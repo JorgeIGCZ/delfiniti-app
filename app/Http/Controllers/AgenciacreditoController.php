@@ -30,7 +30,7 @@ class AgenciacreditoController extends Controller
             'comision' => $request->comision,
             'iva' => $request->iva,
             'representante' => $request->representante,
-            'direcion' => $request->direcion,
+            'direccion' => $request->direccion,
             'telefono' => $request->telefono
         ]);        
         return json_encode(['result' => is_numeric($result['id']) ? "Agencia Guardada" : "Error"]);
@@ -61,7 +61,7 @@ class AgenciacreditoController extends Controller
     {
         if($id > 0){
             $Agenciacredito = Agenciacredito::where('id', $id)->first();
-            return view('agenciascredito.edit',['Agenciacredito' => $Agenciacredito]);
+            return view('agenciascredito.edit',['AgenciaCredito' => $Agenciacredito]);
         }
     }
 
@@ -80,7 +80,7 @@ class AgenciacreditoController extends Controller
         $agenciacredito->comision = $request->comision;
         $agenciacredito->iva      = $request->iva;
         $agenciacredito->representante = $request->representante;
-        $agenciacredito->direcion = $request->direcion;
+        $agenciacredito->direccion = $request->direccion;
         $agenciacredito->telefono = $request->telefono;
         $agenciacredito->save();
 

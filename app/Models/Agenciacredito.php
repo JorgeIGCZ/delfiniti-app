@@ -14,8 +14,8 @@ class Agenciacredito extends Model
         'comision',
         'iva',
         'representante',
-        'direcion',
-        'numero'
+        'direccion',
+        'telefono'
     ];
     protected $primaryKey = 'id';
 } 

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->float('comision');
             $table->float('iva');
             $table->string('representante');
-            $table->string('direcion');
+            $table->string('direccion');
             $table->string('telefono');
             $table->timestamps();
         });

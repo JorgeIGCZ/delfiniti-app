@@ -30,7 +30,7 @@ class AgenciaController extends Controller
             'comision' => $request->comision,
             'iva' => $request->iva,
             'representante' => $request->representante,
-            'direcion' => $request->direcion,
+            'direccion' => $request->direccion,
             'telefono' => $request->telefono
         ]);        
         return json_encode(['result' => is_numeric($result['id']) ? "Agencia Guardado" : "Error"]);

@@ -121,19 +121,19 @@
                             @csrf
                             <div class="form-group col-2 mt-3">
                                 <label for="new-codigo" class="col-form-label">Código</label>    
-                                <input type="text" id="new-codigo" name="codigo" class="form-control">  
+                                <input type="text" name="codigo" class="form-control">  
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="new-nombre" class="col-form-label">Comisionista</label>    
-                                <input type="text" id="new-nombre" name="nombre" class="form-control">  
+                                <input type="text" name="nombre" class="form-control">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="new-nombre" class="col-form-label">Comisión %</label>
-                                <input type="number" id="new-nombre" name="comision" class="form-control" min="1" max="90">
+                                <input type="number" name="comision" class="form-control" min="1" max="90">
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="new-iva" class="col-form-label">Iva %</label>
-                                <input type="number" id="new-iva" name="iva" class="form-control" min="1" max="90">
+                                <input type="number" name="iva" class="form-control" min="1" max="90">
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="crear-agencia">Crear comisionista</button>
