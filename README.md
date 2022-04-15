@@ -1,3 +1,24 @@
+## Step 1
+Install docker
+This proyect users Laravel Sail
+https://laravel.com/docs/9.x/sail
+
+## Step 2
+Run 
+alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
+sail up -d to run the environment 
+
+## Step 3
+Run
+sail npm install
+npm run dev
+
+## Notes
+The environment is ran into sail, in order the commands works it's necessary to use sail coman at the beginning of each eloquent or npm command
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
 <p align="center">
