@@ -29,6 +29,9 @@ class AgenciacreditoController extends Controller
             'nombre' => $request->nombre,
             'comision' => $request->comision,
             'iva' => $request->iva,
+            'representante' => $request->representante,
+            'direcion' => $request->direcion,
+            'telefono' => $request->telefono
         ]);        
         return json_encode(['result' => is_numeric($result['id']) ? "Agencia Guardada" : "Error"]);
     }
@@ -76,6 +79,9 @@ class AgenciacreditoController extends Controller
         $agenciacredito->nombre   = $request->nombre;
         $agenciacredito->comision = $request->comision;
         $agenciacredito->iva      = $request->iva;
+        $agenciacredito->representante = $request->representante;
+        $agenciacredito->direcion = $request->direcion;
+        $agenciacredito->telefono = $request->telefono;
         $agenciacredito->save();
 
         return redirect()->route("agenciascredito")->with(["result" => "Agencia credito actualizada",]);

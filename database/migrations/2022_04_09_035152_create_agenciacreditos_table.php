@@ -21,7 +21,7 @@ return new class extends Migration
             $table->float('iva');
             $table->string('representante');
             $table->string('direcion');
-            $table->string('numero');
+            $table->string('telefono');
             $table->timestamps();
         });
     }

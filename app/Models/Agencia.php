@@ -8,5 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Agencia extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'codigo',
+        'nombre',
+        'comision',
+        'iva',
+        'representante',
+        'direcion',
+        'numero'
+    ];
     protected $primaryKey = 'id';
 }
