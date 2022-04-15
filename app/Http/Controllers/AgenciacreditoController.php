@@ -61,7 +61,7 @@ class AgenciacreditoController extends Controller
     {
         if($id > 0){
             $Agenciacredito = Agenciacredito::where('id', $id)->first();
-            return view('agenciascredito.edit',['AgenciaCredito' => $Agenciacredito]);
+            return view('agenciascredito.edit',['agenciaCredito' => $Agenciacredito]);
         }
     }
 
