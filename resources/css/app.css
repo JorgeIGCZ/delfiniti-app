@@ -2,3 +2,6 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
+@import "daterangepicker/daterangepicker.css";
+@import "select2";
+

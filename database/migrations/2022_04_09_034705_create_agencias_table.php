@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('representante');
             $table->string('direccion');
             $table->string('telefono');
+            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }

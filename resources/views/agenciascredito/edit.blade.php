@@ -1,7 +1,4 @@
 @extends('layouts.app')
-@section('scripts')
-
-@endsection
 @section('content')
     <div class="az-dashboard-one-title">
         <div>

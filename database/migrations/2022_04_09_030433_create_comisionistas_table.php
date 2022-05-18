@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->float('comision');
             $table->float('iva');
+            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }

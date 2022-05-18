@@ -25,10 +25,10 @@ class ComisionistaController extends Controller
     public function store(Request $request)
     {
         $result = Comisionista::create([
-            'codigo' => $request->codigo,
-            'nombre' => $request->nombre,
+            'codigo'   => $request->codigo,
+            'nombre'   => $request->nombre,
             'comision' => $request->comision,
-            'iva' => $request->iva,
+            'iva'      => $request->iva,
         ]);        
         return json_encode(['result' => is_numeric($result['id']) ? "Comisionista Guardado" : "Error"]);
     }

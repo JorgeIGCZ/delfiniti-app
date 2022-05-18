@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        let comisionistasTable;
+        let localizacionesTable;
         function verificacionDestroy(id){
             Swal.fire({
-                title: '¿Desea eliminar comisionista?',
+                title: '¿Desea eliminar localizacion?',
                 text: "Este proceso no se puede revertir!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -13,14 +13,14 @@
                 confirmButtonText: '¡Si, Eliminar!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    destroyComisionista(id);
+                    destroyLocalizacion(id);
                 }else{
                     return false;
                 }
             }) 
         }
-        function destroyComisionista(id){
-            axios.get(`/configuracion/comisionistas/destroy/${id}`)
+        function destroyLocalizacion(id){
+            axios.get(`/configuracion/localizaciones/destroy/${id}`)
             .then(function (response) {
                 Swal.fire({
                     icon: 'success',
@@ -37,15 +37,15 @@
                     timer: 1500
                 })
             });
-            comisionistasTable.ajax.reload();
+            localizacionesTable.ajax.reload();
         }
-        function createComisionista(comisionistas){
-            axios.post('/configuracion/comisionistas/store', {
+        function createLocalizacion(localizaciones){
+            axios.post('/configuracion/localizaciones/store', {
                 '_token'  : '{{ csrf_token() }}',
-                "codigo"  : comisionistas.elements['codigo'].value,
-                "nombre"  : comisionistas.elements['nombre'].value,
-                "comision": comisionistas.elements['comision'].value,
-                "iva"     : comisionistas.elements['iva'].value
+                "codigo"  : localizaciones.elements['codigo'].value,
+                "nombre"  : localizaciones.elements['nombre'].value,
+                "comision": localizaciones.elements['comision'].value,
+                "iva"     : localizaciones.elements['iva'].value
             })
             .then(function (response) {
                 Swal.fire({
@@ -64,13 +64,13 @@
                 })
             });
             event.preventDefault();
-            comisionistas.reset();
-            comisionistasTable.ajax.reload();
+            localizaciones.reset();
+            localizacionesTable.ajax.reload();
         }
         $(function(){
-            comisionistasTable = new DataTable('#comisionistas', {
+            localizacionesTable = new DataTable('#localizaciones', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/configuracion/comisionistas/show')
+                    axios.get('/configuracion/localizaciones/show')
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -89,7 +89,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="comisionistas/edit/${row.id}">Editar</a>
+                                                <a href="localizaciones/edit/${row.id}">Editar</a>
                                                 ${removeRow}
                                             </small>`;
                             return  view;
@@ -99,8 +99,8 @@
             } );
             
             document.getElementById('comisionsistas-form').addEventListener('submit', (event) =>{
-                const comisionistas = document.getElementById('comisionsistas-form');
-                createComisionista(comisionistas);
+                const localizaciones = document.getElementById('comisionsistas-form');
+                createLocalizacion(localizaciones);
             });
             
         });
@@ -109,7 +109,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Comisionistas</h2>
+            <h2 class="az-dashboard-title">Localizaciones</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -124,7 +124,7 @@
                                 <input type="text" name="codigo" class="form-control">  
                             </div>
                             <div class="form-group col-4 mt-3">
-                                <label for="new-nombre" class="col-form-label">Comisionista</label>    
+                                <label for="new-nombre" class="col-form-label">Localización</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
                             <div class="form-group col-2 mt-3">
@@ -136,7 +136,7 @@
                                 <input type="number" name="iva" class="form-control" min="1" max="90">
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-agencia">Crear comisionista</button>
+                                <button class="btn btn-info btn-block mt-33" id="crear-agencia">Crear localización</button>
                             </div>
                         </form>
                     </div>
@@ -150,7 +150,7 @@
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="comisionistas" class="display table" style="width:100%">
+                            <table id="localizaciones" class="display table" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Código</th>

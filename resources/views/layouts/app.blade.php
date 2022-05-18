@@ -47,6 +47,7 @@
 
     <!-- azia CSS -->
     <link rel="stylesheet" href="{{asset('assets/css/app.css')}}">
+    <link rel="stylesheet" href="{{asset('css/app.css')}}">
   </head>
   <body>
     @include('layouts.header')

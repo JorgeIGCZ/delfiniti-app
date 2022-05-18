@@ -1,6 +1,16 @@
+window.moment = require('moment');
+window.daterangepicker = require('daterangepicker');
+
+
 window.$ = window.jQuery = require('jquery');
 window.Swal = require('sweetalert2');
 window.DataTable = require( 'datatables.net-bs5' );
+window.Select2 = require('select2');
+$('.search-drop-down').select2();
+$(document).on('select2:open', () => {
+    document.querySelector('.select2-search__field').focus();
+});
+
 
 window._ = require('lodash');
 

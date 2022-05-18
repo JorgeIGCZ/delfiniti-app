@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('disponibilidads', function (Blueprint $table) {
+        Schema::create('actividad_horarios', function (Blueprint $table) {
             $table->id();
-            $table->string('actividad');
-            $table->integer('capacidad');
-            $table->time('horarioinicial');
-            $table->time('horariofinal');
+            $table->integer('actividad_id');
+            $table->time('horario_inicial');
+            $table->time('horario_final');
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('disponibilidads');
+        Schema::dropIfExists('actividad_horarios');
     }
 };

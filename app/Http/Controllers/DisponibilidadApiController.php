@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ActividadHorario;
 use Illuminate\Http\Request;
+use App\Models\Actividad;
 use Illuminate\Database\Eloquent\Builder;
 
-
-class DisponibilidadController extends Controller
+class DisponibilidadApiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,23 +15,26 @@ class DisponibilidadController extends Controller
      */
     public function index()
     {
-        $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) {
-            $query
-                ->whereRaw('NOW() >= fecha_inicial')
-                ->whereRaw('NOW() <= fecha_final')
-                ->orWhere('duracion','indefinido');
-           })->get()->groupBy('horario_inicial');
-        return view("disponibilidad.index",['actividadesHorarios' => $actividadesHorarios]);
-    }
+        // $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) {
+        //     $query
+        //         ->whereRaw('NOW() >= fecha_inicial')
+        //         ->whereRaw('NOW() <= fecha_final')
+        //         ->orWhere('duracion','indefinido');
+        //    })->get()->groupBy('horario_inicial');
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $actividades = Actividad::whereRaw('NOW() >= fecha_inicial')
+                ->whereRaw('NOW() <= fecha_final')
+                ->orWhere('duracion','indefinido')->get();
+        $actividadesHorarios = [];
+        foreach ($actividades as $key => $value) {
+            $actividadesHorarios[] = ['actividad'=>$value,'horarios'=>$value->horarios];
+        }
+        return response()->json([
+            'status' => true,
+            'message' => "Success",
+            'disponibilidad' => $actividadesHorarios
+
+        ],200);
     }
 
     /**
@@ -49,21 +51,10 @@ class DisponibilidadController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Disponibilidad  $disponibilidad
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show()
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Disponibilidad  $disponibilidad
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
+    public function show($id)
     {
         //
     }
@@ -72,7 +63,7 @@ class DisponibilidadController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Disponibilidad  $disponibilidad
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -83,7 +74,7 @@ class DisponibilidadController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Disponibilidad  $disponibilidad
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

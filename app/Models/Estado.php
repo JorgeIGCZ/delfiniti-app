@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Promotor extends Model
+class Estado extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'codigo',
-        'nombre',
-        'comision',
-        'iva',
+        'pais_id',
+        'nombre'
     ];
-    
     protected $primaryKey = 'id';
-    protected $table = 'promotores';
+
+    public function pais()
+    {
+        return $this->belongsTo(Pais::class,'pais_id');
+    }
 }

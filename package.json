@@ -24,6 +24,8 @@
     "dependencies": {
         "datatables.net-bs5": "^1.11.5",
         "datatables.net-dt": "^1.11.5",
+        "daterangepicker": "^3.1.0",
+        "select2": "^4.1.0-rc.0",
         "sweetalert2": "^11.4.8"
     }
 }

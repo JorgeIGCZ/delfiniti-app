@@ -20,8 +20,9 @@
       <a href="#" class="nav-link with-sub"><i class="typcn typcn-credit-card"></i> Reservaciones</a>
       <div class="az-menu-sub">
         <nav class="nav">
+          <a href="{{ url('disponibilidad') }}" class="nav-link">Disponibilidad</a>
           <a href="{{ url('reservacion') }}" class="nav-link active">Ver reservaciones</a>
-          <a href="{{ url('reservacion/new') }}" class="nav-link">Nueva reservación</a>
+          <a href="{{ url('reservacion/create') }}" class="nav-link">Nueva reservación</a>
         </nav>
       </div><!-- az-menu-sub -->
     </li>
@@ -32,7 +33,7 @@
           <div>
             <nav class="nav">
               <span>General</span>
-              <a href="{{ url('configuracion/disponibilidad') }}" class="nav-link">disponibilidad</a>
+              <a href="{{ url('configuracion/actividades') }}" class="nav-link">Actividades</a>
             </nav>
           </div>
           <div>
@@ -42,6 +43,7 @@
               <a href="{{ url('configuracion/promotores') }}" class="nav-link">Promotores directos</a>
               <a href="{{ url('configuracion/agenciascredito') }}" class="nav-link">Agencias con crédito</a>
               <a href="{{ url('configuracion/agencias') }}" class="nav-link">Agencias sin crédito</a>
+              <a href="{{ url('configuracion/localizaciones') }}" class="nav-link">Localizaciones</a>
             </nav>
           </div>
         </div><!-- container -->
