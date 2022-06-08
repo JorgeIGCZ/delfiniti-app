@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Actividad;
-use App\Models\ActividadHorario;
-use App\Models\Agencia;
-use App\Models\Agenciacredito;
+use App\Models\ArticulosFactura;
 use App\Models\Comisionista;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Pais;
 use App\Models\Estado;
+use App\Models\Factura;
 use App\Models\Localizacion;
-use App\Models\Promotor;
+use App\Models\Pago;
+use App\Models\Reservacion;
 use Illuminate\Notifications\Action;
 use Illuminate\Database\Eloquent\Builder;
+use App\Classes\CustomErrorHandler;
+use App\Models\CodigoAutorizacionPeticion;
+use App\Models\CodigoDescuento;
+use Hamcrest\Type\IsNumeric;
 
 class ReservacionController extends Controller
 {
@@ -39,18 +43,59 @@ class ReservacionController extends Controller
         $estados        = Estado::all();
         $localizaciones = Localizacion::all();
         $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
-                    ->whereRaw('NOW() <= fecha_final')
-                    ->orWhere('duracion','indefinido')
-                    ->get();
-        $comisionsita   = Comisionista::all()->toArray();
-        $promotor       = Promotor::all()->toArray();
-        $agenciaCredito = Agenciacredito::all()->toArray();
-        $agencia        = Agencia::all()->toArray();
-        $agencias       = [...$comisionsita,...$promotor,...$agenciaCredito,...$agencia];
+                            ->whereRaw('NOW() <= fecha_final')
+                            ->orWhere('duracion','indefinido')
+                            ->get();
+        $comisionistas   = Comisionista::all();
         
-        return view('reservacion.create',['estados' => $estados,'actividades' => $actividades,'localizaciones' => $localizaciones,'agencias' => $agencias]);
+        return view('reservacion.create',['estados' => $estados,'actividades' => $actividades,'localizaciones' => $localizaciones,'comisionistas' => $comisionistas]);
     }
-
+    public function getPeticionAutorizacionCodigo(Request $request){
+        $codigoDescuentoId    = $this->getCodigoDescuentoId($request->codigoDescuento);
+        if($codigoDescuentoId !== 0 ){
+            try{
+                $peticionAutorizacionCodigo = $this->getPeticionAutorizacionCodigoArray($codigoDescuentoId,$request);
+                if($peticionAutorizacionCodigo !== null){
+                    if($peticionAutorizacionCodigo->estatus == 1){
+                        $descuento = $this->getDescuento($peticionAutorizacionCodigo->codigo_descuento_id);
+                        return json_encode(['result' => "Success",'status' => 'authorized','descuento' => $descuento]);
+                    }
+                }else{
+                    $codigoAutorizacionPeticion = CodigoAutorizacionPeticion::create([
+                        'codigo_descuento_id' =>  $codigoDescuentoId,
+                        'nombre_cliente'      =>  $request->nombre,
+                        'fecha_peticion'      =>  date('Y-m-d')
+                    ]);
+                    if(is_numeric($codigoAutorizacionPeticion['id'])){
+                        return json_encode(['result' => "Success",'status' => 'created','descuento' => []]);
+                    }else{
+                        return json_encode(['result' => "Error"]);
+                    }
+                }
+                return json_encode(['result' => "Success",'status' => 'waiting','descuento' => []]);
+            } catch (\Exception $e){
+                $CustomErrorHandler = new CustomErrorHandler();
+                $CustomErrorHandler->saveError($e->getMessage(),$request);
+                return json_encode(['result' => "Error"]);
+            }
+        }
+        return json_encode(['result' => "Error"]);
+    }
+    private function getDescuento($codigoDescuentoId){
+        $descuento = CodigoDescuento::find($codigoDescuentoId);  
+        return $descuento;
+    }
+    private function getPeticionAutorizacionCodigoArray($codigoDescuentoId,$request){
+        $codigoDescuento = CodigoAutorizacionPeticion::where('codigo_descuento_id',$codigoDescuentoId)
+                                                        ->where('nombre_cliente',$request->nombre)
+                                                        ->where('fecha_peticion',date('Y-m-d'))
+                                                        ->first();  
+        return $codigoDescuento;
+    }
+    private function getCodigoDescuentoId($nombre){
+        $codigoDescuento = CodigoDescuento::where('nombre',$nombre)->first();
+        return ($codigoDescuento !== null) ? $codigoDescuento->id : 0;
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -59,15 +104,70 @@ class ReservacionController extends Controller
      */
     public function store(Request $request)
     {   
-        /*
-        $result = Promotor::create([
-            'codigo' => $request->codigo,
-            'nombre' => $request->nombre,
-            'comision' => $request->comision,
-            'iva' => $request->iva,
-        ]);        
-        return json_encode(['result' => is_numeric($result['id']) ? "Promotor Guardado" : "Error"]);
-        */
+        $pagado  = ((float)$request->cupon + (float)$request->efectioUsd + (float)$request->efectivo + (float)$request->tarjeta);
+        $adeudo  = ((float)$request->total - (float)$pagado);
+        $estatus = ($request->estatus == "reservar");
+        DB::beginTransaction();
+        try{
+            $reservacion = Reservacion::create([
+                'nombre_cliente'  => $request->nombre,
+                'email'           => $request->email,
+                'localizacion'    => $request->localizacion,
+                'origen'          => $request->origen,
+                'agente_id'       => $request->agente,
+                'comisionista_id' => $request->comisionista,
+                'comentarios'     => $request->comentarios,
+                'estatus'         => $estatus,
+                'fecha_creacion'  => date('Y-m-d')
+            ]);
+            $factura = Factura::create([
+                'reservacion_id' =>  $reservacion['id'],
+                'total'          =>  $request->total,
+                'pagado'         =>  $pagado,
+                'adeudo'         =>  $adeudo
+            ]);
+            foreach($request->reservacionArticulos as $reservacionArticulo){
+                ArticulosFactura::create([
+                    'reservacion_id'       =>  $reservacion['id'],
+                    'factura_id'           =>  $factura['id'],
+                    'actividad_id'         =>  $reservacionArticulo['actividad'],
+                    'actividad_horario_id' =>  $reservacionArticulo['horario'],
+                    'actividad_fecha'      =>  $reservacionArticulo['fecha'],
+                    'numero_personas'      =>  $reservacionArticulo['cantidad']
+                ]); 
+            }
+            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"efectivo");
+            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"efectioUsd");
+            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"tarjeta");
+            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"cupon");
+            DB::commit();
+            return json_encode(['result' => "Success"]);
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        }
+    }
+
+    private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
+        $tipoPagoId = $this->getTipoPagoId($tipoPago);
+        $result     = true;
+        if((float)$request[$tipoPago]>0){
+            $pago = Pago::create([
+                'reservacion_id' =>  $reservacionId,
+                'factura_id'     =>  $facturaId,
+                'cantidad'       =>  $request[$tipoPago],
+                'tipo_pago_id'   =>  $tipoPagoId
+            ]);
+            $result = is_numeric($pago['id']);
+        }
+        return $result;
+    }
+
+    private function getTipoPagoId($tipoPago){
+        //$tipoPagoId = tipoPago::where('nombre',$tipoPago);
+        return 1;
     }
 
     /**
@@ -85,7 +185,6 @@ class ReservacionController extends Controller
         }
         */
     }
-
 
     /**
      * Show the form for editing the specified resource.
