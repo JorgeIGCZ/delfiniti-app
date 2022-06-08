@@ -45,7 +45,10 @@
                 "codigo"  : comisionistas.elements['codigo'].value,
                 "nombre"  : comisionistas.elements['nombre'].value,
                 "comision": comisionistas.elements['comision'].value,
-                "iva"     : comisionistas.elements['iva'].value
+                "iva"     : comisionistas.elements['iva'].value,
+                "representante"  : comisionistas.elements['representante'].value,
+                "direccion": comisionistas.elements['direccion'].value,
+                "telefono"     : comisionistas.elements['telefono'].value
             })
             .then(function (response) {
                 Swal.fire({
@@ -80,8 +83,12 @@
                 columns: [
                     { data: 'codigo' },
                     { data: 'nombre' },
+                    { data: 'tipo' },
                     { data: 'comision' },
                     { data: 'iva' },
+                    { data: 'representante' },
+                    { data: 'direccion' },
+                    { data: 'telefono' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let removeRow = '';
@@ -98,8 +105,8 @@
                 ]
             } );
             
-            document.getElementById('comisionsistas-form').addEventListener('submit', (event) =>{
-                const comisionistas = document.getElementById('comisionsistas-form');
+            document.getElementById('comisionistas-form').addEventListener('submit', (event) =>{
+                const comisionistas = document.getElementById('comisionistas-form');
                 createComisionista(comisionistas);
             });
             
@@ -111,32 +118,58 @@
         <div>
             <h2 class="az-dashboard-title">Comisionistas</h2>
         </div>
-    </div><!-- az-dashboard-one-title -->
+    </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="comisionsistas-form">
+                        <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
                             @csrf
                             <div class="form-group col-2 mt-3">
-                                <label for="new-codigo" class="col-form-label">Código</label>    
+                                <label for="codigo" class="col-form-label">Código</label>    
                                 <input type="text" name="codigo" class="form-control">  
                             </div>
                             <div class="form-group col-4 mt-3">
-                                <label for="new-nombre" class="col-form-label">Comisionista</label>    
+                                <label for="nombre" class="col-form-label">Nombre comisionista</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <label for="new-nombre" class="col-form-label">Comisión %</label>
-                                <input type="number" name="comision" class="form-control" min="1" max="90">
+                                <label for="tipo" class="col-form-label">Tipo</label>
+                                <select name="tipo" class="form-control">
+                                    @foreach($tipos as $tipo)
+                                        <option value="{{$tipo->id}}">{{$tipo->nombre}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <label for="new-iva" class="col-form-label">Iva %</label>
-                                <input type="number" name="iva" class="form-control" min="1" max="90">
+                                <label for="comision" class="col-form-label">Comisión %</label>
+                                <input type="number" name="comision" class="form-control" min="0" max="90" value="0">
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-agencia">Crear comisionista</button>
+                                <label for="iva" class="col-form-label">Iva %</label>
+                                <input type="number" name="iva" class="form-control" min="0" max="90" value="0">
+                            </div>
+
+
+                            <div class="col-12 mt-3">
+                                <strong>Datos Representante</strong>
+                            </div>
+                            <div class="form-group col-5 mt-3">
+                                <label for="representante" class="col-form-label">Representante</label>
+                                <input type="text" id="representante" class="form-control">
+                            </div>
+                            <div class="form-group col-4 mt-3">
+                                <label for="direccion" class="col-form-label">Dirección</label>
+                                <input type="text" id="direccion" class="form-control">
+                            </div>
+                            <div class="form-group col-3 mt-3">
+                                <label for="telefono" class="col-form-label">Teléfono</label>
+                                <input type="text" id="telefono" class="form-control">
+                            </div>
+
+                            <div class="form-group col-3 mt-3">
+                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear comisionista</button>
                             </div>
                         </form>
                     </div>
@@ -144,24 +177,27 @@
             </div>
         </div>
     </div>
+
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="comisionistas" class="display table" style="width:100%">
+                            <table id="comisionistas" class="display" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
+                                        <th>Tipo</th>
                                         <th>Comisión</th>
                                         <th>Iva</th>
+                                        <th>Representante</th>
+                                        <th>Dirección</th>
+                                        <th>Teléfono</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                </tbody>
                             </table>
                         </div>
                     </div>

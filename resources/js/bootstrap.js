@@ -1,7 +1,5 @@
 window.moment = require('moment');
 window.daterangepicker = require('daterangepicker');
-
-
 window.$ = window.jQuery = require('jquery');
 window.Swal = require('sweetalert2');
 window.DataTable = require( 'datatables.net-bs5' );

@@ -1863,5 +1863,11 @@ table.table-bordered.dataTable td {
     padding-right: 2rem;
   }
 }
-
-
+.btn, .sp-container button{
+  min-height: 30px;
+  padding: 0 10px;
+}
+.input-button{
+  display: grid;
+  grid-template-columns: 1fr auto;
+}

@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comisionistas', function (Blueprint $table) {
+        Schema::create('comisionista_tipos', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo');
             $table->string('nombre');
-            $table->float('comision');
-            $table->float('iva');
-            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comisionistas');
+        Schema::dropIfExists('comisionista_tipos');
     }
 };

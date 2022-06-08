@@ -14,6 +14,15 @@ class Comisionista extends Model
         'nombre',
         'comision',
         'iva',
+        'representante',
+        'direccion',
+        'telefono',
+        'tipo_id'
     ];
     protected $primaryKey = 'id';
+
+    public function tipo()
+    {
+        return $this->belongsTo(ComisionistaTipo::class,'tipo_id');
+    }
 }

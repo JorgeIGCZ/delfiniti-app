@@ -5069,6 +5069,11 @@ module.exports = {
   \********************************/
 /***/ (() => {
 
+var formatter = new Intl.NumberFormat('es-MX', {
+  style: 'currency',
+  currency: 'MXN',
+  minimumFractionDigits: 2
+});
 $(".amount").each(function () {
   var amount = $(this).val();
   var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));

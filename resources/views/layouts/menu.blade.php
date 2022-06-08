@@ -40,9 +40,6 @@
             <nav class="nav">
               <span>Catálogos</span>
               <a href="{{ url('configuracion/comisionistas') }}" class="nav-link">Comisionistas</a>
-              <a href="{{ url('configuracion/promotores') }}" class="nav-link">Promotores directos</a>
-              <a href="{{ url('configuracion/agenciascredito') }}" class="nav-link">Agencias con crédito</a>
-              <a href="{{ url('configuracion/agencias') }}" class="nav-link">Agencias sin crédito</a>
               <a href="{{ url('configuracion/localizaciones') }}" class="nav-link">Localizaciones</a>
             </nav>
           </div>

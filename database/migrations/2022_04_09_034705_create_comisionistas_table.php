@@ -13,15 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('agenciacreditos', function (Blueprint $table) {
+        Schema::create('comisionistas', function (Blueprint $table) {
             $table->id();
             $table->string('codigo');
             $table->string('nombre');
             $table->float('comision');
             $table->float('iva');
-            $table->string('representante');
-            $table->string('direccion');
-            $table->string('telefono');
+            $table->string('representante')->nullable();
+            $table->string('direccion')->nullable();
+            $table->string('telefono')->nullable();
+            $table->integer('tipo_id');
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
@@ -34,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('agenciacreditos');
+        Schema::dropIfExists('comisionistas');
     }
 };

@@ -5,17 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Agencia extends Model
-{
+class PagoTipo extends Model
+{ 
     use HasFactory;
+
     protected $fillable = [
-        'codigo',
-        'nombre',
-        'comision',
-        'iva',
-        'representante',
-        'direccion',
-        'telefono'
+        'nombre'
     ];
     protected $primaryKey = 'id';
 }

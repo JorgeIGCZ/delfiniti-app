@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Comisionista;
+use App\Models\ComisionistaTipo;
+use Illuminate\Http\Request;
 
 class ComisionistaController extends Controller
 {
@@ -14,7 +15,8 @@ class ComisionistaController extends Controller
      */
     public function index()
     {
-        return view('comisionistas.index');
+        $tipos = ComisionistaTipo::all();
+        return view('comisionistas.index',['tipos' => $tipos]);
     }
     /**
      * Store a newly created resource in storage.
@@ -25,10 +27,13 @@ class ComisionistaController extends Controller
     public function store(Request $request)
     {
         $result = Comisionista::create([
-            'codigo'   => $request->codigo,
-            'nombre'   => $request->nombre,
+            'codigo' => $request->codigo,
+            'nombre' => $request->nombre,
             'comision' => $request->comision,
-            'iva'      => $request->iva,
+            'iva' => $request->iva,
+            'representante' => $request->representante,
+            'direccion' => $request->direccion,
+            'telefono' => $request->telefono
         ]);        
         return json_encode(['result' => is_numeric($result['id']) ? "Comisionista Guardado" : "Error"]);
     }
@@ -43,7 +48,21 @@ class ComisionistaController extends Controller
     {   
         if(is_null($id)){
             $comisionistas = Comisionista::all();
-            return json_encode(['data' => $comisionistas]);
+            $comisionistasAllArray = [];
+            $comisionistasArray = [];
+            foreach ($comisionistas as $comisionista) {
+                $comisionistasArray[] = [
+                    'codigo'       => $comisionista->codigo,
+                    'nombre'       => $comisionista->nombre,
+                    'tipo'         => $comisionista->tipo->nombre,
+                    'iva'          => $comisionista->iva,
+                    'comision'     => $comisionista->comision,
+                    'representante'=> $comisionista->representante,
+                    'direccion'    => $comisionista->direccion,
+                    'telefono'     => $comisionista->telefono
+                ];
+            }
+            return json_encode(['data' => $comisionistasArray]);
         }
     }
 
@@ -76,9 +95,12 @@ class ComisionistaController extends Controller
         $comisionista->nombre   = $request->nombre;
         $comisionista->comision = $request->comision;
         $comisionista->iva      = $request->iva;
+        $comisionista->representante = $request->representante;
+        $comisionista->direcion = $request->direcion;
+        $comisionista->telefono = $request->telefono;
         $comisionista->save();
 
-        return redirect()->route("comisionistas")->with(["result" => "Comisionista actualizado",]);
+        return redirect()->route("comisionistas")->with(["result" => "Comisionista actualizado"]);
     }
 
 
@@ -102,6 +124,5 @@ class ComisionistaController extends Controller
     {
         $result = Comisionista::destroy($id);
         return json_encode(['result' => ($result) ? "Comisionista eliminado" : "Error"]);
-        //return redirect()->route("comisionistas")->with(["result" => "Comisionista eliminado",]);
     }
 }
