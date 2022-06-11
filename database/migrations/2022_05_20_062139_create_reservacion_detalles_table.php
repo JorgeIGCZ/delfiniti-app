@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('articulos_facturas', function (Blueprint $table) {
+        Schema::create('reservacion_detalles', function (Blueprint $table) {
             $table->id();
             $table->integer('factura_id');
             $table->integer('reservacion_id');
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('articulos_facturas');
+        Schema::dropIfExists('reservaciones_detalles');
     }
 };

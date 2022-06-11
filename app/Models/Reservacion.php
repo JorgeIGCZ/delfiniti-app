@@ -36,4 +36,8 @@ class Reservacion extends Model
     {
         return $this->hasMany(Factura::class,'reservacion_id');
     }
+    public function reservacionDetalle()
+    {
+        return $this->hasMany(ReservacionDetalle::class,'reservacion_id');
+    }
 }

@@ -20,5 +20,20 @@ class ActividadHorario extends Model
     {
         return $this->belongsTo(Actividad::class,'actividad_id');
     }
+
+    public function reservacionDetalle()
+    {
+        return $this->hasMany(ReservacionDetalle::class,'actividad_id','actividad_id');
+    }
+    
+    public function reservacion()
+    {
+        return $this->hasManyThrough(
+            Reservacion::class,
+            ReservacionDetalle::class,
+            'actividad_id',
+            'id',
+            'actividad_id',
+            'reservacion_id');
+    }
 }
- 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Actividad;
-use App\Models\ArticulosFactura;
+use App\Models\ReservacionDetalle;
 use App\Models\Comisionista;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -127,7 +127,7 @@ class ReservacionController extends Controller
                 'adeudo'         =>  $adeudo
             ]);
             foreach($request->reservacionArticulos as $reservacionArticulo){
-                ArticulosFactura::create([
+                ReservacionDetalle::create([
                     'reservacion_id'       =>  $reservacion['id'],
                     'factura_id'           =>  $factura['id'],
                     'actividad_id'         =>  $reservacionArticulo['actividad'],
@@ -178,12 +178,27 @@ class ReservacionController extends Controller
      */
     public function show($id = null)
     {   
-        /*
-        if(is_null($id)){
-            $promotores = Promotor::all();
-            return json_encode(['data' => $promotores]);
-        }
-        */
+        return view('reservacion.show');
+    }
+
+    public function get($id = null)
+    {   
+        $reservacionesDetalle = ReservacionDetalle::all();
+
+        $reservacionDetalleArray = [];
+            foreach ($reservacionesDetalle as $reservacionDetalle) {
+                $reservacionDetalleArray[] = [
+                    'id'            => @$reservacionDetalle->id,
+                    'reservacionId' => @$reservacionDetalle->reservacion->id,
+                    'actividad'     => @$reservacionDetalle->actividad->nombre,
+                    'horario'       => @$reservacionDetalle->horario->horario_inicial,
+                    'fecha'         => @$reservacionDetalle->actividad_fecha,
+                    'cliente'       => @$reservacionDetalle->reservacion->nombre_cliente,
+                    'personas'      => @$reservacionDetalle->numero_personas,
+                    'notas'         => @$reservacionDetalle->reservacion->comentarios
+                ];
+            }
+        return json_encode(['data' => $reservacionDetalleArray]);
     }
 
     /**

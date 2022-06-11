@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActividadHorario;
+use App\Models\Reservacion;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 
 class DisponibilidadController extends Controller
@@ -14,15 +16,52 @@ class DisponibilidadController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) {
+        $fechaActividades    = date('Y-m-d');
+        $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
+        
+        return view("disponibilidad.index",['actividadesHorarios' => $actividadesHorarios,'fechaActividades' => $fechaActividades]);
+    }
+
+    public function getActividadesHorarios($fechaActividades){
+        //$fechaActividades = ($fechaActividades != null) ? $fechaActividades : date('Y-m-d');
+        DB::enableQueryLog();
+        
+        $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) use ($fechaActividades) {
             $query
-                ->whereRaw('NOW() >= fecha_inicial')
-                ->whereRaw('NOW() <= fecha_final')
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
                 ->orWhere('duracion','indefinido');
-           })->get()->groupBy('horario_inicial');
-        return view("disponibilidad.index",['actividadesHorarios' => $actividadesHorarios]);
+        })->orWhereHas('reservacionDetalle', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' = actividad_fecha");
+        })->get()->groupBy('horario_inicial');
+        
+        /*
+        $fechaActividades = "2022-06-19";
+        $actividadesHorarios = ActividadHorario::with(['query' => function($query) {
+            $query
+                ->whereRaw(" '2022-06-09' = actividad_fecha");
+        }])->get()->groupBy('horario_inicial');
+        */
+        /*
+        $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido');
+        })->orWhereHas('reservacionDetalle', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' = actividad_fecha");
+        })->get()->groupBy('horario_inicial');
+        */
+        
+        //dd(DB::getQueryLog());
+        //dd($actividadesHorarios['10:30:00'][0]->reservacionDetalle);
+        //dd($actividadesHorarios);
+
+        return $actividadesHorarios;
     }
 
     /**
@@ -52,9 +91,11 @@ class DisponibilidadController extends Controller
      * @param  \App\Models\Disponibilidad  $disponibilidad
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show(Request $request)
     {
-        //
+        $actividadesHorarios = $this->getActividadesHorarios($request->fecha_actividades);
+
+        return redirect()->route("disponibilidad")->with(['actividadesHorarios' => $actividadesHorarios,'fechaActividades' => "2022-06-07"]);
     }
 
     /**

@@ -7,6 +7,8 @@ use App\Http\Controllers\ComisionistaController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\LocalizacionController;
+use App\Http\Controllers\ReporteController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,7 +21,7 @@ use App\Http\Controllers\LocalizacionController;
 */
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('dashboard.index');
 })->middleware(['auth'])->name('dashboard');
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('/configuracion/comisionistas', 'index')->name('comisionistas');
@@ -42,6 +44,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::get('/reservacion/create', 'create')->name('reservacionesCreate');
     Route::post('/reservacion/store', 'store');
     Route::get('/reservacion/show/{reservacion?}', 'show');
+    Route::get('/reservacion/get', 'get');
     Route::get('/reservacion/edit/{reservacion}', 'edit');
     Route::post('/reservacion/update/{reservacion}', 'update')->name('reservacionesUpdate');
     Route::post('/reservacion/getPeticionAutorizacionCodigo', 'getPeticionAutorizacionCodigo');
@@ -54,5 +57,11 @@ Route::controller(LocalizacionController::class)->middleware(['auth'])->group(fu
     Route::get('/configuracion/localizaciones/edit/{localizacion}', 'edit');
     Route::post('/configuracion/localizaciones/update/{localizacion}', 'update')->name('localizacionesUpdate');
 });
-Route::get('/disponibilidad',[DisponibilidadController::class,'index'])->middleware(['auth'])->name('disponibilidad');
+
+Route::controller(DisponibilidadController::class)->middleware(['auth'])->group(function () {
+    Route::get('/disponibilidad', 'index')->name('disponibilidad');
+    Route::post('/disponibilidad/show', 'show');
+});
+
+Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
 require __DIR__.'/auth.php';

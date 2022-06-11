@@ -1,20 +1,6 @@
 <ul class="nav">
     <li class="nav-item active show">
-      <a href="#" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
-      <div class="az-menu-sub">
-        <nav class="nav">
-          <a href="dashboard-one.html" class="nav-link active">Web Analytics</a>
-          <a href="dashboard-two.html" class="nav-link">Sales Monitoring</a>
-          <a href="dashboard-three.html" class="nav-link">Ad Campaign</a>
-          <a href="dashboard-four.html" class="nav-link">Event Management</a>
-          <a href="dashboard-five.html" class="nav-link">Helpdesk Management</a>
-          <a href="dashboard-six.html" class="nav-link">Finance Monitoring</a>
-          <a href="dashboard-seven.html" class="nav-link">Cryptocurrency</a>
-          <a href="dashboard-eight.html" class="nav-link">Executive / SaaS</a>
-          <a href="dashboard-nine.html" class="nav-link">Campaign Monitoring</a>
-          <a href="dashboard-ten.html" class="nav-link">Product Management</a> 
-        </nav>
-      </div><!-- az-menu-sub -->
+      <a href="{{ url('reportes') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
     </li>
      <li class="nav-item">
       <a href="#" class="nav-link with-sub"><i class="typcn typcn-credit-card"></i> Reservaciones</a>

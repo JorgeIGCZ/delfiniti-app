@@ -1,18 +1,44 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-    jQuery(document).ready( function () {
-        $('#table_id').DataTable();
-        /*
-        let table = new DataTable('#table_id', {
-            // options
-        });
-        */
-        //alert("test");
-        
-        
-        
-    } );
+        $(function(){
+            comisionistasTable = new DataTable('#reservaciones', {
+                ajax: function (d,cb,settings) {
+                    axios.get('/reservacion/get')
+                    .then(function (response) {
+                        cb(response.data)
+                    })
+                    .catch(function (error) {
+                    });
+                },
+                columns: [
+                    { data: 'id' },
+                    { data: 'reservacionId' },
+                    { data: 'actividad' },
+                    { data: 'horario' },
+                    { data: 'fecha' },
+                    { data: 'cliente' },
+                    { data: 'personas' },
+                    { data: 'notas' },
+                    { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
+                        {
+                            let removeRow = '';
+                            let editRow   = '';
+                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
+                                removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
+                            //}
+                            editRow = `<a href="reservacion/edit/${row.id}">Editar</a>`;
+                            let view    =   `<small> 
+                                                <a href="reservacion/show/${row.id}">Ver</a> |
+                                                ${editRow}
+                                                ${removeRow}
+                                            </small>`;
+                            return  view;
+                        }
+                    }
+                ]
+            } );
+        } );
     </script>
 @endsection
 @section('content')
@@ -27,12 +53,18 @@
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
                         <div class="col-12">
-                            <table id="table_id" class="display" style="width:100%">
+                            <table id="reservaciones" class="display" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th>Reserva</th>
+                                        <th>Id</th>
+                                        <th>Reservacion Id</th>
+                                        <th>Actividad</th>
+                                        <th>Horario</th>
+                                        <th>Fecha</th>
                                         <th>Cliente</th>
                                         <th>Personas</th>
+                                        <th>Notas</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                             </table>

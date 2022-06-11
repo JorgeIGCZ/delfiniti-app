@@ -47,8 +47,7 @@ class ComisionistaController extends Controller
     public function show($id = null)
     {   
         if(is_null($id)){
-            $comisionistas = Comisionista::all();
-            $comisionistasAllArray = [];
+            $comisionistas      = Comisionista::all();
             $comisionistasArray = [];
             foreach ($comisionistas as $comisionista) {
                 $comisionistasArray[] = [
