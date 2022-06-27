@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comisionista;
 use App\Models\ComisionistaTipo;
 use Illuminate\Http\Request;
+use App\Classes\CustomErrorHandler;
 
 class ComisionistaController extends Controller
 {
@@ -26,31 +27,39 @@ class ComisionistaController extends Controller
      */
     public function store(Request $request)
     {
-        $result = Comisionista::create([
-            'codigo' => $request->codigo,
-            'nombre' => $request->nombre,
-            'comision' => $request->comision,
-            'iva' => $request->iva,
-            'representante' => $request->representante,
-            'direccion' => $request->direccion,
-            'telefono' => $request->telefono
-        ]);        
-        return json_encode(['result' => is_numeric($result['id']) ? "Comisionista Guardado" : "Error"]);
+        try {
+            $comisionista = Comisionista::create([
+                'codigo'        => $request->codigo,
+                'nombre'        => $request->nombre,
+                'tipo'          => $request->tipo,
+                'comision'      => $request->comision,
+                'iva'           => $request->iva,
+                'representante' => $request->representante,
+                'direccion'     => $request->direccion,
+                'telefono'      => $request->telefono
+            ]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => is_numeric($comisionista['id']) ? 'Success' : 'Error']);
     }
 
     /**
-     * Display the specified resource.
+     * Display apll resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function show($id = null)
+    public function show(Comisionista $comisionista = null)
     {   
-        if(is_null($id)){
+        if(is_null($comisionista)){
             $comisionistas      = Comisionista::all();
             $comisionistasArray = [];
             foreach ($comisionistas as $comisionista) {
                 $comisionistasArray[] = [
+                    'id'           => $comisionista->id,
                     'codigo'       => $comisionista->codigo,
                     'nombre'       => $comisionista->nombre,
                     'tipo'         => $comisionista->tipo->nombre,
@@ -69,15 +78,13 @@ class ComisionistaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Comisionista $comisionista)
     {
-        if($id > 0){
-            $comisionista = Comisionista::where('id', $id)->first();
-            return view('comisionistas.edit',['comisionista' => $comisionista]);
-        }
+        $tipos        = ComisionistaTipo::all();
+        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $tipos]);
     }
 
     /**
@@ -89,17 +96,23 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $comisionista           = Comisionista::find($id);
-        $comisionista->codigo   = $request->codigo;
-        $comisionista->nombre   = $request->nombre;
-        $comisionista->comision = $request->comision;
-        $comisionista->iva      = $request->iva;
-        $comisionista->representante = $request->representante;
-        $comisionista->direcion = $request->direcion;
-        $comisionista->telefono = $request->telefono;
-        $comisionista->save();
+        try {
+            $comisionista           = Comisionista::find($id);
+            $comisionista->codigo   = $request->codigo;
+            $comisionista->nombre   = $request->nombre;
+            $comisionista->comision = $request->comision;
+            $comisionista->iva      = $request->iva;
+            $comisionista->representante = $request->representante;
+            $comisionista->direccion = $request->direccion;
+            $comisionista->telefono = $request->telefono;
+            $comisionista->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
 
-        return redirect()->route("comisionistas")->with(["result" => "Comisionista actualizado"]);
+        return json_encode(['result' => is_numeric($comisionista['id']) ? 'Success' : 'Error']);
     }
 
 
@@ -116,12 +129,12 @@ class ComisionistaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Comisionista $comisionista)
     {
-        $result = Comisionista::destroy($id);
-        return json_encode(['result' => ($result) ? "Comisionista eliminado" : "Error"]);
+        $result = $comisionista->delete();
+        return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }

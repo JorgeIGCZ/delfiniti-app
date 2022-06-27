@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('codigo');
             $table->string('nombre');
-            $table->float('comision');
-            $table->float('iva');
+            $table->float('direccion');
+            $table->float('telefono');
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });

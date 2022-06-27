@@ -20,57 +20,75 @@
             }) 
         }
         function destroyLocalizacion(id){
-            axios.get(`/configuracion/localizaciones/destroy/${id}`)
+            axios.delete(`/localizaciones/${id}`)
             .then(function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro eliminado',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                if(response.data.result == "Success"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registro eliminado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Eliminacion fallida',
+                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        showConfirmButton: true
+                    })
+                }
             })
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Eliminacion fallida',
-                    showConfirmButton: false,
-                    timer: 1500
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
                 })
+                localizaciones.reset();
             });
-            localizacionesTable.ajax.reload();
+            comisionistasTable.ajax.reload();
         }
         function createLocalizacion(localizaciones){
-            axios.post('/configuracion/localizaciones/store', {
-                '_token'  : '{{ csrf_token() }}',
-                "codigo"  : localizaciones.elements['codigo'].value,
-                "nombre"  : localizaciones.elements['nombre'].value,
-                "comision": localizaciones.elements['comision'].value,
-                "iva"     : localizaciones.elements['iva'].value
+            axios.post('/localizaciones', {
+                '_token'   : '{{ csrf_token() }}',
+                "codigo"   : localizaciones.elements['codigo'].value,
+                "nombre"   : localizaciones.elements['nombre'].value,
+                "direccion": localizaciones.elements['direccion'].value,
+                "telefono" : localizaciones.elements['telefono'].value
             })
             .then(function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro creado',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                if(response.data.result == "Success"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Localizacion creada',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registro fallido',
+                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        showConfirmButton: true
+                    })
+                }
             })
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
-                    showConfirmButton: false,
-                    timer: 1500
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
                 })
+                tipoCambio.reset();
             });
-            event.preventDefault();
-            localizaciones.reset();
             localizacionesTable.ajax.reload();
         }
         $(function(){
             localizacionesTable = new DataTable('#localizaciones', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/configuracion/localizaciones/show')
+                    axios.get('/localizaciones/show')
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -80,8 +98,8 @@
                 columns: [
                     { data: 'codigo' },
                     { data: 'nombre' },
-                    { data: 'comision' },
-                    { data: 'iva' },
+                    { data: 'direccion' },
+                    { data: 'telefono' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let removeRow = '';
@@ -89,7 +107,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="localizaciones/edit/${row.id}">Editar</a>
+                                                <a href="localizaciones/${row.id}/edit">Editar</a>
                                                 ${removeRow}
                                             </small>`;
                             return  view;
@@ -99,6 +117,7 @@
             } );
             
             document.getElementById('comisionsistas-form').addEventListener('submit', (event) =>{
+                event.preventDefault();
                 const localizaciones = document.getElementById('comisionsistas-form');
                 createLocalizacion(localizaciones);
             });
@@ -109,7 +128,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Localizaciones</h2>
+            <h2 class="az-dashboard-title">Alojamientos</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -120,23 +139,23 @@
                         <form class="row g-3 align-items-center f-auto" id="comisionsistas-form">
                             @csrf
                             <div class="form-group col-2 mt-3">
-                                <label for="new-codigo" class="col-form-label">Código</label>    
+                                <label for="codigo" class="col-form-label">Código</label>    
                                 <input type="text" name="codigo" class="form-control">  
                             </div>
                             <div class="form-group col-4 mt-3">
-                                <label for="new-nombre" class="col-form-label">Localización</label>    
+                                <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="new-nombre" class="col-form-label">Comisión %</label>
-                                <input type="number" name="comision" class="form-control" min="1" max="90">
+                            <div class="form-group col-6 mt-3">
+                                <label for="direccion" class="col-form-label">Dirección</label>
+                                <input type="text" name="direccion" class="form-control">
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <label for="new-iva" class="col-form-label">Iva %</label>
-                                <input type="number" name="iva" class="form-control" min="1" max="90">
+                                <label for="telefono" class="col-form-label">Teléfono</label>
+                                <input type="text" name="telefono" class="form-control">
                             </div>
                             <div class="form-group col-2 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-agencia">Crear localización</button>
+                                <button class="btn btn-info btn-block mt-33" id="crear-localizacion">Crear localización</button>
                             </div>
                         </form>
                     </div>
@@ -155,8 +174,8 @@
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
-                                        <th>Comisión</th>
-                                        <th>Iva</th>
+                                        <th>Dirección</th>
+                                        <th>Teléfono</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

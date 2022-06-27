@@ -18,7 +18,10 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Classes\CustomErrorHandler;
 use App\Models\CodigoAutorizacionPeticion;
 use App\Models\CodigoDescuento;
+use App\Models\TipoCambio;
+use App\Models\User;
 use Hamcrest\Type\IsNumeric;
+use Illuminate\Support\Facades\Auth;
 
 class ReservacionController extends Controller
 {
@@ -29,10 +32,8 @@ class ReservacionController extends Controller
      */
     public function index()
     {
-        return view('reservacion.index');
+        return view('reservaciones.index');
     }
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -47,32 +48,38 @@ class ReservacionController extends Controller
                             ->orWhere('duracion','indefinido')
                             ->get();
         $comisionistas   = Comisionista::all();
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         
-        return view('reservacion.create',['estados' => $estados,'actividades' => $actividades,'localizaciones' => $localizaciones,'comisionistas' => $comisionistas]);
+        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'localizaciones' => $localizaciones,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra]);
     }
-    public function getPeticionAutorizacionCodigo(Request $request){
-        $codigoDescuentoId    = $this->getCodigoDescuentoId($request->codigoDescuento);
-        if($codigoDescuentoId !== 0 ){
+    public function getDescuentoPersonalizadoValidacion(Request $request){
+        try{
+            if($this->verifyUserAuth($request)){
+                $limite = $this->getLimitesDescuentoPersonalizado($request);
+                return json_encode(['result' => "Success",'status' => 'authorized','limite' => $limite]);
+            }else{
+                return json_encode(['result' => "Error"]);
+            }
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        }
+    }
+    private function getLimitesDescuentoPersonalizado($request){
+        $descuento = User::where('email', $request->email)->first();
+        return $descuento->limite_descuento;
+    }
+    public function getCodigoDescuento(Request $request){
+        $codigoDescuento = $request->codigoDescuento;
+        if($codigoDescuento !== ""){
             try{
-                $peticionAutorizacionCodigo = $this->getPeticionAutorizacionCodigoArray($codigoDescuentoId,$request);
-                if($peticionAutorizacionCodigo !== null){
-                    if($peticionAutorizacionCodigo->estatus == 1){
-                        $descuento = $this->getDescuento($peticionAutorizacionCodigo->codigo_descuento_id);
-                        return json_encode(['result' => "Success",'status' => 'authorized','descuento' => $descuento]);
-                    }
+                if($this->verifyUserAuth($request)){
+                    $descuento = $this->getDescuento($codigoDescuento);
+                    return json_encode(['result' => "Success",'status' => 'authorized','descuento' => $descuento]);
                 }else{
-                    $codigoAutorizacionPeticion = CodigoAutorizacionPeticion::create([
-                        'codigo_descuento_id' =>  $codigoDescuentoId,
-                        'nombre_cliente'      =>  $request->nombre,
-                        'fecha_peticion'      =>  date('Y-m-d')
-                    ]);
-                    if(is_numeric($codigoAutorizacionPeticion['id'])){
-                        return json_encode(['result' => "Success",'status' => 'created','descuento' => []]);
-                    }else{
-                        return json_encode(['result' => "Error"]);
-                    }
+                    return json_encode(['result' => "Error"]);
                 }
-                return json_encode(['result' => "Success",'status' => 'waiting','descuento' => []]);
             } catch (\Exception $e){
                 $CustomErrorHandler = new CustomErrorHandler();
                 $CustomErrorHandler->saveError($e->getMessage(),$request);
@@ -81,20 +88,16 @@ class ReservacionController extends Controller
         }
         return json_encode(['result' => "Error"]);
     }
-    private function getDescuento($codigoDescuentoId){
-        $descuento = CodigoDescuento::find($codigoDescuentoId);  
+    private function getDescuento($codigoDescuento){
+        $descuento = CodigoDescuento::where('nombre', $codigoDescuento)->first();
         return $descuento;
     }
-    private function getPeticionAutorizacionCodigoArray($codigoDescuentoId,$request){
-        $codigoDescuento = CodigoAutorizacionPeticion::where('codigo_descuento_id',$codigoDescuentoId)
-                                                        ->where('nombre_cliente',$request->nombre)
-                                                        ->where('fecha_peticion',date('Y-m-d'))
-                                                        ->first();  
-        return $codigoDescuento;
-    }
-    private function getCodigoDescuentoId($nombre){
-        $codigoDescuento = CodigoDescuento::where('nombre',$nombre)->first();
-        return ($codigoDescuento !== null) ? $codigoDescuento->id : 0;
+    private function verifyUserAuth($request){
+        if(Auth::attempt(['email'=>$request->email,'password'=>$request->password]))
+        {
+            return true;
+        } 
+        return false;
     }
     /**
      * Store a newly created resource in storage.
@@ -106,7 +109,7 @@ class ReservacionController extends Controller
     {   
         $pagado  = ((float)$request->cupon + (float)$request->efectioUsd + (float)$request->efectivo + (float)$request->tarjeta);
         $adeudo  = ((float)$request->total - (float)$pagado);
-        $estatus = ($request->estatus == "reservar");
+        $estatus = ($request->estatus == "finalizar");
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
@@ -146,10 +149,10 @@ class ReservacionController extends Controller
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
-            return json_encode(['result' => "Error"]);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
+        return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
-
     private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
@@ -164,23 +167,20 @@ class ReservacionController extends Controller
         }
         return $result;
     }
-
     private function getTipoPagoId($tipoPago){
         //$tipoPagoId = tipoPago::where('nombre',$tipoPago);
         return 1;
     }
-
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Reservacion  $reservacion
      * @return \Illuminate\Http\Response
      */
-    public function show($id = null)
+    public function show(Reservacion  $reservacion = null)
     {   
-        return view('reservacion.show');
+        return view('reservaciones.show');
     }
-
     public function get($id = null)
     {   
         $reservacionesDetalle = ReservacionDetalle::all();
@@ -200,7 +200,6 @@ class ReservacionController extends Controller
             }
         return json_encode(['data' => $reservacionDetalleArray]);
     }
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -216,7 +215,6 @@ class ReservacionController extends Controller
         }
         */
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -237,7 +235,6 @@ class ReservacionController extends Controller
         return redirect()->route("promotores")->with(["result" => "Promotor actualizado",]);
         */
     }
-
     /**
      * Remove the specified resource from storage.
      *

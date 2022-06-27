@@ -151,7 +151,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #031b4e;
@@ -16447,13 +16447,13 @@ ul.list-ckeck-soft {
 /* ############### DASHBOARD STYLES ############### */
 /* ###### 8.1 Dashboard One  ###### */
 .az-content-dashboard {
-  padding-top: 20px; }
+  padding-top: 10px; }
   @media (min-width: 992px) {
     .az-content-dashboard {
-      padding-top: 30px; } }
+      padding-top: 10px; } }
 
 .az-dashboard-one-title {
-  margin-bottom: 20px; }
+  margin-bottom: 15px; }
   @media (min-width: 576px) {
     .az-dashboard-one-title {
       display: flex;
@@ -16461,7 +16461,11 @@ ul.list-ckeck-soft {
       justify-content: space-between; } }
   @media (min-width: 992px) {
     .az-dashboard-one-title {
-      margin-bottom: 30px; } }
+      margin-bottom: 15px; } }
+
+.disponibilidad-title{
+  justify-content: center;
+}
 
 .az-dashboard-title {
   font-size: 22px;
@@ -45056,10 +45060,11 @@ ul.list-ckeck-soft {
   white-space: nowrap;
 }
 .col-programas .programa{
-  width: 300px;
+  max-width: 300px;
   display: inline-table;
   margin-right: 20px;
   border-right: 2px solid #dfdfdf;
+  padding-right: 20px;
 }
 .p-title{
   font-size: 20px;
@@ -45079,4 +45084,7 @@ ul.list-ckeck-soft {
 }
 .mt-33{
   margin-top: 33px;
+}
+#toogle-info{
+  outline: none;
 }

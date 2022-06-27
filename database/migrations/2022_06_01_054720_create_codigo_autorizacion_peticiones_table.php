@@ -21,8 +21,6 @@ return new class extends Migration
             $table->date('fecha_peticion');
             $table->timestamps();
             $table->boolean('estatus')->default(0)->comment('0 es pendiente 1 autorizado');
-            $table->foreign('reservacion_id')->nullable()->references('id')->on('reservaciones');
-            $table->foreign('codigo_descuento_id')->references('id')->on('descuento_codigos');
         });
     }
 

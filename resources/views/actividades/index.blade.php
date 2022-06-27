@@ -20,7 +20,7 @@
             }) 
         }
         function destroyActividad(id){
-            axios.get(`/configuracion/actividades/destroy/${id}`)
+            axios.delete(`/actividades/${id}`)
             .then(function (response) {
                 Swal.fire({
                     icon: 'success',
@@ -33,9 +33,10 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Eliminacion fallida',
-                    showConfirmButton: false,
-                    timer: 1500
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
                 })
+                comisionistas.reset();
             });
             actividadesTable.ajax.reload();
         }
@@ -54,7 +55,7 @@
                 horario_inicial.push(actividades.elements['horario_inicial[]'].value);
                 horario_final.push(actividades.elements['horario_final[]'].value);
             }
-            axios.post('/configuracion/actividades/store', {
+            axios.post('/actividades/store', {
                 '_token'         : '{{ csrf_token() }}',
                 "clave"          : actividades.elements['clave'].value,
                 "nombre"         : actividades.elements['nombre'].value,
@@ -163,7 +164,7 @@
             });
             actividadesTable = new DataTable('#actividades', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/configuracion/actividades/show')
+                    axios.get('/actividades/show')
                     .then(function (response) {
                         cb(response.data)
                     })

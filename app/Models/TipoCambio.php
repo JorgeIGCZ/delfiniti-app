@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Localizacion extends Model
+class TipoCambio extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'codigo',
-        'nombre',
-        'direccion',
-        'telefono',
+        'seccion_uso',
+        'divisa',
+        'precio_compra',
+        'precio_venta'
     ];
     protected $primaryKey = 'id';
-    protected $table = 'localizaciones';
+
+    protected $table = 'tipos_cambio';
 }

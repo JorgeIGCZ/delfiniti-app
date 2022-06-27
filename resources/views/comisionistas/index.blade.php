@@ -20,30 +20,41 @@
             }) 
         }
         function destroyComisionista(id){
-            axios.get(`/configuracion/comisionistas/destroy/${id}`)
+            axios.delete(`/comisionistas/${id}`)
             .then(function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro eliminado',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                if(response.data.result == "Success"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registro eliminado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Eliminacion fallida',
+                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        showConfirmButton: true
+                    })
+                }
             })
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Eliminacion fallida',
-                    showConfirmButton: false,
-                    timer: 1500
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
                 })
+                comisionistas.reset();
             });
             comisionistasTable.ajax.reload();
         }
         function createComisionista(comisionistas){
-            axios.post('/configuracion/comisionistas/store', {
+            axios.post('/comisionistas', {
                 '_token'  : '{{ csrf_token() }}',
                 "codigo"  : comisionistas.elements['codigo'].value,
                 "nombre"  : comisionistas.elements['nombre'].value,
+                "tipo"  : comisionistas.elements['tipo'].value,
                 "comision": comisionistas.elements['comision'].value,
                 "iva"     : comisionistas.elements['iva'].value,
                 "representante"  : comisionistas.elements['representante'].value,
@@ -51,29 +62,37 @@
                 "telefono"     : comisionistas.elements['telefono'].value
             })
             .then(function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro creado',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                if(response.data.result == "Success"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registro creado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registro fallido',
+                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        showConfirmButton: true
+                    })
+                }
             })
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
-                    showConfirmButton: false,
-                    timer: 1500
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
                 })
+                comisionistas.reset();
             });
-            event.preventDefault();
-            comisionistas.reset();
             comisionistasTable.ajax.reload();
         }
         $(function(){
             comisionistasTable = new DataTable('#comisionistas', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/configuracion/comisionistas/show')
+                    axios.get('/comisionistas/show')
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -96,7 +115,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="comisionistas/edit/${row.id}">Editar</a>
+                                                <a href="comisionistas/${row.id}/edit">Editar</a>
                                                 ${removeRow}
                                             </small>`;
                             return  view;
@@ -106,6 +125,7 @@
             } );
             
             document.getElementById('comisionistas-form').addEventListener('submit', (event) =>{
+                event.preventDefault();
                 const comisionistas = document.getElementById('comisionistas-form');
                 createComisionista(comisionistas);
             });
@@ -122,7 +142,7 @@
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body"> 
                     <div class="container">
                         <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
                             @csrf

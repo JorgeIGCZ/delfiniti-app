@@ -8,6 +8,7 @@ use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\LocalizacionController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\TipoCambioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,22 +25,26 @@ Route::get('/', function () {
     return view('dashboard.index');
 })->middleware(['auth'])->name('dashboard');
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
-    Route::get('/configuracion/comisionistas', 'index')->name('comisionistas');
-    Route::post('/configuracion/comisionistas/store', 'store');
-    Route::get('/configuracion/comisionistas/show/{comisionista?}', 'show');
-    Route::get('/configuracion/comisionistas/edit/{comisionista}', 'edit');
-    Route::post('/configuracion/comisionistas/update/{comisionista}', 'update')->name('comisionistasUpdate');
-    Route::get('/configuracion/comisionistas/destroy/{comisionista}', 'destroy');
+    Route::get('comisionistas/show/{comisionista?}', 'show');
+    Route::resource('comisionistas',ComisionistaController::class, [
+        'parameters' => [
+            'comisionistas' => 'comisionista'
+        ]
+    ]);
+    
 });
+
 Route::controller(ActividadController::class)->middleware(['auth'])->group(function () {
-    Route::get('/configuracion/actividades', 'index')->name('actividades');
-    Route::post('/configuracion/actividades/store', 'store');
-    Route::get('/configuracion/actividades/show/{actividad?}', 'show');
-    Route::get('/configuracion/actividades/edit/{actividad}', 'edit');
-    Route::post('/configuracion/actividades/update/{actividad}', 'update')->name('actividadesUpdate');
-    Route::get('/configuracion/actividades/destroy/{actividad}', 'destroy');
+    Route::get('actividades/show/{actividad?}', 'show');
+    Route::resource('actividades',ActividadController::class, [
+        'parameters' => [
+            'actividades' => 'actividad'
+        ]
+    ]);
 });
+
 Route::controller(ReservacionController::class)->middleware(['auth'])->group(function () {
+    /*
     Route::get('/reservacion', 'index')->name('reservaciones');
     Route::get('/reservacion/create', 'create')->name('reservacionesCreate');
     Route::post('/reservacion/store', 'store');
@@ -47,20 +52,33 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::get('/reservacion/get', 'get');
     Route::get('/reservacion/edit/{reservacion}', 'edit');
     Route::post('/reservacion/update/{reservacion}', 'update')->name('reservacionesUpdate');
-    Route::post('/reservacion/getPeticionAutorizacionCodigo', 'getPeticionAutorizacionCodigo');
+    */
+
+    Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
+    Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::get('reservaciones/show/{reservacion?}', 'show');
+    Route::resource('reservaciones',ReservacionController::class, [
+        'parameters' => [
+            'reservaciones' => 'reservacion'
+        ]
+    ]);
 });
 Route::controller(LocalizacionController::class)->middleware(['auth'])->group(function () {
-    Route::get('/configuracion/localizaciones', 'index')->name('localizaciones');
-    Route::get('/configuracion/localizaciones/create', 'create')->name('localizacionesCreate');
-    Route::post('/configuracion/localizaciones/store', 'store');
-    Route::get('/configuracion/localizaciones/show/{localizacion?}', 'show');
-    Route::get('/configuracion/localizaciones/edit/{localizacion}', 'edit');
-    Route::post('/configuracion/localizaciones/update/{localizacion}', 'update')->name('localizacionesUpdate');
+    Route::get('/localizaciones/show/{localizacion?}', 'show');
+    Route::resource('localizaciones',LocalizacionController::class, [
+        'parameters' => [
+            'localizaciones' => 'localizacion'
+        ]
+    ]);
 });
 
 Route::controller(DisponibilidadController::class)->middleware(['auth'])->group(function () {
     Route::get('/disponibilidad', 'index')->name('disponibilidad');
     Route::post('/disponibilidad/show', 'show');
+});
+
+Route::controller(TipoCambioController::class)->middleware(['auth'])->group(function () {
+    Route::resource('tiposCambio',TipoCambioController::class);
 });
 
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');

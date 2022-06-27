@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Localizacion;
 use Illuminate\Http\Request;
+use App\Classes\CustomErrorHandler;
 
 class LocalizacionController extends Controller
 {
@@ -35,13 +36,19 @@ class LocalizacionController extends Controller
      */
     public function store(Request $request)
     {
-        $result = Localizacion::create([
-            'codigo'   => $request->codigo,
-            'nombre'   => $request->nombre,
-            'comision' => $request->comision,
-            'iva'      => $request->iva,
-        ]);        
-        return json_encode(['result' => is_numeric($result['id']) ? "Localización Guardada" : "Error"]);
+        try {
+            $localizacion = Localizacion::create([
+                'codigo'    => $request->codigo,
+                'nombre'    => $request->nombre,
+                'direccion' => $request->direccion,
+                'telefono'  => $request->telefono,
+            ]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => is_numeric($localizacion['id']) ? 'Success' : 'Error']);
     }
 
     /**
@@ -50,9 +57,9 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function show($id = null)
+    public function show(Localizacion  $localizacion = null)
     {
-        if(is_null($id)){
+        if(is_null($localizacion)){
             $localizaciones = Localizacion::all();
             return json_encode(['data' => $localizaciones]);
         }
@@ -64,12 +71,9 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Localizacion  $localizacion)
     {
-        if($id > 0){
-            $localizacion = Localizacion::where('id', $id)->first();
-            return view('localizaciones.edit',['localizacion' => $localizacion]);
-        }
+        return view('localizaciones.edit',['localizacion' => $localizacion]);
     }
 
     /**
@@ -81,14 +85,20 @@ class LocalizacionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $localizacion           = Localizacion::find($id);
-        $localizacion->codigo   = $request->codigo;
-        $localizacion->nombre   = $request->nombre;
-        $localizacion->comision = $request->comision;
-        $localizacion->iva      = $request->iva;
-        $localizacion->save();
+        try {
+            $localizacion            = Localizacion::find($id);
+            $localizacion->codigo    = $request->codigo;
+            $localizacion->nombre    = $request->nombre;
+            $localizacion->direccion = $request->direccion;
+            $localizacion->telefono  = $request->telefono;
+            $localizacion->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
 
-        return redirect()->route("localizaciones")->with(["result" => "Localización actualizado",]);
+        return json_encode(['result' => is_numeric($localizacion['id']) ? 'Success' : 'Error']);
     }
 
     /**
@@ -97,9 +107,9 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Localizacion $localizacion)
     {
-        $result = Localizacion::destroy($id);
-        return json_encode(['result' => ($result) ? "Localización eliminada" : "Error"]);
+        $result = $localizacion->delete();
+        return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }
