@@ -55,7 +55,7 @@
                 horario_inicial.push(actividades.elements['horario_inicial[]'].value);
                 horario_final.push(actividades.elements['horario_final[]'].value);
             }
-            axios.post('/actividades/store', {
+            axios.post('/actividades', {
                 '_token'         : '{{ csrf_token() }}',
                 "clave"          : actividades.elements['clave'].value,
                 "nombre"         : actividades.elements['nombre'].value,
