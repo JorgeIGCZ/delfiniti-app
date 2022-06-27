@@ -44,7 +44,7 @@
             let horario_inicial = [],
                 horario_final   = [];
 
-            if(Array.isArray(actividades.elements['horario_inicial[]'])){
+            if(actividades.elements['horario_inicial[]'].length > 0){
                 actividades.elements['horario_inicial[]'].forEach(element => {
                     horario_inicial.push(element.value);
                 });
