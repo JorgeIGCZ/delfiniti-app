@@ -23,7 +23,7 @@ use App\Http\Controllers\ComisionistaTipoController;
 */
 
 Route::get('/', function () {
-    return view('dashboard.index');
+    return view('reportes.index');
 })->middleware(['auth'])->name('dashboard');
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');
