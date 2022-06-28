@@ -31,7 +31,7 @@ class ComisionistaController extends Controller
             $comisionista = Comisionista::create([
                 'codigo'        => $request->codigo,
                 'nombre'        => $request->nombre,
-                'tipo'          => $request->tipo,
+                'tipo_id'       => $request->tipo,
                 'comision'      => $request->comision,
                 'iva'           => $request->iva,
                 'representante' => $request->representante,
@@ -62,7 +62,7 @@ class ComisionistaController extends Controller
                     'id'           => $comisionista->id,
                     'codigo'       => $comisionista->codigo,
                     'nombre'       => $comisionista->nombre,
-                    'tipo'         => $comisionista->tipo->nombre,
+                    'tipo_id'      => $comisionista->tipo->nombre,
                     'iva'          => $comisionista->iva,
                     'comision'     => $comisionista->comision,
                     'representante'=> $comisionista->representante,

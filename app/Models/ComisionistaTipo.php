@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ComisionistaTipo extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'nombre'
+    ];
     protected $primaryKey = 'id';
     public function comisionistas()
     {

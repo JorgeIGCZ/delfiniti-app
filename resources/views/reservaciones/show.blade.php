@@ -40,8 +40,8 @@
                                 <input type="email" name="email" class="form-control" autocomplete="off">  
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="localizacion" class="col-form-label">Localización</label>
-                                <select name="localizacion" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                <label for="alojamiento" class="col-form-label">Localización</label>
+                                <select name="alojamiento" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
                                     <option value='0' selected="true">Seleccionar localización</option>
                                     
                                 </select>

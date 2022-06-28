@@ -155,7 +155,7 @@
                 '_token'       : '{{ csrf_token() }}',
                 'nombre'       : reservacion.elements['nombre'].value,
                 'email'        : reservacion.elements['email'].value,
-                'localizacion' : reservacion.elements['localizacion'].value,
+                'alojamiento'  : reservacion.elements['alojamiento'].value,
                 'origen'       : reservacion.elements['origen'].value,
                 'agente'       : reservacion.elements['agente'].value,
                 'comisionista' : reservacion.elements['comisionista'].value,
@@ -207,19 +207,21 @@
             document.getElementById('efectivo-usd').setAttribute('value',0);
             document.getElementById('tarjeta').setAttribute('value',0);
             document.getElementById('cupon').setAttribute('value',0);
-            document.getElementById('descuento').setAttribute('value',0);
+            document.getElementById('descuento-a').setAttribute('value',0);
+            document.getElementById('descuento-general').setAttribute('value',0);
 
             document.getElementById('efectivo').value     = 0;
             document.getElementById('efectivo-usd').value = 0;
             document.getElementById('tarjeta').value      = 0;
             document.getElementById('cupon').value        = 0;
-            document.getElementById('descuento').value    = 0;
-
+            document.getElementById('descuento-a').value    = 0;
+            document.getElementById('descuento-general').value    = 0;
+            
             $('select[name="actividad"] option:nth-child(1)').attr('selected','selected');
             $('select[name="actividad"]').trigger('change.select2');
 
-            $('select[name="localizacion"] option:nth-child(1)').attr('selected','selected');
-            $('select[name="localizacion"]').trigger('change.select2');
+            $('select[name="alojamiento"] option:nth-child(1)').attr('selected','selected');
+            $('select[name="alojamiento"]').trigger('change.select2');
 
             $('select[name="origen"] option:nth-child(1)').attr('selected','selected');
             $('select[name="origen"]').trigger('change.select2');
@@ -581,11 +583,11 @@
                                 <input type="email" name="email" class="form-control" autocomplete="off">  
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="localizacion" class="col-form-label">Localización</label>
-                                <select name="localizacion" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                <label for="alojamiento" class="col-form-label">Localización</label>
+                                <select name="alojamiento" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
                                     <option value='0' selected="true">Seleccionar localización</option>
-                                    @foreach($localizaciones as $localizacion)
-                                        <option value="{{$localizacion->id}}">{{$localizacion->nombre}}</option>
+                                    @foreach($alojamientos as $alojamiento)
+                                        <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>  

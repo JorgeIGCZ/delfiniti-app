@@ -22,38 +22,42 @@ class RoleSeeder extends Seeder
         $responsableReservacionesExterno = Role::create(['name' => 'Responsable reservaciones externo']);
 
         Permission::create(['name' => 'Usuarios.index'])->assignRole($administrador);
-        Permission::create(['name' => 'Usuarios.create'])->assignRole($administrador);;
-        Permission::create(['name' => 'Usuarios.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Usuarios.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Usuarios.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Usuarios.Roles.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'Usuarios.Roles.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Usuarios.Roles.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Usuarios.Roles.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);;
+        Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Reportes.Reservaciones.index'])->assignRole($administrador);;
+        Permission::create(['name' => 'Reportes.Reservaciones.index'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Reportes.Comisiones.index'])->assignRole($administrador);;
+        Permission::create(['name' => 'Reportes.Comisiones.index'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Disponibilidad.index'])->assignRole($administrador);;
+        Permission::create(['name' => 'Disponibilidad.index'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Reservaciones.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'Reservaciones.create'])->assignRole($administrador);;
-        Permission::create(['name' => 'Reservaciones.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Reservaciones.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Reservaciones.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Reservaciones.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Actividades.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'Actividades.create'])->assignRole($administrador);;
-        Permission::create(['name' => 'Actividades.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Actividades.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Actividades.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Actividades.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Comisiones.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'Comisiones.create'])->assignRole($administrador);;
-        Permission::create(['name' => 'Comisiones.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Comisiones.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Comisiones.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Comisiones.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'Alojamientos.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'Alojamientos.create'])->assignRole($administrador);;
-        Permission::create(['name' => 'Alojamientos.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'Alojamientos.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Alojamientos.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Alojamientos.update'])->assignRole($administrador);
 
-        Permission::create(['name' => 'TipoCambio.index'])->assignRole($administrador);;
-        Permission::create(['name' => 'TipoCambio.update'])->assignRole($administrador);;
+        Permission::create(['name' => 'TipoCambio.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TipoCambio.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'TiposComisionista.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiposComisionista.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiposComisionista.update'])->assignRole($administrador);
 
     }
 }

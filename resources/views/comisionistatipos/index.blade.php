@@ -1,10 +1,10 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        let localizacionesTable;
+        let comisionistaTiposTable;
         function verificacionDestroy(id){
             Swal.fire({
-                title: '¿Desea eliminar localizacion?',
+                title: '¿Desea eliminar tipo de comisionista?',
                 text: "Este proceso no se puede revertir!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -13,14 +13,15 @@
                 confirmButtonText: '¡Si, Eliminar!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    destroyLocalizacion(id);
+                    destroyComisionista(id);
                 }else{
                     return false;
                 }
             }) 
         }
-        function destroyLocalizacion(id){
-            axios.delete(`/localizaciones/${id}`)
+        function destroyComisionista(id){
+            const comisionistaTipos = document.getElementById('comisionista-tipos-form');
+            axios.delete(`/comisionistatipos/${id}`)
             .then(function (response) {
                 if(response.data.result == "Success"){
                     Swal.fire({
@@ -29,6 +30,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    comisionistaTipos.reset();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -45,26 +47,23 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                localizaciones.reset();
             });
-            comisionistasTable.ajax.reload();
+            comisionistaTiposTable.ajax.reload();
         }
-        function createLocalizacion(localizaciones){
-            axios.post('/localizaciones', {
-                '_token'   : '{{ csrf_token() }}',
-                "codigo"   : localizaciones.elements['codigo'].value,
-                "nombre"   : localizaciones.elements['nombre'].value,
-                "direccion": localizaciones.elements['direccion'].value,
-                "telefono" : localizaciones.elements['telefono'].value
+        function createComisionista(comisionistaTipos){
+            axios.post('/comisionistatipos', {
+                '_token'  : '{{ csrf_token() }}',
+                "nombre"  : comisionistaTipos.elements['nombre'].value
             })
             .then(function (response) {
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Localizacion creada',
+                        title: 'Registro creado',
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    comisionistaTipos.reset();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -81,14 +80,13 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                tipoCambio.reset();
             });
-            localizacionesTable.ajax.reload();
+            comisionistaTiposTable.ajax.reload();
         }
         $(function(){
-            localizacionesTable = new DataTable('#localizaciones', {
+            comisionistaTiposTable = new DataTable('#comisionista-tipos', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/localizaciones/show')
+                    axios.get('/comisionistatipos/show')
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -96,10 +94,8 @@
                     });
                 },
                 columns: [
-                    { data: 'codigo' },
+                    { data: 'id' },
                     { data: 'nombre' },
-                    { data: 'direccion' },
-                    { data: 'telefono' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let removeRow = '';
@@ -107,7 +103,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="localizaciones/${row.id}/edit">Editar</a>
+                                                <a href="comisionistatipos/${row.id}/edit">Editar</a>
                                                 ${removeRow}
                                             </small>`;
                             return  view;
@@ -116,10 +112,10 @@
                 ]
             } );
             
-            document.getElementById('comisionsistas-form').addEventListener('submit', (event) =>{
+            document.getElementById('comisionista-tipos-form').addEventListener('submit', (event) =>{
                 event.preventDefault();
-                const localizaciones = document.getElementById('comisionsistas-form');
-                createLocalizacion(localizaciones);
+                const comisionistaTipos = document.getElementById('comisionista-tipos-form');
+                createComisionista(comisionistaTipos);
             });
             
         });
@@ -128,34 +124,23 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Alojamientos</h2>
+            <h2 class="az-dashboard-title">Tipos de comisionista</h2>
         </div>
-    </div><!-- az-dashboard-one-title -->
+    </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body"> 
                     <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="comisionsistas-form">
+                        <form class="row g-3 align-items-center f-auto" id="comisionista-tipos-form">
                             @csrf
-                            <div class="form-group col-2 mt-3">
-                                <label for="codigo" class="col-form-label">Código</label>    
-                                <input type="text" name="codigo" class="form-control">  
-                            </div>
                             <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
+                                <label for="nombre" class="col-form-label">Nombre de tipo de comisionista</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
-                            <div class="form-group col-6 mt-3">
-                                <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" name="direccion" class="form-control">
-                            </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="telefono" class="col-form-label">Teléfono</label>
-                                <input type="text" name="telefono" class="form-control">
-                            </div>
-                            <div class="form-group col-2 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-localizacion">Crear localización</button>
+
+                            <div class="form-group col-3 mt-3">
+                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear tipo de comisionista</button>
                             </div>
                         </form>
                     </div>
@@ -163,24 +148,21 @@
             </div>
         </div>
     </div>
+
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="localizaciones" class="display table" style="width:100%">
+                            <table id="comisionista-tipos" class="display" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
-                                        <th>Dirección</th>
-                                        <th>Teléfono</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                </tbody>
                             </table>
                         </div>
                     </div>

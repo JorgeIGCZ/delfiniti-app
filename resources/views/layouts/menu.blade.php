@@ -21,15 +21,16 @@
           <div>
             <nav class="nav">
               <span>General</span>
-              <a href="{{ url('/tiposCambio') }}" class="nav-link">Tipos de cambio</a>
+              <a href="{{ url('/tiposcambio') }}" class="nav-link">Tipos de cambio</a>
             </nav>
           </div>
           <div>
             <nav class="nav">
               <span>Catálogos</span>
               <a href="{{ url('/actividades') }}" class="nav-link">Actividades</a>
+              <a href="{{ url('/alojamientos') }}" class="nav-link">Alojamientos</a>
               <a href="{{ url('/comisionistas') }}" class="nav-link">Comisionistas</a>
-              <a href="{{ url('/localizaciones') }}" class="nav-link">Alojamientos</a>
+              <a href="{{ url('/comisionistatipos') }}" class="nav-link">Tipos de Comisionista</a>
             </nav>
           </div>
         </div><!-- container -->

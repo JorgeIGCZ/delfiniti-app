@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('localizaciones', function (Blueprint $table) {
+        Schema::create('alojamientos', function (Blueprint $table) {
             $table->id();
             $table->string('codigo');
             $table->string('nombre');
-            $table->float('direccion');
-            $table->float('telefono');
+            $table->float('direccion')->nullable();;
+            $table->float('telefono')->nullable();;
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('localizaciones');
+        Schema::dropIfExists('alojamientos');
     }
 };

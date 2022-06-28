@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Localizacion;
+use App\Models\Alojamiento;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
-class LocalizacionController extends Controller
+class AlojamientoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class LocalizacionController extends Controller
      */
     public function index()
     {
-        return view('localizaciones.index');
+        return view('alojamientos.index');
     }
 
     /**
@@ -37,7 +37,7 @@ class LocalizacionController extends Controller
     public function store(Request $request)
     {
         try {
-            $localizacion = Localizacion::create([
+            $alojamiento = Alojamiento::create([
                 'codigo'    => $request->codigo,
                 'nombre'    => $request->nombre,
                 'direccion' => $request->direccion,
@@ -48,7 +48,7 @@ class LocalizacionController extends Controller
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
-        return json_encode(['result' => is_numeric($localizacion['id']) ? 'Success' : 'Error']);
+        return json_encode(['result' => is_numeric($alojamiento['id']) ? 'Success' : 'Error']);
     }
 
     /**
@@ -57,11 +57,11 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function show(Localizacion  $localizacion = null)
+    public function show(Alojamiento  $alojamiento = null)
     {
-        if(is_null($localizacion)){
-            $localizaciones = Localizacion::all();
-            return json_encode(['data' => $localizaciones]);
+        if(is_null($alojamiento)){
+            $alojamiento = Alojamiento::all();
+            return json_encode(['data' => $alojamiento]);
         }
     }
 
@@ -71,9 +71,9 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function edit(Localizacion  $localizacion)
+    public function edit(Alojamiento  $localizacion)
     {
-        return view('localizaciones.edit',['localizacion' => $localizacion]);
+        return view('alojamientos.edit',['alojamiento' => $localizacion->first()]);
     }
 
     /**
@@ -86,19 +86,19 @@ class LocalizacionController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $localizacion            = Localizacion::find($id);
-            $localizacion->codigo    = $request->codigo;
-            $localizacion->nombre    = $request->nombre;
-            $localizacion->direccion = $request->direccion;
-            $localizacion->telefono  = $request->telefono;
-            $localizacion->save();
+            $alojamiento            = Alojamiento::find($id);
+            $alojamiento->codigo    = $request->codigo;
+            $alojamiento->nombre    = $request->nombre;
+            $alojamiento->direccion = $request->direccion;
+            $alojamiento->telefono  = $request->telefono;
+            $alojamiento->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($localizacion['id']) ? 'Success' : 'Error']);
+        return json_encode(['result' => is_numeric($alojamiento['id']) ? 'Success' : 'Error']);
     }
 
     /**
@@ -107,9 +107,9 @@ class LocalizacionController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Localizacion $localizacion)
+    public function destroy(Alojamiento $alojamiento)
     {
-        $result = $localizacion->delete();
+        $result = $alojamiento->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }

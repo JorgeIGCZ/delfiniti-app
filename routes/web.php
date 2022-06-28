@@ -6,9 +6,10 @@ use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\ComisionistaController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
-use App\Http\Controllers\LocalizacionController;
+use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
+use App\Http\Controllers\ComisionistaTipoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,11 +64,11 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
         ]
     ]);
 });
-Route::controller(LocalizacionController::class)->middleware(['auth'])->group(function () {
-    Route::get('/localizaciones/show/{localizacion?}', 'show');
-    Route::resource('localizaciones',LocalizacionController::class, [
+Route::controller(AlojamientoController::class)->middleware(['auth'])->group(function () {
+    Route::get('/alojamientos/show/{alojamiento?}', 'show');
+    Route::resource('alojamientos',AlojamientoController::class, [
         'parameters' => [
-            'localizaciones' => 'localizacion'
+            'alojamientos' => 'alojamiento'
         ]
     ]);
 });
@@ -78,7 +79,15 @@ Route::controller(DisponibilidadController::class)->middleware(['auth'])->group(
 });
 
 Route::controller(TipoCambioController::class)->middleware(['auth'])->group(function () {
-    Route::resource('tiposCambio',TipoCambioController::class);
+    Route::resource('tiposcambio',TipoCambioController::class);
+});
+
+Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->group(function () {
+    Route::resource('comisionistatipos',ComisionistaTipoController::class, [
+        'parameters' => [
+            'comisionistatipos' => 'comisionistatipo'
+        ]
+    ]);
 });
 
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
