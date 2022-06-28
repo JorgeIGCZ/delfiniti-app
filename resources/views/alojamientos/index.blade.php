@@ -119,7 +119,7 @@
             document.getElementById('alojamientos-form').addEventListener('submit', (event) =>{
                 event.preventDefault();
                 const alojamientos = document.getElementById('alojamientos-form');
-                createLocalizacion(alojamientos);
+                createAlojamiento(alojamientos);
             });
             
         });
