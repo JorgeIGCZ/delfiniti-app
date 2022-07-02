@@ -121,6 +121,7 @@
                     !result ? updated++ : '';
                     return result;
                 });
+                setTotal();
             } );
             $('#clave-actividad').on('select2:select', function (e) {
                 changeActividad();
@@ -138,7 +139,9 @@
             const fecha     = urlParams.get('f');
             const hora      = urlParams.get('h');
             const actividad = urlParams.get('id');
-            
+            if(actividad === null){
+                return;
+            }
             document.getElementsByName('fecha')[0].value = fecha;
             
             $('#actividades').val(actividad); 
