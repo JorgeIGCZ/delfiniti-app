@@ -40,8 +40,7 @@ class ActividadController extends Controller
                 $actividadHorario = ActividadHorario::create([
                     'actividad_id'    => $actividad['id'],
                     'horario_inicial' => $request->horarioInicial[$i],
-                    'horario_final'   => $request->horarioFinal[$i],
-                    'duracion'        => $request->duracion
+                    'horario_final'   => $request->horarioFinal[$i]
                 ]);
             }
         } catch (\Exception $e){
@@ -75,7 +74,8 @@ class ActividadController extends Controller
      */
     public function edit(Actividad  $actividad)
     {
-        return view('actividades.edit',['actividad' => $actividad]);
+        $actividadHorarios = ActividadHorario::where('actividad_id',2)->get();
+        return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios]);
     }
 
     /**
@@ -92,16 +92,25 @@ class ActividadController extends Controller
             $actividad->nombre          = $request->nombre;
             $actividad->precio          = $request->precio;
             $actividad->capacidad       = $request->capacidad;
-            $actividad->horario_inicial = $request->horario_inicial;
-            $actividad->horario_final   = $request->horario_final;
             $actividad->save();
+
+            ActividadHorario::where('actividad_id',$id)->delete();
+
+            for ($i=0; $i < count($request->horario_inicial); $i++) { 
+                ActividadHorario::create([
+                    'actividad_id'    => $id,
+                    'horario_inicial' => $request->horario_inicial[$i],
+                    'horario_final'   => $request->horario_final[$i]
+                ]);
+            }
+            
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($actividad['id']) ? 'Success' : 'Error']);
+        return redirect()->route("actividades.index")->with(["result" => "Actividad actualizada"]);
     }
 
 

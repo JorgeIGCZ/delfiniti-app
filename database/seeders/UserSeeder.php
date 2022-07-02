@@ -20,6 +20,7 @@ class UserSeeder extends Seeder
             'name'              => 'Admin',
             'email'             => 'admin@delfiniti.com',
             'email_verified_at' => now(),
+            'limite_descuento'  => 100,
             'password'          => '$2y$10$35tSUN6kgVhu3arf00b0DO4nAE8PU8qerbsg5hHagB9iHNLCQ6H12',
             'remember_token'    => Str::random(10)
         ])->assignRole('Administrador');

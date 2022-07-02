@@ -4,8 +4,12 @@
         let reservacionesTable; 
         let allActividades = [];
         let reservacionesArray  = [];
+
         window.onload = function() {
+            document.getElementById('reservacion-form').elements['nombre'].focus();
+
             getDisponibilidad();
+
             document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
                 document.getElementById('password').value="";
             });
@@ -100,6 +104,24 @@
                 setTimeout(setOperacionResultados(),500);
             });
             //jQuery
+            $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
+                event.preventDefault();
+                reservacionesTable
+                    .row( $(this).parents('tr') )
+                    .remove()
+                    .draw();
+
+                //remove clave from the array
+                const clave = $(this).parents('tr')[0].firstChild.innerText;
+                const fecha = $(this).parents('tr')[0].childNodes[3].innerText;
+                let updated = 0;
+                reservacionesArray = reservacionesArray.filter(function (reservaciones) {
+                    let result = (reservaciones.claveActividad !== clave && reservaciones.fecha !== fecha && $updated === 0);
+                    updated > 0 ? result = true : '';
+                    !result ? updated++ : '';
+                    return result;
+                });
+            } );
             $('#clave-actividad').on('select2:select', function (e) {
                 changeActividad();
             });
@@ -110,6 +132,23 @@
                 changeCuponDetalle();
             });
         };
+        function applyVariables(){
+            const queryString = window.location.search;
+            const urlParams   = new URLSearchParams(queryString);
+            const fecha     = urlParams.get('f');
+            const hora      = urlParams.get('h');
+            const actividad = urlParams.get('id');
+            
+            document.getElementsByName('fecha')[0].value = fecha;
+            
+            $('#actividades').val(actividad); 
+            $('#actividades').trigger('change');   
+
+            changeClaveActividad();
+
+            $('#horarios').val(hora); 
+            $('#horarios').trigger('change');
+        }
         function isLimite(){
             const total     = parseFloat(document.getElementById('total').getAttribute('value'));
             const descuento = parseFloat(document.getElementById('descuento-general').getAttribute('value'));
@@ -177,6 +216,7 @@
                         timer: 1500
                     })
                     resetReservaciones()
+                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -380,11 +420,12 @@
             const precio         = document.getElementById('precio').value;
             const horario        = document.getElementById('horarios').value;
             const fecha          = document.getElementById('fecha').value;
-            const acciones       = `<a href='#' id='actividad-${claveActividad}' class='editar'>Editar</a> | <a href='#' id='actividad-${claveActividad}' class='eliminar'>Eliminar</a>`
+            const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
             reservacionesTable.row.add( [ 
                 claveActividad,
                 actividadDetalle,
                 horarioDetalle,
+                fecha,
                 cantidad,
                 precio,
                 precio*cantidad,
@@ -511,6 +552,7 @@
                 displayActividad()
                 getActividadHorario()
                 getActividadPrecio()
+                applyVariables()
             })
             .catch(function (error) {
                 actividades = [];
@@ -576,16 +618,16 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off">  
+                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1">  
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>    
-                                <input type="email" name="email" class="form-control" autocomplete="off">  
+                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">  
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="alojamiento" class="col-form-label">Localización</label>
-                                <select name="alojamiento" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
-                                    <option value='0' selected="true">Seleccionar localización</option>
+                                <label for="alojamiento" class="col-form-label">Hotel</label>
+                                <select name="alojamiento" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
+                                    <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>
                                     @endforeach
@@ -593,7 +635,7 @@
                             </div>  
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
-                                <select name="origen" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                <select name="origen" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true" tabindex="4">
                                     <option value='0' selected="true">Seleccionar origen</option>
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}} ({{$estado->pais->nombre}})">{{$estado->nombre}} ({{$estado->pais->nombre}})</option>
@@ -605,34 +647,34 @@
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="clave" class="col-form-label">Clave</label>
-                                <select id="clave-actividad" name="clave" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                <select id="clave-actividad" name="clave" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true" tabindex="5">
                                 </select>
                             </div>
                             <div class="form-group col-3 mt-0 mb-0">
                                 <label for="actividad" class="col-form-label">Actividad</label>
-                                <select name="actividad" id="actividades"  class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                <select name="actividad" id="actividades"  class="search-drop-down form-control" data-show-subtext="true" data-live-search="true" tabindex="6">
                                 </select>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="horario" class="col-form-label">Horario</label>
-                                <select name="horario" id="horarios" class="form-control">
+                                <select name="horario" id="horarios" class="form-control" tabindex="7">
                                 </select>
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="cantidad" class="col-form-label">Cantidad</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off">
+                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="8">
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
-                                <input type="number" name="disponibilidad" class="form-control" value="0" disabled="disabled">
+                                <input type="number" name="disponibilidad" class="form-control" value="0" disabled="disabled" >
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}" autocomplete="off">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}" autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="agregar-reservacion">+</button>
+                                <button class="btn btn-info btn-block mt-33" id="agregar-reservacion" tabindex="10">+</button>
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -643,6 +685,7 @@
                                                     <th>Clave</th>
                                                     <th>Actividad</th>
                                                     <th>Horario</th>
+                                                    <th>Fecha</th>
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
                                                     <th>Subtotal</th>
@@ -659,7 +702,7 @@
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="agente" class="col-form-label">Reservado por</label>
-                                                <select name="agente" class="form-control">
+                                                <select name="agente" class="form-control" tabindex="11">
                                                     <option value="{{Auth::user()->id}}" selected="selected" disabled="disabled">
                                                         {{Auth::user()->name}} ({{Auth::user()->email}})
                                                     </option>
@@ -667,7 +710,7 @@
                                             </div>
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="comisionista" class="col-form-label">Comisionista</label>
-                                                <select name="comisionista" id="comisionista" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true">
+                                                <select name="comisionista" id="comisionista" class="search-drop-down form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
                                                         <option value="{{$comisionista->id}}" tipo="{{$comisionista->tipo->nombre}}">{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
@@ -677,13 +720,13 @@
                                             <div class="col-4 mt-0 mb-0">
                                                 <label for="codigo-descuento" class="col-form-label">Código descuento</label>
                                                 <div class="input-button">
-                                                    <input type="text" name="codigo-descuento" id="codigo-descuento"  class="form-control" autocomplete="off">
+                                                    <input type="text" name="codigo-descuento" id="codigo-descuento"  class="form-control" autocomplete="off" tabindex="13">
                                                     <button id="add-codigo-descuento" class="btn btn-info btn-block form-control" data-bs-toggle="modal" data-bs-target="#verificacion-modal">verificar</button>
                                                 </div>
                                             </div>
                                             <div class="form-group col-4 mt-0 mt-3">
                                                 <label for="add-descuento-general" class="col-form-label">Agregar descuento</label>
-                                                <input type="checkbox" name="add-descuento-general" id="add-descuento-general" class="form-control" style="display: block;">
+                                                <input type="checkbox" name="add-descuento-general" id="add-descuento-general" class="form-control" style="display: block;" tabindex="14">
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
@@ -709,21 +752,21 @@
                                                         <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount" value="0.00">
+                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount" value="0.00" tabindex="15">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount" value="0.00">
+                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount" value="0.00" tabindex="16">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount" value="0.00">
+                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount" value="0.00" tabindex="17">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
@@ -771,13 +814,13 @@
                                 </div>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="reservar">Reservar</button>
+                                <button class="btn btn-info btn-block mt-33" id="reservar" tabindex="18">Reservar</button>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="finalizar" disabled="disabled">finalizar</button>
+                                <button class="btn btn-info btn-block mt-33" id="finalizar" disabled="disabled" tabindex="19">finalizar</button>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar">Cancelar</button>
+                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="20">Cancelar</button>
                             </div>
                         </form>
                     </div>

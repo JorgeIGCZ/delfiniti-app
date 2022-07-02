@@ -199,7 +199,7 @@
                                     @foreach ($actividadesHorario as $actividadHorario)
                                         <div class="programa">
                                             <strong class="p-title"><a
-                                                    href="reservacion/create?id={{ $actividadHorario->actividad->id }}&h={{ $actividadesHorario[0]->horario_inicial }}&f={{ $fechaActividades }}">{{ $actividadHorario->actividad->nombre }}</a></strong>
+                                                    href="reservaciones/create/?id={{ $actividadHorario->actividad->id }}&h={{ $actividadHorario->id }}&f={{ $fechaActividades }}">{{ $actividadHorario->actividad->nombre }}</a></strong>
                                             <div class="p-detalles">
                                                 <div>
                                                     <p class="mg-b-0">Reserv. total: <span>

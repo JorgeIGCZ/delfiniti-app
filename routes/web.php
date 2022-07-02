@@ -10,6 +10,8 @@ use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\ComisionistaTipoController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +75,15 @@ Route::controller(AlojamientoController::class)->middleware(['auth'])->group(fun
     ]);
 });
 
+Route::controller(UsuarioController::class)->middleware(['auth'])->group(function () {
+    Route::get('/usuarios/show/{usuario?}', 'show');
+    Route::resource('usuarios',UsuarioController::class, [
+        'parameters' => [
+            'usuarios' => 'usuario'
+        ]
+    ]);
+});
+
 Route::controller(DisponibilidadController::class)->middleware(['auth'])->group(function () {
     Route::get('/disponibilidad', 'index')->name('disponibilidad');
     Route::post('/disponibilidad/show', 'show');
@@ -91,4 +102,8 @@ Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->grou
 });
 
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
+
+Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
+Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');
+Route::get('/roles/{rol}',[RolController::class,'show'])->middleware(['auth'])->name('rolesupdate');
 require __DIR__.'/auth.php';

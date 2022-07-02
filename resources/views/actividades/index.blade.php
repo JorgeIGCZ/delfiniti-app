@@ -184,7 +184,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="actividades/edit/${row.id}">Editar</a>
+                                                <a href="actividades/${row.id}/edit/">Editar</a>
                                                 ${removeRow}
                                             </small>`;
                             return  view;
