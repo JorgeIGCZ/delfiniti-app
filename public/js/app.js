@@ -5069,11 +5069,6 @@ module.exports = {
   \********************************/
 /***/ (() => {
 
-var formatter = new Intl.NumberFormat('es-MX', {
-  style: 'currency',
-  currency: 'MXN',
-  minimumFractionDigits: 2
-});
 $(".amount").each(function () {
   var amount = $(this).val();
   var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
@@ -5118,6 +5113,8 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./amount */ "./resources/js/amount.js");
+
+__webpack_require__(/*! ./percentage */ "./resources/js/percentage.js");
 
 
 
@@ -5193,6 +5190,43 @@ var on = function on(eventName, selector, handler) {
     });
   }, true);
 };
+
+/***/ }),
+
+/***/ "./resources/js/percentage.js":
+/*!************************************!*\
+  !*** ./resources/js/percentage.js ***!
+  \************************************/
+/***/ (() => {
+
+$(".percentage").each(function () {
+  var amount = $(this).val();
+  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
+  amountNumeric = parseFloat(amountNumeric).toFixed(2);
+  $(this).val(amountNumeric);
+  $(this).attr("value", amountNumeric);
+  $(this).select();
+});
+$(".percentage").keyup(function () {
+  var amount = $(this).val();
+  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
+  amount = parseFloat(amount).toFixed(2);
+  $(this).attr("value", amount);
+});
+$(".percentage").focus(function () {
+  var amount = $(this).val();
+  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
+  amountNumeric = parseFloat(amountNumeric).toFixed(2);
+  $(this).val(amountNumeric);
+  $(this).select();
+});
+$(".percentage").focusout(function () {
+  var amount = $(this).val();
+  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
+  amount = parseFloat(amount).toFixed(2);
+  $(this).attr("value", amount);
+  $(this).val("".concat(amount, "%"));
+});
 
 /***/ }),
 

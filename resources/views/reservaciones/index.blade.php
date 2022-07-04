@@ -4,7 +4,7 @@
         $(function(){
             comisionistasTable = new DataTable('#reservaciones', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/reservacion/get')
+                    axios.get('/reservaciones/show')
                     .then(function (response) {
                         cb(response.data)
                     })

@@ -45088,3 +45088,30 @@ ul.list-ckeck-soft {
 #toogle-info{
   outline: none;
 }
+.btn, .sp-container button{
+  min-height: 30px;
+  padding: 0 10px;
+}
+.input-button{
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
+[type='text']:focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus, .select2-container--focus .select2-selection__rendered{
+  --tw-ring-color: #17a2b8;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color)!important;
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) #17a2b8!important;
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)!important;
+  border: 1px solid #7fedff!important;
+}
+#add-descuento-general{
+  display: block;
+  height: 25px;
+  width: 25px;
+  border-radius: 5px;
+  color: #17a2b8;
+}
+.not-editable{
+  background: none!important;
+  border: none;
+  font-weight: 900;
+}

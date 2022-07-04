@@ -19,6 +19,7 @@ use App\Classes\CustomErrorHandler;
 use App\Models\CodigoAutorizacionPeticion;
 use App\Models\CodigoDescuento;
 use App\Models\TipoCambio;
+use App\Models\TipoPago;
 use App\Models\User;
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Facades\Auth;
@@ -107,9 +108,9 @@ class ReservacionController extends Controller
      */
     public function store(Request $request)
     {   
-        $pagado  = ((float)$request->cupon + (float)$request->efectioUsd + (float)$request->efectivo + (float)$request->tarjeta);
+        $pagado  = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
         $adeudo  = ((float)$request->total - (float)$pagado);
-        $estatus = ($request->estatus == "finalizar");
+        $estatus = ($request->estatus == "pagar-reservar");
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
@@ -139,10 +140,39 @@ class ReservacionController extends Controller
                     'numero_personas'      =>  $reservacionArticulo['cantidad']
                 ]); 
             }
-            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"efectivo");
-            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"efectioUsd");
-            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"tarjeta");
-            $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"cupon");
+            
+            if($estatus){
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoAgencia");
+
+                if((float)$request['descuentoCodigo']['cantidad'] > 0){
+                    /*
+                    if($this->verifyUserAuth(
+                        [
+                            'email'    => Auth::user()->email,
+                            'password' => $request['descuentoCodigo']['password']
+                        ])
+                    ){*/
+                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
+                    //}
+                }
+
+                if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
+                    /*
+                    if($this->verifyUserAuth(
+                        [
+                            'email'    => Auth::user()->email,
+                            'password' => $request['descuentoPersonalizado']['password']
+                        ])
+                    ){
+                        */
+                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    //}
+                }
+                
+            }
             DB::commit();
             return json_encode(['result' => "Success"]);
         } catch (\Exception $e){
@@ -153,14 +183,16 @@ class ReservacionController extends Controller
         }
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
+    
     private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
-        if((float)$request[$tipoPago]>0){
+        $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
+        if((float)$cantidad>0){
             $pago = Pago::create([
                 'reservacion_id' =>  $reservacionId,
                 'factura_id'     =>  $facturaId,
-                'cantidad'       =>  $request[$tipoPago],
+                'cantidad'       =>  (float)$cantidad,
                 'tipo_pago_id'   =>  $tipoPagoId
             ]);
             $result = is_numeric($pago['id']);
@@ -168,8 +200,8 @@ class ReservacionController extends Controller
         return $result;
     }
     private function getTipoPagoId($tipoPago){
-        //$tipoPagoId = tipoPago::where('nombre',$tipoPago);
-        return 1;
+        $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
+        return $tipoPagoId;
     }
     /**
      * Display the specified resource.
@@ -179,26 +211,24 @@ class ReservacionController extends Controller
      */
     public function show(Reservacion  $reservacion = null)
     {   
-        return view('reservaciones.show');
-    }
-    public function get($id = null)
-    {   
-        $reservacionesDetalle = ReservacionDetalle::all();
+        if(is_null($reservacion)){
+            $reservaciones = Reservacion::all();
 
-        $reservacionDetalleArray = [];
-            foreach ($reservacionesDetalle as $reservacionDetalle) {
+            $reservacionDetalleArray = [];
+            foreach ($reservaciones as $reservacion) {
                 $reservacionDetalleArray[] = [
-                    'id'            => @$reservacionDetalle->id,
-                    'reservacionId' => @$reservacionDetalle->reservacion->id,
-                    'actividad'     => @$reservacionDetalle->actividad->nombre,
-                    'horario'       => @$reservacionDetalle->horario->horario_inicial,
-                    'fecha'         => @$reservacionDetalle->actividad_fecha,
-                    'cliente'       => @$reservacionDetalle->reservacion->nombre_cliente,
-                    'personas'      => @$reservacionDetalle->numero_personas,
-                    'notas'         => @$reservacionDetalle->reservacion->comentarios
+                    'id'            => @$reservacion->id,
+                    'cliente' => @$reservacion->reservacion->id,
+                    'email'     => @$reservacion->actividad->nombre,
+                    'locacion'       => @$reservacion->horario->horario_inicial,
+                    'fecha'         => @$reservacion->actividad_fecha,
+                    'cliente'       => @$reservacion->reservacion->nombre_cliente,
+                    'personas'      => @$reservacion->numero_personas,
+                    'notas'         => @$reservacion->reservacion->comentarios
                 ];
             }
-        return json_encode(['data' => $reservacionDetalleArray]);
+            return json_encode(['data' => $reservacionDetalleArray]);
+        }
     }
     /**
      * Show the form for editing the specified resource.

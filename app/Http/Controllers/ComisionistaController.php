@@ -53,7 +53,7 @@ class ComisionistaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Comisionista $comisionista = null)
-    {   
+    {
         if(is_null($comisionista)){
             $comisionistas      = Comisionista::all();
             $comisionistasArray = [];
