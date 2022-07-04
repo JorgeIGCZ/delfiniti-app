@@ -141,6 +141,15 @@
                 }
                 setTimeout(setOperacionResultados(),500);
             });
+
+            document.getElementById('descuento-agencia').addEventListener('keyup', (event) =>{
+                if(getResta() < 0){
+                    document.getElementById('descuento-agencia').value = '0';
+                    document.getElementById('descuento-agencia').setAttribute('value',0);
+                }
+                setTimeout(setOperacionResultados(),500);
+            });
+
             //jQuery
             $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
                 event.preventDefault();
@@ -169,6 +178,7 @@
             });
             $('#comisionista').on('change', function (e) {
                 changeCuponDetalle();
+                document.getElementById('reservacion-form').elements['descuento-agencia'].focus();
             });
         };
         function applyVariables(){
@@ -580,7 +590,7 @@
 
             const descuentoAgencia          = parseFloat(document.getElementById('descuento-agencia').getAttribute('value'));
             const cantidadDescuentoAgencia  = (document.getElementById('descuento-agencia').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoAgencia/100)) : descuentoAgencia;
-
+            
             const resta              = total-(efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+cantidadDescuentoAgencia);
 
             return resta;
@@ -866,10 +876,10 @@
                                                     </div-->
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="descuento-agencia" class="col-form-label">Descuento (Agencia)</label>
+                                                        <label for="descuento-agencia" class="col-form-label">Cupon</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="descuento-agencia" id="descuento-agencia" class="form-control percentage" value="0" disabled="disabled" tipo='porcentaje'>
+                                                        <input type="text" name="descuento-agencia" id="descuento-agencia" class="form-control amount" value="0" disabled="disabled" tipo='cantidad'>
                                                     </div>
                                                     
                                                     <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
