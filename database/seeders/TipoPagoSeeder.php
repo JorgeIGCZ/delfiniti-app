@@ -25,13 +25,16 @@ class TipoPagoSeeder extends Seeder
             'nombre'   => 'tarjeta'
         ]);
         TipoPago::create([
-            'nombre'   => 'descuentoAgencia'
+            'nombre'   => 'cupon'
         ]);
         TipoPago::create([
             'nombre'   => 'descuentoCodigo'
         ]);
         TipoPago::create([
             'nombre'   => 'descuentoPersonalizado'
+        ]);
+        TipoPago::create([
+            'nombre'   => 'cambio'
         ]);
     }
 }

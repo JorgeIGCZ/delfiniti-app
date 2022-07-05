@@ -108,9 +108,12 @@ class ReservacionController extends Controller
      */
     public function store(Request $request)
     {   
-        $pagado  = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
-        $adeudo  = ((float)$request->total - (float)$pagado);
-        $estatus = ($request->estatus == "pagar-reservar");
+
+        $email    = Auth::user()->email;
+        $password = "";
+        $pagado   = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
+        $adeudo   = ((float)$request->total - (float)$pagado);
+        $estatus  = ($request->estatus == "pagar-reservar");
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
@@ -142,21 +145,23 @@ class ReservacionController extends Controller
             }
             
             if($estatus){
+                
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoAgencia");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
 
                 if((float)$request['descuentoCodigo']['cantidad'] > 0){
-                    /*
+                    $password = $request['descuentoCodigo']['password'];
                     if($this->verifyUserAuth(
                         [
-                            'email'    => Auth::user()->email,
-                            'password' => $request['descuentoCodigo']['password']
+                            'email'    => $email,
+                            'password' => $password
                         ])
-                    ){*/
+                    ){
                         $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
-                    //}
+                    }
                 }
 
                 if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
@@ -167,7 +172,10 @@ class ReservacionController extends Controller
                             'password' => $request['descuentoPersonalizado']['password']
                         ])
                     ){
+                        $this->isDescuentoValid($request[$tipoPago]['cantidad'],$request->total,$email)
+                        
                         */
+                        
                         $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                     //}
                 }
@@ -184,6 +192,12 @@ class ReservacionController extends Controller
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
     
+    private function isDescuentoValid($cantidad,$total,$email){
+        $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
+        $maximoDescuento = ($total/100) * $limite;
+        return ($total >= $maximoDescuento);
+    }
+
     private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
