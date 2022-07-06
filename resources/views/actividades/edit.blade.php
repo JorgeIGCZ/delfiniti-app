@@ -64,7 +64,7 @@
                                 <label for="nombre" class="col-form-label">Nombre actividad</label>    
                                 <input type="text" name="nombre" class="form-control" value="{{$actividad['nombre']}}">  
                             </div>
-
+ 
 
                             <div class="form-group col-1">
                                 <label for="precio" class="col-form-label">Precio</label>    

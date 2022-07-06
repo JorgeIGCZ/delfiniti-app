@@ -13,10 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('alojamientos', function (Blueprint $table) {
+        Schema::create('cerradores', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo');
             $table->string('nombre');
+            $table->float('comision');
+            $table->float('iva');
             $table->string('direccion')->nullable();
             $table->string('telefono')->nullable();
             $table->boolean('estatus')->default(1);
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('alojamientos');
+        Schema::dropIfExists('cerradores');
     }
 };

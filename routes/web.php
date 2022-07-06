@@ -7,6 +7,7 @@ use App\Http\Controllers\ComisionistaController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AlojamientoController;
+use App\Http\Controllers\CerradorController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\ComisionistaTipoController;
@@ -106,4 +107,15 @@ Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])
 Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');
 Route::get('/roles/{rol}',[RolController::class,'show'])->middleware(['auth'])->name('rolesupdate');
+
+Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
+    Route::get('cerradores/show/{cerrador?}', 'show');
+    Route::resource('cerradores',CerradorController::class, [
+        'parameters' => [
+            'cerradores' => 'cerrador'
+        ]
+    ]);
+    
+});
+
 require __DIR__.'/auth.php';

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('origen')->nullable();
             $table->integer('agente_id');
             $table->integer('comisionista_id');
+            $table->integer('cerrador_id');
             $table->longText('comentarios')->nullable();
             $table->dateTime('fecha_creacion');
             $table->boolean('estatus')->comment('0 es orden guardada 1 es orden reservada');

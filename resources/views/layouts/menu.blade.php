@@ -31,6 +31,7 @@
               <span>Catálogos</span>
               <a href="{{ url('/actividades') }}" class="nav-link {{url()->current() == url('actividades') ? 'active' : ''}}">Actividades</a>
               <a href="{{ url('/alojamientos') }}" class="nav-link {{url()->current() == url('alojamientos') ? 'active' : ''}}">Alojamientos</a>
+              <a href="{{ url('/cerradores') }}" class="nav-link {{url()->current() == url('cerradores') ? 'active' : ''}}">Cerradores</a>
               <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
               <a href="{{ url('/comisionistatipos') }}" class="nav-link {{url()->current() == url('comisionistatipos') ? 'active' : ''}}">Tipos de Comisionista</a>
             </nav>

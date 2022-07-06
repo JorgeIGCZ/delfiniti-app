@@ -59,7 +59,7 @@
                 '_token'         : '{{ csrf_token() }}',
                 "clave"          : actividades.elements['clave'].value,
                 "nombre"         : actividades.elements['nombre'].value,
-                "precio"         : actividades.elements['precio'].value,
+                "precio"         : actividades.elements['precio'].getAttribute('value'),
                 "capacidad"      : actividades.elements['capacidad'].value,
                 "duracion"       : actividades.elements['duracion'].value,
                 "fechaInicial"   : actividades.elements['rango'].getAttribute('fechainicial'),
@@ -83,7 +83,7 @@
                     timer: 1500
                 })
             });
-            actividades.reset();
+            actividades.reset(); 
             actividadesTable.ajax.reload();
         }
         function displayRangoPersonalizado(duracion){
@@ -232,7 +232,7 @@
                             </div>
                             <div class="form-group col-1">
                                 <label for="precio" class="col-form-label">Precio</label>    
-                                <input type="text" name="precio" class="form-control" required="required">  
+                                <input type="text" name="precio" class="form-control amount" required="required">  
                             </div>
                             <div class="form-group col-1">
                                 <label for="capacidad" class="col-form-label">Capacidad</label>    

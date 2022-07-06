@@ -16,6 +16,7 @@ use App\Models\Reservacion;
 use Illuminate\Notifications\Action;
 use Illuminate\Database\Eloquent\Builder;
 use App\Classes\CustomErrorHandler;
+use App\Models\Cerrador;
 use App\Models\CodigoAutorizacionPeticion;
 use App\Models\CodigoDescuento;
 use App\Models\TipoCambio;
@@ -44,6 +45,7 @@ class ReservacionController extends Controller
     {
         $estados        = Estado::all();
         $alojamientos   = Alojamiento::all();
+        $cerradores     = Cerrador::all();
         $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
                             ->whereRaw('NOW() <= fecha_final')
                             ->orWhere('duracion','indefinido')
@@ -51,7 +53,7 @@ class ReservacionController extends Controller
         $comisionistas   = Comisionista::all();
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         
-        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra]);
+        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
     }
     public function getDescuentoPersonalizadoValidacion(Request $request){
         try{
@@ -123,6 +125,7 @@ class ReservacionController extends Controller
                 'origen'          => $request->origen,
                 'agente_id'       => $request->agente,
                 'comisionista_id' => $request->comisionista,
+                'cerrador_id'     => $request->cerrador,
                 'comentarios'     => $request->comentarios,
                 'estatus'         => $estatus,
                 'fecha_creacion'  => date('Y-m-d')
@@ -250,14 +253,9 @@ class ReservacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Reservacion $reservacion)
     {
-        /*
-        if($id > 0){
-            $promotores = Promotor::where('id', $id)->first();
-            return view('promotores.edit',['promotor' => $promotores]);
-        }
-        */
+        //return view('reservaciones.edit',['reservacion' => $reservacion]);
     }
     /**
      * Update the specified resource in storage.

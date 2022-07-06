@@ -235,7 +235,7 @@
                                                             <td>{{ $reservacionDetalle->reservacion->nombre_cliente }}</td>
                                                             <td>{{ @$reservacionDetalle->numero_personas }}</td>
                                                             <td>{{ $actividadHorario->horario_inicial }}</td>
-                                                            <td><a href="#">Ver</a> | <a href="#">Editar</a></td>
+                                                            <td><a href="{{ url('reservaciones/'.$reservacionDetalle->reservacion_id.'/edit') }}">Editar</a></td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

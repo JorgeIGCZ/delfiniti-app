@@ -7,7 +7,7 @@
         updateTpoCambio(tipoCambio);
     });
     function updateTpoCambio(tipoCambio){
-        axios.post(`/tiposCambio/${tipoCambio.elements['id'].value}`, {
+        axios.post(`/tiposcambio/${tipoCambio.elements['id'].value}`, {
             '_token'       : '{{ csrf_token() }}',
             '_method'      : 'put',
             "precio_compra" : tipoCambio.elements['precio_compra'].value,

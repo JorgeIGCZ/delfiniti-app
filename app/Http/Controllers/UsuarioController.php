@@ -73,7 +73,7 @@ class UsuarioController extends Controller
                     'name'     => $usuario->name,
                     'email'    => $usuario->email,
                     'limiteDescuento'  => $usuario->limite_descuento,
-                    'rol'      => $usuario->roles->pluck('name')[0]
+                    'rol'      => @$usuario->roles->pluck('name')[0]
                 ];
             }
             return json_encode(['data' => $usuariosArray]);
