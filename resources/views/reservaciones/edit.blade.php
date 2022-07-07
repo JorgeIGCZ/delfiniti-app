@@ -552,7 +552,7 @@
                 pagoId       = '{{$pago->id}}';
                 tipoCambio   = '{{$pago->tipo_cambio_usd}}';
                 cantidad     = '{{$pago->cantidad}}';
-                tipoPago     = 'test';//'{$pago->tipoPago->nombre}}';
+                tipoPago     = '{{$pago->tipoPago->nombre}}';
                 tipoPagoId   = '{{$pago->tipo_pago_id}}';
                 fechaPago    = '{{$pago->created_at}}';
 

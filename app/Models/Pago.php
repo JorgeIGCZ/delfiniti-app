@@ -20,6 +20,6 @@ class Pago extends Model
 
     public function tipoPago()
     {
-        return $this->hasOne(TipoPago::class,'id');
+        return $this->hasOne(TipoPago::class,'id','tipo_pago_id');
     }
 }
