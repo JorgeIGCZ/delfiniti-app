@@ -1,46 +1,36 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        let reservacionesTable; 
-        let allActividades = [];
+        let reservacionesTabla; 
+        let pagosTabla;
+        let allActividades      = [];
         let reservacionesArray  = [];
+        let pagosArray          = [];
+        let cantidadPagada      = 0;
 
         window.onload = function() {
-            document.getElementById('reservacion-form').elements['nombre'].focus();
-
-            $('body').on('keydown', 'input, select, button', function(e) {
-                if (e.key === "Enter") {
-                
-                    if($(this).attr("id") == "agregar-reservacion"){
-                        addReservaciones();
-                    }
-                    if($(this).attr("id") == "password"){
-                        validarVerificacion();
-                    }
-
-                    var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-                    focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
-                    next = focusable.eq(focusable.index(this)+1);
-                    if (next.length) {
-                        next.focus();
-                    } else {
-                        form.submit();
-                    }
-                    return false;
-                }
-            });
-
             getDisponibilidad();
 
-            document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
-                document.getElementById('password').value="";
-            });
-
-            reservacionesTable = new DataTable('#reservaciones', {
+            reservacionesTabla = new DataTable('#reservaciones', {
                 searching: false,
                 paging: false,
                 info: false
             } );
+
+            pagosTabla = new DataTable('#pagos', {
+                searching: false,
+                paging: false,
+                info: false
+            } );
+
+            fillReservacionDetallesTabla();
+            fillPagosTabla();
+
+            document.getElementById('reservacion-form').elements['nombre'].focus();
+            document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
+                document.getElementById('password').value="";
+            });
+
             document.getElementById('agregar-reservacion').addEventListener('click', (event) =>{
                 event.preventDefault();
                 addReservaciones();
@@ -70,19 +60,10 @@
             document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
                 validarVerificacion();
             });
-            document.getElementById('pagar-reservar').addEventListener('click', (event) =>{
+            document.getElementById('pagar').addEventListener('click', (event) =>{
                 if(formValidity()){
-                    createReservacion('pagar-reservar');
+                    createReservacion('pagar');
                 }
-            });
-            document.getElementById('reservar').addEventListener('click', (event) =>{
-                if(formValidity()){
-                    createReservacion('reservar');
-                }
-            });
-            document.getElementById('cancelar').addEventListener('click', (event) =>{
-                event.preventDefault();
-                resetReservaciones();
             });
 
             document.getElementById('efectivo').addEventListener('keyup', (event) =>{
@@ -145,9 +126,30 @@
             });
 
             //jQuery
+            $('body').on('keydown', 'input, select, button', function(e) {
+                if (e.key === "Enter") {
+                
+                    if($(this).attr("id") == "agregar-reservacion"){
+                        addReservaciones();
+                    }
+                    if($(this).attr("id") == "password"){
+                        validarVerificacion();
+                    }
+
+                    var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+                    focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
+                    next = focusable.eq(focusable.index(this)+1);
+                    if (next.length) {
+                        next.focus();
+                    } else {
+                        form.submit();
+                    }
+                    return false;
+                }
+            });
             $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
                 event.preventDefault();
-                reservacionesTable
+                reservacionesTabla
                     .row( $(this).parents('tr') )
                     .remove()
                     .draw();
@@ -262,8 +264,9 @@
                 'tarjeta'      : reservacion.elements['tarjeta'].getAttribute('value'),
                 'cambio'       : reservacion.elements['cambio'].getAttribute('value'),
             };
-            axios.post('/reservaciones', {
+            axios.post('/reservaciones/{{$reservacion->id}}', {
                 '_token'       : '{{ csrf_token() }}',
+                '_method'      : 'PATCH',
                 'nombre'       : reservacion.elements['nombre'].value,
                 'email'        : reservacion.elements['email'].value,
                 'alojamiento'  : reservacion.elements['alojamiento'].value,
@@ -272,7 +275,7 @@
                 'comisionista' : reservacion.elements['comisionista'].value,
                 'cerrador'     : reservacion.elements['cerrador'].value,
                 'total'        : reservacion.elements['total'].getAttribute('value'),
-                'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
+                'pagos'        : estatus === 'pagar' ? pagos : {},
                 
                 //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
                 'cupon'       : {
@@ -295,11 +298,10 @@
                 if(response.data.result == 'Success'){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Reservacion creada',
+                        title: 'Reservacion actualizada',
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    resetReservaciones()
                     location.reload();
                 }else{
                     Swal.fire({
@@ -323,53 +325,6 @@
             return (subtotal/100) * porcentaje;
         }
 
-        function resetReservaciones(){
-            const reservacion = document.getElementById('reservacion-form');
-            reservacionesArray  = [];
-            reservacion.reset();
-            reservacionesTable.clear().draw();
-            document.getElementsByName('cantidad')[0].value = 1;
-            document.getElementsByName('disponibilidad')[0].value = 1;
-            document.getElementsByName('fecha')[0].value = new Date();
-
-            document.getElementById('efectivo').setAttribute('value',0);
-            document.getElementById('efectivo-usd').setAttribute('value',0);
-            document.getElementById('tarjeta').setAttribute('value',0);
-            //document.getElementById('cupon').setAttribute('value',0);
-            document.getElementById('cupon').setAttribute('value',0);
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-            document.getElementById('descuento-codigo').setAttribute('value',0);
-
-            document.getElementById('efectivo').value     = 0;
-            document.getElementById('efectivo-usd').value = 0;
-            document.getElementById('tarjeta').value      = 0;
-            //document.getElementById('cupon').value        = 0;
-            document.getElementById('cupon').value         = 0;
-            document.getElementById('descuento-personalizado').value   = 0;
-            document.getElementById('descuento-codigo').value          = 0;
-            
-            $('select[name="actividad"] option:nth-child(1)').attr('selected','selected');
-            $('select[name="actividad"]').trigger('change.select2');
-
-            $('select[name="alojamiento"] option:nth-child(1)').attr('selected','selected');
-            $('select[name="alojamiento"]').trigger('change.select2');
-
-            $('select[name="origen"] option:nth-child(1)').attr('selected','selected');
-            $('select[name="origen"]').trigger('change.select2');
-
-            $('select[name="comisionista"] option:nth-child(1)').attr('selected','selected');
-            $('select[name="comisionista"]').trigger('change.select2');
-
-            $('select[name="cerrador"] option:nth-child(1)').attr('selected','selected');
-
-
-            document.getElementById('descuento-personalizado').setAttribute('password','');
-            document.getElementById('descuento-codigo').setAttribute('password','');
-
-            changeClaveActividad();
-            changeActividad();
-            setOperacionResultados();
-        }
         function validateDescuentoPersonalizado(){
             axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
                 '_token'          : '{{ csrf_token() }}',
@@ -516,7 +471,7 @@
             const horario        = document.getElementById('horarios').value;
             const fecha          = document.getElementById('fecha').value;
             const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
-            reservacionesTable.row.add( [ 
+            reservacionesTabla.row.add( [ 
                 claveActividad,
                 actividadDetalle,
                 horarioDetalle,
@@ -536,6 +491,110 @@
                 'fecha': fecha
             }];
             setSubtotal();
+        }
+        function fillReservacionDetallesTabla(){
+            let actividadDetalle = '';
+            let horarioDetalle   = '';
+            let claveActividad   = '';
+            let actividad      = '';
+            let cantidad       = '';
+            let precio         = '';
+            let horario        = '';
+            let fecha          = '';
+            let acciones       = '';
+
+            @forEach($reservacion->reservacionDetalle as $detalle)
+                actividadDetalle = '{{$detalle->actividad->nombre}}';
+                horarioDetalle   = '{{$detalle->horario->horario_inicial}}';
+                claveActividad   = '{{$detalle->actividad->clave}}';
+                actividad      = '{{$detalle->actividad_id}}';
+                cantidad       = '{{$detalle->numero_personas}}';
+                precio         = '{{$detalle->PPU}}';
+                horario        = '{{$detalle->actividad_horario_id}}';
+                fecha          = '{{$detalle->actividad_fecha}}';
+                acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
+                reservacionesTabla.row.add( [ 
+                    claveActividad,
+                    actividadDetalle,
+                    horarioDetalle,
+                    fecha,
+                    cantidad,
+                    precio,
+                    precio*cantidad,
+                    acciones
+                ] )
+                .draw(false);
+                reservacionesArray = [...reservacionesArray,{
+                    'claveActividad': claveActividad,
+                    'actividad': actividad,
+                    'cantidad': cantidad,
+                    'precio': precio,
+                    'horario': horario,
+                    'fecha': fecha
+                }];
+            @endforeach
+            setSubtotal();
+        }
+
+        function fillPagosTabla(){
+            let pagoId       = '';
+            let cantidad     = '';
+            let tipoPago     = '';
+            let tipoPagoId   = '';
+            let fechaPago    = '';
+            let acciones     = '';
+            let tipoCambio   = 0;    
+            //'1','efectivo'
+            //'2','efectivoUsd'
+            //'3','tarjeta'
+
+            @forEach($reservacion->pagos as $pago)
+                pagoId       = '{{$pago->id}}';
+                tipoCambio   = '{{$pago->tipo_cambio_usd}}';
+                cantidad     = '{{$pago->cantidad}}';
+                tipoPago     = 'test';//'{$pago->tipoPago->nombre}}';
+                tipoPagoId   = '{{$pago->tipo_pago_id}}';
+                fechaPago    = '{{$pago->created_at}}';
+
+                //acciones     = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
+                pagosTabla.row.add( [ 
+                    pagoId,
+                    (pagoId == '2' ? `${cantidad}USD * ${tipoCambio}` : cantidad),
+                    tipoPago,
+                    fechaPago
+                ] )
+                .draw(false);
+                pagosArray = [...pagosArray,{
+                    'id': pagoId,
+                    'cantidad': cantidad,
+                    'tipoPagoId': tipoPagoId,
+                    'fechaPago': fechaPago
+                }];
+
+                cantidadPagada += parseFloat(cantidad);
+                blockDescuentos({{$pago->id}});
+            @endforeach
+            setCantidadPagada(cantidadPagada);
+            setSubtotal();
+        }
+
+        function setCantidadPagada(cantidadPagada){
+            document.getElementById('pagado').setAttribute('value',cantidadPagada);
+            document.getElementById('pagado').value = formatter.format(cantidadPagada);
+        }
+
+        function blockDescuentos(pagoId){
+            switch (pagoId){
+                case 4:
+                    document.getElementById('comisionista').setAttribute('disabled','disabled');
+                    break;
+                case 5:
+                    document.getElementById('codigo-descuento').setAttribute('disabled','disabled');
+                    break;
+                case 6:
+                    document.getElementById('add-descuento-personalizado').setAttribute('disabled','disabled');
+                    break;
+            }
         }
         
         function getActividadPrecio(){
@@ -565,9 +624,10 @@
             const descuentoCodigo        = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
             const cantidadCodigo         = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
             const cupon                  = parseFloat(document.getElementById('cupon').getAttribute('value'));
+            const pagado                 = parseFloat(document.getElementById('pagado').getAttribute('value'));
             
 
-            let total = subtotal - (cantidadPersonalizado+cantidadCodigo+cupon);
+            let total = subtotal - (cantidadPersonalizado+cantidadCodigo+cupon+pagado);
             total     = parseFloat(total).toFixed(2);
 
             document.getElementById('total').setAttribute('value',total);
@@ -612,8 +672,9 @@
             const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
             const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
             const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
+            const pagado          = parseFloat(document.getElementById('pagado').getAttribute('value'));
             
-            const resta           = subtotal-(cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo);
+            const resta           = subtotal-(cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+pagado);
 
             return resta;
         }
@@ -627,7 +688,7 @@
         }
 
         function enableFinalizar($status){
-            let pagarReservar = document.getElementById('pagar-reservar');
+            let pagarReservar = document.getElementById('pagar');
             ($status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled','disabled');
         }
         function getActividadHorario(){
@@ -719,10 +780,9 @@
         </div>
         </div><!-- modal-dialog -->
     </div>
-    
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Nueva Reserva</h2>
+            <h2 class="az-dashboard-title">Reserva #</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -737,7 +797,7 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1">  
+                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1" value={{$reservacion->nombre_cliente}}>  
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>    
@@ -745,17 +805,17 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>
-                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
+                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3" value={{$reservacion->email}}>
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
-                                        <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>
+                                        <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento === $alojamiento->id ? 'selected="selected' : ""}} >{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>  
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control" tabindex="4"/>
+                                <input list="ciudades" name="origen" class="form-control" tabindex="4" value="{{$reservacion->origen}}"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}} ({{$estado->pais->nombre}})">
@@ -796,7 +856,7 @@
                             <div class="form-group col-1 mt-0 mb-0">
                                 <button class="btn btn-info btn-block mt-33" id="agregar-reservacion" tabindex="10">+</button>
                             </div>
-                            <div class="form-group col-12 mt-8 mb-8 bd-t">
+                            <div class="form-group col-12 mt-8 mb-2 bd-t">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-2">
                                         <table id="reservaciones" class="display" style="width:100%">
@@ -816,6 +876,27 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-12 mt-3">
+                                <strong>Pagos</strong>
+                            </div>
+                            <div class="form-group col-12 mt-8 mb-8 bd-t">
+                                <div class="row">
+                                    <div class="col-12 mt-2 mb-2">
+                                        <table id="pagos" class="display" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Id</th>
+                                                    <th>Cantidad</th>
+                                                    <th>Tipo de pago</th>
+                                                    <th>Fecha pago</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group col-12 mt-0 mb-0">
                                 <div class="row">
                                     <div class="form-group col-8 mt-0 mb-0">
@@ -833,7 +914,7 @@
                                                 <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
-                                                        <option value="{{$comisionista->id}}" tipo="{{$comisionista->tipo->nombre}}">{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
+                                                        <option value="{{$comisionista->id}}" tipo="{{$comisionista->tipo->nombre}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -843,7 +924,7 @@
                                                 <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar cerrador</option>
                                                     @foreach($cerradores as $cerrador)
-                                                        <option value="{{$cerrador->id}}" >{{$cerrador->nombre}}</option>
+                                                        <option value="{{$cerrador->id}}" {{$reservacion->cerrador_id === $cerrador->id ? 'selected="selected' : ""}}>{{$cerrador->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -861,7 +942,7 @@
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" rows="5" style="width:100%;"></textarea>
+                                                <textarea name="comentarios" rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -877,6 +958,13 @@
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="pagado" class="col-form-label">Pagado:</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="pagado" id="pagado" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
 
 
@@ -962,19 +1050,13 @@
 
 
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block" id="pagar-reservar" disabled="disabled" tabindex="19">Pagar y reservar</button>
+                                                        <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="19">Pagar</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="reservar" tabindex="18">Reservar</button>
-                            </div>
-                            <div class="form-group col-2 mt-0 mb-0">
-                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="20">Cancelar</button>
                             </div>
                         </form>
                     </div>
@@ -983,4 +1065,4 @@
         </div>
     </div>
     
-@endsection
+@endsection         

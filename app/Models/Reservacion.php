@@ -12,7 +12,7 @@ class Reservacion extends Model
     protected $fillable = [
         'nombre_cliente',
         'email',
-        'localizacion',
+        'alojamiento',
         'origen',
         'agente_id',
         'comisionista_id',
@@ -40,5 +40,39 @@ class Reservacion extends Model
     public function reservacionDetalle()
     {
         return $this->hasMany(ReservacionDetalle::class,'reservacion_id');
+    }
+    
+    public function actividad()
+    {
+        return $this->hasManyThrough(
+            Actividad::class,
+            ReservacionDetalle::class,
+            'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
+            'id', // FK Actividad como comunica a ReservacionDetalle
+            'id', //local key Reservacion
+            'id' //local key ReservacionDetalle
+        );
+    }
+    public function horario()
+    {
+        return $this->hasManyThrough(
+            ActividadHorario::class,
+            ReservacionDetalle::class,
+            'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
+            'id', // FK Actividad como comunica a ReservacionDetalle
+            'id', //local key Reservacion
+            'id' //local key ReservacionDetalle
+        );
+    }
+    public function tipoPago()
+    {
+        return $this->hasOneThrough(
+            TipoPago::class,
+            Pago::class,
+            'reservacion_id', // FK Pago como comunica a Reservacion
+            'id', // FK TipoPago como comunica a Pago
+            'id', //local key TipoPago
+            'id' //local key Pago
+        );
     }
 }

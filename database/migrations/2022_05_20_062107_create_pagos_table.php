@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('reservacion_id');
             $table->float('cantidad');
             $table->integer('tipo_pago_id');
+            $table->float('tipo_cambio_usd')->nullable();
             $table->timestamps();
         });
     }

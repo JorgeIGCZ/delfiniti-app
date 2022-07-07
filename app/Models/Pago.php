@@ -13,7 +13,13 @@ class Pago extends Model
         'factura_id',
         'reservacion_id',
         'cantidad',
-        'tipo_pago_id'
+        'tipo_pago_id',
+        'tipo_cambio_usd'
     ];
     protected $primaryKey = 'id';
+
+    public function tipoPago()
+    {
+        return $this->hasOne(TipoPago::class,'id');
+    }
 }

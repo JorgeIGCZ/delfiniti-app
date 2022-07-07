@@ -143,7 +143,8 @@ class ReservacionController extends Controller
                     'actividad_id'         =>  $reservacionArticulo['actividad'],
                     'actividad_horario_id' =>  $reservacionArticulo['horario'],
                     'actividad_fecha'      =>  $reservacionArticulo['fecha'],
-                    'numero_personas'      =>  $reservacionArticulo['cantidad']
+                    'numero_personas'      =>  $reservacionArticulo['cantidad'],
+                    'PPU'                  =>  $reservacionArticulo['precio']
                 ]); 
             }
             
@@ -202,6 +203,7 @@ class ReservacionController extends Controller
     }
 
     private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
         $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
@@ -210,7 +212,8 @@ class ReservacionController extends Controller
                 'reservacion_id' =>  $reservacionId,
                 'factura_id'     =>  $facturaId,
                 'cantidad'       =>  (float)$cantidad,
-                'tipo_pago_id'   =>  $tipoPagoId
+                'tipo_pago_id'   =>  $tipoPagoId,
+                'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra
             ]);
             $result = is_numeric($pago['id']);
         }
@@ -255,7 +258,17 @@ class ReservacionController extends Controller
      */
     public function edit(Reservacion $reservacion)
     {
-        //return view('reservaciones.edit',['reservacion' => $reservacion]);
+        $estados        = Estado::all();
+        $alojamientos   = Alojamiento::all();
+        $cerradores     = Cerrador::all();
+        $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
+                            ->whereRaw('NOW() <= fecha_final')
+                            ->orWhere('duracion','indefinido')
+                            ->get();
+        $comisionistas   = Comisionista::all();
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+        
+        return view('reservaciones.edit',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
     }
     /**
      * Update the specified resource in storage.
@@ -266,16 +279,92 @@ class ReservacionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        /*
-        $promotor           = promotor::find($id);
-        $promotor->codigo   = $request->codigo;
-        $promotor->nombre   = $request->nombre;
-        $promotor->comision = $request->comision;
-        $promotor->iva      = $request->iva;
-        $promotor->save();
+        $email    = Auth::user()->email;
+        $password = "";
+        $pagado   = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
+        $adeudo   = ((float)$request->total - (float)$pagado);
+        $estatus  = ($request->estatus == "pagar");
+        DB::beginTransaction();
+        try{
+            $reservacion                  = Reservacion::find($id);
+            $reservacion->nombre_cliente  = $request->nombre;
+            $reservacion->email           = $request->email;
+            $reservacion->alojamiento     = $request->alojamiento;
+            $reservacion->origen          = $request->origen;
+            $reservacion->agente_id       = $request->agente;
+            $reservacion->comisionista_id = $request->comisionista;
+            $reservacion->cerrador_id     = $request->cerrador;
+            $reservacion->comentarios     = $request->comentarios;
+            $reservacion->estatus         = $estatus;
+            $reservacion->save();
 
-        return redirect()->route("promotores")->with(["result" => "Promotor actualizado",]);
-        */
+            $factura                 = Factura::find($id);
+            $factura->reservacion_id =  $reservacion['id'];
+            $factura->total          =  $request->total;
+            $factura->pagado         =  $request->$pagado;
+            $factura->adeudo         =  $request->$adeudo;
+            $reservacion->save();
+
+            ReservacionDetalle::where('reservacion_id', $reservacion['id'])->delete();
+                
+            foreach($request->reservacionArticulos as $reservacionArticulo){
+                ReservacionDetalle::create([
+                    'reservacion_id'       =>  $reservacion['id'],
+                    'factura_id'           =>  $factura['id'],
+                    'actividad_id'         =>  $reservacionArticulo['actividad'],
+                    'actividad_horario_id' =>  $reservacionArticulo['horario'],
+                    'actividad_fecha'      =>  $reservacionArticulo['fecha'],
+                    'numero_personas'      =>  $reservacionArticulo['cantidad'],
+                    'PPU'                  =>  $reservacionArticulo['precio']
+                ]); 
+            }
+            
+            if($estatus){
+                
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+
+                if((float)$request['descuentoCodigo']['cantidad'] > 0){
+                    $password = $request['descuentoCodigo']['password'];
+                    if($this->verifyUserAuth(
+                        [
+                            'email'    => $email,
+                            'password' => $password
+                        ])
+                    ){
+                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
+                    }
+                }
+
+                if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
+                    /*
+                    if($this->verifyUserAuth(
+                        [
+                            'email'    => Auth::user()->email,
+                            'password' => $request['descuentoPersonalizado']['password']
+                        ])
+                    ){
+                        $this->isDescuentoValid($request[$tipoPago]['cantidad'],$request->total,$email)
+                        
+                        */
+                        
+                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    //}
+                }
+                
+            }
+            DB::commit();
+            return json_encode(['result' => "Success"]);
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
     /**
      * Remove the specified resource from storage.

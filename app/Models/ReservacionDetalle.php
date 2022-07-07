@@ -15,7 +15,8 @@ class ReservacionDetalle extends Model
         'actividad_id',
         'actividad_horario_id',
         'actividad_fecha',
-        'numero_personas'
+        'numero_personas',
+        'PPU'
     ];
     protected $primaryKey = 'id';
 

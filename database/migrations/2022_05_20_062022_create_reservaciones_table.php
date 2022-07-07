@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre_cliente');
             $table->string('email')->nullable();
-            $table->string('localizacion')->nullable();
+            $table->string('alojamiento')->nullable();
             $table->string('origen')->nullable();
             $table->integer('agente_id');
             $table->integer('comisionista_id');

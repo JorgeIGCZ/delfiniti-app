@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('actividad_horario_id');
             $table->date('actividad_fecha');
             $table->integer('numero_personas');
+            $table->double('PPU');
             $table->timestamps();
         });
     }
