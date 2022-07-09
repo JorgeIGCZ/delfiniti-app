@@ -271,8 +271,7 @@
                 'agente'       : reservacion.elements['agente'].value,
                 'comisionista' : reservacion.elements['comisionista'].value,
                 'cerrador'     : reservacion.elements['cerrador'].value,
-                'total'        : reservacion.elements['subtotal'].getAttribute('value'),
-                'pagosAnteriores': reservacion.elements['pagado'].getAttribute('value'),
+                'total'        : reservacion.elements['subtotal'].getAttribute('value')
                 'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
                 
                 
