@@ -255,15 +255,15 @@ class ReservacionController extends Controller
             $reservacionDetalleArray = [];
             foreach($reservacionesDetalle as $reservacionDetalle){
                 $reservacionDetalleArray[] = [
-                    'id'           => $reservacionDetalle->id,
-                    'reservacionId'=> $reservacionDetalle->reservacion_id,
+                    'id'           => @$reservacionDetalle->id,
+                    'reservacionId'=> @$reservacionDetalle->reservacion_id,
                     'folio'        => '',
-                    'actividad'    => $reservacionDetalle->actividad->nombre,
-                    'horario'      => $reservacionDetalle->horario->horario_inicial,
-                    'fecha'        => $reservacionDetalle->reservacion->fecha_creacion,
-                    'cliente'      => $reservacionDetalle->reservacion->nombre_cliente,
-                    'personas'     => $reservacionDetalle->numero_personas,
-                    'notas'        => $reservacionDetalle->reservacion->comentarios
+                    'actividad'    => @$reservacionDetalle->actividad->nombre,
+                    'horario'      => @$reservacionDetalle->horario->horario_inicial,
+                    'fecha'        => @$reservacionDetalle->reservacion->fecha_creacion,
+                    'cliente'      => @$reservacionDetalle->reservacion->nombre_cliente,
+                    'personas'     => @$reservacionDetalle->numero_personas,
+                    'notas'        => @$reservacionDetalle->reservacion->comentarios
                 ];
             }   
             return json_encode(['data' => $reservacionDetalleArray]);
