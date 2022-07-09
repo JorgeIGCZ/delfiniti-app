@@ -21,6 +21,9 @@ class ImprimirController extends Controller
             // Enter the share name for your USB printer here
             //$connector = $nombreImpresora;
 //            $connector = new WindowsPrintConnector("EPSON");
+
+            $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+
             $connector = new WindowsPrintConnector("smb://$hostname/EPSON80");
 
 
