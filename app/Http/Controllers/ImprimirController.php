@@ -7,6 +7,7 @@ use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Mike42\Escpos\PrintConnectors\FilePrintConnector;
+use Mike42\Escpos\CapabilityProfile;
 
 class ImprimirController extends Controller
 {
@@ -14,13 +15,22 @@ class ImprimirController extends Controller
         //"POS-58";
         $reservaciones = [];
 
-        echo("TESTING...".$nombreImpresora);
-
+        echo("TESTING2...".$nombreImpresora);
+        /*
         $connector = new FilePrintConnector("php://stdout");
         $printer = new Printer($connector);
         $printer -> text("Hello World!\n");
         $printer -> cut();
         $printer -> close();
+        */
+
+        $profile = CapabilityProfile::load("simple");
+        $connector = new WindowsPrintConnector("smb://computer/printer");
+        $printer = new Printer($connector, $profile);
+        $printer -> text("Hello World!\n");
+        $printer -> cut();
+        $printer -> close();
+
         /*
         $connector = new WindowsPrintConnector($nombreImpresora);
         $printer   = new Printer($connector);
