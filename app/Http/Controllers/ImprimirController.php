@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\PrintConnectors\FilePrintConnector;
 
 class ImprimirController extends Controller
 {
@@ -14,7 +15,13 @@ class ImprimirController extends Controller
         $reservaciones = [];
 
         echo("TESTING...".$nombreImpresora);
-        
+
+        $connector = new FilePrintConnector("php://stdout");
+        $printer = new Printer($connector);
+        $printer -> text("Hello World!\n");
+        $printer -> cut();
+        $printer -> close();
+        /*
         $connector = new WindowsPrintConnector($nombreImpresora);
         $printer   = new Printer($connector);
         $printer->text("DELFINITI DE MEXICO S.A. DE C.V.");
@@ -57,6 +64,6 @@ class ImprimirController extends Controller
         $printer->cut();
         $printer->pulse();
         $printer->close();
-        
+        */
     }
 }
