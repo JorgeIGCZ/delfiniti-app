@@ -24,7 +24,7 @@ class ImprimirController extends Controller
 
             $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
-            $connector = new WindowsPrintConnector("smb://$hostname/EPSON80");
+            $connector = new WindowsPrintConnector("smb://$hostname/EPSON");
 
 
         
