@@ -19,10 +19,10 @@ class Factura extends Model
 
     public function pagos()
     {
-        return $this->hasMany(Factura::class,'factura_id');
+        return $this->hasMany(Pagos::class,'factura_id');
     }
-    public function articulos()
-    {
-        return $this->hasMany(Factura::class,'factura_id');
-    }
+   //public function articulos()
+   //{
+   //    return $this->hasMany(Factura::class,'factura_id');
+   //}
 }

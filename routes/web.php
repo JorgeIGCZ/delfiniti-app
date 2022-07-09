@@ -13,6 +13,7 @@ use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\ComisionistaTipoController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ImprimirController;
 
 /*
 |--------------------------------------------------------------------------
@@ -103,10 +104,13 @@ Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->grou
 });
 
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
+Route::get('/reportes/cortecaja',[ReporteController::class,'corteCaja'])->middleware(['auth'])->name('cortecaja');
 
 Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');
 Route::get('/roles/{rol}',[RolController::class,'show'])->middleware(['auth'])->name('rolesupdate');
+
+Route::get('/imprimir/{actividad?}',[ImprimirController::class,'imprimirTicket'])->middleware(['auth'])->name('imprimirticket');
 
 Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
     Route::get('cerradores/show/{cerrador?}', 'show');

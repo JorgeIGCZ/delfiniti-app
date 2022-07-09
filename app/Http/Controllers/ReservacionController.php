@@ -70,7 +70,7 @@ class ReservacionController extends Controller
         }
     }
     private function getLimitesDescuentoPersonalizado($request){
-        $descuento = User::where('email', $request->email)->first();
+        $descuento = User::where('email', $request['email'])->first();
         return $descuento->limite_descuento;
     }
     public function getCodigoDescuento(Request $request){
@@ -113,7 +113,7 @@ class ReservacionController extends Controller
 
         $email    = Auth::user()->email;
         $password = "";
-        $pagado   = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
+        $pagado   = $this->getCantidadPagada($request,$email);
         $adeudo   = ((float)$request->total - (float)$pagado);
         $estatus  = ($request->estatus == "pagar-reservar");
         DB::beginTransaction();
@@ -132,7 +132,7 @@ class ReservacionController extends Controller
             ]);
             $factura = Factura::create([
                 'reservacion_id' =>  $reservacion['id'],
-                'total'          =>  $request->total,
+                'total'          =>  (float)$request->total,
                 'pagado'         =>  $pagado,
                 'adeudo'         =>  $adeudo
             ]);
@@ -155,33 +155,13 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
-
-                if((float)$request['descuentoCodigo']['cantidad'] > 0){
-                    $password = $request['descuentoCodigo']['password'];
-                    if($this->verifyUserAuth(
-                        [
-                            'email'    => $email,
-                            'password' => $password
-                        ])
-                    ){
-                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
-                    }
+            
+                if($this->isValidDescuentoCodigo($request,$email)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
                 }
 
-                if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
-                    /*
-                    if($this->verifyUserAuth(
-                        [
-                            'email'    => Auth::user()->email,
-                            'password' => $request['descuentoPersonalizado']['password']
-                        ])
-                    ){
-                        $this->isDescuentoValid($request[$tipoPago]['cantidad'],$request->total,$email)
-                        
-                        */
-                        
-                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
-                    //}
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
                 
             }
@@ -196,7 +176,29 @@ class ReservacionController extends Controller
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
     
-    private function isDescuentoValid($cantidad,$total,$email){
+    private function getCantidadPagada($request,$email){
+        $pagosAnteriores = isset($request->pagosAnteriores) ? (float)$request->pagosAnteriores : '';
+
+        $pagado = $pagosAnteriores
+            + (
+                (float)$request->cupon['cantidad'] 
+                + (float)$request->pagos['efectivoUsd'] 
+                + (float)$request->pagos['efectivo'] 
+                + (float)$request->pagos['tarjeta']
+            );
+        
+        if($this->isValidDescuentoCodigo($request,$email)){
+            $pagado += (float)$request->descuentoCodigo['cantidad'];
+        }
+
+        if($this->isValidDescuentoPersonalizado($request,$email)){
+            $pagado += (float)$request->descuentoPersonalizado['cantidad'];
+        }
+
+        return $pagado;
+    } 
+
+    private function isDescuentoValid($total,$email){
         $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
         $maximoDescuento = ($total/100) * $limite;
         return ($total >= $maximoDescuento);
@@ -232,21 +234,38 @@ class ReservacionController extends Controller
     public function show(Reservacion  $reservacion = null)
     {   
         if(is_null($reservacion)){
-            $reservaciones = Reservacion::all();
+            /*
+            $reservaciones = Reservacion::all();// only actives
 
             $reservacionDetalleArray = [];
             foreach ($reservaciones as $reservacion) {
                 $reservacionDetalleArray[] = [
                     'id'            => @$reservacion->id,
-                    'cliente' => @$reservacion->reservacion->id,
-                    'email'     => @$reservacion->actividad->nombre,
-                    'locacion'       => @$reservacion->horario->horario_inicial,
-                    'fecha'         => @$reservacion->actividad_fecha,
-                    'cliente'       => @$reservacion->reservacion->nombre_cliente,
-                    'personas'      => @$reservacion->numero_personas,
+                    'folio'         => @$reservacion->id,
+                    'actividad'     => '',
+                    'cliente'       => @$reservacion->nombre_cliente,
+                    'email'         => @$reservacion->email,
+                    'origen'        => @$reservacion->origen,
+                    'fechaCreacion' => @$reservacion->fecha_creacion,
                     'notas'         => @$reservacion->reservacion->comentarios
                 ];
             }
+            */
+            $reservacionesDetalle = ReservacionDetalle::all();
+            $reservacionDetalleArray = [];
+            foreach($reservacionesDetalle as $reservacionDetalle){
+                $reservacionDetalleArray[] = [
+                    'id'           => $reservacionDetalle->id,
+                    'reservacionId'=> $reservacionDetalle->reservacion_id,
+                    'folio'        => '',
+                    'actividad'    => $reservacionDetalle->actividad->nombre,
+                    'horario'      => $reservacionDetalle->horario->horario_inicial,
+                    'fecha'        => $reservacionDetalle->reservacion->fecha_creacion,
+                    'cliente'      => $reservacionDetalle->reservacion->nombre_cliente,
+                    'personas'     => $reservacionDetalle->numero_personas,
+                    'notas'        => $reservacionDetalle->reservacion->comentarios
+                ];
+            }   
             return json_encode(['data' => $reservacionDetalleArray]);
         }
     }
@@ -281,11 +300,14 @@ class ReservacionController extends Controller
     {
         $email    = Auth::user()->email;
         $password = "";
-        $pagado   = ((float)$request->cupon + (float)$request->efectivoUsd + (float)$request->efectivo + (float)$request->tarjeta);
-        $adeudo   = ((float)$request->total - (float)$pagado);
-        $estatus  = ($request->estatus == "pagar");
+        
         DB::beginTransaction();
+        
         try{
+            $pagado   = $this->getCantidadPagada($request,$email);
+            $adeudo   = ((float)$request->total - (float)$pagado);
+            $estatus  = ($request->estatus == "pagar");
+            
             $reservacion                  = Reservacion::find($id);
             $reservacion->nombre_cliente  = $request->nombre;
             $reservacion->email           = $request->email;
@@ -301,9 +323,9 @@ class ReservacionController extends Controller
             $factura                 = Factura::find($id);
             $factura->reservacion_id =  $reservacion['id'];
             $factura->total          =  $request->total;
-            $factura->pagado         =  $request->$pagado;
-            $factura->adeudo         =  $request->$adeudo;
-            $reservacion->save();
+            $factura->pagado         =  (float)$pagado;
+            $factura->adeudo         =  (float)$adeudo;
+            $factura->save();
 
             ReservacionDetalle::where('reservacion_id', $reservacion['id'])->delete();
                 
@@ -327,34 +349,13 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
 
-                if((float)$request['descuentoCodigo']['cantidad'] > 0){
-                    $password = $request['descuentoCodigo']['password'];
-                    if($this->verifyUserAuth(
-                        [
-                            'email'    => $email,
-                            'password' => $password
-                        ])
-                    ){
-                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
-                    }
+                if($this->isValidDescuentoCodigo($request,$email)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
                 }
 
-                if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
-                    /*
-                    if($this->verifyUserAuth(
-                        [
-                            'email'    => Auth::user()->email,
-                            'password' => $request['descuentoPersonalizado']['password']
-                        ])
-                    ){
-                        $this->isDescuentoValid($request[$tipoPago]['cantidad'],$request->total,$email)
-                        
-                        */
-                        
-                        $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
-                    //}
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
-                
             }
             DB::commit();
             return json_encode(['result' => "Success"]);
@@ -365,6 +366,38 @@ class ReservacionController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
+    }
+
+    private function isValidDescuentoCodigo($request,$email){
+        if((float)$request['descuentoCodigo']['cantidad'] > 0){
+            $password = $request['descuentoCodigo']['password'];
+            //if($this->verifyUserAuth(
+            //    [
+            //        'email'    => $email,
+            //        'password' => $password
+            //    ])
+            //){
+                return true;
+            //}
+        }
+        return false;
+    }
+
+    private function isValidDescuentoPersonalizado($request,$email){
+        if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
+            //$password = $request['descuentoPersonalizado']['password'];
+            //if($this->verifyUserAuth(
+            //    [
+            //        'email'    => $email,
+            //        'password' => $password
+            //    ])
+            //){
+                if($this->isDescuentoValid($request->total,$email)){
+                    return true;
+                }
+            //}
+        }
+        return false;
     }
     /**
      * Remove the specified resource from storage.

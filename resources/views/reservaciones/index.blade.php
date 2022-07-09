@@ -13,7 +13,7 @@
                 },
                 columns: [
                     { data: 'id' },
-                    { data: 'reservacionId' },
+                    { data: 'folio' },
                     { data: 'actividad' },
                     { data: 'horario' },
                     { data: 'fecha' },
@@ -27,11 +27,9 @@
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
-                            editRow = `<a href="reservacion/edit/${row.id}">Editar</a>`;
+                            editRow = `<a href="reservaciones/${row.reservacionId}/edit">Editar</a>`;
                             let view    =   `<small> 
-                                                <a href="reservacion/show/${row.id}">Ver</a> |
                                                 ${editRow}
-                                                ${removeRow}
                                             </small>`;
                             return  view;
                         }
@@ -57,10 +55,10 @@
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Reservacion Id</th>
+                                        <th>Folio</th>
                                         <th>Actividad</th>
                                         <th>Horario</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha creación</th>
                                         <th>Cliente</th>
                                         <th>Personas</th>
                                         <th>Notas</th>

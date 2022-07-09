@@ -271,12 +271,14 @@
                 'agente'       : reservacion.elements['agente'].value,
                 'comisionista' : reservacion.elements['comisionista'].value,
                 'cerrador'     : reservacion.elements['cerrador'].value,
-                'total'        : reservacion.elements['total'].getAttribute('value'),
+                'total'        : reservacion.elements['subtotal'].getAttribute('value'),
+                'pagosAnteriores': reservacion.elements['pagado'].getAttribute('value'),
                 'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
+                
                 
                 //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
                 'cupon'       : {
-                    'cantidad': convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
+                    'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
                 },
                 'descuentoCodigo'        : {
                     'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value')),

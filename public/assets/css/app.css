@@ -45046,7 +45046,7 @@ ul.list-ckeck-soft {
 /******CUSTOM**********/
 .p-container{
   display: grid;
-  grid-template-columns: 128px auto;
+  grid-template-columns: 80px auto;
 }
 .col-horario{
   display: grid;
@@ -45062,12 +45062,12 @@ ul.list-ckeck-soft {
 .col-programas .programa{
   max-width: 300px;
   display: inline-table;
-  margin-right: 20px;
+  margin-right: 12px;
   border-right: 2px solid #dfdfdf;
-  padding-right: 20px;
+  padding-right: 12px;
 }
 .p-title{
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 300;
   font-weight: 500;
   color: #13a3b8;
