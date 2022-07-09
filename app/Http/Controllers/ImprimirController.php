@@ -19,8 +19,8 @@ class ImprimirController extends Controller
 
         try {
             // Enter the share name for your USB printer here
-            $connector = $nombreImpresora;
-            //$connector = new WindowsPrintConnector("Receipt Printer");
+            //$connector = $nombreImpresora;
+            $connector = new WindowsPrintConnector("EPSON");
         
             /* Print a "Hello world" receipt" */
             $printer = new Printer($connector);
