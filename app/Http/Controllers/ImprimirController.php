@@ -16,13 +16,29 @@ class ImprimirController extends Controller
         $reservaciones = [];
 
         echo("TESTING2...".$nombreImpresora);
+
+        try {
+            // Enter the share name for your USB printer here
+            $connector = $nombreImpresora;
+            //$connector = new WindowsPrintConnector("Receipt Printer");
+        
+            /* Print a "Hello world" receipt" */
+            $printer = new Printer($connector);
+            $printer -> text("Hello World!\n");
+            $printer -> cut();
+            
+            /* Close printer */
+            $printer -> close();
+        } catch (\Exception $e){
+            echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+        }
         /*
         $connector = new FilePrintConnector("php://stdout");
         $printer = new Printer($connector);
         $printer -> text("Hello World!\n");
         $printer -> cut();
         $printer -> close();
-        */
+        
 
         $profile = CapabilityProfile::load("simple");
         $connector = new WindowsPrintConnector("smb://computer/printer");
@@ -31,7 +47,7 @@ class ImprimirController extends Controller
         $printer -> cut();
         $printer -> close();
 
-        /*
+        
         $connector = new WindowsPrintConnector($nombreImpresora);
         $printer   = new Printer($connector);
         $printer->text("DELFINITI DE MEXICO S.A. DE C.V.");
