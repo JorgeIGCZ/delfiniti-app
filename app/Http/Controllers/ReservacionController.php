@@ -113,7 +113,7 @@ class ReservacionController extends Controller
 
         $email    = Auth::user()->email;
         $password = "";
-        $pagado   = $this->getCantidadPagada($request,$email);
+        $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
         $estatus  = ($request->estatus == "pagar-reservar");
         DB::beginTransaction();
@@ -304,7 +304,7 @@ class ReservacionController extends Controller
         DB::beginTransaction();
         
         try{
-            $pagado   = $this->getCantidadPagada($request,$email);
+            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
             $adeudo   = ((float)$request->total - (float)$pagado);
             $estatus  = ($request->estatus == "pagar");
             
