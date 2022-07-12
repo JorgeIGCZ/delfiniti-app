@@ -273,9 +273,6 @@
                 'cerrador'     : reservacion.elements['cerrador'].value,
                 'total'        : reservacion.elements['subtotal'].getAttribute('value'),
                 'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
-                
-                
-                //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
                 'cupon'       : {
                     'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
                 },
@@ -298,6 +295,7 @@
                         icon: 'success',
                         title: 'Reservacion creada',
                         showConfirmButton: false,
+                        footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservacion</a>`,
                         timer: 1500
                     })
                     resetReservaciones()
@@ -306,6 +304,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: `Reservacion fallida`,
+                        text: response.data.message,
                         showConfirmButton: true
                     })
                 }

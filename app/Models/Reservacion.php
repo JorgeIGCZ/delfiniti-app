@@ -41,6 +41,11 @@ class Reservacion extends Model
     {
         return $this->hasMany(ReservacionDetalle::class,'reservacion_id');
     }
+
+    public function alojamiento()
+    {
+        return $this->hasOne(Alojamiento::class,'id','alojamiento');
+    }
     
     public function actividad()
     {

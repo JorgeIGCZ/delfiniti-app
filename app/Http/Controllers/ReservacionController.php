@@ -110,7 +110,6 @@ class ReservacionController extends Controller
      */
     public function store(Request $request)
     {   
-
         $email    = Auth::user()->email;
         $password = "";
         $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
@@ -166,14 +165,13 @@ class ReservacionController extends Controller
                 
             }
             DB::commit();
-            return json_encode(['result' => "Success"]);
+            return json_encode(['result' => 'Success','id' => $reservacion['id']]);
         } catch (\Exception $e){
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
-        return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
     
     private function getCantidadPagada($request,$email){
@@ -234,23 +232,6 @@ class ReservacionController extends Controller
     public function show(Reservacion  $reservacion = null)
     {   
         if(is_null($reservacion)){
-            /*
-            $reservaciones = Reservacion::all();// only actives
-
-            $reservacionDetalleArray = [];
-            foreach ($reservaciones as $reservacion) {
-                $reservacionDetalleArray[] = [
-                    'id'            => @$reservacion->id,
-                    'folio'         => @$reservacion->id,
-                    'actividad'     => '',
-                    'cliente'       => @$reservacion->nombre_cliente,
-                    'email'         => @$reservacion->email,
-                    'origen'        => @$reservacion->origen,
-                    'fechaCreacion' => @$reservacion->fecha_creacion,
-                    'notas'         => @$reservacion->reservacion->comentarios
-                ];
-            }
-            */
             $reservacionesDetalle = ReservacionDetalle::all();
             $reservacionDetalleArray = [];
             foreach($reservacionesDetalle as $reservacionDetalle){
@@ -267,6 +248,18 @@ class ReservacionController extends Controller
                 ];
             }   
             return json_encode(['data' => $reservacionDetalleArray]);
+        }else{
+            $estados        = Estado::all();
+            $alojamientos   = Alojamiento::all();
+            $cerradores     = Cerrador::all();
+            $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
+                                ->whereRaw('NOW() <= fecha_final')
+                                ->orWhere('duracion','indefinido')
+                                ->get();
+            $comisionistas   = Comisionista::all();
+            $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+            
+            return view('reservaciones.show',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
         }
     }
     /**
