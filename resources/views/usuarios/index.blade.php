@@ -29,6 +29,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    usuariosTable.ajax.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -45,9 +46,8 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                usuarios.reset();
             }); 
-            usuariosTable.ajax.reload();
+            
         }
         function createUsuario(usuario){
             let rol   = usuario.elements['rol'];
@@ -68,6 +68,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -84,9 +85,19 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                usuarios.reset();
             });
             usuariosTable.ajax.reload();
+        }
+        function formValidity(formId){
+            const reservacion = document.getElementById(formId);
+            let response = true;
+            if(reservacion.checkValidity()){
+                event.preventDefault();
+            }else{
+                reservacion.reportValidity();
+                response = false;
+            }
+            return response;
         }
         $(function(){
             usuariosTable = new DataTable('#usuarios', {
@@ -127,7 +138,9 @@
             document.getElementById('usuarios-form').addEventListener('submit', (event) =>{
                 event.preventDefault();
                 const usaurio = document.getElementById('usuarios-form');
-                createUsuario(usaurio);
+                if(formValidity('usuarios-form')){
+                    createUsuario(usaurio);
+                }
             });
             
         });
@@ -148,24 +161,24 @@
                             @csrf
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" autocomplete="off">  
+                                <input type="text" name="nombre" class="form-control" autocomplete="off" required="required">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
                                 <label for="email" class="col-form-label">Email</label>    
                                 <input
-                                 type="email" name="email" class="form-control" autocomplete="off">  
+                                 type="email" name="email" class="form-control" autocomplete="off" required="required">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
                                 <label for="limite-descuento" class="col-form-label">Limite descuento</label>    
                                 <input
-                                 type="number" name="limite-descuento" class="form-control" autocomplete="off">  
+                                 type="number" name="limite-descuento" class="form-control" autocomplete="off" required="required">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
                                 <label for="password" class="col-form-label">Password</label>    
-                                <input type="password" name="password" class="form-control" autocomplete="off">  
+                                <input type="password" name="password" class="form-control" autocomplete="off" required="required">  
                             </div>
 
                             <div class="form-group col-2 mt-3">

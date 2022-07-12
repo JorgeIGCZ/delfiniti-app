@@ -123,12 +123,12 @@ class UsuarioController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $usuario
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(User $usuario)
     {
-        $result = $user->delete();
+        $result = $usuario->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }

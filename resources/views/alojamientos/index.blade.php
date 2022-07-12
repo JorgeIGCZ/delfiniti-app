@@ -13,7 +13,7 @@
                 confirmButtonText: '¡Si, Eliminar!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    destroyLocalizacion(id);
+                    destroyAlojamiento(id);
                 }else{
                     return false;
                 }
@@ -29,6 +29,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    alojamientosTable.ajax.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -47,7 +48,6 @@
                 })
                 alojamientos.reset();
             });
-            alojamientosTable.ajax.reload();
         }
         function createAlojamiento(alojamientos){
             axios.post('/alojamientos', {
@@ -65,6 +65,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -81,10 +82,7 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                alojamientos.reset();
             });
-            alojamientos.reset();
-            alojamientosTable.ajax.reload();
         }
         $(function(){
             alojamientosTable = new DataTable('#alojamientos', {

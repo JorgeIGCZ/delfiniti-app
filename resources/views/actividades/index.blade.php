@@ -28,6 +28,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 })
+                actividadesTable.ajax.reload();
             })
             .catch(function (error) {
                 Swal.fire({
@@ -36,9 +37,7 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                comisionistas.reset();
             });
-            actividadesTable.ajax.reload();
         }
         function createActividad(actividades){
             let horario_inicial = [],
@@ -74,6 +73,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 })
+                location.reload();
             })
             .catch(function (error) {
                 Swal.fire({
@@ -83,8 +83,6 @@
                     timer: 1500
                 })
             });
-            actividades.reset(); 
-            actividadesTable.ajax.reload();
         }
         function displayRangoPersonalizado(duracion){
             if(duracion == "personalizado"){

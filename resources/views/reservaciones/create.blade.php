@@ -71,12 +71,12 @@
                 validarVerificacion();
             });
             document.getElementById('pagar-reservar').addEventListener('click', (event) =>{
-                if(formValidity()){
+                if(formValidity('reservacion-form')){
                     createReservacion('pagar-reservar');
                 }
             });
             document.getElementById('reservar').addEventListener('click', (event) =>{
-                if(formValidity()){
+                if(formValidity('reservacion-form')){
                     createReservacion('reservar');
                 }
             });
@@ -178,7 +178,7 @@
         function validarVerificacion(){
             const action = document.getElementById('validar-verificacion').getAttribute('action');
                 
-            if(formValidity()){
+            if(formValidity('reservacion-form')){
                 if(action === 'add-descuento-personalizado'){
                     applyDescuentoPassword('descuento-personalizado');
                     validateDescuentoPersonalizado();
@@ -243,17 +243,6 @@
             (tipoDetalle == 'Agencia') ? descuento.removeAttribute('disabled') : descuento.setAttribute('disabled','disabled');
         }
 
-        function formValidity(){
-            const reservacion = document.getElementById('reservacion-form');
-            let response = true;
-            if(reservacion.checkValidity()){
-                event.preventDefault();
-            }else{
-                reservacion.reportValidity();
-                response = false;
-            }
-            return response;
-        }
         function createReservacion(estatus){
             const reservacion = document.getElementById('reservacion-form');
             const pagos       = {
@@ -427,7 +416,7 @@
             const reservacion = document.getElementById('reservacion-form');
             const nombre          = reservacion.elements['nombre'].value;
             const codigoDescuento = reservacion.elements['codigo-descuento'].value;
-            if(!formValidity()){
+            if(!formValidity('reservacion-form')){
                 return false;
             }
             axios.post('/reservaciones/getCodigoDescuento', {
@@ -694,6 +683,17 @@
                 optionClave.actividadId = allActividades[i].actividad.id;
                 actividadesClaveSelect.add(optionClave);
             }
+        }
+        function formValidity(formId){
+            const reservacion = document.getElementById(formId);
+            let response = true;
+            if(reservacion.checkValidity()){
+                event.preventDefault();
+            }else{
+                reservacion.reportValidity();
+                response = false;
+            }
+            return response;
         }
     </script>
 @endsection
