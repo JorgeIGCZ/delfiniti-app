@@ -86,10 +86,10 @@
             });
 
             document.getElementById('efectivo').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('efectivo').value = '$0.00';
-                    document.getElementById('efectivo').setAttribute('value',0);
-                }
+                //if(getResta() < 0){
+                //    document.getElementById('efectivo').value = '$0.00';
+                //    document.getElementById('efectivo').setAttribute('value',0);
+                //}
                 setTimeout(setOperacionResultados(),500);
             });
             document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
@@ -790,7 +790,7 @@
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}" autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  min="{{date('Y-m-d')}}" autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">

@@ -1,49 +1,4 @@
 @extends('layouts.app')
-@section('scripts')
-    <script>
-        function updateTipoComisionista(comisionistaTipo){
-            axios.post(`/comisionistatipos/${comisionistaTipo.elements['id'].value}`, {
-                '_token'       : '{{ csrf_token() }}',
-                '_method'      : 'put',  
-                "id"  : comisionistaTipo.elements['id'].value,
-                "nombre"  : comisionistaTipo.elements['nombre'].value
-            })
-            .then(function (response) {
-                if(response.data.result == "Success"){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registro actualizado',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Registro fallido',
-                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
-                        showConfirmButton: true
-                    })
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registro fallido',
-                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
-                    showConfirmButton: true
-                })
-                comisionistaTipos.reset();
-            });
-        }
-        $(function(){
-            document.getElementById('tipos-comisionista-form').addEventListener('submit', (event) =>{
-                event.preventDefault();
-                const comisionistaTipos = document.getElementById('tipos-comisionista-form');
-                updateTipoComisionista(comisionistaTipos);
-            });
-        });
-    </script>
-@endsection
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
@@ -55,9 +10,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="tipos-comisionista-form">
+                        <form method="POST" class="row g-3 align-items-center f-auto" id="comisionistatipos-form" action="{{route("comisionistatipos.update",$comisionistaTipo['id'])}}">
                             @csrf
-                            <input type="hidden" name="id" value="{{$comisionistaTipo->id}}">
+                            <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-2 mt-3">
                                 <label for="codigo" class="col-form-label">Id</label>    
                                 <input type="text" name="codigo" class="form-control" value="{{$comisionistaTipo->id}}" disabled="disabled">  

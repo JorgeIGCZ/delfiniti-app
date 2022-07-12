@@ -96,6 +96,7 @@ Route::controller(TipoCambioController::class)->middleware(['auth'])->group(func
 });
 
 Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->group(function () {
+    Route::get('/comisionistatipos/show/{comisionistatipo?}', 'show');
     Route::resource('comisionistatipos',ComisionistaTipoController::class, [
         'parameters' => [
             'comisionistatipos' => 'comisionistatipo'

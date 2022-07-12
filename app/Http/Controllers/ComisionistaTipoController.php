@@ -44,9 +44,9 @@ class ComisionistaTipoController extends Controller
      * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function show(ComisionistaTipo $tipoComisionista = null)
+    public function show(ComisionistaTipo $comisionistatipo = null)
     {   
-        if(is_null($tipoComisionista)){
+        if(is_null($comisionistatipo)){
             $comisionistaTipos      = ComisionistaTipo::all();
             $comisionistaTiposArray = [];
             foreach ($comisionistaTipos as $comisionistaTipo) {
@@ -66,9 +66,9 @@ class ComisionistaTipoController extends Controller
      * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function edit(ComisionistaTipo $tipoComisionista)
+    public function edit(ComisionistaTipo $comisionistatipo)
     {
-        return view('comisionistatipos.edit',['comisionistaTipo' => $tipoComisionista->first()]);
+        return view('comisionistatipos.edit',['comisionistaTipo' => $comisionistatipo]);
     }
 
     /**
@@ -90,7 +90,7 @@ class ComisionistaTipoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($tipoComisionista['id']) ? 'Success' : 'Error']);
+        return redirect()->route("comisionistatipos.index")->with(["result" => "Tipo de comisionista actualizado"]);
     }
 
 
