@@ -112,7 +112,7 @@ class ComisionistaController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($comisionista['id']) ? 'Success' : 'Error']);
+        return redirect()->route("comisionistas.index")->with(["result" => "Comisionista actualizado"]);
     }
 
 

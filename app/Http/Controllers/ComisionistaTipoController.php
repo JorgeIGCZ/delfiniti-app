@@ -110,9 +110,9 @@ class ComisionistaTipoController extends Controller
      * @param  ComisionistaTipo  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ComisionistaTipo $tipoComisionista)
+    public function destroy(ComisionistaTipo $comisionistatipo)
     {
-        $result = $tipoComisionista->delete();
+        $result = $comisionistatipo->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }

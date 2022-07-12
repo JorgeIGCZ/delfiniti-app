@@ -30,7 +30,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    comisionistaTipos.reset();
+                    comisionistaTiposTable.ajax.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -63,7 +63,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    comisionistaTipos.reset();
+                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -81,7 +81,6 @@
                     showConfirmButton: true
                 })
             });
-            comisionistaTiposTable.ajax.reload();
         }
         $(function(){
             comisionistaTiposTable = new DataTable('#comisionista-tipos', {

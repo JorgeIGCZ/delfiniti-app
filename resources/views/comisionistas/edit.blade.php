@@ -1,55 +1,4 @@
 @extends('layouts.app')
-@section('scripts')
-    <script>
-        function updateComisionista(comisionistas){
-            axios.post(`/comisionistas/${comisionistas.elements['id'].value}`, {
-                '_token'       : '{{ csrf_token() }}',
-                '_method'      : 'put',  
-                "codigo"  : comisionistas.elements['codigo'].value,
-                "nombre"  : comisionistas.elements['nombre'].value,
-                "tipo"  : comisionistas.elements['tipo'].value,
-                "comision": comisionistas.elements['comision'].value,
-                "iva"     : comisionistas.elements['iva'].value,
-                "representante"  : comisionistas.elements['representante'].value,
-                "direccion": comisionistas.elements['direccion'].value,
-                "telefono"     : comisionistas.elements['telefono'].value
-            })
-            .then(function (response) {
-                if(response.data.result == "Success"){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registro actualizado',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Registro fallido',
-                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
-                        showConfirmButton: true
-                    })
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registro fallido',
-                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
-                    showConfirmButton: true
-                })
-                comisionistas.reset();
-            });
-        }
-        $(function(){
-            document.getElementById('comisionistas-form').addEventListener('submit', (event) =>{
-                event.preventDefault();
-                const comisionistas = document.getElementById('comisionistas-form');
-                updateComisionista(comisionistas);
-            });
-        });
-    </script>
-@endsection
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
@@ -61,9 +10,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
+                        <form method="POST" class="row g-3 align-items-center f-auto" id="comisionistas-form" action="{{route("comisionistas.update",$comisionista['id'])}}">
                             @csrf
-                            <input type="hidden" name="id" value="{{$comisionista->id}}">
+                            <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-2 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
                                 <input type="text" name="codigo" class="form-control" value="{{$comisionista->codigo}}" disabled="disabled">  

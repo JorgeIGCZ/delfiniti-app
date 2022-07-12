@@ -29,7 +29,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    location.reload();
+                    cerradoresTable.ajax.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -65,6 +65,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
+                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -81,9 +82,7 @@
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
-                cerradores.reset();
             });
-            cerradoresTable.ajax.reload();
         }
         $(function(){
             cerradoresTable = new DataTable('#cerradores', {
