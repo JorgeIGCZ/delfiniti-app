@@ -1,6 +1,5 @@
 require('./bootstrap');
-require('./amount');
-require('./percentage');
+require('./utils');
 
 import Alpine from 'alpinejs';
 import { on } from "./on";

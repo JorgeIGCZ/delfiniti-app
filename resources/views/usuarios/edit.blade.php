@@ -15,7 +15,7 @@
                             <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-2 mt-3">
                                 <label for="username" class="col-form-label">Usuario</label>    
-                                <input type="text" name="username" class="form-control" autocomplete="off" value ="{{$usuario->username}}">  
+                                <input type="text" name="username" class="form-control no_space lowercase" autocomplete="off" value ="{{$usuario->username}}">  
                             </div>
 
                             <div class="form-group col-4 mt-3">

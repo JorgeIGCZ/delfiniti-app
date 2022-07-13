@@ -110,13 +110,7 @@ class UsuarioController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            if(count(User::
-                where('email',$request->email)
-                ->orWhere('username',$request->username)->get()
-            ) > 0){
-                return json_encode(['result' => 'Error','message' => 'El correo o el nombre de usuario ya se encuentra registrado.']);
-            }
-            
+
             $user                   = User::find($id);
             $user->username         = $request->username;
             $user->name             = $request->nombre;

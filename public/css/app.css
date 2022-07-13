@@ -713,6 +713,8 @@ Ensure the default browser behavior of the `hidden` attribute.
   font-weight: 600;
 }.uppercase{
   text-transform: uppercase;
+}.lowercase{
+  text-transform: lowercase;
 }.leading-5{
   line-height: 1.25rem;
 }.leading-7{

@@ -5063,43 +5063,6 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./resources/js/amount.js":
-/*!********************************!*\
-  !*** ./resources/js/amount.js ***!
-  \********************************/
-/***/ (() => {
-
-$(".amount").each(function () {
-  var amount = $(this).val();
-  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
-  amountNumeric = parseFloat(amountNumeric).toFixed(2);
-  $(this).val(amountNumeric);
-  $(this).attr("value", amountNumeric);
-  $(this).select();
-});
-$(".amount").keyup(function () {
-  var amount = $(this).val();
-  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
-  amount = parseFloat(amount).toFixed(2);
-  $(this).attr("value", amount);
-});
-$(".amount").focus(function () {
-  var amount = $(this).val();
-  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
-  amountNumeric = parseFloat(amountNumeric).toFixed(2);
-  $(this).val(amountNumeric);
-  $(this).select();
-});
-$(".amount").focusout(function () {
-  var amount = $(this).val();
-  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
-  amount = parseFloat(amount).toFixed(2);
-  $(this).attr("value", amount);
-  $(this).val(formatter.format(amount));
-});
-
-/***/ }),
-
 /***/ "./resources/js/app.js":
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
@@ -5112,9 +5075,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _on__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./on */ "./resources/js/on.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-__webpack_require__(/*! ./amount */ "./resources/js/amount.js");
-
-__webpack_require__(/*! ./percentage */ "./resources/js/percentage.js");
+__webpack_require__(/*! ./utils */ "./resources/js/utils.js");
 
 
 
@@ -5193,12 +5154,40 @@ var on = function on(eventName, selector, handler) {
 
 /***/ }),
 
-/***/ "./resources/js/percentage.js":
-/*!************************************!*\
-  !*** ./resources/js/percentage.js ***!
-  \************************************/
+/***/ "./resources/js/utils.js":
+/*!*******************************!*\
+  !*** ./resources/js/utils.js ***!
+  \*******************************/
 /***/ (() => {
 
+$(".amount").each(function () {
+  var amount = $(this).val();
+  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
+  amountNumeric = parseFloat(amountNumeric).toFixed(2);
+  $(this).val(amountNumeric);
+  $(this).attr("value", amountNumeric);
+  $(this).select();
+});
+$(".amount").keyup(function () {
+  var amount = $(this).val();
+  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
+  amount = parseFloat(amount).toFixed(2);
+  $(this).attr("value", amount);
+});
+$(".amount").focus(function () {
+  var amount = $(this).val();
+  var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
+  amountNumeric = parseFloat(amountNumeric).toFixed(2);
+  $(this).val(amountNumeric);
+  $(this).select();
+});
+$(".amount").focusout(function () {
+  var amount = $(this).val();
+  amount = !isNaN(parseFloat(amount)) && isFinite(amount) ? amount : 0;
+  amount = parseFloat(amount).toFixed(2);
+  $(this).attr("value", amount);
+  $(this).val(formatter.format(amount));
+});
 $(".percentage").each(function () {
   var amount = $(this).val();
   var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));
@@ -5226,6 +5215,46 @@ $(".percentage").focusout(function () {
   amount = parseFloat(amount).toFixed(2);
   $(this).attr("value", amount);
   $(this).val("".concat(amount, "%"));
+});
+$(".no_space").each(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.replace(/\s/g, '');
+  $(this).val(stringWOSpace);
+});
+$(".no_space").keyup(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.replace(/\s/g, '');
+  $(this).val(stringWOSpace);
+});
+$(".no_space").focus(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.replace(/\s/g, '');
+  $(this).val(stringWOSpace);
+});
+$(".no_space").focusout(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.replace(/\s/g, '');
+  $(this).val(stringWOSpace);
+});
+$(".lowercase").each(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.toLowerCase();
+  $(this).val(stringWOSpace);
+});
+$(".lowercase").keyup(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.toLowerCase();
+  $(this).val(stringWOSpace);
+});
+$(".lowercase").focus(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.toLowerCase();
+  $(this).val(stringWOSpace);
+});
+$(".lowercase").focusout(function () {
+  var string = $(this).val();
+  var stringWOSpace = string.toLowerCase();
+  $(this).val(stringWOSpace);
 });
 
 /***/ }),

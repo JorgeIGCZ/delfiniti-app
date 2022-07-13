@@ -163,7 +163,7 @@
                             @csrf
                             <div class="form-group col-2 mt-3">
                                 <label for="username" class="col-form-label">Usuario</label>    
-                                <input type="text" name="username" class="form-control" autocomplete="off" required="required">  
+                                <input type="text" name="username" class="form-control no_space lowercase" autocomplete="off" required="required">  
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
