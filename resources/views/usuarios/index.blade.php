@@ -54,7 +54,7 @@
             rol       = rol.options[rol.selectedIndex].value;
             axios.post('/usuarios', {
                 '_token'  : '{{ csrf_token() }}',
-                "name"    : usuario.elements['nombre'].value,
+                "username": usuario.elements['username'].value,
                 "email"   : usuario.elements['email'].value,
                 "limiteDescuento" : usuario.elements['limite-descuento'].value,
                 "password": usuario.elements['password'].value,
@@ -111,7 +111,7 @@
                 },
                 columns: [
                     { data: 'id' },
-                    { data: 'name' },
+                    { data: 'username' },
                     { data: 'email' },
                     { defaultContent: 'limiteDescuento', className: 'dt-left', 'render': function ( data, type, row ) 
                         {
@@ -160,8 +160,8 @@
                         <form class="row g-3 align-items-center f-auto" id="usuarios-form">
                             @csrf
                             <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" autocomplete="off" required="required">  
+                                <label for="username" class="col-form-label">Nombre de usuario</label>    
+                                <input type="text" name="username" class="form-control" autocomplete="off" required="required">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
@@ -173,7 +173,7 @@
                             <div class="form-group col-2 mt-3">
                                 <label for="limite-descuento" class="col-form-label">Limite descuento</label>    
                                 <input
-                                 type="number" name="limite-descuento" class="form-control" autocomplete="off" required="required">  
+                                 type="number" name="limite-descuento" class="form-control" autocomplete="off" required="required" min="0" max="100">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
@@ -210,7 +210,7 @@
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Nombre</th>
+                                        <th>Usuario</th>
                                         <th>Email</th>
                                         <th>Limite descuento</th>
                                         <th>Rol</th>

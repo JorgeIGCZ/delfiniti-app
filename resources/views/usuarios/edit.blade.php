@@ -14,8 +14,8 @@
                             @csrf
                             <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" autocomplete="off" value ="{{$usuario->name}}">  
+                                <label for="username" class="col-form-label">Nombre de usuario</label>    
+                                <input type="text" name="username" class="form-control" autocomplete="off" value ="{{$usuario->username}}">  
                             </div>
 
                             <div class="form-group col-2 mt-3">
@@ -27,7 +27,7 @@
                             <div class="form-group col-2 mt-3">
                                 <label for="limite_descuento" class="col-form-label">Limite descuento</label>    
                                 <input
-                                 type="number" name="limite_descuento" class="form-control" autocomplete="off" value ="{{$usuario->limite_descuento}}">  
+                                 type="number" name="limite_descuento" class="form-control" autocomplete="off" value ="{{$usuario->limite_descuento}}" min="0" max="100">  
                             </div>
 
                             <div class="form-group col-2 mt-3">

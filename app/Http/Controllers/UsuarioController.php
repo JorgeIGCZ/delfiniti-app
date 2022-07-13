@@ -42,8 +42,11 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         try {
+            if(count(User::where('email',$request->email)->get()) > 0){
+                return json_encode(['result' => 'Error','message' => 'El correo seleccionado ya se encuentra registrado.']);
+            }
             $user = User::create([
-                    'name' => $request->name,
+                    'username' => $request->username,
                     'email' => $request->email,
                     'limite_descuento' => $request->limiteDescuento,
                     'password' => Hash::make($request->password),
@@ -70,7 +73,7 @@ class UsuarioController extends Controller
             foreach ($usuarios as $usuario) {
                 $usuariosArray[] = [
                     'id'       => $usuario->id,
-                    'name'     => $usuario->name,
+                    'username' => $usuario->username,
                     'email'    => $usuario->email,
                     'limiteDescuento'  => $usuario->limite_descuento,
                     'rol'      => @$usuario->roles->pluck('name')[0]
@@ -103,7 +106,7 @@ class UsuarioController extends Controller
     {
         try {
             $user                   = User::find($id);
-            $user->name             = $request->nombre;
+            $user->username         = $request->username;
             $user->email            = $request->email;
             $user->limite_descuento = $request->limite_descuento;
 
