@@ -27,6 +27,12 @@ class ActividadController extends Controller
     public function store(Request $request)
     {
         try {
+            if(count(Actividad::
+                where('clave',$request->clave)->get()
+            ) > 0){
+                return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
+            }
+
             $actividad = Actividad::create([
                 'clave'           => $request->clave,
                 'nombre'          => $request->nombre,

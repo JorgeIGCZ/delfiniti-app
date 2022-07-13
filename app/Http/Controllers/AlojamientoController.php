@@ -37,6 +37,12 @@ class AlojamientoController extends Controller
     public function store(Request $request)
     {
         try {
+            if(count(Alojamiento::
+                where('codigo',$request->codigo)->get()
+            ) > 0){
+                return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
+            }
+
             $alojamiento = Alojamiento::create([
                 'codigo'    => $request->codigo,
                 'nombre'    => $request->nombre,

@@ -67,13 +67,22 @@
                 "horarioFinal"   : horario_final
             })
             .then(function (response) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Registro creado',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-                location.reload();
+                if(response.data.result == "Success"){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Registro creado',
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                    location.reload();
+                }else{
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registro fallido',
+                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        showConfirmButton: true
+                    })
+                }
             })
             .catch(function (error) {
                 Swal.fire({

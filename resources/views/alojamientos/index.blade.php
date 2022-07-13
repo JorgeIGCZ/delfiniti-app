@@ -61,7 +61,7 @@
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Alojamiento creado',
+                        title: 'Registro creado',
                         showConfirmButton: false,
                         timer: 1500
                     })

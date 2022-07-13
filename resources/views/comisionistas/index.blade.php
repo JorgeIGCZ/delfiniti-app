@@ -2,6 +2,19 @@
 @section('scripts')
     <script>
         let comisionistasTable;
+        
+        function formValidity(formId){
+            const reservacion = document.getElementById(formId);
+            let response = true;
+            if(reservacion.checkValidity()){
+                event.preventDefault();
+            }else{
+                reservacion.reportValidity();
+                response = false;
+            }
+            return response;
+        }
+
         function verificacionDestroy(id){
             Swal.fire({
                 title: '¿Desea eliminar comisionista?',
@@ -128,7 +141,9 @@
             document.getElementById('comisionistas-form').addEventListener('submit', (event) =>{
                 event.preventDefault();
                 const comisionistas = document.getElementById('comisionistas-form');
-                createComisionista(comisionistas);
+                if(formValidity('comisionistas-form')){
+                    createComisionista(comisionistas);
+                }
             });
             
         });
