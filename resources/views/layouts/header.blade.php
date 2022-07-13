@@ -39,7 +39,7 @@
         </div--><!-- az-header-notification -->
         <div class="dropdown az-profile-menu">
           <a href="#" class="nav-link">
-            <i class="typcn typcn-user-outline"></i> {{Auth::user()->username}}
+            <i class="typcn typcn-user-outline"></i> {{Auth::user()->name}}
           </a>
           <div class="dropdown-menu">
             <div class="az-dropdown-header d-sm-none">

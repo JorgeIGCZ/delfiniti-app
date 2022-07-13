@@ -42,11 +42,15 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         try {
-            if(count(User::where('email',$request->email)->get()) > 0){
-                return json_encode(['result' => 'Error','message' => 'El correo seleccionado ya se encuentra registrado.']);
+            if(count(User::
+                where('email',$request->email)
+                ->orWhere('username',$request->username)->get()
+            ) > 0){
+                return json_encode(['result' => 'Error','message' => 'El correo o el nombre de usuario ya se encuentra registrado.']);
             }
             $user = User::create([
                     'username' => $request->username,
+                    'name' => $request->nombre,
                     'email' => $request->email,
                     'limite_descuento' => $request->limiteDescuento,
                     'password' => Hash::make($request->password),
@@ -74,6 +78,7 @@ class UsuarioController extends Controller
                 $usuariosArray[] = [
                     'id'       => $usuario->id,
                     'username' => $usuario->username,
+                    'name'     => $usuario->name,
                     'email'    => $usuario->email,
                     'limiteDescuento'  => $usuario->limite_descuento,
                     'rol'      => @$usuario->roles->pluck('name')[0]
@@ -105,8 +110,16 @@ class UsuarioController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            if(count(User::
+                where('email',$request->email)
+                ->orWhere('username',$request->username)->get()
+            ) > 0){
+                return json_encode(['result' => 'Error','message' => 'El correo o el nombre de usuario ya se encuentra registrado.']);
+            }
+            
             $user                   = User::find($id);
             $user->username         = $request->username;
+            $user->name             = $request->nombre;
             $user->email            = $request->email;
             $user->limite_descuento = $request->limite_descuento;
 

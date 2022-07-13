@@ -45118,3 +45118,6 @@ ul.list-ckeck-soft {
 .height-auto{
   height: auto;
 }
+.alert{
+  line-height: 2.8;
+}

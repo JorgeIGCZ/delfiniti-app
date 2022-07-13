@@ -13,9 +13,14 @@
                         <form method="POST" class="row g-3 align-items-center f-auto" id="actividades-form" action="{{route("usuarios.update",$usuario['id'])}}">
                             @csrf
                             <input type="hidden" name="_method" value="PATCH">
-                            <div class="form-group col-4 mt-3">
-                                <label for="username" class="col-form-label">Nombre de usuario</label>    
+                            <div class="form-group col-2 mt-3">
+                                <label for="username" class="col-form-label">Usuario</label>    
                                 <input type="text" name="username" class="form-control" autocomplete="off" value ="{{$usuario->username}}">  
+                            </div>
+
+                            <div class="form-group col-4 mt-3">
+                                <label for="nombre" class="col-form-label">Nombre</label>    
+                                <input type="text" name="nombre" class="form-control" autocomplete="off" value ="{{$usuario->name}}">  
                             </div>
 
                             <div class="form-group col-2 mt-3">

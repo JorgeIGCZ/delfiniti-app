@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name'              => 'Admin',
+            'username'          => 'admin',
             'email'             => 'admin@delfiniti.com',
             'email_verified_at' => now(),
             'limite_descuento'  => 100,
