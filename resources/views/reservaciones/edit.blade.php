@@ -65,6 +65,11 @@
                     createReservacion('pagar');
                 }
             });
+            document.getElementById('actualizar').addEventListener('click', (event) =>{
+                if(formValidity()){
+                    createReservacion('actualizar');
+                }
+            });
 
             document.getElementById('efectivo').addEventListener('keyup', (event) =>{
                 if(getResta() < 0){
@@ -783,7 +788,7 @@
     </div>
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Reserva #</h2>
+            <h2 class="az-dashboard-title">FOLIO: {{$reservacion->folio}}</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -1056,6 +1061,10 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div class="form-group col-2 mt-0 mb-0">
+                                        <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="18">Actualizar</button>
                                     </div>
                                 </div>
                             </div>

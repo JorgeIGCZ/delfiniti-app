@@ -3,6 +3,7 @@
     <script>
         $(function(){
             comisionistasTable = new DataTable('#reservaciones', {
+                order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
                     axios.get('/reservaciones/show')
                     .then(function (response) {
@@ -14,11 +15,11 @@
                 columns: [
                     { data: 'id' },
                     { data: 'folio' },
+                    { data: 'cliente' },
                     { data: 'actividad' },
+                    { data: 'personas' },
                     { data: 'horario' },
                     { data: 'fecha' },
-                    { data: 'cliente' },
-                    { data: 'personas' },
                     { data: 'notas' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
@@ -27,7 +28,7 @@
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
-                            editRow = `<a href="reservaciones/${row.reservacionId}/edit">Editar</a>`;
+                            editRow = `<a href="reservaciones/${row.id}/edit">Editar</a>`;
                             let view    =   `<small> 
                                                 ${editRow}
                                             </small>`;
@@ -56,11 +57,11 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Folio</th>
+                                        <th>Cliente</th>
                                         <th>Actividad</th>
+                                        <th>Personas</th>
                                         <th>Horario</th>
                                         <th>Fecha creación</th>
-                                        <th>Cliente</th>
-                                        <th>Personas</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>
                                     </tr>

@@ -288,12 +288,14 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Reservacion creada',
-                        showConfirmButton: false,
-                        footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservacion</a>`,
-                        timer: 1500
+                        showConfirmButton: true,
+                        footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            resetReservaciones()
+                            location.reload();
+                        }
                     })
-                    resetReservaciones()
-                    location.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',

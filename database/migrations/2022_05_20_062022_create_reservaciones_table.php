@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('reservaciones', function (Blueprint $table) {
             $table->id();
+            $table->string('folio');
             $table->string('nombre_cliente');
             $table->string('email')->nullable();
             $table->string('alojamiento')->nullable();

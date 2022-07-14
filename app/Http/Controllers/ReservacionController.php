@@ -27,6 +27,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ReservacionController extends Controller
 {
+    public $folioSufijo   = "-B";
+    public $longitudFolio = 7;
+
     /**
      * Display a listing of the resource.
      *
@@ -55,6 +58,7 @@ class ReservacionController extends Controller
         
         return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
     }
+
     public function getDescuentoPersonalizadoValidacion(Request $request){
         try{
             if($this->verifyUserAuth($request)){
@@ -73,6 +77,7 @@ class ReservacionController extends Controller
         $descuento = User::where('email', $request['email'])->first();
         return $descuento->limite_descuento;
     }
+
     public function getCodigoDescuento(Request $request){
         $codigoDescuento = $request->codigoDescuento;
         if($codigoDescuento !== ""){
@@ -165,6 +170,12 @@ class ReservacionController extends Controller
                 
             }
             DB::commit();
+
+            $reservacion        = Reservacion::find($reservacion['id']);
+            $reservacion->folio = str_pad($reservacion['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
+            $reservacion->save();
+            
+
             return json_encode(['result' => 'Success','id' => $reservacion['id']]);
         } catch (\Exception $e){
             DB::rollBack();
@@ -232,19 +243,44 @@ class ReservacionController extends Controller
     public function show(Reservacion  $reservacion = null)
     {   
         if(is_null($reservacion)){
-            $reservacionesDetalle = ReservacionDetalle::all();
+            /*
+            $reservacionesDetalle = ReservacionDetalle::orderByDesc('id')->get();
             $reservacionDetalleArray = [];
             foreach($reservacionesDetalle as $reservacionDetalle){
                 $reservacionDetalleArray[] = [
                     'id'           => @$reservacionDetalle->id,
                     'reservacionId'=> @$reservacionDetalle->reservacion_id,
-                    'folio'        => '',
+                    'folio'        => @$reservacionDetalle->folio,
                     'actividad'    => @$reservacionDetalle->actividad->nombre,
                     'horario'      => @$reservacionDetalle->horario->horario_inicial,
                     'fecha'        => @$reservacionDetalle->reservacion->fecha_creacion,
                     'cliente'      => @$reservacionDetalle->reservacion->nombre_cliente,
                     'personas'     => @$reservacionDetalle->numero_personas,
                     'notas'        => @$reservacionDetalle->reservacion->comentarios
+                ];
+            }   
+            return json_encode(['data' => $reservacionDetalleArray]);
+            */
+            $reservaciones           = Reservacion::orderByDesc('id')->get();
+            $reservacionDetalleArray = [];
+            foreach($reservaciones as $reservacion){
+                $numeroPersonas = 0;
+                $horario        = "";
+                $actividades    = "";
+                foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                    $numeroPersonas += $reservacionDetalle->numero_personas;
+                    $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
+                    $actividades     = ($actividades != "" ? $actividades.", " : "").$reservacionDetalle->actividad->nombre;
+                }
+                $reservacionDetalleArray[] = [
+                    'id'           => @$reservacion->id,
+                    'folio'        => @$reservacion->folio,
+                    'actividad'    => $actividades,
+                    'horario'      => $horario,
+                    'fecha'        => @$reservacion->fecha_creacion,
+                    'cliente'      => @$reservacion->nombre_cliente,
+                    'personas'     => $numeroPersonas,
+                    'notas'        => @$reservacion->comentarios
                 ];
             }   
             return json_encode(['data' => $reservacionDetalleArray]);
@@ -310,7 +346,9 @@ class ReservacionController extends Controller
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = $request->comentarios;
-            $reservacion->estatus         = $estatus;
+            if($estatus){
+                $reservacion->estatus = $estatus;
+            }
             $reservacion->save();
 
             $factura                 = Factura::find($id);

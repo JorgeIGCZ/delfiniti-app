@@ -762,7 +762,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Reserva #</h2>
+            <h2 class="az-dashboard-title">FOLIO: {{$reservacion->folio}}</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">

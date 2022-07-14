@@ -10,6 +10,7 @@ class Reservacion extends Model
     use HasFactory;
     
     protected $fillable = [
+        'folio',
         'nombre_cliente',
         'email',
         'alojamiento',
