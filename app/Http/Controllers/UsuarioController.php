@@ -47,10 +47,10 @@ class UsuarioController extends Controller
                 ->orWhere('username',$request->username)->get()
             ) > 0){
                 return json_encode(['result' => 'Error','message' => 'El correo o el nombre de usuario ya se encuentra registrado.']);
-            }
+            } 
             $user = User::create([
                     'username' => $request->username,
-                    'name' => $request->nombre,
+                    'name' => $request->name,
                     'email' => $request->email,
                     'limite_descuento' => $request->limiteDescuento,
                     'password' => Hash::make($request->password),
