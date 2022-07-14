@@ -11,8 +11,8 @@
             $('body').on('keydown', 'input, select, button', function(e) {
                 if (e.key === "Enter") {
                 
-                    if($(this).attr("id") == "agregar-reservacion"){
-                        addReservaciones();
+                    if($(this).attr("id") == "add-actividad"){
+                        addActividades();
                     }
                     if($(this).attr("id") == "password"){
                         validarVerificacion();
@@ -41,9 +41,9 @@
                 paging: false,
                 info: false
             } );
-            document.getElementById('agregar-reservacion').addEventListener('click', (event) =>{
+            document.getElementById('add-actividad').addEventListener('click', (event) =>{
                 event.preventDefault();
-                addReservaciones();
+                addActividades();
             });
             document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
                 event.preventDefault();
@@ -144,6 +144,10 @@
                 setTimeout(setOperacionResultados(),500);
             });
 
+            document.getElementById('fecha').addEventListener('focusout', (event) =>{
+                setTimeout(validateFecha(),500);
+            });
+
             //jQuery
             $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
                 event.preventDefault();
@@ -162,6 +166,7 @@
                     !result ? updated++ : '';
                     return result;
                 });
+                enablePagar(reservacionesArray.length > 0);
                 setSubtotal();
             } );
             $('#clave-actividad').on('change', function (e) {
@@ -358,6 +363,7 @@
             changeClaveActividad();
             changeActividad();
             setOperacionResultados();
+            enablePagar(false);
         }
         function validateDescuentoPersonalizado(){
             axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
@@ -492,7 +498,7 @@
             }
             return cantidadDescuento;
         }
-        function addReservaciones(){
+        function addActividades(){
             let actividadDetalle = document.getElementById('actividades');
             actividadDetalle     = actividadDetalle.options[actividadDetalle.selectedIndex].text;
             let horarioDetalle   = document.getElementById('horarios');
@@ -524,6 +530,7 @@
                 'horario': horario,
                 'fecha': fecha
             }];
+            enablePagar(reservacionesArray.length > 0);
             setSubtotal();
         }
         
@@ -568,7 +575,7 @@
             setCambio();
             //document.getElementById('reservacion-form').elements['descuento-general'].focus();
 
-            enableFinalizar((getResta() < subtotal) ? true : false);
+            enableReservar((getResta() < subtotal) ? true : false);
         }
         function setCambio(){
             const cambioCampo = document.getElementById('cambio');
@@ -615,10 +622,16 @@
             return {{$dolarPrecioCompra->precio_compra}};
         }
 
-        function enableFinalizar($status){
-            let pagarReservar = document.getElementById('pagar-reservar');
-            ($status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled','disabled');
+        function enablePagar(status){
+            let reservar = document.getElementById('reservar');
+            (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
         }
+
+        function enableReservar(status){
+            let pagarReservar = document.getElementById('pagar-reservar');
+            (status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled','disabled');
+        }
+
         function getActividadHorario(){
             const actividad   = document.getElementById('actividades').value;
             let horarioSelect = document.getElementById('horarios');
@@ -694,6 +707,21 @@
                 response = false;
             }
             return response;
+        }
+        function validateFecha(){
+            const fecha      = document.getElementById('fecha');
+            const horario    = document.getElementById('horarios');
+            const horarioOpcion = horario.options[horario.selectedIndex];
+            const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
+            const now        = new Date();
+            if(now > fechaValor){
+                Swal.fire({
+                    icon: 'warning',
+                    title: `Fecha de reserva invalida`
+                })
+                fecha.value = null;
+                fecha.focus()
+            }
         }
     </script>
 @endsection
@@ -794,7 +822,7 @@
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="agregar-reservacion" tabindex="10">+</button>
+                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -971,7 +999,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="reservar" tabindex="18">Reservar</button>
+                                <button class="btn btn-info btn-block mt-33" id="reservar" disabled="disabled" tabindex="18">Reservar</button>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="20">Cancelar</button>
