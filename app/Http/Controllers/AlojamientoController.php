@@ -74,12 +74,12 @@ class AlojamientoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Localizacion  $localizacion
+     * @param  \App\Models\Alojamiento  $alojamiento
      * @return \Illuminate\Http\Response
      */
-    public function edit(Alojamiento  $localizacion)
+    public function edit(Alojamiento  $alojamiento)
     {
-        return view('alojamientos.edit',['alojamiento' => $localizacion->first()]);
+        return view('alojamientos.edit',['alojamiento' => $alojamiento]);
     }
 
     /**
@@ -93,7 +93,6 @@ class AlojamientoController extends Controller
     {
         try {
             $alojamiento            = Alojamiento::find($id);
-            $alojamiento->codigo    = $request->codigo;
             $alojamiento->nombre    = $request->nombre;
             $alojamiento->direccion = $request->direccion;
             $alojamiento->telefono  = $request->telefono;
@@ -104,7 +103,7 @@ class AlojamientoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($alojamiento['id']) ? 'Success' : 'Error']);
+        return redirect()->route("alojamientos.index")->with(["result" => "Alojamiento actualizado"]);
     }
 
     /**

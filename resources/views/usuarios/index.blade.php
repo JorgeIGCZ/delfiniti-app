@@ -179,7 +179,7 @@
                             <div class="form-group col-2 mt-3">
                                 <label for="limite-descuento" class="col-form-label">Limite descuento</label>    
                                 <input
-                                 type="number" name="limite-descuento" class="form-control" autocomplete="off" required="required" min="0" max="100">  
+                                 type="number" name="limite-descuento" class="form-control" autocomplete="off" required="required" min="0" max="100" value="0">  
                             </div>
 
                             <div class="form-group col-2 mt-3">

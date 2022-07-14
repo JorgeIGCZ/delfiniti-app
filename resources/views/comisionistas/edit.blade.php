@@ -25,7 +25,7 @@
                                 <label for="tipo" class="col-form-label">Tipo</label>
                                 <select name="tipo" class="form-control">
                                     @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}">{{$tipo->nombre}}</option>
+                                        <option value="{{$tipo->id}}" {{$tipo->id === $comisionista->tipo_id ? 'selected="selected' : ""}} >{{$tipo->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -44,15 +44,15 @@
                             </div>
                             <div class="form-group col-5 mt-3">
                                 <label for="representante" class="col-form-label">Representante</label>
-                                <input type="text" id="representante" class="form-control" value="{{$comisionista->representante}}">
+                                <input type="text" name="representante" class="form-control" value="{{$comisionista->representante}}">
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" id="direccion" class="form-control" value="{{$comisionista->direccion}}">
+                                <input type="text" name="direccion" class="form-control" value="{{$comisionista->direccion}}">
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="telefono" class="col-form-label">Teléfono</label>
-                                <input type="text" id="telefono" class="form-control" value="{{$comisionista->telefono}}">
+                                <input type="text" name="telefono" class="form-control" value="{{$comisionista->telefono}}">
                             </div>
 
                             <div class="form-group col-3 mt-3">

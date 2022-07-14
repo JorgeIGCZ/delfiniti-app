@@ -67,7 +67,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
             'reservaciones' => 'reservacion'
         ]
     ]);
-});
+}); 
 Route::controller(AlojamientoController::class)->middleware(['auth'])->group(function () {
     Route::get('/alojamientos/show/{alojamiento?}', 'show');
     Route::resource('alojamientos',AlojamientoController::class, [

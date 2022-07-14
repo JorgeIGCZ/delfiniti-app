@@ -104,10 +104,10 @@ class ComisionistaController extends Controller
     {
         try {
             $comisionista           = Comisionista::find($id);
-            $comisionista->codigo   = $request->codigo;
             $comisionista->nombre   = $request->nombre;
             $comisionista->comision = $request->comision;
             $comisionista->iva      = $request->iva;
+            $comisionista->tipo_id  = $request->tipo;
             $comisionista->representante = $request->representante;
             $comisionista->direccion = $request->direccion;
             $comisionista->telefono = $request->telefono;

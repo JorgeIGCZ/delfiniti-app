@@ -1,56 +1,8 @@
 @extends('layouts.app')
-@section('scripts')
-    <script>
-        function updateComisionista(cerradores){
-            axios.post(`/cerradores/${cerradores.elements['id'].value}`, {
-                '_token'       : '{{ csrf_token() }}',
-                '_method'      : 'put',  
-                "nombre"       : cerradores.elements['nombre'].value,
-                "comision"     : cerradores.elements['comision'].value,
-                "iva"          : cerradores.elements['iva'].value,
-                "direccion"    : cerradores.elements['direccion'].value,
-                "telefono"     : cerradores.elements['telefono'].value
-            })
-            .then(function (response) {
-                if(response.data.result == "Success"){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registro actualizado',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Registro fallido',
-                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
-                        showConfirmButton: true
-                    })
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Registro fallido',
-                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
-                    showConfirmButton: true
-                })
-                cerradores.reset();
-            });
-        }
-        $(function(){
-            document.getElementById('cerradores-form').addEventListener('submit', (event) =>{
-                event.preventDefault();
-                const cerradores = document.getElementById('cerradores-form');
-                updateComisionista(cerradores);
-            });
-        });
-    </script>
-@endsection
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Comisionistas</h2>
+            <h2 class="az-dashboard-title">Cerrador</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
@@ -58,12 +10,12 @@
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="cerradores-form">
+                        <form method="POST" class="row g-3 align-items-center f-auto" id="cerradores-form" action="{{route("cerradores.update",$cerrador['id'])}}">
                             @csrf
-                            <input type="hidden" name="id" value="{{$cerrador->id}}">
+                            <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre cerrador</label>    
-                                <input type="text" name="nombre" class="form-control" value="{{$cerrador->nombre}}">  
+                                <input type="text" name="nombre" class="form-control" value="{{$cerrador->nombre}}"  required="required">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="comision" class="col-form-label">Comisión %</label>
@@ -75,11 +27,11 @@
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" id="direccion" class="form-control" value="{{$cerrador->direccion}}">
+                                <input type="text" name="direccion" class="form-control" value="{{$cerrador->direccion}}">
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="telefono" class="col-form-label">Teléfono</label>
-                                <input type="text" id="telefono" class="form-control" value="{{$cerrador->telefono}}">
+                                <input type="text" name="telefono" class="form-control" value="{{$cerrador->telefono}}">
                             </div>
 
                             <div class="form-group col-3 mt-3">

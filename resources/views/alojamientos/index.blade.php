@@ -139,11 +139,11 @@
                             @csrf
                             <div class="form-group col-2 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
-                                <input type="text" name="codigo" class="form-control">  
+                                <input type="text" name="codigo" class="form-control" required="required">  
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
-                                <input type="text" name="nombre" class="form-control">  
+                                <input type="text" name="nombre" class="form-control" required="required">  
                             </div>
                             <div class="form-group col-6 mt-3">
                                 <label for="direccion" class="col-form-label">Dirección</label>

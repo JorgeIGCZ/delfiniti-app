@@ -101,8 +101,7 @@ class CerradorController extends Controller
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
-
-        return json_encode(['result' => is_numeric($cerrador['id']) ? 'Success' : 'Error']);
+        return redirect()->route("cerradores.index")->with(["result" => "Cerrador actualizado"]);
     }
 
 
