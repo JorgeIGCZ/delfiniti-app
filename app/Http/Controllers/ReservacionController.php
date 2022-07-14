@@ -270,7 +270,7 @@ class ReservacionController extends Controller
                 foreach($reservacion->reservacionDetalle as $reservacionDetalle){
                     $numeroPersonas += $reservacionDetalle->numero_personas;
                     $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
-                    $actividades     = ($actividades != "" ? $actividades.", " : "").$reservacionDetalle->actividad->nombre;
+                    $actividades     = ($actividades != "" ? $actividades.", " : "").@$reservacionDetalle->actividad->nombre;
                 }
                 $reservacionDetalleArray[] = [
                     'id'           => @$reservacion->id,
