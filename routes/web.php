@@ -27,8 +27,9 @@ use App\Http\Controllers\ImprimirController;
 */
 
 Route::get('/', function () {
-    return view('reportes.index');
-})->middleware(['auth'])->name('dashboard');
+    return view('disponibilidad.index');
+})->middleware(['auth'])->name('disponibilidad');
+
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');
     Route::resource('comisionistas',ComisionistaController::class, [

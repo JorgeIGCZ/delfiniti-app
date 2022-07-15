@@ -46,6 +46,7 @@
                 'Usuarios.index'              : roles.elements['Usuarios.index'                ].checked,
                 'Usuarios.create'             : roles.elements['Usuarios.create'               ].checked,
                 'Usuarios.update'             : roles.elements['Usuarios.update'               ].checked,
+                'Reportes.index'              : roles.elements['Reportes.index'                ].checked,
                 'Reportes.CorteCaja.index'    : roles.elements['Reportes.CorteCaja.index'      ].checked,
                 'Reportes.Reservaciones.index': roles.elements['Reportes.Reservaciones.index'  ].checked,
                 'Reportes.Comisiones.index'   : roles.elements['Reportes.Comisiones.index'     ].checked,
@@ -68,8 +69,13 @@
                 'TipoCambio.index'            : roles.elements['TipoCambio.index'              ].checked,
                 'TipoCambio.update'           : roles.elements['TipoCambio.update'             ].checked,
                 'Usuarios.Roles.index'        : roles.elements['Usuarios.Roles.index'          ].checked,
-                'Usuarios.Roles.update'       : roles.elements['Usuarios.Roles.update'         ].checked
-                
+                'Usuarios.Roles.update'       : roles.elements['Usuarios.Roles.update'         ].checked,
+                'Cupones.index'               : roles.elements['Cupones.index'                 ].checked,
+                'Cupones.create'              : roles.elements['Cupones.create'                ].checked,
+                'Cupones.update'              : roles.elements['Cupones.update'                ].checked,
+                'Cerradores.index'            : roles.elements['Cerradores.index'              ].checked,
+                'Cerradores.create'           : roles.elements['Cerradores.create'             ].checked,
+                'Cerradores.update'           : roles.elements['Cerradores.update'             ].checked,
             }
         })
         .then(function (response) {
@@ -121,6 +127,34 @@
                     </select>
                 </div>
                 <form class="row g-3 f-auto" id="roles-form">
+
+                    <div class="col-md-2">
+                        <strong>Reportes</strong>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Reportes.index" type="checkbox" >
+                            <label for="Reportes.index">
+                                Ver
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Reportes.CorteCaja.index" type="checkbox" >
+                            <label for="Reportes.CorteCaja.index">
+                              Corte caja
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Reportes.Reservaciones.index" type="checkbox" >
+                            <label for="Reportes.Reservaciones.index">
+                              Reservaciones
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Reportes.Comisiones.index" type="checkbox" >
+                            <label for="Reportes.Comisiones.index">
+                                Comisiones
+                            </label>
+                        </div>
+                    </div>
                     <div class="col-md-2">
                         <strong>Usuarios</strong>
                         <div class="checkbox checkbox-primary">
@@ -141,27 +175,6 @@
                                 Modificar 
                             </label>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <strong>Reportes</strong>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Reportes.CorteCaja.index" type="checkbox" >
-                          <label for="Reportes.CorteCaja.index">
-                              Corte caja
-                          </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Reportes.Reservaciones.index" type="checkbox" >
-                          <label for="Reportes.Reservaciones.index">
-                              Reservaciones
-                          </label>
-                      </div>
-                      <div class="checkbox checkbox-primary">
-                        <input name="Reportes.Comisiones.index" type="checkbox" >
-                        <label for="Reportes.Comisiones.index">
-                            Comisiones
-                        </label>
-                    </div>
                     </div>
                     <div class="col-md-2">
                         <strong>Disponibilidad</strong>
@@ -256,6 +269,52 @@
                             </label>
                         </div>
                     </div>
+
+
+                    <div class="col-md-2">
+                        <strong>Cupones</strong>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cupones.index" type="checkbox" >
+                            <label for="Cupones.index">
+                                Ver 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cupones.create" type="checkbox" >
+                            <label for="Cupones.create">
+                                Crear 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cupones.update" type="checkbox" >
+                            <label for="Cupones.update">
+                                Modificar 
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <strong>Cerradores</strong>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cerradores.index" type="checkbox" >
+                            <label for="Cerradores.index">
+                                Ver 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cerradores.create" type="checkbox" >
+                            <label for="Cerradores.create">
+                                Crear 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Cerradores.update" type="checkbox" >
+                            <label for="Cerradores.update">
+                                Modificar 
+                            </label>
+                        </div>
+                    </div>
+
                     <div class="col-md-2">
                         <strong>Alojamientos</strong>
                         <div class="checkbox checkbox-primary">

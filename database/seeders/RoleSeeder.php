@@ -28,10 +28,9 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'Usuarios.Roles.index'])->assignRole($administrador);
         Permission::create(['name' => 'Usuarios.Roles.update'])->assignRole($administrador);
 
+        Permission::create(['name' => 'Reportes.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);
-
         Permission::create(['name' => 'Reportes.Reservaciones.index'])->assignRole($administrador);
-
         Permission::create(['name' => 'Reportes.Comisiones.index'])->assignRole($administrador);
 
         Permission::create(['name' => 'Disponibilidad.index'])->assignRole($administrador);
@@ -59,5 +58,12 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'TiposComisionista.create'])->assignRole($administrador);
         Permission::create(['name' => 'TiposComisionista.update'])->assignRole($administrador);
 
+        Permission::create(['name' => 'Cupones.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Cupones.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Cupones.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'Cerradores.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Cerradores.create'])->assignRole($administrador);
+        Permission::create(['name' => 'Cerradores.update'])->assignRole($administrador);
     }
 }

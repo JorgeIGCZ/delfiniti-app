@@ -21,12 +21,14 @@ class ReporteController extends Controller
         $reservaciones =  Reservacion::all();
         //dd($reservaciones[0]->pagos);
         //dd($reservaciones[0]->pagos[0]->tipoPago->nombre);
+        /*
         foreach($reservaciones as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
                 print_r($reservacionDetalle->actividad->nombre);
             }
         }
-        //return view('reportes.index');
+        */
+        return view('reportes.index');
     }
     
     /**
