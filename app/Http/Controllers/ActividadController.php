@@ -81,7 +81,7 @@ class ActividadController extends Controller
      */
     public function edit(Actividad  $actividad)
     {
-        $actividadHorarios = ActividadHorario::where('actividad_id',2)->get();
+        $actividadHorarios = ActividadHorario::where('actividad_id',$actividad['id'])->orderBy('horario_inicial', 'asc')->get();
         return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios]);
     }
 
