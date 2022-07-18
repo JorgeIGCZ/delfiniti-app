@@ -738,7 +738,8 @@
             const horarioOpcion = horario.options[horario.selectedIndex];
             const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
             const now        = new Date();
-            if(now > fechaValor){
+            
+            if(now > fechaValor && {{!Auth::user()->hasRole('Administrador')}} ){
                 Swal.fire({
                     icon: 'warning',
                     title: `Fecha de reserva invalida`
@@ -842,7 +843,7 @@
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  min="{{date('Y-m-d')}}" autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
