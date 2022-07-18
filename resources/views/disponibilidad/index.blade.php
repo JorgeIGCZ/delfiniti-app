@@ -48,14 +48,14 @@
             document.body.addEventListener("keypress", setActivityTime);
 
             const refresh = () => {
-            if (new Date().getTime() - time >= 5000) {
-                window.location.reload(true);
-            } else {
-                setTimeout(refresh, 5000);
-            }
+                if (new Date().getTime() - time >= 20000) {
+                    window.location.reload(true);
+                } else {
+                    setTimeout(refresh, 20000);
+                }
             }
 
-            setTimeout(refresh, 5000);
+            setTimeout(refresh, 20000);
         }
     </script>
 @endsection
