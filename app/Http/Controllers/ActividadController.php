@@ -7,6 +7,7 @@ use App\Models\ActividadHorario;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
+
 class ActividadController extends Controller
 {
     /**

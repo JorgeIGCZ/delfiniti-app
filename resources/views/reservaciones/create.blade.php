@@ -47,7 +47,7 @@
             });
             document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
                 event.preventDefault();
-                resetDescuentos();
+                //resetDescuentos();
                 document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
             });
             /*
@@ -58,7 +58,7 @@
             });
             */
             document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
-                resetDescuentos();
+                //resetDescuentos();
                 if(document.getElementById('add-descuento-personalizado').checked){
                     $('#verificacion-modal').modal('show');
                     document.getElementById('add-descuento-personalizado').checked = false;
@@ -85,6 +85,10 @@
                 resetReservaciones();
             });
 
+            document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
+                setTimeout(setOperacionResultados(),500);
+            });
+
             document.getElementById('efectivo').addEventListener('keyup', (event) =>{
                 //if(getResta() < 0){
                 //    document.getElementById('efectivo').value = '$0.00';
@@ -92,6 +96,7 @@
                 //}
                 setTimeout(setOperacionResultados(),500);
             });
+
             document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
                 //if(getResta() < 0){
                 //    document.getElementById('efectivo-usd').value = '$0.00';
@@ -269,14 +274,21 @@
                 'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
                 'cupon'       : {
                     'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
+                    'tipo'    : document.getElementById('descuento-codigo').getAttribute('tipo')
                 },
                 'descuentoCodigo'        : {
-                    'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value')),
-                    'password': document.getElementById('descuento-codigo').getAttribute('password'),
+                    'cantidad'  : (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') 
+                                    ? convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value')) 
+                                    : parseFloat(document.getElementById('descuento-codigo').getAttribute('value')),
+                    'password'  : document.getElementById('descuento-codigo').getAttribute('password'),
+                    'valor'     : document.getElementById('descuento-codigo').value,
+                    'tipoValor' : document.getElementById('descuento-codigo').getAttribute('tipo')
                 },
                 'descuentoPersonalizado' : {
-                    'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-personalizado'].getAttribute('value')),
-                    'password': document.getElementById('descuento-personalizado').getAttribute('password'),
+                    'cantidad'  : convertPorcentageCantidad(reservacion.elements['descuento-personalizado'].getAttribute('value')),
+                    'password'  : document.getElementById('descuento-personalizado').getAttribute('password'),
+                    'valor'     : document.getElementById('descuento-personalizado').value,
+                    'tipoValor' : document.getElementById('descuento-personalizado').getAttribute('tipo')
                 },
 
                 'comentarios'  : reservacion.elements['comentarios'].value,
@@ -440,7 +452,7 @@
                             if(response.data.descuento.descuento !== null){
                                 
                                 $('#verificacion-modal').modal('hide');
-                                setCodigoDescuento(response.data.descuento.descuento);
+                                setCodigoDescuento(response.data.descuento);
                                 break;
                             }else{
                                 Swal.fire({
@@ -449,6 +461,10 @@
                                     showConfirmButton: false,
                                     timer: 1500
                                 })
+
+                                document.getElementById('descuento-codigo').value = 0;
+                                document.getElementById('descuento-codigo').text  = 0;
+                                document.getElementById('descuento-codigo-container').classList.add("hidden");
                             }
                         default:
                             Swal.fire({
@@ -457,7 +473,9 @@
                                 showConfirmButton: false,
                                 timer: 1500
                             })
-                            setCodigoDescuento(null);
+                            document.getElementById('descuento-codigo').value = 0;
+                            document.getElementById('descuento-codigo').text  = 0;
+                            document.getElementById('descuento-codigo-container').classList.add("hidden");
                             break;
                     }
                 }else{
@@ -466,7 +484,9 @@
                         title: `Petición fallida`,
                         showConfirmButton: true
                     })
-                    setCodigoDescuento(null);
+                    document.getElementById('descuento-codigo').value = 0;
+                    document.getElementById('descuento-codigo').text  = 0;
+                    document.getElementById('descuento-codigo-container').classList.add("hidden");
                 }
             })
             .catch(function (error) {
@@ -478,16 +498,17 @@
             });
         }
         function setCodigoDescuento(descuento){
-            document.getElementById('descuento-codigo').removeAttribute('disabled','disabled');
-            if(descuento == null){
-                document.getElementById('descuento-codigo').value = 0;
-                document.getElementById('descuento-codigo').text  = 0;
-                document.getElementById('descuento-codigo-container').classList.add("hidden");
-            }else{
-                $descuento = getDescuento(descuento);
+            if(descuento.tipo == 'porcentaje'){
+                let descuento = getDescuento(descuento.descuento);
                 document.getElementById('descuento-codigo-container').classList.remove("hidden");
                 document.getElementById('descuento-codigo').setAttribute('value',descuento);
                 document.getElementById('descuento-codigo').value = `${descuento}%`;
+                document.getElementById('descuento-codigo').setAttribute('tipo','porcentaje');
+            }else{
+                document.getElementById('descuento-codigo-container').classList.remove("hidden");
+                document.getElementById('descuento-codigo').setAttribute('value',descuento.descuento);
+                document.getElementById('descuento-codigo').value  = `$${descuento.descuento}`;
+                document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
             }
             setOperacionResultados()
             
@@ -607,8 +628,9 @@
             const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
             const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoPersonalizado/100)) : descuentoPersonalizado;
 
-            const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
+            const descuentoCodigo   = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
             const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
+            
             const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
             
             const resta           = subtotal-(cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo);
@@ -934,7 +956,7 @@
                                                                 <label for="descuento-codigo" class="col-form-label">Descuento (Código)</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
+                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control not-editable height-auto" disabled="disabled" value="0" >
                                                             </div>
                                                         </div>
                                                     </div>

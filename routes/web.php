@@ -14,7 +14,7 @@ use App\Http\Controllers\ComisionistaTipoController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
-
+use App\Http\Controllers\DescuentoCodigoController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,7 +27,7 @@ use App\Http\Controllers\ImprimirController;
 */
 
 Route::get('/', function () {
-    return view('disponibilidad.index');
+    return redirect()->route("disponibilidad")->with(["result" => ""]);
 })->middleware(['auth'])->name('disponibilidad');
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
@@ -119,6 +119,16 @@ Route::controller(CerradorController::class)->middleware(['auth'])->group(functi
     Route::resource('cerradores',CerradorController::class, [
         'parameters' => [
             'cerradores' => 'cerrador'
+        ]
+    ]);
+    
+});
+
+Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group(function () {
+    Route::get('descuentocodigos/show/{descuentocodigo?}', 'show');
+    Route::resource('descuentocodigos',DescuentoCodigoController::class, [
+        'parameters' => [
+            'descuentocodigos' => 'descuentocodigo'
         ]
     ]);
     

@@ -62,6 +62,11 @@
               @can('TiposComisionista.index')
               <a href="{{ url('/comisionistatipos') }}" class="nav-link {{url()->current() == url('comisionistatipos') ? 'active' : ''}}">Tipos de Comisionista</a>
               @endcan
+
+              @can('CodigosDescuento.index')
+              <a href="{{ url('/descuentocodigos') }}" class="nav-link {{url()->current() == url('descuentocodigos') ? 'active' : ''}}">Codigo descuentos</a>
+              @endcan
+
             </nav>
           </div>
         </div><!-- container -->

@@ -14,7 +14,9 @@ class Pago extends Model
         'reservacion_id',
         'cantidad',
         'tipo_pago_id',
-        'tipo_cambio_usd'
+        'tipo_cambio_usd',
+        'valor',
+        'tipo_valor'
     ];
     protected $primaryKey = 'id';
 

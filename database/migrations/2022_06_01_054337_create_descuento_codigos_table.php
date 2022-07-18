@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('codigo_descuentos', function (Blueprint $table) {
+        Schema::create('descuento_codigos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             $table->string('tipo')->comment('porcentaje cantidad');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('codigo_descuentos');
+        Schema::dropIfExists('descuento_codigos');
     }
 };

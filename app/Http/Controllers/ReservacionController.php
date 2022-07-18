@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Classes\CustomErrorHandler;
 use App\Models\Cerrador;
 use App\Models\CodigoAutorizacionPeticion;
-use App\Models\CodigoDescuento;
+use App\Models\DescuentoCodigo;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
@@ -97,7 +97,7 @@ class ReservacionController extends Controller
         return json_encode(['result' => "Error"]);
     }
     private function getDescuento($codigoDescuento){
-        $descuento = CodigoDescuento::where('nombre', $codigoDescuento)->first();
+        $descuento = DescuentoCodigo::where('nombre', $codigoDescuento)->first();
         return $descuento;
     }
     private function verifyUserAuth($request){
@@ -186,16 +186,15 @@ class ReservacionController extends Controller
     }
     
     private function getCantidadPagada($request,$email){
-        $pagosAnteriores = isset($request->pagosAnteriores) ? (float)$request->pagosAnteriores : '';
-
-        $pagado = $pagosAnteriores
+        $pagosAnteriores = (float)($request->pagosAnteriores) ?? 0;
+        $pagado          = $pagosAnteriores
             + (
-                (float)$request->cupon['cantidad'] 
+                  (float)$request->cupon['cantidad'] 
                 + (float)$request->pagos['efectivoUsd'] 
                 + (float)$request->pagos['efectivo'] 
                 + (float)$request->pagos['tarjeta']
             );
-        
+            
         if($this->isValidDescuentoCodigo($request,$email)){
             $pagado += (float)$request->descuentoCodigo['cantidad'];
         }
@@ -224,9 +223,12 @@ class ReservacionController extends Controller
                 'factura_id'     =>  $facturaId,
                 'cantidad'       =>  (float)$cantidad,
                 'tipo_pago_id'   =>  $tipoPagoId,
-                'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra
+                'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
+                'valor'          =>  (float)($request[$tipoPago]['valor'] ?? 0),
+                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
             ]);
             $result = is_numeric($pago['id']);
+            
         }
         return $result;
     }
@@ -379,7 +381,7 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
-
+                
                 if($this->isValidDescuentoCodigo($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
                 }

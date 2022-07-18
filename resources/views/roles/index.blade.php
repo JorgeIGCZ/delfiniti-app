@@ -70,9 +70,9 @@
                 'TipoCambio.update'           : roles.elements['TipoCambio.update'             ].checked,
                 'Usuarios.Roles.index'        : roles.elements['Usuarios.Roles.index'          ].checked,
                 'Usuarios.Roles.update'       : roles.elements['Usuarios.Roles.update'         ].checked,
-                'Cupones.index'               : roles.elements['Cupones.index'                 ].checked,
-                'Cupones.create'              : roles.elements['Cupones.create'                ].checked,
-                'Cupones.update'              : roles.elements['Cupones.update'                ].checked,
+                'CodigosDescuento.index'      : roles.elements['CodigosDescuento.index'                 ].checked,
+                'CodigosDescuento.create'     : roles.elements['CodigosDescuento.create'                ].checked,
+                'CodigosDescuento.update'     : roles.elements['CodigosDescuento.update'                ].checked,
                 'Cerradores.index'            : roles.elements['Cerradores.index'              ].checked,
                 'Cerradores.create'           : roles.elements['Cerradores.create'             ].checked,
                 'Cerradores.update'           : roles.elements['Cerradores.update'             ].checked,
@@ -272,22 +272,22 @@
 
 
                     <div class="col-md-2">
-                        <strong>Cupones</strong>
+                        <strong>Codigos descuento</strong>
                         <div class="checkbox checkbox-primary">
-                            <input name="Cupones.index" type="checkbox" >
-                            <label for="Cupones.index">
+                            <input name="CodigosDescuento.index" type="checkbox" >
+                            <label for="CodigosDescuento.index">
                                 Ver 
                             </label>
                         </div>
                         <div class="checkbox checkbox-primary">
-                            <input name="Cupones.create" type="checkbox" >
-                            <label for="Cupones.create">
+                            <input name="CodigosDescuento.create" type="checkbox" >
+                            <label for="CodigosDescuento.create">
                                 Crear 
                             </label>
                         </div>
                         <div class="checkbox checkbox-primary">
-                            <input name="Cupones.update" type="checkbox" >
-                            <label for="Cupones.update">
+                            <input name="CodigosDescuento.update" type="checkbox" >
+                            <label for="CodigosDescuento.update">
                                 Modificar 
                             </label>
                         </div>
