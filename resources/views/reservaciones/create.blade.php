@@ -739,7 +739,7 @@
             const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
             const now        = new Date();
             
-            if(now > fechaValor && {{!Auth::user()->hasRole('Administrador')}} ){
+            if(now > fechaValor && {{!Auth::user()->hasRole('Administrador') ? 1 : 0}} ){
                 Swal.fire({
                     icon: 'warning',
                     title: `Fecha de reserva invalida`
