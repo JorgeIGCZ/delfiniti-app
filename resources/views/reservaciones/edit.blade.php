@@ -160,11 +160,11 @@
                     .draw();
 
                 //remove clave from the array
-                const clave = $(this).parents('tr')[0].firstChild.innerText;
-                const fecha = $(this).parents('tr')[0].childNodes[3].innerText;
-                let updated = 0;
+                const clave   = $(this).parents('tr')[0].firstChild.innerText;
+                const horario = $(this).parents('tr')[0].childNodes[2].innerText;
+                let updated   = 0;
                 reservacionesArray = reservacionesArray.filter(function (reservaciones) {
-                    let result = (reservaciones.claveActividad !== clave && reservaciones.fecha !== fecha && $updated === 0);
+                    let result = (reservaciones.claveActividad !== clave && reservaciones.horario !== horario && updated == 0);
                     updated > 0 ? result = true : '';
                     !result ? updated++ : '';
                     return result;
@@ -281,6 +281,7 @@
                 'cerrador'     : reservacion.elements['cerrador'].value,
                 'total'        : reservacion.elements['subtotal'].getAttribute('value'),
                 'pagosAnteriores': reservacion.elements['pagado'].getAttribute('value'),
+                'fecha'        : reservacion.elements['fecha'].value,
                 'pagos'        : estatus === 'pagar' ? pagos : {},
                 
                 //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
@@ -475,13 +476,11 @@
             const cantidad       = document.getElementById('cantidad').value;
             const precio         = document.getElementById('precio').value;
             const horario        = document.getElementById('horarios').value;
-            const fecha          = document.getElementById('fecha').value;
             const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
             reservacionesTabla.row.add( [ 
                 claveActividad,
                 actividadDetalle,
                 horarioDetalle,
-                fecha,
                 cantidad,
                 precio,
                 precio*cantidad,
@@ -493,8 +492,7 @@
                 'actividad': actividad,
                 'cantidad': cantidad,
                 'precio': precio,
-                'horario': horario,
-                'fecha': fecha
+                'horario': horario
             }];
             setSubtotal();
         }
@@ -506,7 +504,6 @@
             let cantidad       = '';
             let precio         = '';
             let horario        = '';
-            let fecha          = '';
             let acciones       = '';
 
             @forEach($reservacion->reservacionDetalle as $detalle)
@@ -517,13 +514,11 @@
                 cantidad       = '{{$detalle->numero_personas}}';
                 precio         = '{{$detalle->PPU}}';
                 horario        = '{{$detalle->actividad_horario_id}}';
-                fecha          = '{{$detalle->actividad_fecha}}';
                 acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
                 reservacionesTabla.row.add( [ 
                     claveActividad,
                     actividadDetalle,
                     horarioDetalle,
-                    fecha,
                     cantidad,
                     precio,
                     precio*cantidad,
@@ -535,8 +530,7 @@
                     'actividad': actividad,
                     'cantidad': cantidad,
                     'precio': precio,
-                    'horario': horario,
-                    'fecha': fecha
+                    'horario': horario
                 }];
             @endforeach
             setSubtotal();
@@ -856,7 +850,7 @@
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}" autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{$reservacion->fecha}}" autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
@@ -871,7 +865,6 @@
                                                     <th>Clave</th>
                                                     <th>Actividad</th>
                                                     <th>Horario</th>
-                                                    <th>Fecha</th>
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
                                                     <th>Subtotal</th>

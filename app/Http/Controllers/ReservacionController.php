@@ -117,9 +117,9 @@ class ReservacionController extends Controller
     {   
         $email    = Auth::user()->email;
         $password = "";
-        $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
-        $adeudo   = ((float)$request->total - (float)$pagado);
         $estatus  = ($request->estatus == "pagar-reservar");
+        $pagado   = ($estatus ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
+        $adeudo   = ((float)$request->total - (float)$pagado);
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
@@ -132,6 +132,7 @@ class ReservacionController extends Controller
                 'cerrador_id'     => $request->cerrador,
                 'comentarios'     => $request->comentarios,
                 'estatus'         => $estatus,
+                'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
             $factura = Factura::create([
@@ -146,7 +147,6 @@ class ReservacionController extends Controller
                     'factura_id'           =>  $factura['id'],
                     'actividad_id'         =>  $reservacionArticulo['actividad'],
                     'actividad_horario_id' =>  $reservacionArticulo['horario'],
-                    'actividad_fecha'      =>  $reservacionArticulo['fecha'],
                     'numero_personas'      =>  $reservacionArticulo['cantidad'],
                     'PPU'                  =>  $reservacionArticulo['precio']
                 ]); 
@@ -169,12 +169,18 @@ class ReservacionController extends Controller
                 }
                 
             }
-            DB::commit();
 
             $reservacion        = Reservacion::find($reservacion['id']);
             $reservacion->folio = str_pad($reservacion['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
             $reservacion->save();
-            
+
+            DB::commit();
+
+            if($this->reservacionPagadaTotal($reservacion['id'])){
+                $reservacion        = Reservacion::find($reservacion['id']);
+                $reservacion->estatus = 2;
+                $reservacion->save();
+            }
 
             return json_encode(['result' => 'Success','id' => $reservacion['id']]);
         } catch (\Exception $e){
@@ -348,6 +354,7 @@ class ReservacionController extends Controller
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = $request->comentarios;
+            $reservacion->fecha           = $request->fecha;
             if($estatus){
                 $reservacion->estatus = $estatus;
             }
@@ -368,7 +375,6 @@ class ReservacionController extends Controller
                     'factura_id'           =>  $factura['id'],
                     'actividad_id'         =>  $reservacionArticulo['actividad'],
                     'actividad_horario_id' =>  $reservacionArticulo['horario'],
-                    'actividad_fecha'      =>  $reservacionArticulo['fecha'],
                     'numero_personas'      =>  $reservacionArticulo['cantidad'],
                     'PPU'                  =>  $reservacionArticulo['precio']
                 ]); 
@@ -390,7 +396,15 @@ class ReservacionController extends Controller
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
             }
+
             DB::commit();
+
+            if($this->reservacionPagadaTotal($reservacion['id'])){
+                $reservacion          = Reservacion::find($reservacion['id']);
+                $reservacion->estatus = 2;
+                $reservacion->save();
+            }
+
             return json_encode(['result' => "Success"]);
         } catch (\Exception $e){
             DB::rollBack();
@@ -399,6 +413,12 @@ class ReservacionController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
+    }
+
+    private function reservacionPagadaTotal($reservacionId){
+        $factura = Factura::where('reservacion_id',$reservacionId)->first();
+
+        return ($factura->pagado >= $factura->total);
     }
 
     private function isValidDescuentoCodigo($request,$email){

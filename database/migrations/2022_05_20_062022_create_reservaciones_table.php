@@ -24,8 +24,10 @@ return new class extends Migration
             $table->integer('comisionista_id');
             $table->integer('cerrador_id');
             $table->longText('comentarios')->nullable();
+            $table->dateTime('fecha');
             $table->dateTime('fecha_creacion');
-            $table->boolean('estatus')->comment('0 es orden guardada 1 es orden reservada');
+            $table->boolean('estatus')->comment('0 es orden reservada 1 es orden parcialmente pagada 2 es orden pagada');
+            $table->boolean('check_in')->default(0);
             $table->timestamps();
         });
     }

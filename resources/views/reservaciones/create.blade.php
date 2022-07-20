@@ -162,17 +162,17 @@
                     .draw();
 
                 //remove clave from the array
-                const clave = $(this).parents('tr')[0].firstChild.innerText;
-                const fecha = $(this).parents('tr')[0].childNodes[3].innerText;
+                const clave   = $(this).parents('tr')[0].firstChild.innerText;
+                const horario = $(this).parents('tr')[0].childNodes[2].innerText;
                 let updated = 0;
                 reservacionesArray = reservacionesArray.filter(function (reservaciones) {
-                    let result = (reservaciones.claveActividad !== clave && reservaciones.fecha !== fecha && $updated === 0);
+                    let result = (reservaciones.claveActividad !== clave && reservaciones.horario !== horario && $updated === 0);
                     updated > 0 ? result = true : '';
                     !result ? updated++ : '';
                     return result;
                 });
                 enablePagar(reservacionesArray.length > 0);
-                setSubtotal();
+                setTotal();
             } );
             $('#clave-actividad').on('change', function (e) {
                 changeActividad();
@@ -218,10 +218,10 @@
             $('#horarios').trigger('change');
         }
         function isLimite(){
-            const subtotal     = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+            const total     = parseFloat(document.getElementById('total').getAttribute('value'));
             const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
             const limite    = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
-            //return ((subtotal/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
+            //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
             return limite >= descuento;
         }
         function resetDescuentos(){
@@ -270,7 +270,8 @@
                 'agente'       : reservacion.elements['agente'].value,
                 'comisionista' : reservacion.elements['comisionista'].value,
                 'cerrador'     : reservacion.elements['cerrador'].value,
-                'total'        : reservacion.elements['subtotal'].getAttribute('value'),
+                'total'        : reservacion.elements['total'].getAttribute('value'),
+                'fecha'        : reservacion.elements['fecha'].value,
                 'pagos'        : estatus === 'pagar-reservar' ? pagos : {},
                 'cupon'       : {
                     'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
@@ -327,8 +328,8 @@
         }
 
         function convertPorcentageCantidad(porcentaje){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
-            return (subtotal/100) * porcentaje;
+            const total = document.getElementById('total').getAttribute('value');
+            return (total/100) * porcentaje;
         }
 
         function resetReservaciones(){
@@ -514,10 +515,10 @@
             
         }
         function getDescuento(descuento){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
+            const total = document.getElementById('total').getAttribute('value');
             let cantidadDescuento = descuento.descuento;
             if(descuento.tipo == "porcentaje"){
-                cantidadDescuento = descuento.descuento;//(subtotal/100) * descuento.descuento;
+                cantidadDescuento = descuento.descuento;//(total/100) * descuento.descuento;
             }
             return cantidadDescuento;
         }
@@ -532,13 +533,11 @@
             const cantidad       = document.getElementById('cantidad').value;
             const precio         = document.getElementById('precio').value;
             const horario        = document.getElementById('horarios').value;
-            const fecha          = document.getElementById('fecha').value;
             const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
             reservacionesTable.row.add( [ 
                 claveActividad,
                 actividadDetalle,
                 horarioDetalle,
-                fecha,
                 cantidad,
                 precio,
                 precio*cantidad,
@@ -550,11 +549,10 @@
                 'actividad': actividad,
                 'cantidad': cantidad,
                 'precio': precio,
-                'horario': horario,
-                'fecha': fecha
+                'horario': horario
             }];
             enablePagar(reservacionesArray.length > 0);
-            setSubtotal();
+            setTotal();
         }
         
         function getActividadPrecio(){
@@ -566,39 +564,31 @@
                 }
             }
         }
-        function setSubtotal(){
-            let subtotal = 0;
+        function setTotal(){
+            let total = 0;
             reservacionesArray.forEach(reservacion => {
-                subtotal += (reservacion.cantidad*reservacion.precio);
+                total += (reservacion.cantidad*reservacion.precio);
             });
-            subtotal = parseFloat(subtotal).toFixed(2)
-            document.getElementById('subtotal').setAttribute('value',subtotal);
-            document.getElementById('subtotal').value = formatter.format(subtotal);
+            total = parseFloat(total).toFixed(2)
+            document.getElementById('total').setAttribute('value',total);
+            document.getElementById('total').value = formatter.format(total);
             
             setOperacionResultados();
         }
-        function setTotal(){
-            const subtotal               = parseFloat(document.getElementById('subtotal').getAttribute('value'));
-            const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoPersonalizado/100)) : descuentoPersonalizado;
-            const descuentoCodigo        = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-            const cantidadCodigo         = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
-            const cupon                  = parseFloat(document.getElementById('cupon').getAttribute('value'));
-            
+        function setTotalRecibido(){
+            let totalRecibido = getPagos();
+            totalRecibido     = parseFloat(totalRecibido).toFixed(2);
 
-            let total = subtotal - (cantidadPersonalizado+cantidadCodigo+cupon);
-            total     = parseFloat(total).toFixed(2);
-
-            document.getElementById('total').setAttribute('value',total);
-            document.getElementById('total').value = formatter.format(total);
+            document.getElementById('total-recibido').setAttribute('value',totalRecibido);
+            document.getElementById('total-recibido').value = formatter.format(totalRecibido);
         }
         function setOperacionResultados(){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
+            const total = document.getElementById('total').getAttribute('value');
             setResta();
             setCambio();
             //document.getElementById('reservacion-form').elements['descuento-general'].focus();
 
-            enableReservar((getResta() < subtotal) ? true : false);
+            enableReservar((getResta() < total) ? true : false);
         }
         function setCambio(){
             const cambioCampo = document.getElementById('cambio');
@@ -617,26 +607,34 @@
             restaCampo.setAttribute('value',restaTotal);
             restaCampo.value = formatter.format(restaTotal);
 
-            setTotal();
+            setTotalRecibido();
         }
         function getResta(){
-            const subtotal           = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+            const total = parseFloat(document.getElementById('total').getAttribute('value'));
+            const pagos    = getPagos();
+            const resta    = parseFloat(total-pagos);
+            return resta;
+        }
+
+        function getPagos(){
+            const total              = parseFloat(document.getElementById('total').getAttribute('value'));
             const efectivo           = parseFloat(document.getElementById('efectivo').getAttribute('value'));
             const efectivoUsd        = getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')));
             const tarjeta            = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
             
             const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoPersonalizado/100)) : descuentoPersonalizado;
+            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
 
             const descuentoCodigo   = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-            const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
+            const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoCodigo/100)) : descuentoCodigo;
             
             const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
             
-            const resta           = subtotal-(cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo);
+            const pagos           = (cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo);
 
-            return resta;
+            return parseFloat(pagos);
         }
+        
         function getMXNFromUSD(usd){
             const dolarPrecio = getDolarPrecioCompra();
             
@@ -841,13 +839,14 @@
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
                                 <input type="number" name="disponibilidad" class="form-control" value="0" disabled="disabled" >
                             </div>
-                            <div class="form-group col-2 mt-0 mb-0">
-                                <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif autocomplete="off" tabindex="9">
-                            </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
                                 <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
+                            </div>
+
+                            <div class="form-group col-2 mt-0 mb-0">
+                                <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif autocomplete="off" tabindex="9">
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -858,7 +857,6 @@
                                                     <th>Clave</th>
                                                     <th>Actividad</th>
                                                     <th>Horario</th>
-                                                    <th>Fecha</th>
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
                                                     <th>Subtotal</th>
@@ -926,16 +924,57 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="subtotal" class="col-form-label">SubTotal:</label>
+                                                        <label for="total" class="col-form-label"><strong>Total:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                        <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
 
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="total-recibido" class="col-form-label"><strong>Total recibido:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="total-recibido" id="total-recibido" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="resta" class="col-form-label"><strong>Resta</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="cambio" class="col-form-label"><strong>Cambio</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="16">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
+                                                    </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón</label>
                                                     </div>
+                                                    
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
                                                     </div>
@@ -962,60 +1001,14 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="total" class="col-form-label"><strong>Total:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="16">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
-                                                    </div>
-
                                                     <!--div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
                                                     </div-->
-                                                    
-                                                    
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="resta" class="col-form-label">Resta</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cambio" class="col-form-label">Cambio</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block" id="pagar-reservar" disabled="disabled" tabindex="19">Pagar y reservar</button>
+                                                        <button class="btn btn-info btn-block mt-3" id="pagar-reservar" disabled="disabled" tabindex="19">Pagar y reservar</button>
                                                     </div>
                                                 </div>
                                             </div>
