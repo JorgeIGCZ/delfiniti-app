@@ -75,10 +75,10 @@
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
                 <div class="card-body">
-                    <div class="container">
+                    <div class="container" id="disponibilidad-settings-container">
                         <form class="row g-3 align-items-center f-auto" action="disponibilidad" method="GET">
                             @csrf
-                            <div class="col-auto actividades mt-3">
+                            <div class="col-auto actividades">
                                 <div class="row g-3 align-items-center">
                                     <div class="col-auto">
                                         <label for="fecha-actividades" class="col-form-label">fecha</label>
@@ -89,13 +89,26 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-auto mt-3">
-                            </div>
                         </form>
-
-                        <button id="toogle-info">
-                            <i class="fa fa-expand" aria-hidden="true"></i>
-                        </button>
+                        <div id="contenedor-informacion-disponibilidad">
+                            <div>
+                                <label class="col-form-label">Total diario:</label>
+                                <strong>{{$reservaciones}}</strong>
+                            </div>
+                            <div>
+                                <label class="col-form-label">Pagados:</label>
+                                <strong>{{$reservacionesPagadas}}</strong>
+                            </div>
+                            <div>
+                                <label class="col-form-label">Cortesias:</label>
+                                <strong>-</strong>
+                            </div>
+                        </div>
+                        <div>
+                            <button id="toogle-info">
+                                <i class="fa fa-expand" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                 </div><!-- card-body -->
             </div><!-- card -->
@@ -141,13 +154,33 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach ($actividadHorario->reservacionDetalle as $reservacionDetalle)
+                                                    @foreach ($actividadHorario->reservacion as $reservacion)
+                                                        @php 
+                                                            $estatus = '';
+                                                            switch ($reservacion->estatus) {
+                                                                case 0:
+                                                                    $estatus = 'Pendiente';
+                                                                    break;
+                                                                case 1:
+                                                                    $estatus = 'Parcial';
+                                                                    break;
+                                                                case 2:
+                                                                    $estatus = 'Pagado';
+                                                                    break;
+                                                            }
+                                                            $numeroPersonas = 0;
+                                                            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                                                                if($reservacionDetalle->actividad_id == $actividadHorario->actividad->id){
+                                                                    $numeroPersonas = $reservacionDetalle->numero_personas;
+                                                                }
+                                                            }
+                                                        @endphp
                                                         <tr>
-                                                            <td>{{ $reservacionDetalle->reservacion_id }}</td>
-                                                            <td>{{ $reservacionDetalle->reservacion->nombre_cliente }}</td>
-                                                            <td>{{ @$reservacionDetalle->numero_personas }}</td>
-                                                            <td>{{ $actividadHorario->horario_inicial }}</td>
-                                                            <td><a href="{{ url('reservaciones/'.$reservacionDetalle->reservacion_id.'/edit') }}">Editar</a></td>
+                                                            <td>{{ $reservacion->id }}</td>
+                                                            <td>{{ $reservacion->nombre_cliente }}</td>
+                                                            <td>{{ $numeroPersonas }}</td>
+                                                            <td>{{ $estatus }}</td>
+                                                            <td><a href="{{ url('reservaciones/'.$reservacion->id.'/edit') }}">Editar</a></td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

@@ -14,7 +14,6 @@ class ReservacionDetalle extends Model
         'reservacion_id',
         'actividad_id',
         'actividad_horario_id',
-        'actividad_fecha',
         'numero_personas',
         'PPU'
     ];

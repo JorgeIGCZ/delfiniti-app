@@ -25,7 +25,16 @@ class ActividadHorario extends Model
     {
         return $this->hasMany(ReservacionDetalle::class,'actividad_horario_id','id');
     }
-    
+/*
+    public function reservacion()
+    {
+        return $this->hasMany(
+            Reservacion::class,
+            'actividad_id',
+            'id'
+        );
+    }
+    */
     public function reservacion()
     {
         return $this->hasManyThrough(
@@ -34,7 +43,7 @@ class ActividadHorario extends Model
             'actividad_horario_id', // FK ReservacionDetalle como comunica a ActividadHorario
             'id', // FK Reservacion como comunica a ReservacionDetalle
             'id', //local key ActividadHorario
-            'id' //local key ReservacionDetalle
+            'reservacion_id' //ReservacionDetalle como comunica a Reservacion
         );
     }
 }

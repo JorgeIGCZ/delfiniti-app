@@ -22,11 +22,15 @@ class DisponibilidadController extends Controller
     {
         $fechaActividades    = (is_null($request->fecha_actividades) ? date('Y-m-d') : $request->fecha_actividades);
         $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
+        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->count();
+        //dd($reservaciones);
+        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',2)->count();
         
-        DB::enableQueryLog();
         return view("disponibilidad.index",[
             'actividadesHorarios' => $actividadesHorarios,
-            'fechaActividades'    => $fechaActividades
+            'fechaActividades'    => $fechaActividades,
+            'reservaciones'       => $reservaciones,
+            'reservacionesPagadas'=> $reservacionesPagadas
         ]);
     }
 
@@ -37,9 +41,20 @@ class DisponibilidadController extends Controller
                 ->whereRaw(" '$fechaActividades' >= fecha_inicial")
                 ->whereRaw(" '$fechaActividades' <= fecha_final")
                 ->orWhere('duracion','indefinido');
-        })->with(['reservacionDetalle' => function ($query) use ($fechaActividades) {
-            $query->where('actividad_fecha', "{$fechaActividades}");
+        })->with(['reservacion' => function ($query) use ($fechaActividades) {
+                $query->where('fecha', "{$fechaActividades}");
         }])->orderBy('horario_inicial', 'asc')->orderBy('id', 'asc')->get()->groupBy('horario_inicial');
+/*
+->with(['reservacion' => function ($query) use ($fechaActividades) {
+                $query->where('fecha', "{$fechaActividades}");
+        }])
+        */
+        //print_r($fechaActividades);
+        //echo("<pre>");
+        //dd($actividadesHorarios['08:00:00'][0]);
+        //dd($actividadesHorarios['08:00:00'][0]->reservacion[0]->reservacionDetalle);
+        //dd($actividadesHorarios['08:00:00'][0]->reservacionDetalle[1]->reservacion);
+        //dd(DB::getQueryLog());
 
         return $actividadesHorarios;
     }

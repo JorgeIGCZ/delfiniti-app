@@ -20,9 +20,10 @@ class Reservacion extends Model
         'cerrador_id',
         'comentarios',
         'estatus',
+        'fecha',
         'fecha_creacion'
     ];
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id';  
     
     protected $table = 'reservaciones';
 
@@ -65,7 +66,7 @@ class Reservacion extends Model
             ActividadHorario::class,
             ReservacionDetalle::class,
             'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
-            'id', // FK Actividad como comunica a ReservacionDetalle
+            'actividad_id', // FK Actividad como comunica a ReservacionDetalle
             'id', //local key Reservacion
             'id' //local key ReservacionDetalle
         );

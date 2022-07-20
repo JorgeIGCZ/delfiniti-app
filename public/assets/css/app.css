@@ -45121,3 +45121,16 @@ ul.list-ckeck-soft {
 .alert{
   line-height: 2.8;
 }
+#disponibilidad-settings-container{
+  display: grid;
+  grid-template-columns: 1fr 400px 1fr;
+  align-items: center;
+}
+#contenedor-informacion-disponibilidad{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+}
+#toogle-info{
+  float:right;
+}
