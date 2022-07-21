@@ -35,14 +35,16 @@ class ComisionistaController extends Controller
             }
 
             $comisionista = Comisionista::create([
-                'codigo'        => $request->codigo,
-                'nombre'        => $request->nombre,
-                'tipo_id'       => $request->tipo,
-                'comision'      => $request->comision,
-                'iva'           => $request->iva,
-                'representante' => $request->representante,
-                'direccion'     => $request->direccion,
-                'telefono'      => $request->telefono
+                'codigo'             => $request->codigo,
+                'nombre'             => $request->nombre,
+                'tipo_id'            => $request->tipo,
+                'comision'           => $request->comision,
+                'iva'                => $request->iva,
+                'descuento_impuesto' => $request->descuentoImpuesto,
+                'descuentos'         => $request->descuentos,
+                'representante'      => $request->representante,
+                'direccion'          => $request->direccion,
+                'telefono'           => $request->telefono
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -65,15 +67,17 @@ class ComisionistaController extends Controller
             $comisionistasArray = [];
             foreach ($comisionistas as $comisionista) {
                 $comisionistasArray[] = [
-                    'id'           => $comisionista->id,
-                    'codigo'       => $comisionista->codigo,
-                    'nombre'       => $comisionista->nombre,
-                    'tipo_id'      => $comisionista->tipo->nombre,
-                    'iva'          => $comisionista->iva,
-                    'comision'     => $comisionista->comision,
-                    'representante'=> $comisionista->representante,
-                    'direccion'    => $comisionista->direccion,
-                    'telefono'     => $comisionista->telefono
+                    'id'                => $comisionista->id,
+                    'codigo'            => $comisionista->codigo,
+                    'nombre'            => $comisionista->nombre,
+                    'tipo_id'           => $comisionista->tipo->nombre,
+                    'iva'               => $comisionista->iva,
+                    'descuentoImpuesto' => $comisionista->descuento_impuesto,
+                    'descuentos'        => $comisionista->descuentos,
+                    'comision'          => $comisionista->comision,
+                    'representante'     => $comisionista->representante,
+                    'direccion'         => $comisionista->direccion,
+                    'telefono'          => $comisionista->telefono
                 ];
             }
             return json_encode(['data' => $comisionistasArray]);
@@ -103,14 +107,16 @@ class ComisionistaController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $comisionista           = Comisionista::find($id);
-            $comisionista->nombre   = $request->nombre;
-            $comisionista->comision = $request->comision;
-            $comisionista->iva      = $request->iva;
-            $comisionista->tipo_id  = $request->tipo;
-            $comisionista->representante = $request->representante;
-            $comisionista->direccion = $request->direccion;
-            $comisionista->telefono = $request->telefono;
+            $comisionista                     = Comisionista::find($id);
+            $comisionista->nombre             = $request->nombre;
+            $comisionista->comision           = $request->comision;
+            $comisionista->iva                = $request->iva;
+            $comisionista->descuento_impuesto = $request->descuento_impuesto;
+            $comisionista->descuentos         = $request->has('descuentos');
+            $comisionista->tipo_id            = $request->tipo;
+            $comisionista->representante      = $request->representante;
+            $comisionista->direccion          = $request->direccion;
+            $comisionista->telefono           = $request->telefono;
             $comisionista->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

@@ -9,6 +9,30 @@
         let cantidadPagada      = 0;
 
         window.onload = function() {
+            document.getElementById('reservacion-form').elements['nombre'].focus();
+
+            $('body').on('keydown', 'input, select, button', function(e) {
+                if (e.key === "Enter") {
+                
+                    if($(this).attr("id") == "add-actividad"){
+                        addActividades();
+                    }
+                    if($(this).attr("id") == "password"){
+                        validarVerificacion();
+                    }
+
+                    var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+                    focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
+                    next = focusable.eq(focusable.index(this)+1);
+                    if (next.length) {
+                        next.focus();
+                    } else {
+                        form.submit();
+                    }
+                    return false;
+                }
+            });
+
             getDisponibilidad();
             @if($reservacion->estatus == 2)
                 bloquearPagos();
@@ -29,7 +53,6 @@
             fillReservacionDetallesTabla();
             fillPagosTabla();
 
-            document.getElementById('reservacion-form').elements['nombre'].focus();
             document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
                 document.getElementById('password').value="";
             });
@@ -51,7 +74,7 @@
             });
             */
             document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
-                resetDescuentos();
+                //resetDescuentos();
                 if(document.getElementById('add-descuento-personalizado').checked){
                     $('#verificacion-modal').modal('show');
                     document.getElementById('add-descuento-personalizado').checked = false;
@@ -172,7 +195,7 @@
                     !result ? updated++ : '';
                     return result;
                 });
-                setSubtotal();
+                setTotal();
             } );
             $('#clave-actividad').on('change', function (e) {
                 changeActividad();
@@ -218,10 +241,10 @@
             $('#horarios').trigger('change');
         }
         function isLimite(){
-            const subtotal     = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+            const total     = parseFloat(document.getElementById('total').getAttribute('value'));
             const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
             const limite    = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
-            //return ((subtotal/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
+            //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
             return limite >= descuento;
         }
         function resetDescuentos(){
@@ -242,15 +265,22 @@
             document.getElementById($elementId).setAttribute('password',document.getElementById('password').value);
         }
         function changeCuponDetalle() {
-            const comisionista = document.getElementById('comisionista');
-            const tipoDetalle  = comisionista.options[comisionista.selectedIndex].getAttribute('tipo');
-            const descuento    = document.getElementById('cupon');
+            const comisionista    = document.getElementById('comisionista');
+            const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
+            const cupon           = document.getElementById('cupon');
     
             document.getElementById('cupon').setAttribute('value',0);
             document.getElementById('cupon').value = 0;
             document.getElementById('reservacion-form').elements['cupon'].focus();
 
-            (tipoDetalle == 'Agencia') ? descuento.removeAttribute('disabled') : descuento.setAttribute('disabled','disabled');
+            (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
+        }
+
+        function removeCupon(cupon){
+            cupon.setAttribute('disabled','disabled');
+            cupon.setAttribute('value',0);
+            cupon.value = 0;
+            setTimeout(setOperacionResultados(),500);
         }
 
         function formValidity(){
@@ -282,8 +312,8 @@
                 'agente'       : reservacion.elements['agente'].value,
                 'comisionista' : reservacion.elements['comisionista'].value,
                 'cerrador'     : reservacion.elements['cerrador'].value,
-                'total'        : reservacion.elements['subtotal'].getAttribute('value'),
-                'pagosAnteriores': reservacion.elements['pagado'].getAttribute('value'),
+                'total'        : reservacion.elements['total'].getAttribute('value'),
+                'pagosAnteriores': reservacion.elements['anticipo'].getAttribute('value'),
                 'fecha'        : reservacion.elements['fecha'].value,
                 'pagos'        : estatus === 'pagar' ? pagos : {},
                 
@@ -331,8 +361,8 @@
         }
 
         function convertPorcentageCantidad(porcentaje){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
-            return (subtotal/100) * porcentaje;
+            const total = document.getElementById('total').getAttribute('value');
+            return (total/100) * porcentaje;
         }
 
         function validateDescuentoPersonalizado(){
@@ -461,10 +491,10 @@
             
         }
         function getDescuento(descuento){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
+            const total = document.getElementById('total').getAttribute('value');
             let cantidadDescuento = descuento.descuento;
             if(descuento.tipo == "porcentaje"){
-                cantidadDescuento = descuento.descuento;//(subtotal/100) * descuento.descuento;
+                cantidadDescuento = descuento.descuento;//(total/100) * descuento.descuento;
             }
             return cantidadDescuento;
         }
@@ -497,7 +527,7 @@
                 'precio': precio,
                 'horario': horario
             }];
-            setSubtotal();
+            setTotal();
         }
         function fillReservacionDetallesTabla(){
             let actividadDetalle = '';
@@ -536,7 +566,7 @@
                     'horario': horario
                 }];
             @endforeach
-            setSubtotal();
+            setTotal();
         }
 
         function fillPagosTabla(){
@@ -578,12 +608,12 @@
                 blockDescuentos({{$pago->id}});
             @endforeach
             setCantidadPagada(cantidadPagada);
-            setSubtotal();
+            setTotal();
         }
 
         function setCantidadPagada(cantidadPagada){
-            document.getElementById('pagado').setAttribute('value',cantidadPagada);
-            document.getElementById('pagado').value = formatter.format(cantidadPagada);
+            document.getElementById('anticipo').setAttribute('value',cantidadPagada);
+            document.getElementById('anticipo').value = formatter.format(cantidadPagada);
         }
 
         function blockDescuentos(pagoId){
@@ -609,40 +639,31 @@
                 }
             }
         }
-        function setSubtotal(){
-            let subtotal = 0;
+        function setTotal(){
+            let total = 0;
             reservacionesArray.forEach(reservacion => {
-                subtotal += (reservacion.cantidad*reservacion.precio);
+                total += (reservacion.cantidad*reservacion.precio);
             });
-            subtotal = parseFloat(subtotal).toFixed(2)
-            document.getElementById('subtotal').setAttribute('value',subtotal);
-            document.getElementById('subtotal').value = formatter.format(subtotal);
+            total = parseFloat(total).toFixed(2)
+            document.getElementById('total').setAttribute('value',total);
+            document.getElementById('total').value = formatter.format(total);
             
             setOperacionResultados();
         }
-        function setTotal(){
-            const subtotal               = parseFloat(document.getElementById('subtotal').getAttribute('value'));
-            const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoPersonalizado/100)) : descuentoPersonalizado;
-            const descuentoCodigo        = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-            const cantidadCodigo         = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
-            const cupon                  = parseFloat(document.getElementById('cupon').getAttribute('value'));
-            const pagado                 = parseFloat(document.getElementById('pagado').getAttribute('value'));
-            
+        function setTotalRecibido(){
+            let totalRecibido = getPagos();
+            totalRecibido     = parseFloat(totalRecibido).toFixed(2);
 
-            let total = subtotal - (cantidadPersonalizado+cantidadCodigo+cupon+pagado);
-            total     = parseFloat(total).toFixed(2);
-
-            document.getElementById('total').setAttribute('value',total);
-            document.getElementById('total').value = formatter.format(total);
+            document.getElementById('total-recibido').setAttribute('value',totalRecibido);
+            document.getElementById('total-recibido').value = formatter.format(totalRecibido);
         }
         function setOperacionResultados(){
-            const subtotal = document.getElementById('subtotal').getAttribute('value');
+            const total = document.getElementById('total').getAttribute('value');
             setResta();
             setCambio();
             //document.getElementById('reservacion-form').elements['descuento-general'].focus();
 
-            enableFinalizar((getResta() < subtotal) ? true : false);
+            enableFinalizar((getResta() < total) ? true : false);
         }
         function setCambio(){
             const cambioCampo = document.getElementById('cambio');
@@ -661,26 +682,36 @@
             restaCampo.setAttribute('value',restaTotal);
             restaCampo.value = formatter.format(restaTotal);
 
-            setTotal();
+            setTotalRecibido();
         }
         function getResta(){
-            const subtotal           = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+            const total = parseFloat(document.getElementById('total').getAttribute('value'));
+            const pagos    = getPagos();
+            const resta    = parseFloat(total-pagos);
+            return resta;
+        }
+
+        function getPagos(){
+            const total              = parseFloat(document.getElementById('total').getAttribute('value'));
             const efectivo           = parseFloat(document.getElementById('efectivo').getAttribute('value'));
             const efectivoUsd        = getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')));
             const tarjeta            = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
             
             const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoPersonalizado/100)) : descuentoPersonalizado;
+            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
 
-            const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-            const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (subtotal*(descuentoCodigo/100)) : descuentoCodigo;
-            const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
-            const pagado          = parseFloat(document.getElementById('pagado').getAttribute('value'));
+            const descuentoCodigo   = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
+            const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoCodigo/100)) : descuentoCodigo;
             
-            const resta           = subtotal-(cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+pagado);
+            const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
+            
+            const anticipo        = parseFloat(document.getElementById('anticipo').getAttribute('value'));
 
-            return resta;
+            const pagos           = (cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+anticipo);
+
+            return parseFloat(pagos);
         }
+
         function getMXNFromUSD(usd){
             const dolarPrecio = getDolarPrecioCompra();
             
@@ -929,7 +960,7 @@
                                                 <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
-                                                        <option value="{{$comisionista->id}}" tipo="{{$comisionista->tipo->nombre}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
+                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -969,54 +1000,38 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="subtotal" class="col-form-label">SubTotal:</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="pagado" class="col-form-label">Pagado:</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="pagado" id="pagado" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cupon" class="col-form-label">Cupón</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
-                                                    </div>
-
-                                                    <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
-                                                        <div class="row ">
-                                                            <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado)</label>
-                                                            </div>
-                                                            <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
-                                                        <div class="row ">
-                                                            <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código)</label>
-                                                            </div>
-                                                            <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="total" class="col-form-label"><strong>Total:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="anticipo" class="col-form-label"><strong>Anticipo:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="anticipo" id="anticipo" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="total-recibido" class="col-form-label"><strong>Total pagado:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="total-recibido" id="total-recibido" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
@@ -1039,7 +1054,35 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
                                                     </div>
+                                                    
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="cupon" class="col-form-label">Cupón:</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
+                                                    </div>
 
+                                                    <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                        <div class="row ">
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado):</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                        <div class="row ">
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <!--div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón</label>
                                                     </div>
@@ -1047,21 +1090,6 @@
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
                                                     </div-->
                                                     
-                                                    
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="resta" class="col-form-label">Resta</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cambio" class="col-form-label">Cambio</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
 
                                                     
                                                     <div class="form-group col-12 mt-0 mb-0">

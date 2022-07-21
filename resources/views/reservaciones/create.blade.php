@@ -242,15 +242,22 @@
             document.getElementById($elementId).setAttribute('password',document.getElementById('password').value);
         }
         function changeCuponDetalle() {
-            const comisionista = document.getElementById('comisionista');
-            const tipoDetalle  = comisionista.options[comisionista.selectedIndex].getAttribute('tipo');
-            const descuento    = document.getElementById('cupon');
+            const comisionista    = document.getElementById('comisionista');
+            const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
+            const cupon           = document.getElementById('cupon');
     
             document.getElementById('cupon').setAttribute('value',0);
             document.getElementById('cupon').value = 0;
             document.getElementById('reservacion-form').elements['cupon'].focus();
 
-            (tipoDetalle == 'Agencia') ? descuento.removeAttribute('disabled') : descuento.setAttribute('disabled','disabled');
+            (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
+        }
+
+        function removeCupon(cupon){
+            cupon.setAttribute('disabled','disabled');
+            cupon.setAttribute('value',0);
+            cupon.value = 0;
+            setTimeout(setOperacionResultados(),500);
         }
 
         function createReservacion(estatus){
@@ -884,7 +891,7 @@
                                                 <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
-                                                        <option value="{{$comisionista->id}}" tipo="{{$comisionista->tipo->nombre}}">{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
+                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}">{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -937,14 +944,14 @@
                                                         <input type="text" name="total-recibido" id="total-recibido" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="resta" class="col-form-label"><strong>Resta</strong></label>
+                                                        <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cambio" class="col-form-label"><strong>Cambio</strong></label>
+                                                        <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
@@ -958,21 +965,21 @@
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
+                                                        <label for="efectivo-usd" class="col-form-label">Efectivo USD:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="16">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
+                                                        <label for="tarjeta" class="col-form-label">Tarjeta crédito:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cupon" class="col-form-label">Cupón</label>
+                                                        <label for="cupon" class="col-form-label">Cupón:</label>
                                                     </div>
                                                     
                                                     <div class="form-group col-5 mt-0 mb-0">
@@ -982,7 +989,7 @@
                                                     <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
                                                         <div class="row ">
                                                             <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado)</label>
+                                                                <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado):</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
                                                                 <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
@@ -993,7 +1000,7 @@
                                                     <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
                                                         <div class="row ">
                                                             <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código)</label>
+                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
                                                                 <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control not-editable height-auto" disabled="disabled" value="0" >

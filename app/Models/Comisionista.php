@@ -14,6 +14,8 @@ class Comisionista extends Model
         'nombre',
         'comision',
         'iva',
+        'descuento_impuesto',
+        'descuentos',
         'representante',
         'direccion',
         'telefono',

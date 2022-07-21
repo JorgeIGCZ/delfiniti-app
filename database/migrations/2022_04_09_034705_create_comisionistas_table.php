@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('nombre');
             $table->float('comision');
             $table->float('iva');
+            $table->float('descuento_impuesto')->default(0);;
+            $table->boolean('descuentos')->default(0);
             $table->string('representante')->nullable();
             $table->string('direccion')->nullable();
             $table->string('telefono')->nullable();

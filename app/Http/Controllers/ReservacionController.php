@@ -158,7 +158,10 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+
+                if($this->isValidDescuentoCupon($request)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+                }
             
                 if($this->isValidDescuentoCodigo($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
@@ -211,6 +214,13 @@ class ReservacionController extends Controller
 
         return $pagado;
     } 
+
+    private function isValidDescuentoCupon($request){
+        $comisionistaId = $request->comisionista;
+        $comisionista   = Comisionista::find($comisionistaId);
+
+        return ($comisionista->descuentos);
+    }
 
     private function isDescuentoValid($total,$email){
         $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
@@ -386,8 +396,11 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
-                
+
+                if($this->isValidDescuentoCupon($request)){
+                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+                }
+            
                 if($this->isValidDescuentoCodigo($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
                 }
@@ -395,6 +408,7 @@ class ReservacionController extends Controller
                 if($this->isValidDescuentoPersonalizado($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
+
             }
 
             DB::commit();

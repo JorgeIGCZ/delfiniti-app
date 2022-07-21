@@ -13,11 +13,11 @@
                         <form method="POST" class="row g-3 align-items-center f-auto" id="comisionistas-form" action="{{route("comisionistas.update",$comisionista['id'])}}">
                             @csrf
                             <input type="hidden" name="_method" value="PATCH">
-                            <div class="form-group col-2 mt-3">
+                            <div class="form-group col-1 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
                                 <input type="text" name="codigo" class="form-control" value="{{$comisionista->codigo}}" disabled="disabled">  
                             </div>
-                            <div class="form-group col-4 mt-3">
+                            <div class="form-group col-3 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre comisionista</label>    
                                 <input type="text" name="nombre" class="form-control" value="{{$comisionista->nombre}}">  
                             </div>
@@ -36,6 +36,14 @@
                             <div class="form-group col-2 mt-3">
                                 <label for="iva" class="col-form-label">Iva %</label>
                                 <input type="number" name="iva" class="form-control" min="0" max="90" value="{{$comisionista->iva}}">
+                            </div>
+                            <div class="form-group col-2 mt-3">
+                                <label for="descuento_impuesto" class="col-form-label">Descuentro por imp. %</label>
+                                <input type="number" name="descuento_impuesto" class="form-control" min="0" max="90" value="{{$comisionista->descuento_impuesto}}">
+                            </div>
+                            <div class="form-group col-2 mt-3">
+                                <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
+                                <input type="checkbox" name="descuentos" class="form-control" value="{{$comisionista->descuentos}}" @if($comisionista->descuentos) checked="checked" @endif>
                             </div>
 
 

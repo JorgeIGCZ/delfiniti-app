@@ -72,6 +72,8 @@
                 "tipo"  : tipo,
                 "comision": comisionistas.elements['comision'].value,
                 "iva"     : comisionistas.elements['iva'].value,
+                "descuentoImpuesto" : comisionistas.elements['descuento-impuesto'].value,
+                "descuentos": comisionistas.elements['descuentos'].checked,
                 "representante"  : comisionistas.elements['representante'].value,
                 "direccion": comisionistas.elements['direccion'].value,
                 "telefono"     : comisionistas.elements['telefono'].value
@@ -117,8 +119,26 @@
                     { data: 'codigo' },
                     { data: 'nombre' },
                     { data: 'tipo_id' },
-                    { data: 'comision' },
-                    { data: 'iva' },
+                    { defaultContent: 'comision', 'render': function ( data, type, row ) 
+                        {
+                            return  `${row.comision}%`;
+                        }
+                    },
+                    { defaultContent: 'iva', 'render': function ( data, type, row ) 
+                        {
+                            return  `${row.iva}%`;
+                        }
+                    },
+                    { defaultContent: 'descuentoImpuesto', 'render': function ( data, type, row ) 
+                        {
+                            return  `${row.descuentoImpuesto}%`;
+                        }
+                    },
+                    { defaultContent: 'descuentos', 'render': function ( data, type, row ) 
+                        {
+                            return  row.descuentos ? 'Si' : 'No';
+                        }
+                    },
                     { data: 'representante' },
                     { data: 'direccion' },
                     { data: 'telefono' },
@@ -162,11 +182,11 @@
                     <div class="container">
                         <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
                             @csrf
-                            <div class="form-group col-2 mt-3">
+                            <div class="form-group col-1 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
                                 <input type="text" name="codigo" class="form-control">  
                             </div>
-                            <div class="form-group col-4 mt-3">
+                            <div class="form-group col-3 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre comisionista</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
@@ -187,6 +207,15 @@
                                 <input type="number" name="iva" class="form-control" min="0" max="90" value="0">
                             </div>
 
+                            <div class="form-group col-2 mt-3">
+                                <label for="descuento-impuesto" class="col-form-label">Descuentro por imp. %</label>
+                                <input type="number" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
+                            </div>
+
+                            <div class="form-group col-2 mt-3">
+                                <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
+                                <input type="checkbox" name="descuentos" class="form-control" >
+                            </div>
 
                             <div class="col-12 mt-3">
                                 <strong>Datos Representante</strong>
@@ -228,6 +257,8 @@
                                         <th>Tipo</th>
                                         <th>Comisión</th>
                                         <th>Iva</th>
+                                        <th>Descuento impuesto</th>
+                                        <th>Descuentos</th>
                                         <th>Representante</th>
                                         <th>Dirección</th>
                                         <th>Teléfono</th>
