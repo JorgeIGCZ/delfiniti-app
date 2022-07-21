@@ -476,25 +476,26 @@
             });
         }
         function setCodigoDescuento(descuento){
-            document.getElementById('descuento-codigo').removeAttribute('disabled','disabled');
-            if(descuento == null){
-                document.getElementById('descuento-codigo').value = 0;
-                document.getElementById('descuento-codigo').text  = 0;
-                document.getElementById('descuento-codigo-container').classList.add("hidden");
-            }else{
-                $descuento = getDescuento(descuento);
+            if(descuento.tipo == 'porcentaje'){
+                let cantidadDescuento = getDescuento(descuento.descuento);
                 document.getElementById('descuento-codigo-container').classList.remove("hidden");
-                document.getElementById('descuento-codigo').setAttribute('value',descuento);
-                document.getElementById('descuento-codigo').value = `${descuento}%`;
+                document.getElementById('descuento-codigo').setAttribute('value',cantidadDescuento);
+                document.getElementById('descuento-codigo').value = `${cantidadDescuento}%`;
+                document.getElementById('descuento-codigo').setAttribute('tipo','porcentaje');
+            }else{
+                document.getElementById('descuento-codigo-container').classList.remove("hidden");
+                document.getElementById('descuento-codigo').setAttribute('value',descuento.descuento);
+                document.getElementById('descuento-codigo').value  = `$${descuento.descuento}`;
+                document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
             }
             setOperacionResultados()
             
         }
         function getDescuento(descuento){
             const total = document.getElementById('total').getAttribute('value');
-            let cantidadDescuento = descuento.descuento;
+            let cantidadDescuento = descuento;
             if(descuento.tipo == "porcentaje"){
-                cantidadDescuento = descuento.descuento;//(total/100) * descuento.descuento;
+                cantidadDescuento = descuento;//(total/100) * descuento.descuento;
             }
             return cantidadDescuento;
         }
