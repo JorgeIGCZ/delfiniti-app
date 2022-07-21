@@ -507,10 +507,10 @@
         }
         function setCodigoDescuento(descuento){
             if(descuento.tipo == 'porcentaje'){
-                let descuento = getDescuento(descuento.descuento);
+                let cantidadDescuento = getDescuento(descuento.descuento);
                 document.getElementById('descuento-codigo-container').classList.remove("hidden");
-                document.getElementById('descuento-codigo').setAttribute('value',descuento);
-                document.getElementById('descuento-codigo').value = `${descuento}%`;
+                document.getElementById('descuento-codigo').setAttribute('value',cantidadDescuento);
+                document.getElementById('descuento-codigo').value = `${cantidadDescuento}%`;
                 document.getElementById('descuento-codigo').setAttribute('tipo','porcentaje');
             }else{
                 document.getElementById('descuento-codigo-container').classList.remove("hidden");
@@ -523,9 +523,9 @@
         }
         function getDescuento(descuento){
             const total = document.getElementById('total').getAttribute('value');
-            let cantidadDescuento = descuento.descuento;
+            let cantidadDescuento = descuento;
             if(descuento.tipo == "porcentaje"){
-                cantidadDescuento = descuento.descuento;//(total/100) * descuento.descuento;
+                cantidadDescuento = descuento;//(total/100) * descuento.descuento;
             }
             return cantidadDescuento;
         }
