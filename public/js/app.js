@@ -5160,6 +5160,20 @@ var on = function on(eventName, selector, handler) {
   \*******************************/
 /***/ (() => {
 
+function formValidity(formId) {
+  var form = document.getElementById(formId);
+  var response = true;
+
+  if (form.checkValidity()) {
+    event.preventDefault();
+  } else {
+    form.reportValidity();
+    response = false;
+  }
+
+  return response;
+}
+
 $(".amount").each(function () {
   var amount = $(this).val();
   var amountNumeric = Number(amount.replace(/[^-0-9\.]+/g, ""));

@@ -2,7 +2,23 @@
 @section('scripts')
     <script>
         let descuentocodigosTable;
-        
+        window.onload = function() {
+            document.getElementById('tipo').addEventListener('change', (event) =>{
+                event.preventDefault();
+                let tipo     = document.getElementById('tipo');
+                let descuento= document.getElementById('descuento');
+                let tipoVaor = tipo.options[tipo.selectedIndex].value;
+
+                if(tipoVaor == "cantidad"){
+                    descuento.setAttribute('min','0');
+                    descuento.removeAttribute('max');
+                }else{
+                    descuento.setAttribute('min','0');
+                    descuento.setAttribute('max','100');
+                }
+            });
+        };
+
         function formValidity(formId){
             const reservacion = document.getElementById(formId);
             let response = true;
@@ -143,7 +159,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Codigos Descuento</h2>
+            <h2 class="az-dashboard-title">Códigos de descuento</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
@@ -159,14 +175,14 @@
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
-                                <select name="tipo" class="form-control">
+                                <select name="tipo" id="tipo" class="form-control">
                                     <option value="cantidad">Cantidad</option>
                                     <option value="porcentaje">Porcentaje</option>
                                 </select>
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="descuento" class="col-form-label">Descuento</label>
-                                <input type="number" name="descuento" class="form-control" value="0">
+                                <input type="number" name="descuento"  id="descuento" class="form-control" value="0">
                             </div>
 
                             <div class="form-group col-3 mt-3">

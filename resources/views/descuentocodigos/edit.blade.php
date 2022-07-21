@@ -1,8 +1,32 @@
 @extends('layouts.app')
+@section('scripts')
+    <script>
+        window.onload = function() {
+            setLimits();
+            document.getElementById('tipo').addEventListener('change', (event) =>{
+                event.preventDefault();
+                setLimits();
+            });
+        };
+        function setLimits(){
+            let tipo     = document.getElementById('tipo');
+            let descuento= document.getElementById('descuento');
+            let tipoVaor = tipo.options[tipo.selectedIndex].value;
+
+            if(tipoVaor == "cantidad"){
+                descuento.setAttribute('min','0');
+                descuento.removeAttribute('max');
+            }else{
+                descuento.setAttribute('min','0');
+                descuento.setAttribute('max','100');
+            }
+        }
+    </script>
+@endsection
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Códigos de desucentos</h2>
+            <h2 class="az-dashboard-title">Códigos de descuento</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
@@ -19,14 +43,14 @@
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
-                                <select name="tipo" class="form-control">
+                                <select name="tipo" id="tipo" class="form-control">
                                     <option value="cantidad" {{'cantidad' === $descuentocodigo->tipo ? 'selected="selected' : ""}} >Cantidad</option>
                                     <option value="porcentaje" {{'porcentaje' === $descuentocodigo->tipo ? 'selected="selected' : ""}} >Porcentaje</option>
                                 </select>
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="descuento" class="col-form-label">descuento</label>
-                                <input type="number" name="descuento" class="form-control" min="0" max="90" value="{{$descuentocodigo->descuento}}">
+                                <input type="number" name="descuento" id="descuento" class="form-control" min="0" max="90" value="{{$descuentocodigo->descuento}}">
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="actualizar-descuentocodigo">Actualizar Código</button>
