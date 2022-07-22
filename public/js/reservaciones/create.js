@@ -122,7 +122,7 @@
                 !result ? updated++ : '';
                 return result;
             });
-            enablePagar(reservacionesArray.length > 0);
+            enableBtn('reservar',reservacionesArray.length > 0);
             setTotal();
         } );
         $('#clave-actividad').on('change', function (e) {
@@ -322,7 +322,7 @@
             changeClaveActividad();
             changeActividad();
             setOperacionResultados();
-            enablePagar(false);
+            enableBtn('reservar',false);
         }
 
         function validateDescuentoPersonalizado(){
@@ -475,7 +475,7 @@
                 'precio': precio,
                 'horario': horario
             }];
-            enablePagar(reservacionesArray.length > 0);
+            enableBtn('reservar',reservacionesArray.length > 0);
             setTotal();
         }
         

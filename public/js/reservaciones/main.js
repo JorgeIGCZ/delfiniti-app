@@ -92,8 +92,8 @@ function convertPorcentageCantidad(porcentaje){
     return (total/100) * porcentaje;
 }
 
-function enablePagar(status){
-    let reservar = document.getElementById('reservar');
+function enableBtn(btnId,status){
+    let reservar = document.getElementById(btnId);
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
 

@@ -135,6 +135,7 @@
                 !result ? updated++ : '';
                 return result;
             });
+            enableBtn('actualizar',reservacionesArray.length > 0);
             setTotal();
         } );
 
@@ -406,7 +407,7 @@
                 'precio': precio,
                 'horario': horario
             }];
-            //enablePagar(reservacionesArray.length > 0);
+            //enableBtn('enableBtn',reservacionesArray.length > 0);
             setTotal();
         }
         
