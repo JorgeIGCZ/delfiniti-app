@@ -266,11 +266,6 @@
             });
         }
 
-        function convertPorcentageCantidad(porcentaje){
-            const total = document.getElementById('total').getAttribute('value');
-            return (total/100) * porcentaje;
-        }
-
         function validateDescuentoPersonalizado(){
             axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
                 '_token'          : token(),
@@ -526,14 +521,14 @@
             const efectivoUsd        = getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')));
             const tarjeta            = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
             
-            const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = convertPorcentageCantidad(descuentoPersonalizado); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
-
             const descuentoCodigo   = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
             const cantidadCodigo    = convertPorcentageCantidad(descuentoCodigo); //(document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoCodigo/100)) : descuentoCodigo;
             
             const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
             
+            const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
+            const cantidadPersonalizado  = calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
+
             const anticipo        = parseFloat(document.getElementById('anticipo').getAttribute('value'));
 
             const pagos           = (cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+anticipo);

@@ -7,7 +7,7 @@
         const isReservacionPagada = () => {
             return {{$reservacion->estatus == 2 ? 1 : 0}};
         }
-        const getDolarPrecioCompra = () =>{
+        const dolarPrecioCompra = () =>{
             return  {{$dolarPrecioCompra->precio_compra}};
         }
         const isAdmin = () => {
@@ -331,6 +331,17 @@
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
                                                     </div>
 
+                                                    <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                        <div class="row ">
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
                                                     <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
                                                         <div class="row ">
                                                             <div class="form-group col-7 mt-0 mb-0">
@@ -342,16 +353,6 @@
                                                         </div>
                                                     </div>
 
-                                                    <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
-                                                        <div class="row ">
-                                                            <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
-                                                            </div>
-                                                            <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <!--div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón</label>
                                                     </div>

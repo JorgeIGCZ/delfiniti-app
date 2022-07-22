@@ -80,6 +80,18 @@ function setCodigoDescuento(descuento){
     
 }
 
+function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
+    const total    = document.getElementById('total').getAttribute('value');
+    const subTotal = total - (cantidadCodigo+cupon);
+
+    return (subTotal/100) * descuentoPersonalizado;
+}
+
+function convertPorcentageCantidad(porcentaje){
+    const total = document.getElementById('total').getAttribute('value');
+    return (total/100) * porcentaje;
+}
+
 function enablePagar(status){
     let reservar = document.getElementById('reservar');
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
