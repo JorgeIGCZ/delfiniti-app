@@ -1,810 +1,73 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        let reservacionesTabla; 
-        let pagosTabla;
-        let allActividades      = [];
-        let reservacionesArray  = [];
-        let pagosArray          = [];
-        let cantidadPagada      = 0;
-
-        window.onload = function() {
-            document.getElementById('reservacion-form').elements['nombre'].focus();
-
-            $('body').on('keydown', 'input, select, button', function(e) {
-                if (e.key === "Enter") {
-                
-                    if($(this).attr("id") == "add-actividad"){
-                        addActividades();
-                    }
-                    if($(this).attr("id") == "password"){
-                        validarVerificacion();
-                    }
-
-                    var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-                    focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
-                    next = focusable.eq(focusable.index(this)+1);
-                    if (next.length) {
-                        next.focus();
-                    } else {
-                        form.submit();
-                    }
-                    return false;
-                }
-            });
-
-            getDisponibilidad();
-            @if($reservacion->estatus == 2)
-                bloquearPagos();
-            @endif
-
-            reservacionesTabla = new DataTable('#reservaciones', {
-                searching: false,
-                paging: false,
-                info: false
-            } );
-
-            pagosTabla = new DataTable('#pagos', {
-                searching: false,
-                paging: false,
-                info: false
-            } );
-
-            fillReservacionDetallesTabla();
-            fillPagosTabla();
-
-            document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
-                document.getElementById('password').value="";
-            });
-
-            document.getElementById('agregar-reservacion').addEventListener('click', (event) =>{
-                event.preventDefault();
-                addReservaciones();
-            });
-            document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
-                event.preventDefault();
-                resetDescuentos();
-                document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
-            });
-            /*
-            document.getElementById('add-descuento-cupon').addEventListener('click', (event) =>{
-                resetDescuentos();
-                $('#verificacion-modal').modal('show');
-                document.getElementById('validar-verificacion').setAttribute('action','add-descuento-cupon');
-            });
-            */
-            document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
-                //resetDescuentos();
-                if(document.getElementById('add-descuento-personalizado').checked){
-                    $('#verificacion-modal').modal('show');
-                    document.getElementById('add-descuento-personalizado').checked = false;
-                    document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
-                    document.getElementById('password').focus();
-                }
-            });
-
-            document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-                validarVerificacion();
-            });
-            document.getElementById('pagar').addEventListener('click', (event) =>{
-                if(formValidity()){
-                    createReservacion('pagar');
-                }
-            });
-            document.getElementById('actualizar').addEventListener('click', (event) =>{
-                if(formValidity()){
-                    createReservacion('actualizar');
-                }
-            });
-
-            document.getElementById('efectivo').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('efectivo').value = '$0.00';
-                    document.getElementById('efectivo').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-            document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
-                //if(getResta() < 0){
-                //    document.getElementById('efectivo-usd').value = '$0.00';
-                //    document.getElementById('efectivo-usd').setAttribute('value',0);
-                //}
-                setTimeout(setOperacionResultados(),500);
-            });
-            document.getElementById('tarjeta').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('tarjeta').value = '$0.00';
-                    document.getElementById('tarjeta').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-            /*
-            document.getElementById('cupon').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('cupon').value = '$0.00';
-                    document.getElementById('cupon').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-            */
-
-            document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('descuento-codigo').value = '0%';
-                    document.getElementById('descuento-codigo').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-
-            document.getElementById('descuento-personalizado').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('descuento-personalizado').value = '0';
-                    document.getElementById('descuento-personalizado').setAttribute('value',0);
-                }
-                if(!isLimite()){
-                    document.getElementById('descuento-personalizado').value = '0';
-                    document.getElementById('descuento-personalizado').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-
-            document.getElementById('cupon').addEventListener('keyup', (event) =>{
-                if(getResta() < 0){
-                    document.getElementById('cupon').value = '0';
-                    document.getElementById('cupon').setAttribute('value',0);
-                }
-                setTimeout(setOperacionResultados(),500);
-            });
-
-            //jQuery
-            $('body').on('keydown', 'input, select, button', function(e) {
-                if (e.key === "Enter") {
-                
-                    if($(this).attr("id") == "agregar-reservacion"){
-                        addReservaciones();
-                    }
-                    if($(this).attr("id") == "password"){
-                        validarVerificacion();
-                    }
-
-                    var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-                    focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
-                    next = focusable.eq(focusable.index(this)+1);
-                    if (next.length) {
-                        next.focus();
-                    } else {
-                        form.submit();
-                    }
-                    return false;
-                }
-            });
-            $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
-                event.preventDefault();
-                reservacionesTabla
-                    .row( $(this).parents('tr') )
-                    .remove()
-                    .draw();
-
-                //remove clave from the array
-                const clave   = $(this).parents('tr')[0].firstChild.innerText;
-                const horario = $(this).parents('tr')[0].childNodes[2].innerText;
-                let updated   = 0;
-                reservacionesArray = reservacionesArray.filter(function (reservaciones) {
-                    let result = (reservaciones.claveActividad !== clave && reservaciones.horario !== horario && updated == 0);
-                    updated > 0 ? result = true : '';
-                    !result ? updated++ : '';
-                    return result;
-                });
-                setTotal();
-            } );
-            $('#clave-actividad').on('change', function (e) {
-                changeActividad();
-            });
-            $('#actividades').on('change', function (e) {
-                changeClaveActividad();
-            });
-            $('#comisionista').on('change', function (e) {
-                changeCuponDetalle();
-                document.getElementById('reservacion-form').elements['cupon'].focus();
-            });
-        };
-        function validarVerificacion(){
-            const action = document.getElementById('validar-verificacion').getAttribute('action');
-                
-            if(formValidity()){
-                if(action === 'add-descuento-personalizado'){
-                    applyDescuentoPassword('descuento-personalizado');
-                    validateDescuentoPersonalizado();
-                }else if(action === 'add-codigo-descuento'){
-                    applyDescuentoPassword('descuento-codigo');
-                    getCodigoDescuento();
-                }
-            }
+        const reservacionId = () => {
+            return {{$reservacion->id}};
         }
-        function applyVariables(){
-            const queryString = window.location.search;
-            const urlParams   = new URLSearchParams(queryString);
-            const fecha     = urlParams.get('f');
-            const hora      = urlParams.get('h');
-            const actividad = urlParams.get('id');
-            if(actividad === null){
-                return;
-            }
-            document.getElementsByName('fecha')[0].value = fecha;
-            
-            $('#actividades').val(actividad); 
-            $('#actividades').trigger('change');   
+        const isReservacionPagada = () => {
+            return {{$reservacion->estatus == 2 ? 1 : 0}};
+        }
+        const dolarPrecioCompra = () =>{
+            return  {{$dolarPrecioCompra->precio_compra}};
+        }
+        const isAdmin = () => {
+            return {{!Auth::user()->hasRole('Administrador') ? 1 : 0}};
+        }
+        const token = () =>{
+            return  '{{ csrf_token() }}';
+        }
+        const userEmail = () =>{
+            return  '{{Auth::user()->email}}';
+        }
+        
+        let reservacionesArray      = [];
+        let reservacionesTableArray = [];
+        let pagosArray              = [];
+        let pagosTablaArray         = [];
+        let nombreTipoPagoArray     = [];
+        let cantidadPagada          = 0;
 
-            changeClaveActividad();
-
-            $('#horarios').val(hora); 
-            $('#horarios').trigger('change');
-        }
-        function isLimite(){
-            const total     = parseFloat(document.getElementById('total').getAttribute('value'));
-            const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const limite    = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
-            //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
-            return limite >= descuento;
-        }
-        function resetDescuentos(){
-            document.getElementById('descuento-personalizado-container').classList.add("hidden");
-            document.getElementById('descuento-personalizado').setAttribute('limite','');
-            document.getElementById('descuento-personalizado').setAttribute('password','');
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-            document.getElementById('descuento-personalizado').value = 0;
-
-            document.getElementById('descuento-codigo-container').classList.add("hidden");
-            document.getElementById('descuento-codigo').setAttribute('limite','');
-            document.getElementById('descuento-codigo').setAttribute('password','');
-            document.getElementById('descuento-codigo').setAttribute('value',0);
-            document.getElementById('descuento-codigo').value = "0%";
-            setTimeout(setOperacionResultados(),500);
-        }
-        function applyDescuentoPassword($elementId){
-            document.getElementById($elementId).setAttribute('password',document.getElementById('password').value);
-        }
-        function changeCuponDetalle() {
-            const comisionista    = document.getElementById('comisionista');
-            const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
-            const cupon           = document.getElementById('cupon');
-    
-            document.getElementById('cupon').setAttribute('value',0);
-            document.getElementById('cupon').value = 0;
-            document.getElementById('reservacion-form').elements['cupon'].focus();
-
-            (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
-        }
-
-        function removeCupon(cupon){
-            cupon.setAttribute('disabled','disabled');
-            cupon.setAttribute('value',0);
-            cupon.value = 0;
-            setTimeout(setOperacionResultados(),500);
-        }
-
-        function formValidity(){
-            const reservacion = document.getElementById('reservacion-form');
-            let response = true;
-            if(reservacion.checkValidity()){
-                event.preventDefault();
-            }else{
-                reservacion.reportValidity();
-                response = false;
-            }
-            return response;
-        }
-        function createReservacion(estatus){
-            const reservacion = document.getElementById('reservacion-form');
-            const pagos       = {
-                'efectivo'     : reservacion.elements['efectivo'].getAttribute('value'),
-                'efectivoUsd'  : reservacion.elements['efectio-usd'].getAttribute('value'),
-                'tarjeta'      : reservacion.elements['tarjeta'].getAttribute('value'),
-                'cambio'       : reservacion.elements['cambio'].getAttribute('value'),
-            };
-            axios.post('/reservaciones/{{$reservacion->id}}', {
-                '_token'       : '{{ csrf_token() }}',
-                '_method'      : 'PATCH',
-                'nombre'       : reservacion.elements['nombre'].value,
-                'email'        : reservacion.elements['email'].value,
-                'alojamiento'  : reservacion.elements['alojamiento'].value,
-                'origen'       : reservacion.elements['origen'].value,
-                'agente'       : reservacion.elements['agente'].value,
-                'comisionista' : reservacion.elements['comisionista'].value,
-                'cerrador'     : reservacion.elements['cerrador'].value,
-                'total'        : reservacion.elements['total'].getAttribute('value'),
-                'pagosAnteriores': reservacion.elements['anticipo'].getAttribute('value'),
-                'fecha'        : reservacion.elements['fecha'].value,
-                'pagos'        : estatus === 'pagar' ? pagos : {},
-                
-                //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
-                'cupon'       : {
-                    'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
-                },
-                'descuentoCodigo'        : {
-                    'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value')),
-                    'password': document.getElementById('descuento-codigo').getAttribute('password'),
-                },
-                'descuentoPersonalizado' : {
-                    'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-personalizado'].getAttribute('value')),
-                    'password': document.getElementById('descuento-personalizado').getAttribute('password'),
-                },
-
-                'comentarios'  : reservacion.elements['comentarios'].value,
-                'estatus'      : estatus,
-                'reservacionArticulos'  : reservacionesArray
-            })
-            .then(function (response) {
-                if(response.data.result == 'Success'){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Reservacion actualizada',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    location.reload();
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: `Reservacion fallida`,
-                        showConfirmButton: true
-                    })
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Reservacion fallida E:${error.message}`,
-                    showConfirmButton: true
-                })
-            });
-        }
-
-        function convertPorcentageCantidad(porcentaje){
-            const total = document.getElementById('total').getAttribute('value');
-            return (total/100) * porcentaje;
-        }
-
-        function validateDescuentoPersonalizado(){
-            axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
-                '_token'          : '{{ csrf_token() }}',
-                'email'           : '{{Auth::user()->email}}',
-                'password'        : document.getElementById('descuento-personalizado').getAttribute('password')
-            })
-            .then(function (response) {
-                if(response.data.result == 'Success'){
-                    switch (response.data.status) {
-                        case 'authorized':
-                            $('#verificacion-modal').modal('hide');
-                            setLimiteDescuentoPersonalizado(response.data.limite);
-                            document.getElementById('add-descuento-personalizado').checked = true;
-                            break;
-                        default:
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Codigo incorrecto',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                            document.getElementById('add-descuento-personalizado').checked = false;
-                            break;
-                    }
-                    $('#descuento-personalizado').focus();
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: `Petición fallida`,
-                        showConfirmButton: true
-                    })
-                    document.getElementById('add-descuento-personalizado').checked = false;
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Autorización fallida E:${error.message}`,
-                    showConfirmButton: true
-                })
-                document.getElementById('add-descuento-personalizado').checked = false;
-            });
-        }
-        function setLimiteDescuentoPersonalizado(limite){
-            document.getElementById('descuento-personalizado').removeAttribute('disabled');
-            if(limite !== null){
-                document.getElementById('descuento-personalizado').setAttribute('limite',limite);
-                document.getElementById('descuento-personalizado-container').classList.remove("hidden");
-            }else{
-                document.getElementById('descuento-personalizado-container').classList.add("hidden");
-            }
-            setOperacionResultados();
-        }
-        function getCodigoDescuento(){
-            const reservacion = document.getElementById('reservacion-form');
-            const nombre          = reservacion.elements['nombre'].value;
-            const codigoDescuento = reservacion.elements['codigo-descuento'].value;
-            if(!formValidity()){
-                return false;
-            }
-            axios.post('/reservaciones/getCodigoDescuento', {
-                '_token'          : '{{ csrf_token() }}',
-                'email'           : '{{Auth::user()->email}}',
-                'password'        : document.getElementById('descuento-codigo').getAttribute('password'),
-                'codigoDescuento' : reservacion.elements['codigo-descuento'].value
-            })
-            .then(function (response) {
-                if(response.data.result == 'Success'){
-                    switch (response.data.status) {
-                        case 'authorized':
-                            if(response.data.descuento.descuento !== null){
-                                
-                                $('#verificacion-modal').modal('hide');
-                                setCodigoDescuento(response.data.descuento.descuento);
-                                break;
-                            }else{
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Codigo incorrecto',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                })
-                            }
-                        default:
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Credenciales incorrectas',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                            setCodigoDescuento(null);
-                            break;
-                    }
-                }else{
-                    Swal.fire({
-                        icon: 'error',
-                        title: `Petición fallida`,
-                        showConfirmButton: true
-                    })
-                    setCodigoDescuento(null);
-                }
-            })
-            .catch(function (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Autorización fallida E:${error.message}`,
-                    showConfirmButton: true
-                })
-            });
-        }
-        function setCodigoDescuento(descuento){
-            if(descuento.tipo == 'porcentaje'){
-                let cantidadDescuento = getDescuento(descuento.descuento);
-                document.getElementById('descuento-codigo-container').classList.remove("hidden");
-                document.getElementById('descuento-codigo').setAttribute('value',cantidadDescuento);
-                document.getElementById('descuento-codigo').value = `${cantidadDescuento}%`;
-                document.getElementById('descuento-codigo').setAttribute('tipo','porcentaje');
-            }else{
-                document.getElementById('descuento-codigo-container').classList.remove("hidden");
-                document.getElementById('descuento-codigo').setAttribute('value',descuento.descuento);
-                document.getElementById('descuento-codigo').value  = `$${descuento.descuento}`;
-                document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
-            }
-            setOperacionResultados()
-            
-        }
-        function getDescuento(descuento){
-            const total = document.getElementById('total').getAttribute('value');
-            let cantidadDescuento = descuento;
-            if(descuento.tipo == "porcentaje"){
-                cantidadDescuento = descuento;//(total/100) * descuento.descuento;
-            }
-            return cantidadDescuento;
-        }
-        function addReservaciones(){
-            let actividadDetalle = document.getElementById('actividades');
-            actividadDetalle     = actividadDetalle.options[actividadDetalle.selectedIndex].text;
-            let horarioDetalle   = document.getElementById('horarios');
-            horarioDetalle       = horarioDetalle.options[horarioDetalle.selectedIndex].text;
-            let claveActividad   = document.getElementById('clave-actividad');
-            claveActividad       = claveActividad.options[claveActividad.selectedIndex].text;
-            const actividad      = document.getElementById('actividades').value;
-            const cantidad       = document.getElementById('cantidad').value;
-            const precio         = document.getElementById('precio').value;
-            const horario        = document.getElementById('horarios').value;
-            const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
-            reservacionesTabla.row.add( [ 
-                claveActividad,
-                actividadDetalle,
-                horarioDetalle,
-                cantidad,
-                precio,
-                precio*cantidad,
-                acciones
-            ] )
-            .draw(false);
+        @forEach($reservacion->reservacionDetalle as $detalle)
+            reservacionesTableArray = [...reservacionesTableArray,[
+                '{{$detalle->actividad->clave}}',
+                '{{$detalle->actividad->nombre}}',
+                '{{$detalle->horario->horario_inicial}}',
+                '{{$detalle->numero_personas}}',
+                '{{$detalle->PPU}}',
+                '{{$detalle->PPU}}'*'{{$detalle->numero_personas}}',
+                `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
+            ]];
             reservacionesArray = [...reservacionesArray,{
-                'claveActividad': claveActividad,
-                'actividad': actividad,
-                'cantidad': cantidad,
-                'precio': precio,
-                'horario': horario
+                'claveActividad': '{{$detalle->actividad->clave}}',
+                'actividad'     : '{{$detalle->actividad_id}}',
+                'cantidad'      : '{{$detalle->numero_personas}}',
+                'precio'        : '{{$detalle->PPU}}',
+                'horario'       : '{{$detalle->actividad_horario_id}}'
             }];
-            setTotal();
-        }
-        function fillReservacionDetallesTabla(){
-            let actividadDetalle = '';
-            let horarioDetalle   = '';
-            let claveActividad   = '';
-            let actividad      = '';
-            let cantidad       = '';
-            let precio         = '';
-            let horario        = '';
-            let acciones       = '';
+        @endforeach
 
-            @forEach($reservacion->reservacionDetalle as $detalle)
-                actividadDetalle = '{{$detalle->actividad->nombre}}';
-                horarioDetalle   = '{{$detalle->horario->horario_inicial}}';
-                claveActividad   = '{{$detalle->actividad->clave}}';
-                actividad      = '{{$detalle->actividad_id}}';
-                cantidad       = '{{$detalle->numero_personas}}';
-                precio         = '{{$detalle->PPU}}';
-                horario        = '{{$detalle->actividad_horario_id}}';
-                acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
-                reservacionesTabla.row.add( [ 
-                    claveActividad,
-                    actividadDetalle,
-                    horarioDetalle,
-                    cantidad,
-                    precio,
-                    precio*cantidad,
-                    acciones
-                ] )
-                .draw(false);
-                reservacionesArray = [...reservacionesArray,{
-                    'claveActividad': claveActividad,
-                    'actividad': actividad,
-                    'cantidad': cantidad,
-                    'precio': precio,
-                    'horario': horario
-                }];
-            @endforeach
-            setTotal();
-        }
-
-        function fillPagosTabla(){
-            let pagoId       = '';
-            let cantidad     = '';
-            let tipoPago     = '';
-            let tipoPagoId   = '';
-            let fechaPago    = '';
-            let acciones     = '';
-            let tipoCambio   = 0;    
-            //'1','efectivo'
-            //'2','efectivoUsd'
-            //'3','tarjeta'
-
-            @forEach($reservacion->pagos as $pago)
-                pagoId       = '{{$pago->id}}';
-                tipoCambio   = '{{$pago->tipo_cambio_usd}}';
-                cantidad     = '{{$pago->cantidad}}';
-                tipoPago     = '{{$pago->tipoPago->nombre}}';
-                tipoPagoId   = '{{$pago->tipo_pago_id}}';
-                fechaPago    = '{{$pago->created_at}}';
-
-                //acciones     = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
-                pagosTabla.row.add( [ 
-                    pagoId,
-                    (pagoId == '2' ? `${cantidad}USD * ${tipoCambio}` : cantidad),
-                    tipoPago,
-                    fechaPago
-                ] )
-                .draw(false);
-                pagosArray = [...pagosArray,{
-                    'id': pagoId,
-                    'cantidad': cantidad,
-                    'tipoPagoId': tipoPagoId,
-                    'fechaPago': fechaPago
-                }];
-
-                cantidadPagada += parseFloat(cantidad);
-                blockDescuentos({{$pago->id}});
-            @endforeach
-            setCantidadPagada(cantidadPagada);
-            setTotal();
-        }
-
-        function setCantidadPagada(cantidadPagada){
-            document.getElementById('anticipo').setAttribute('value',cantidadPagada);
-            document.getElementById('anticipo').value = formatter.format(cantidadPagada);
-        }
-
-        function blockDescuentos(pagoId){
-            switch (pagoId){
-                case 4:
-                    document.getElementById('comisionista').setAttribute('disabled','disabled');
-                    break;
-                case 5:
-                    document.getElementById('codigo-descuento').setAttribute('disabled','disabled');
-                    break;
-                case 6:
-                    document.getElementById('add-descuento-personalizado').setAttribute('disabled','disabled');
-                    break;
-            }
-        }
-        
-        function getActividadPrecio(){
-            const actividad = document.getElementById('actividades').value;
-            let precio      = document.getElementById('precio');
-            for (var i = 0; i < allActividades.length; i++) {
-                if(actividad == allActividades[i].actividad.id){
-                    precio.value = allActividades[i].actividad.precio;
-                }
-            }
-        }
-        function setTotal(){
-            let total = 0;
-            reservacionesArray.forEach(reservacion => {
-                total += (reservacion.cantidad*reservacion.precio);
-            });
-            total = parseFloat(total).toFixed(2)
-            document.getElementById('total').setAttribute('value',total);
-            document.getElementById('total').value = formatter.format(total);
+        @forEach($reservacion->pagos as $pago)
+            pagosTablaArray = [...pagosTablaArray,[
+                '{{$pago->id}}',
+                ('{{$pago->id}}' == '2' ? `${'{{$pago->cantidad}}'}USD * ${'{{$pago->tipo_cambio_usd}}'}` : '{{$pago->cantidad}}'),
+                '{{$pago->tipoPago->nombre}}',
+                '{{$pago->created_at}}'
+            ]];
+            pagosArray = [...pagosArray,{
+                'id'        : '{{$pago->id}}',
+                'cantidad'  : '{{$pago->cantidad}}',
+                'tipoPagoId': '{{$pago->tipo_pago_id}}',
+                'fechaPago' : '{{$pago->created_at}}'
+            }];
             
-            setOperacionResultados();
-        }
-        function setTotalRecibido(){
-            let totalRecibido = getPagos();
-            totalRecibido     = parseFloat(totalRecibido).toFixed(2);
+            nombreTipoPagoArray = [...nombreTipoPagoArray,'{{$pago->tipoPago->nombre}}'];
+        @endforeach
 
-            document.getElementById('total-recibido').setAttribute('value',totalRecibido);
-            document.getElementById('total-recibido').value = formatter.format(totalRecibido);
-        }
-        function setOperacionResultados(){
-            const total = document.getElementById('total').getAttribute('value');
-            setResta();
-            setCambio();
-            //document.getElementById('reservacion-form').elements['descuento-general'].focus();
-
-            enableFinalizar((getResta() < total) ? true : false);
-        }
-        function setCambio(){
-            const cambioCampo = document.getElementById('cambio');
-            const resta       = getResta();
-            const cambio      = getCambio(resta);
-            cambioCampo.setAttribute('value',cambio);
-            cambioCampo.value = formatter.format(cambio);
-        }
-        function getCambio(resta){
-            return (resta < 0 ? resta : 0 );
-        }
-        function setResta(){
-            const restaCampo  = document.getElementById('resta');
-            const resta       = getResta();
-            const restaTotal  = (resta >= 0 ? resta : 0 );
-            restaCampo.setAttribute('value',restaTotal);
-            restaCampo.value = formatter.format(restaTotal);
-
-            setTotalRecibido();
-        }
-        function getResta(){
-            const total = parseFloat(document.getElementById('total').getAttribute('value'));
-            const pagos    = getPagos();
-            const resta    = parseFloat(total-pagos);
-            return resta;
-        }
-
-        function getPagos(){
-            const total              = parseFloat(document.getElementById('total').getAttribute('value'));
-            const efectivo           = parseFloat(document.getElementById('efectivo').getAttribute('value'));
-            const efectivoUsd        = getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')));
-            const tarjeta            = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
-            
-            const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-            const cantidadPersonalizado  = (document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
-
-            const descuentoCodigo   = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-            const cantidadCodigo  = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoCodigo/100)) : descuentoCodigo;
-            
-            const cupon           = parseFloat(document.getElementById('cupon').getAttribute('value'));
-            
-            const anticipo        = parseFloat(document.getElementById('anticipo').getAttribute('value'));
-
-            const pagos           = (cupon+efectivo+efectivoUsd+tarjeta+cantidadPersonalizado+cantidadCodigo+anticipo);
-
-            return parseFloat(pagos);
-        }
-
-        function getMXNFromUSD(usd){
-            const dolarPrecio = getDolarPrecioCompra();
-            
-            return usd*dolarPrecio;
-        }
-        function getDolarPrecioCompra(){
-            return {{$dolarPrecioCompra->precio_compra}};
-        }
-
-        function enableFinalizar($status){
-            try {
-                let pagarReservar = document.getElementById('pagar');
-                ($status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled','disabled');
-            } catch (error) {
-                
-            }
-        }
-        function getActividadHorario(){
-            const actividad   = document.getElementById('actividades').value;
-            let horarioSelect = document.getElementById('horarios');
-            let option;
-            horarioSelect.length = 0;
-            for (let i = 0; i < allActividades.length; i++) {
-                if(actividad == allActividades[i].actividad.id){
-                    for (let ii = 0; ii < allActividades[i].horarios.length; ii++) {
-                        option       = document.createElement('option');
-                        option.value = allActividades[i].horarios[ii].id;
-                        option.text  = allActividades[i].horarios[ii].horario_inicial;
-                        horarioSelect.add(option);
-                    }
-                }
-            }
-        }
-        function changeClaveActividad() {
-            const actividades = document.getElementById('actividades');
-            document.getElementById('clave-actividad').value = actividades.value;
-            document.getElementById('clave-actividad').text = actividades.value;
-
-            //$('#clave-actividad').trigger('change.select2');
-            getActividadHorario();
-            getActividadPrecio();
-        }
-        function changeActividad() {
-            const claveActividad = document.getElementById('clave-actividad');
-            document.getElementById('actividades').value = claveActividad.value;
-            document.getElementById('actividades').text = claveActividad.value;
-        
-            //$('#actividades').trigger('change.select2');
-            getActividadHorario();
-            getActividadPrecio();
-        }
-        function getDisponibilidad(){
-            axios.get('/api/disponibilidad')
-            .then(function (response) {
-                allActividades = response.data.disponibilidad;
-                displayActividad()
-                getActividadHorario()
-                getActividadPrecio()
-                applyVariables()
-            })
-            .catch(function (error) {
-                actividades = [];
-            });
-        }
-        function bloquearPagos(){
-            const contenedorPagos = document.getElementById("detalle-reservacion-contenedor");
-            const elementos       = contenedorPagos.querySelectorAll("input, select, checkbox, textarea")
-            elementos.forEach( elemento => {
-                elemento.classList.add('not-editable');
-                elemento.setAttribute('disabled','disabled');
-            })
-            document.getElementById("pagar").remove();
-        }
-        function displayActividad(){
-            let actividadesClaveSelect = document.getElementById('clave-actividad');
-            let actividadesSelect      = document.getElementById('actividades');
-            let optionNombre;
-            let optionClave;
-            let option;
-            for (var i = 0; i < allActividades.length; i++) {
-                option             = document.createElement('option');
-                option.value       = allActividades[i].actividad.id;
-                option.text        = allActividades[i].actividad.nombre;
-                actividadesSelect.add(option);
-                optionClave        = document.createElement('option');
-                optionClave.value  = allActividades[i].actividad.id;
-                optionClave.text   = allActividades[i].actividad.clave;
-                optionClave.actividadId = allActividades[i].actividad.id;
-                actividadesClaveSelect.add(optionClave);
-            }
-        }
     </script>
+
+    <script src="{{ asset('js/reservaciones/main.js') }}"></script>
+    <script src="{{ asset('js/reservaciones/edit.js') }}"></script>
+
 @endsection
 @section('content')
     <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -841,7 +104,7 @@
                         <form class="row g-3 align-items-center f-auto" id="reservacion-form">
                             @csrf
                             <div class="col-12 mt-3">
-                                <strong>Datos del ciente</strong>
+                                <strong>Datos del cliente</strong>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
@@ -902,7 +165,7 @@
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="agregar-reservacion" tabindex="10">+</button>
+                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
                             </div>
                             <div class="form-group col-12 mt-8 mb-2 bd-t">
                                 <div class="row">
@@ -979,7 +242,12 @@
                                             <div class="col-4 mt-0 mb-0">
                                                 <label for="codigo-descuento" class="col-form-label">Código descuento</label>
                                                 <div class="input-button">
-                                                    <input type="text" name="codigo-descuento" id="codigo-descuento"  class="form-control" autocomplete="off" tabindex="13">
+                                                    <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
+                                                        <option value='0' selected="true">Seleccionar codigo</option>
+                                                        @foreach($descuentosCodigo as $descuentoCodigo)
+                                                            <option value="{{$descuentoCodigo->nombre}}" >{{$descuentoCodigo->nombre}}</option>
+                                                        @endforeach
+                                                    </select>
                                                     <button id="add-codigo-descuento" class="btn btn-info btn-block form-control" data-bs-toggle="modal" data-bs-target="#verificacion-modal">verificar</button>
                                                 </div>
                                             </div>

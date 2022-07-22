@@ -26,9 +26,9 @@ use App\Http\Controllers\DescuentoCodigoController;
 |
 */
 
-Route::get('/', function () {
-    return redirect()->route("disponibilidad")->with(["result" => ""]);
-})->middleware(['auth'])->name('disponibilidad');
+//Route::get('/', function () {
+//    return redirect()->route("disponibilidad")->with(["result" => ""]);
+//})->middleware(['auth'])->name('disponibilidad');
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');

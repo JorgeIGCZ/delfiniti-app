@@ -16,25 +16,25 @@ class TipoPagoSeeder extends Seeder
     public function run()
     {
         TipoPago::create([
-            'nombre'   => 'efectivo'
+            'nombre'   => 'Efectivo'
         ]);
         TipoPago::create([
-            'nombre'   => 'efectivoUsd'
+            'nombre'   => 'Efectivo USD'
         ]);
         TipoPago::create([
-            'nombre'   => 'tarjeta'
+            'nombre'   => 'Tarjeta'
         ]);
         TipoPago::create([
-            'nombre'   => 'cupon'
+            'nombre'   => 'Cupón'
         ]);
         TipoPago::create([
-            'nombre'   => 'descuentoCodigo'
+            'nombre'   => 'Código Descuento'
         ]);
         TipoPago::create([
-            'nombre'   => 'descuentoPersonalizado'
+            'nombre'   => 'Descuento Personalizado'
         ]);
         TipoPago::create([
-            'nombre'   => 'cambio'
+            'nombre'   => 'Cambio'
         ]);
     }
 }

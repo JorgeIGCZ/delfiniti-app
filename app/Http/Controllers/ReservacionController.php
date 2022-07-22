@@ -46,17 +46,18 @@ class ReservacionController extends Controller
      */
     public function create(Request $request)
     {
-        $estados        = Estado::all();
-        $alojamientos   = Alojamiento::all();
-        $cerradores     = Cerrador::all();
-        $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
+        $estados          = Estado::all();
+        $alojamientos     = Alojamiento::all();
+        $cerradores       = Cerrador::all();
+        $descuentosCodigo = DescuentoCodigo::all();
+        $actividades      = Actividad::whereRaw('NOW() >= fecha_inicial')
                             ->whereRaw('NOW() <= fecha_final')
                             ->orWhere('duracion','indefinido')
                             ->get();
-        $comisionistas   = Comisionista::all();
-        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+        $comisionistas     = Comisionista::all();
+        $dolarPrecioCompra = TipoCambio::where('seccion_uso', 'general')->first();
         
-        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
+        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo]);
     }
 
     public function getDescuentoPersonalizadoValidacion(Request $request){
@@ -330,6 +331,7 @@ class ReservacionController extends Controller
         $estados        = Estado::all();
         $alojamientos   = Alojamiento::all();
         $cerradores     = Cerrador::all();
+        $descuentosCodigo = DescuentoCodigo::all();
         $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
                             ->whereRaw('NOW() <= fecha_final')
                             ->orWhere('duracion','indefinido')
@@ -337,7 +339,7 @@ class ReservacionController extends Controller
         $comisionistas   = Comisionista::all();
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         
-        return view('reservaciones.edit',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores]);
+        return view('reservaciones.edit',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores, 'descuentosCodigo' => $descuentosCodigo]);
     }
     /**
      * Update the specified resource in storage.
