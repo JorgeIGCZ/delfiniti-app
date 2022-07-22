@@ -80,10 +80,6 @@ function setCodigoDescuento(descuento){
     
 }
 
-function getDolarPrecioCompra(){
-    return dolarPrecioCompra();
-}
-
 function enablePagar(status){
     let reservar = document.getElementById('reservar');
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');

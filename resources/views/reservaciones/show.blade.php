@@ -680,11 +680,11 @@
             return resta;
         }
         function getMXNFromUSD(usd){
-            const dolarPrecio = getDolarPrecioCompra();
+            const dolarPrecio = dolarPrecioCompra();
             
             return usd*dolarPrecio;
         }
-        function getDolarPrecioCompra(){
+        function dolarPrecioCompra(){
             return {{$dolarPrecioCompra->precio_compra}};
         }
 

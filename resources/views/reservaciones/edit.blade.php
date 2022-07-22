@@ -7,7 +7,7 @@
         const isReservacionPagada = () => {
             return {{$reservacion->estatus == 2 ? 1 : 0}};
         }
-        const dolarPrecioCompra = () =>{
+        const getDolarPrecioCompra = () =>{
             return  {{$dolarPrecioCompra->precio_compra}};
         }
         const isAdmin = () => {

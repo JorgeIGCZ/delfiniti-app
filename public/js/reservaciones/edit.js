@@ -542,7 +542,7 @@
         }
 
         function getMXNFromUSD(usd){
-            const dolarPrecio = getDolarPrecioCompra();
+            const dolarPrecio = dolarPrecioCompra();
             
             return usd*dolarPrecio;
         }

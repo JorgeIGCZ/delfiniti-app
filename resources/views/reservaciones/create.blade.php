@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        const getDolarPrecioCompra = () => {
+        const dolarPrecioCompra = () => {
             return {{$dolarPrecioCompra->precio_compra}};
         }
         const isAdmin = () => {
