@@ -216,6 +216,9 @@ class ReservacionController extends Controller
     } 
 
     private function isValidDescuentoCupon($request){
+        if($request->comisionista == "0"){
+            return false;
+        }
         $comisionistaId = $request->comisionista;
         $comisionista   = Comisionista::find($comisionistaId);
 
@@ -240,7 +243,7 @@ class ReservacionController extends Controller
                 'cantidad'       =>  (float)$cantidad,
                 'tipo_pago_id'   =>  $tipoPagoId,
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
-                'valor'          =>  (float)($request[$tipoPago]['valor'] ?? 0),
+                'valor'          =>  $request[$tipoPago]['valor'] ?? '',
                 'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
             ]);
             $result = is_numeric($pago['id']);
