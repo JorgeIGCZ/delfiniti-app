@@ -1,7 +1,5 @@
         let allActividades      = [];
         let reservacionesArray  = [];
-
-        window.onload = function() {
             
             /*
             document.getElementById('add-descuento-cupon').addEventListener('click', (event) =>{
@@ -104,7 +102,7 @@
                 setTimeout(validateFecha(),500);
             });
 
-        };
+        
 
         //jQuery
         $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
