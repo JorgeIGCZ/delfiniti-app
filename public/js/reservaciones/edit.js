@@ -441,14 +441,14 @@
 
         function blockDescuentos(nombre){
             switch (nombre){
-                case 'Cupón':
+                case 'cupon':
                     document.getElementById('comisionista').setAttribute('disabled','disabled');
                     break;
-                case 'Código Descuento':
+                case 'descuentoCodigo':
                     document.getElementById('codigo-descuento').setAttribute('disabled','disabled');
                     document.getElementById('add-codigo-descuento').setAttribute('disabled','disabled');
                     break;
-                case 'Descuento Personalizado':
+                case 'descuentoPersonalizado':
                     document.getElementById('add-descuento-personalizado').setAttribute('disabled','disabled');
                     break;
             }
