@@ -20,7 +20,7 @@ return new class extends Migration
             $table->float('cantidad');
             $table->integer('tipo_pago_id');
             $table->float('tipo_cambio_usd')->nullable();
-            $table->float('valor')->nullable();
+            $table->string('valor')->nullable();
             $table->string('tipo_valor')->nullable();
             $table->timestamps();
         });
