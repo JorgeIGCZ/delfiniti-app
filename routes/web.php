@@ -28,9 +28,9 @@ use App\Models\Actividad;
 |
 */
 
-//Route::get('/', function () {
-//    return redirect()->route("disponibilidad")->with(["result" => ""]);
-//})->middleware(['auth'])->name('disponibilidad');
+Route::get('/', function () {
+    return redirect()->route("disponibilidad")->with(["result" => ""]);
+})->middleware(['auth'])->name('disp');
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');
