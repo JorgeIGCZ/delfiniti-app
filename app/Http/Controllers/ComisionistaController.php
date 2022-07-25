@@ -77,7 +77,8 @@ class ComisionistaController extends Controller
                     'comision'          => $comisionista->comision,
                     'representante'     => $comisionista->representante,
                     'direccion'         => $comisionista->direccion,
-                    'telefono'          => $comisionista->telefono
+                    'telefono'          => $comisionista->telefono,
+                    'estatus'           => $comisionista->estatus
                 ];
             }
             return json_encode(['data' => $comisionistasArray]);
@@ -95,6 +96,26 @@ class ComisionistaController extends Controller
     {
         $tipos        = ComisionistaTipo::all();
         return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $tipos]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateEstatus(Request $request, $id){
+        try{
+            $Alojamiento          = Comisionista::find($id);
+            $Alojamiento->estatus = $request->estatus;
+            $Alojamiento->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => 'Success']);
     }
 
     /**

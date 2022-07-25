@@ -47,14 +47,14 @@ class ReservacionController extends Controller
     public function create(Request $request)
     {
         $estados          = Estado::all();
-        $alojamientos     = Alojamiento::all();
-        $cerradores       = Cerrador::all();
-        $descuentosCodigo = DescuentoCodigo::all();
+        $alojamientos     = Alojamiento::where('estatus',1)->get();
+        $cerradores       = Cerrador::where('estatus',1)->get();
+        $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::whereRaw('NOW() >= fecha_inicial')
                             ->whereRaw('NOW() <= fecha_final')
                             ->orWhere('duracion','indefinido')
                             ->get();
-        $comisionistas     = Comisionista::all();
+        $comisionistas     = Comisionista::where('estatus',1)->get();
         $dolarPrecioCompra = TipoCambio::where('seccion_uso', 'general')->first();
         
         return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo]);

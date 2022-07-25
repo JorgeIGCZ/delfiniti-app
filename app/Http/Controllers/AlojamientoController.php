@@ -107,6 +107,26 @@ class AlojamientoController extends Controller
     }
 
     /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateEstatus(Request $request, $id){
+        try{
+            $Alojamiento          = Alojamiento::find($id);
+            $Alojamiento->estatus = $request->estatus;
+            $Alojamiento->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => 'Success']);
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Localizacion  $localizacion

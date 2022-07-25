@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('tipo')->comment('porcentaje cantidad');
             $table->double('descuento');
+            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }

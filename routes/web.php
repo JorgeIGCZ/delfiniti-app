@@ -34,6 +34,7 @@ use App\Models\Actividad;
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');
+    Route::patch('comisionistas/estatus/{actividad}', 'updateEstatus');
     Route::resource('comisionistas',ComisionistaController::class, [
         'parameters' => [
             'comisionistas' => 'comisionista'
@@ -74,6 +75,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
 }); 
 Route::controller(AlojamientoController::class)->middleware(['auth'])->group(function () {
     Route::get('/alojamientos/show/{alojamiento?}', 'show');
+    Route::patch('alojamientos/estatus/{actividad}', 'updateEstatus');
     Route::resource('alojamientos',AlojamientoController::class, [
         'parameters' => [
             'alojamientos' => 'alojamiento'
@@ -101,6 +103,7 @@ Route::controller(TipoCambioController::class)->middleware(['auth'])->group(func
 
 Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->group(function () {
     Route::get('/comisionistatipos/show/{comisionistatipo?}', 'show');
+    Route::patch('comisionistatipos/estatus/{actividad}', 'updateEstatus');
     Route::resource('comisionistatipos',ComisionistaTipoController::class, [
         'parameters' => [
             'comisionistatipos' => 'comisionistatipo'
@@ -119,6 +122,7 @@ Route::get('/imprimir/{actividad?}',[ImprimirController::class,'imprimirTicket']
 
 Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
     Route::get('cerradores/show/{cerrador?}', 'show');
+    Route::patch('cerradores/estatus/{actividad}', 'updateEstatus');
     Route::resource('cerradores',CerradorController::class, [
         'parameters' => [
             'cerradores' => 'cerrador'
@@ -129,6 +133,7 @@ Route::controller(CerradorController::class)->middleware(['auth'])->group(functi
 
 Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group(function () {
     Route::get('descuentocodigos/show/{descuentocodigo?}', 'show');
+    Route::patch('descuentocodigos/estatus/{actividad}', 'updateEstatus');
     Route::resource('descuentocodigos',DescuentoCodigoController::class, [
         'parameters' => [
             'descuentocodigos' => 'descuentocodigo'

@@ -15,30 +15,34 @@
             return response;
         }
 
-        function verificacionDestroy(id){
+        function verificacionInactivar(id){
             Swal.fire({
-                title: '¿Desea eliminar comisionista?',
-                text: "Este proceso no se puede revertir!",
+                title: '¿Desea inactivar al comisionista?',
+                text: "El comisionista dejará de estar disponible!!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: '¡Si, Eliminar!'
+                confirmButtonText: '¡Si, inactivar!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    destroyComisionista(id);
+                    updateComisionistaEstatus(id,0);
                 }else{
                     return false;
                 }
             }) 
         }
-        function destroyComisionista(id){
-            axios.delete(`/comisionistas/${id}`)
+        function updateComisionistaEstatus(id,estatus){
+            axios.post(`comisionistas/estatus/${id}`, {
+                '_token'  : '{{ csrf_token() }}',
+                'estatus' : estatus,
+                '_method' : 'PATCH'
+            })
             .then(function (response) {
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
-                        title: 'Registro eliminado',
+                        title: 'Registro actualizado',
                         showConfirmButton: false,
                         timer: 1500
                     })
@@ -46,7 +50,7 @@
                 }else{
                     Swal.fire({
                         icon: 'error',
-                        title: 'Eliminacion fallida',
+                        title: 'Actualización fallida',
                         html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
                         showConfirmButton: true
                     })
@@ -55,7 +59,7 @@
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Eliminacion fallida',
+                    title: 'Actualización fallida',
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
@@ -142,15 +146,27 @@
                     { data: 'representante' },
                     { data: 'direccion' },
                     { data: 'telefono' },
+                    { defaultContent: 'estatus', 'render': function ( data, type, row ) 
+                        {
+                            if(row.estatus){
+                                    return 'Activo';
+                            }
+                            return 'Inactivo';
+                        }
+                    },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
-                            let removeRow = '';
+                            let estatusRow = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
-                                removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
+                                if(row.estatus){
+                                    estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
+                                }else{
+                                    estatusRow = `| <a href="#!" onclick="updateComisionistaEstatus(${row.id},1)" >Reactivar</a>`;
+                                }
                             //}
                             let view    =   `<small> 
                                                 <a href="comisionistas/${row.id}/edit">Editar</a>
-                                                ${removeRow}
+                                                ${estatusRow}
                                             </small>`;
                             return  view;
                         }
@@ -262,6 +278,7 @@
                                         <th>Representante</th>
                                         <th>Dirección</th>
                                         <th>Teléfono</th>
+                                        <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

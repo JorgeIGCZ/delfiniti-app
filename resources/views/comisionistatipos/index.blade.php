@@ -103,7 +103,6 @@
                             //}
                             let view    =   `<small> 
                                                 <a href="comisionistatipos/${row.id}/edit">Editar</a>
-                                                ${removeRow}
                                             </small>`;
                             return  view;
                         }

@@ -60,6 +60,7 @@ class CerradorController extends Controller
                     'iva'          => $cerrador->iva,
                     'comision'     => $cerrador->comision,
                     'direccion'    => $cerrador->direccion,
+                    'estatus'      => $cerrador->estatus,
                     'telefono'     => $cerrador->telefono
                 ];
             }
@@ -112,6 +113,27 @@ class CerradorController extends Controller
      */
     public function create(Request $request)
     {
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateEstatus(Request $request, $id){
+        try{
+            $Alojamiento          = Cerrador::find($id);
+            $Alojamiento->estatus = $request->estatus;
+            $Alojamiento->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => 'Success']);
     }
 
 
