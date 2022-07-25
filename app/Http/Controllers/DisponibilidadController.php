@@ -41,7 +41,6 @@ class DisponibilidadController extends Controller
                 ->whereRaw(" '$fechaActividades' >= fecha_inicial")
                 ->whereRaw(" '$fechaActividades' <= fecha_final")
                 ->orWhere('duracion','indefinido')
-                ->whereRaw(" '$fechaActividades' <= fecha_final")
                 ->whereRaw('estatus = 1');
         })->with(['reservacion' => function ($query) use ($fechaActividades) {
                 $query->where('fecha', "{$fechaActividades}");
