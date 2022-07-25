@@ -15,6 +15,8 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Models\Actividad;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -42,6 +44,7 @@ Route::controller(ComisionistaController::class)->middleware(['auth'])->group(fu
 
 Route::controller(ActividadController::class)->middleware(['auth'])->group(function () {
     Route::get('actividades/show/{actividad?}', 'show');
+    Route::patch('actividades/estatus/{actividad}', 'updateEstatus');
     Route::resource('actividades',ActividadController::class, [
         'parameters' => [
             'actividades' => 'actividad'

@@ -2,29 +2,33 @@
 @section('scripts')
     <script>
         let actividadesTable;
-        function verificacionDestroy(id){
+        function verificacionInactivar(id){
             Swal.fire({
-                title: '¿Desea eliminar actividad?',
-                text: "Este proceso no se puede revertir!",
+                title: '¿Desea inactivar la actividad?',
+                text: "La actividad dejará de estar disponible!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: '¡Si, Eliminar!'
+                confirmButtonText: '¡Si, Inactivar!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    destroyActividad(id);
+                    updateActividadEstatus(id,0);
                 }else{
                     return false;
                 }
             }) 
         }
-        function destroyActividad(id){
-            axios.delete(`/actividades/${id}`)
+        function updateActividadEstatus(id,estatus){
+            axios.post(`actividades/estatus/${id}`, {
+                '_token'  : '{{ csrf_token() }}',
+                'estatus' : estatus,
+                '_method' : 'PATCH'
+            })
             .then(function (response) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Registro eliminado',
+                    title: 'Registro actualizado',
                     showConfirmButton: false,
                     timer: 1500
                 })
@@ -33,7 +37,7 @@
             .catch(function (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Eliminacion fallida',
+                    title: 'Actualización fallida',
                     html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                     showConfirmButton: true
                 })
@@ -184,15 +188,28 @@
                     { data: 'precio' },
                     { data: 'capacidad' },
                     { data: 'duracion' },
+                    { defaultContent: 'estatus', 'render': function ( data, type, row ) 
+                        {
+                            if(row.estatus){
+                                    return 'Activo';
+                            }
+                            return 'Inactivo';
+                        }
+                    },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
-                            let removeRow = '';
+                            let estatusRow = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
-                                removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
+                                if(row.estatus){
+                                    estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
+                                }else{
+                                    estatusRow = `| <a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
+                                }
+                                
                             //}
                             let view    =   `<small> 
                                                 <a href="actividades/${row.id}/edit/">Editar</a>
-                                                ${removeRow}
+                                                ${estatusRow}
                                             </small>`;
                             return  view;
                         }
@@ -305,6 +322,7 @@
                                         <th>Precio</th>
                                         <th>Capacidad</th>
                                         <th>Duración</th>
+                                        <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

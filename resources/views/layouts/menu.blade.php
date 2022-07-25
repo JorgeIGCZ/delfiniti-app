@@ -1,9 +1,15 @@
 <ul class="nav">
     @can('Reportes.index')
-    <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}} show">
+    <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
       <a href="{{ url('reportes') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
     </li>
     @endcan
+
+    <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
+      <a href="{{ url('checkin') }}" class="nav-link"><i class="typcn typcn-tick-outline"></i> Check-in</a>
+    </li>
+
+
     @can('Disponibilidad.index')
     <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
       <a href="{{ url('disponibilidad') }}" class="nav-link"><i class="typcn  typcn typcn-ticket"></i> Disponibilidad</a>
@@ -64,7 +70,7 @@
               @endcan
 
               @can('CodigosDescuento.index')
-              <a href="{{ url('/descuentocodigos') }}" class="nav-link {{url()->current() == url('descuentocodigos') ? 'active' : ''}}">Codigo descuentos</a>
+              <a href="{{ url('/descuentocodigos') }}" class="nav-link {{url()->current() == url('descuentocodigos') ? 'active' : ''}}">Códigos descuento</a>
               @endcan
 
             </nav>

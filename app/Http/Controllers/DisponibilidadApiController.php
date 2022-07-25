@@ -24,7 +24,8 @@ class DisponibilidadApiController extends Controller
 
         $actividades = Actividad::whereRaw('NOW() >= fecha_inicial')
                 ->whereRaw('NOW() <= fecha_final')
-                ->orWhere('duracion','indefinido')->get();
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')->get();
         $actividadesHorarios = [];
         foreach ($actividades as $key => $value) {
             $actividadesHorarios[] = ['actividad'=>$value,'horarios'=>$value->horarios];

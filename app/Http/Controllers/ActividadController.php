@@ -130,7 +130,25 @@ class ActividadController extends Controller
     {
     }
 
-
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateEstatus(Request $request, $id){
+        try{
+            $actividad          = Actividad::find($id);
+            $actividad->estatus = $request->estatus;
+            $actividad->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => 'Success']);
+    }
     /**
      * Remove the specified resource from storage.
      *
