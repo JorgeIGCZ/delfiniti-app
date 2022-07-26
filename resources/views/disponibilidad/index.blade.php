@@ -130,8 +130,10 @@
                                                     <p class="mg-b-0">Reserv. total: <span>
                                                             @php
                                                                 $numeroReservaciones = 0;
-                                                                foreach ($actividadHorario->reservacionDetalle as $reservacionDetalle) {
-                                                                    $numeroReservaciones += $reservacionDetalle->numero_personas;
+                                                                foreach ($actividadHorario->reservacion as $reservacion) {
+                                                                    foreach ($reservacion->reservacionDetalle as $reservacionDetalle){
+                                                                        $numeroReservaciones += $reservacionDetalle->numero_personas;
+                                                                    }
                                                                 }
                                                             @endphp
                                                             {{ $numeroReservaciones }}

@@ -23,7 +23,7 @@ class DisponibilidadController extends Controller
         $fechaActividades    = (is_null($request->fecha_actividades) ? date('Y-m-d') : $request->fecha_actividades);
         $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
         $reservaciones       = Reservacion::where('fecha',$fechaActividades)->count();
-        //dd($reservaciones);
+        
         $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',2)->count();
         
         return view("disponibilidad.index",[
