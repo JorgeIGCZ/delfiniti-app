@@ -5,7 +5,7 @@
             return {{$reservacion->id}};
         }
         const isReservacionPagada = () => {
-            return {{$reservacion->estatus == 2 ? 1 : 0}};
+            return {{$reservacion->estatus_pago == 2 ? 1 : 0}};
         }
         const dolarPrecioCompra = () =>{
             return  {{$dolarPrecioCompra->precio_compra}};
@@ -157,7 +157,7 @@
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
-                                <input type="number" name="disponibilidad" class="form-control" value="0" disabled="disabled" >
+                                <input type="number" name="disponibilidad" id="disponibilidad" class="form-control" value="0" disabled="disabled" >
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>

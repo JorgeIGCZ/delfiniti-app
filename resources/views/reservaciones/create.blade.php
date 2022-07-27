@@ -106,7 +106,7 @@
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
-                                <input type="number" name="disponibilidad" class="form-control" value="0" disabled="disabled" >
+                                <input type="number" name="disponibilidad" id="disponibilidad" class="form-control" value="0" disabled="disabled" >
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">

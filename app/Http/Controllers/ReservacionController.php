@@ -116,13 +116,17 @@ class ReservacionController extends Controller
      */
     public function store(Request $request)
     {   
+        $actividad = new ActividadController();
         $email    = Auth::user()->email;
         $password = "";
-        $estatus  = ($request->estatus == "pagar-reservar");
-        $pagado   = ($estatus ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
+        $estatusPago  = ($request->estatus == "pagar-reservar");
+        $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
         DB::beginTransaction();
         try{
+            if(!$actividad->isDisponible($request)){
+                return json_encode(['result' => 'Error','message' => 'No hay disponibilidad suficiente en la actividad seleccionada para ese horario.']);
+            }
             $reservacion = Reservacion::create([
                 'nombre_cliente'  => $request->nombre,
                 'email'           => $request->email,
@@ -132,7 +136,7 @@ class ReservacionController extends Controller
                 'comisionista_id' => $request->comisionista,
                 'cerrador_id'     => $request->cerrador,
                 'comentarios'     => $request->comentarios,
-                'estatus'         => $estatus,
+                'estatus_pago'    => $estatusPago,
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
@@ -153,7 +157,7 @@ class ReservacionController extends Controller
                 ]); 
             }
             
-            if($estatus){
+            if($estatusPago){
                 
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
@@ -181,8 +185,8 @@ class ReservacionController extends Controller
             DB::commit();
 
             if($this->reservacionPagadaTotal($reservacion['id'])){
-                $reservacion        = Reservacion::find($reservacion['id']);
-                $reservacion->estatus = 2;
+                $reservacion              = Reservacion::find($reservacion['id']);
+                $reservacion->estatus_pago = 2;
                 $reservacion->save();
             }
 
@@ -194,7 +198,7 @@ class ReservacionController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
     }
-    
+
     private function getCantidadPagada($request,$email){
         $pagosAnteriores = (float)($request->pagosAnteriores) ?? 0;
         $pagado          = $pagosAnteriores
@@ -358,7 +362,7 @@ class ReservacionController extends Controller
         try{
             $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
             $adeudo   = ((float)$request->total - (float)$pagado);
-            $estatus  = ($request->estatus == "pagar");
+            $pagar    = ($request->estatus == "pagar");
             
             $reservacion                  = Reservacion::find($id);
             $reservacion->nombre_cliente  = $request->nombre;
@@ -370,8 +374,8 @@ class ReservacionController extends Controller
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = $request->comentarios;
             $reservacion->fecha           = $request->fecha;
-            if($estatus){
-                $reservacion->estatus = $estatus;
+            if($pagar){
+                $reservacion->estatus_pago = 1;
             }
             $reservacion->save();
 
@@ -395,7 +399,7 @@ class ReservacionController extends Controller
                 ]); 
             }
             
-            if($estatus){
+            if($pagar){
                 
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
@@ -419,8 +423,8 @@ class ReservacionController extends Controller
             DB::commit();
 
             if($this->reservacionPagadaTotal($reservacion['id'])){
-                $reservacion          = Reservacion::find($reservacion['id']);
-                $reservacion->estatus = 2;
+                $reservacion               = Reservacion::find($reservacion['id']);
+                $reservacion->estatus_pago = 2;
                 $reservacion->save();
             }
 

@@ -19,6 +19,7 @@ class Reservacion extends Model
         'comisionista_id',
         'cerrador_id',
         'comentarios',
+        'estatus_pago',
         'estatus',
         'fecha',
         'fecha_creacion'

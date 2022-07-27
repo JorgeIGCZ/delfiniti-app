@@ -125,16 +125,6 @@
             enableBtn('reservar',reservacionesArray.length > 0);
             setTotal();
         } );
-        $('#clave-actividad').on('change', function (e) {
-            changeActividad();
-        });
-        $('#actividades').on('change', function (e) {
-            changeClaveActividad();
-        });
-        $('#comisionista').on('change', function (e) {
-            changeCuponDetalle();
-            document.getElementById('reservacion-form').elements['cupon'].focus();
-        });
 
         function applyVariables(){
             const queryString = window.location.search;
@@ -181,18 +171,6 @@
 
         function applyDescuentoPassword($elementId){
             document.getElementById($elementId).setAttribute('password',document.getElementById('password').value);
-        }
-
-        function changeCuponDetalle() {
-            const comisionista    = document.getElementById('comisionista');
-            const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
-            const cupon           = document.getElementById('cupon');
-    
-            document.getElementById('cupon').setAttribute('value',0);
-            document.getElementById('cupon').value = 0;
-            document.getElementById('reservacion-form').elements['cupon'].focus();
-
-            (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
         }
 
         function removeCupon(cupon){
@@ -592,26 +570,6 @@
                     }
                 }
             }
-        }
-
-        function changeClaveActividad() {
-            const actividades = document.getElementById('actividades');
-            document.getElementById('clave-actividad').value = actividades.value;
-            document.getElementById('clave-actividad').text = actividades.value;
-
-            //$('#clave-actividad').trigger('change.select2');
-            getActividadHorario();
-            getActividadPrecio();
-        }
-
-        function changeActividad() {
-            const claveActividad = document.getElementById('clave-actividad');
-            document.getElementById('actividades').value = claveActividad.value;
-            document.getElementById('actividades').text = claveActividad.value;
-        
-            //$('#actividades').trigger('change.select2');
-            getActividadHorario();
-            getActividadPrecio();
         }
 
         function displayActividad(){

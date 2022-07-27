@@ -6,7 +6,9 @@ use App\Models\Actividad;
 use App\Models\ActividadHorario;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
-
+use App\Models\ReservacionDetalle;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class ActividadController extends Controller
 {
@@ -19,6 +21,36 @@ class ActividadController extends Controller
     {
         return view('actividades.index');
     }
+
+    public function isDisponible($request){
+        foreach($request->reservacionArticulos as $reservacionArticulo){
+            $actividadDisponibilidad = $this->getActividadDisponibilidad($reservacionArticulo['actividad'],$request->fecha,$reservacionArticulo['horario']);
+            if($actividadDisponibilidad < $reservacionArticulo['cantidad']){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function getActividadDisponibilidad($id,$fecha,$horario){
+        $capacidad           = Actividad::where('id',$id)->first()->capacidad;
+        $numeroReservaciones = 0;
+        $reservacionDetalles = ReservacionDetalle::whereHas('reservacion', function (Builder $query) use ($fecha) {
+            $query
+                ->where('fecha',"{$fecha}")
+                ->where('estatus',1);
+            })
+            ->where('actividad_id',$id)
+            ->where('actividad_horario_id',$horario)
+            ->get();
+        
+        foreach($reservacionDetalles as $reservacionDetalle){
+            $numeroReservaciones += $reservacionDetalle->numero_personas;
+        }
+        
+        return ($capacidad-$numeroReservaciones);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

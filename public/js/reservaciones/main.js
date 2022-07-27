@@ -1,3 +1,23 @@
+function getActividadDisponibilidad(){
+    const actividad   = document.getElementById('actividades').value;
+    const fecha       = document.getElementById('fecha').value;
+    const horario     = document.getElementById('horarios').value;
+
+    axios.get(`/api/disponibilidad/actividadDisponibilidad/${actividad}/${fecha}/${horario}`)
+    .then(function (response) {
+        displayDisponibilidad(response.data.disponibilidad);
+    })
+    .catch(function (error) {
+        displayDisponibilidad(0);
+    });
+}
+function displayDisponibilidad(disponibilidad){
+    const cantidadElement       = document.getElementById('cantidad');
+    const disponibilidadElement = document.getElementById('disponibilidad');
+
+    cantidadElement.setAttribute('max',disponibilidad);
+    disponibilidadElement.value = disponibilidad;
+}
 
 let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,
@@ -32,6 +52,21 @@ window.onload = function() {
 };
 
 //jQuery
+ $('#clave-actividad').on('change', function (e) {
+    changeActividad();
+});
+$('#actividades').on('change', function (e) {
+    changeClaveActividad();
+});
+$('#horarios').on('change', function (e) {
+    getActividadDisponibilidad();
+});
+$('#comisionista').on('change', function (e) {
+    changeCuponDetalle();
+    document.getElementById('reservacion-form').elements['cupon'].focus();
+});
+
+
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
     
@@ -53,6 +88,40 @@ $('body').on('keydown', 'input, select, button', function(e) {
         return false;
     }
 });
+
+function changeCuponDetalle() {
+    const comisionista    = document.getElementById('comisionista');
+    const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
+    const cupon           = document.getElementById('cupon');
+
+    document.getElementById('cupon').setAttribute('value',0);
+    document.getElementById('cupon').value = 0;
+    document.getElementById('reservacion-form').elements['cupon'].focus();
+
+    (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
+}
+
+function changeClaveActividad() {
+    const actividades = document.getElementById('actividades');
+    document.getElementById('clave-actividad').value = actividades.value;
+    document.getElementById('clave-actividad').text = actividades.value;
+
+    //$('#clave-actividad').trigger('change.select2');
+    getActividadHorario();
+    getActividadDisponibilidad();
+    getActividadPrecio();
+}
+
+function changeActividad() {
+    const claveActividad = document.getElementById('clave-actividad');
+    document.getElementById('actividades').value = claveActividad.value;
+    document.getElementById('actividades').text = claveActividad.value;
+
+    //$('#actividades').trigger('change.select2');
+    getActividadHorario();
+    getActividadDisponibilidad();
+    getActividadPrecio();
+}
 
 function getDescuento(descuento){
     const total = document.getElementById('total').getAttribute('value');

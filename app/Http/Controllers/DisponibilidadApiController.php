@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Actividad;
+use App\Models\ReservacionDetalle;
 use Illuminate\Database\Eloquent\Builder;
 
 class DisponibilidadApiController extends Controller
@@ -38,6 +39,7 @@ class DisponibilidadApiController extends Controller
         ],200);
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -55,9 +57,17 @@ class DisponibilidadApiController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function actividadDisponibilidad($id,$fecha,$horario)
     {
-        //
+        $actividad = new ActividadController();
+
+        $actividadDisponibilidad = $actividad->getActividadDisponibilidad($id,$fecha,$horario);
+        return response()->json([
+            'status' => true,
+            'message' => "Success",
+            'disponibilidad' => ($actividadDisponibilidad)
+
+        ],200);
     }
 
     /**

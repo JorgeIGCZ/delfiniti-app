@@ -22,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::apiResource('disponibilidad', DisponibilidadApiController::class);
+Route::get('disponibilidad/actividadDisponibilidad/{id}/{fecha}/{horario}',[DisponibilidadApiController::class,'actividadDisponibilidad']);
