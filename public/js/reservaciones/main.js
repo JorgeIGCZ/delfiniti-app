@@ -18,6 +18,15 @@ function displayDisponibilidad(disponibilidad){
     cantidadElement.setAttribute('max',disponibilidad);
     disponibilidadElement.value = disponibilidad;
 }
+function isActividadDuplicada(nuevaActividad){
+    let duplicado = 0;
+    reservacionesArray.forEach( function (actividad) {
+        if(actividad.claveActividad == nuevaActividad.claveActividad && actividad.horario == nuevaActividad.horario){
+            duplicado += 1;
+        }
+    });
+    return duplicado;
+}
 
 let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,

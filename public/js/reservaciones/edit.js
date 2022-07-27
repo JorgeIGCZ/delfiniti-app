@@ -369,6 +369,15 @@
             const precio         = document.getElementById('precio').value;
             const horario        = document.getElementById('horarios').value;
             const acciones       = `<a href="#reservaciones" class='eliminar-celda' class='eliminar'>Eliminar</a>`
+            if(isActividadDuplicada({'claveActividad': claveActividad,'horario': horario})){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'La actividad ya se encuentra agregada.',
+                    showConfirmButton: false,
+                    timer: 800
+                });
+                return false;
+            }
             reservacionesTable.row.add( [ 
                 claveActividad,
                 actividadDetalle,
