@@ -57,14 +57,6 @@ window.onload = function() {
 
         document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
     });
-    
-    
-    document.getElementById('actualizar').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(formValidity('reservacion-form')){
-            createReservacion('actualizar');
-        }
-    });
 
     document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
         //resetDescuentos();
@@ -75,31 +67,6 @@ window.onload = function() {
             document.getElementById('password').focus();
         }
     });
-
-    document.getElementById('pagar').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(formValidity('reservacion-form')){
-            createReservacion('pagar');
-        }
-    });
-
-    document.getElementById('pagar-reservar').addEventListener('click', (event) =>{
-        if(formValidity('reservacion-form')){
-            createReservacion('pagar-reservar');
-        }
-    });
-
-    document.getElementById('reservar').addEventListener('click', (event) =>{
-        if(formValidity('reservacion-form')){
-            createReservacion('reservar');
-        }
-    });
-
-    document.getElementById('cancelar').addEventListener('click', (event) =>{
-        event.preventDefault();
-        resetReservaciones();
-    });
-
     document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
         setTimeout(setOperacionResultados(),500);
     });

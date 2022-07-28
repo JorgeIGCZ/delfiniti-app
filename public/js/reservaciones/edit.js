@@ -1,6 +1,20 @@
         let pagosTabla;
         let allActividades = [];
 
+        document.getElementById('actualizar').addEventListener('click', (event) =>{
+            event.preventDefault();
+            if(formValidity('reservacion-form')){
+                createReservacion('actualizar');
+            }
+        });
+
+        document.getElementById('pagar').addEventListener('click', (event) =>{
+            event.preventDefault();
+            if(formValidity('reservacion-form')){
+                createReservacion('pagar');
+            }
+        });
+        
             if((isReservacionPagada())){
                 bloquearPagos();
             }

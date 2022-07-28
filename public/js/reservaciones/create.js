@@ -1,5 +1,25 @@
         let allActividades   = [];
         let actvidadesArray  = [];
+
+
+
+    document.getElementById('pagar-reservar').addEventListener('click', (event) =>{
+        if(formValidity('reservacion-form')){
+            createReservacion('pagar-reservar');
+        }
+    });
+
+    document.getElementById('reservar').addEventListener('click', (event) =>{
+        if(formValidity('reservacion-form')){
+            createReservacion('reservar');
+        }
+    });
+
+    document.getElementById('cancelar').addEventListener('click', (event) =>{
+        event.preventDefault();
+        resetReservaciones();
+    });
+
             
         function applyVariables(){
             const queryString = window.location.search;
