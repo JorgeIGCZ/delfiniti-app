@@ -59,8 +59,8 @@ const format    = () => {
                     }
                     
                     .ticket {
-                        width: 190px;
-                        max-width: 190px;
+                        width: 215px;
+                        max-width: 215px;
                     }
                     
                     img {
