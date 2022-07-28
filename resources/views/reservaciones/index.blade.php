@@ -11,7 +11,7 @@
                     })
                     .catch(function (error) {
                     });
-                },
+                }, 
                 columns: [
                     { data: 'id' },
                     { data: 'folio' },
@@ -20,6 +20,7 @@
                     { data: 'personas' },
                     { data: 'horario' },
                     { data: 'fecha' },
+                    { data: 'fechaCreacion' },
                     { data: 'notas' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
@@ -61,6 +62,7 @@
                                         <th>Actividad</th>
                                         <th>Personas</th>
                                         <th>Horario</th>
+                                        <th>Fecha Actividad</th>
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>

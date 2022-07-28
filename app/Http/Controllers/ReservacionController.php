@@ -303,7 +303,8 @@ class ReservacionController extends Controller
                     'folio'        => @$reservacion->folio,
                     'actividad'    => $actividades,
                     'horario'      => $horario,
-                    'fecha'        => @$reservacion->fecha_creacion,
+                    'fechaCreacion' => @$reservacion->fecha_creacion,
+                    'fecha'        => @$reservacion->fecha,
                     'cliente'      => @$reservacion->nombre_cliente,
                     'personas'     => $numeroPersonas,
                     'notas'        => @$reservacion->comentarios

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
+        const env = 'create';
         const dolarPrecioCompra = () => {
             return {{$dolarPrecioCompra->precio_compra}};
         }
@@ -13,9 +14,26 @@
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }
+        const logo = () =>{ 
+            return '{{asset("assets/img/logo.png")}}';
+        }
+        const detalleReservacion = () =>{
+            const reservacion   = document.getElementById('reservacion-form');
+            const nombreCliente = reservacion.elements['nombre'].value;
+            const direccion     = reservacion.elements['alojamiento'].value;
+            const ciudad        = reservacion.elements['origen'].value;
+            
+            return {
+                'cajero'    : '{{Auth::user()->name}}',
+                'cliente'   : nombreCliente,
+                'dirección' : direccion,
+                'ciudad'    : ciudad
+            };
+        }
     </script>
     <script src="{{ asset('js/reservaciones/create.js') }}"></script>
     <script src="{{ asset('js/reservaciones/main.js') }}"></script>
+    <script src="{{ asset('js/reservaciones/ticket.js') }}"></script>
 @endsection
 @section('content')
     <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

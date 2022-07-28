@@ -20,7 +20,7 @@ function displayDisponibilidad(disponibilidad){
 }
 function isActividadDuplicada(nuevaActividad){
     let duplicado = 0;
-    reservacionesArray.forEach( function (actividad) {
+    actvidadesArray.forEach( function (actividad) {
         if(actividad.claveActividad == nuevaActividad.claveActividad && actividad.horario == nuevaActividad.horario){
             duplicado += 1;
         }
@@ -58,9 +58,136 @@ window.onload = function() {
         document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
     });
     
+    
+    document.getElementById('actualizar').addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(formValidity('reservacion-form')){
+            createReservacion('actualizar');
+        }
+    });
+
+    document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
+        //resetDescuentos();
+        if(document.getElementById('add-descuento-personalizado').checked){
+            $('#verificacion-modal').modal('show');
+            document.getElementById('add-descuento-personalizado').checked = false;
+            document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
+            document.getElementById('password').focus();
+        }
+    });
+
+    document.getElementById('pagar').addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(formValidity('reservacion-form')){
+            createReservacion('pagar');
+        }
+    });
+
+    document.getElementById('pagar-reservar').addEventListener('click', (event) =>{
+        if(formValidity('reservacion-form')){
+            createReservacion('pagar-reservar');
+        }
+    });
+
+    document.getElementById('reservar').addEventListener('click', (event) =>{
+        if(formValidity('reservacion-form')){
+            createReservacion('reservar');
+        }
+    });
+
+    document.getElementById('cancelar').addEventListener('click', (event) =>{
+        event.preventDefault();
+        resetReservaciones();
+    });
+
+    document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('efectivo').addEventListener('keyup', (event) =>{
+        //if(getResta() < 0){
+        //    document.getElementById('efectivo').value = '$0.00';
+        //    document.getElementById('efectivo').setAttribute('value',0);
+        //}
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
+        //if(getResta() < 0){
+        //    document.getElementById('efectivo-usd').value = '$0.00';
+        //    document.getElementById('efectivo-usd').setAttribute('value',0);
+        //}
+        setTimeout(setOperacionResultados(),500);
+    });
+    document.getElementById('tarjeta').addEventListener('keyup', (event) =>{
+        if(getResta() < 0){
+            document.getElementById('tarjeta').value = '$0.00';
+            document.getElementById('tarjeta').setAttribute('value',0);
+        }
+        setTimeout(setOperacionResultados(),500);
+    });
+
+
+
+    document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
+        if(getResta() < 0){
+            document.getElementById('descuento-codigo').value = '0%';
+            document.getElementById('descuento-codigo').setAttribute('value',0);
+        }
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('descuento-personalizado').addEventListener('keyup', (event) =>{
+        if(getResta() < 0){
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+        }
+        if(!isLimite()){
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+        }
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('cupon').addEventListener('keyup', (event) =>{
+        if(getResta() < 0){
+            document.getElementById('cupon').value = '0';
+            document.getElementById('cupon').setAttribute('value',0);
+        }
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('fecha').addEventListener('focusout', (event) =>{
+        setTimeout(validateFecha(),500);
+    });
 };
 
 //jQuery
+$('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
+    event.preventDefault();
+    reservacionesTable
+        .row( $(this).parents('tr') )
+        .remove()
+        .draw();
+
+    //remove clave from the array
+    const clave   = $(this).parents('tr')[0].firstChild.innerText;
+    const horario = $(this).parents('tr')[0].childNodes[2].innerText;
+    let updated   = 0;
+    actvidadesArray = actvidadesArray.filter(function (reservaciones) {
+        let result = (reservaciones.claveActividad !== clave && reservaciones.horario !== horario && updated == 0);
+        updated > 0 ? result = true : '';
+        !result ? updated++ : '';
+        return result;
+    });
+    if(env == 'create'){
+        enableBtn('reservar',actvidadesArray.length > 0);
+    }else{
+        enableBtn('actualizar',actvidadesArray.length > 0);
+    }
+    setTotal();
+} );
+
  $('#clave-actividad').on('change', function (e) {
     changeActividad();
 });

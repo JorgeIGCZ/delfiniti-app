@@ -8,6 +8,7 @@ use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\CerradorController;
+use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\ComisionistaTipoController;
@@ -72,7 +73,8 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
             'reservaciones' => 'reservacion'
         ]
     ]);
-}); 
+});
+
 Route::controller(AlojamientoController::class)->middleware(['auth'])->group(function () {
     Route::get('/alojamientos/show/{alojamiento?}', 'show');
     Route::patch('alojamientos/estatus/{actividad}', 'updateEstatus');
@@ -140,6 +142,16 @@ Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group
         ]
     ]);
     
+});
+
+Route::controller(CheckinController::class)->middleware(['auth'])->group(function () {
+    Route::get('checkin/show/{reservacion?}', 'show');
+    Route::patch('checkin/registro/{reservacion}', 'registroVisita');
+    Route::resource('checkin',CheckinController::class, [
+        'parameters' => [
+            'reservaciones' => 'reservacion'
+        ]
+    ]);
 });
 
 require __DIR__.'/auth.php';
