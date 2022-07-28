@@ -299,66 +299,68 @@
                                                         <input type="text" name="total-recibido" id="total-recibido" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
 
-                                                    <div id="detallePagoContainer">
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                        </div>
+                                                    <div class="col-12" id="detallePagoContainer">
+                                                        <div class="row">
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                            </div>
 
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                        </div>
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
-                                                        </div>
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                            </div>
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
+                                                            </div>
 
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="16">
-                                                        </div>
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="16">
+                                                            </div>
 
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
-                                                        </div>
-                                                        
-                                                        <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="cupon" class="col-form-label">Cupón:</label>
-                                                        </div>
-                                                        <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
-                                                        </div>
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
+                                                            </div>
+                                                            
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="cupon" class="col-form-label">Cupón:</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
+                                                            </div>
 
-                                                        <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
-                                                            <div class="row ">
-                                                                <div class="form-group col-7 mt-0 mb-0">
-                                                                    <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
-                                                                </div>
-                                                                <div class="form-group col-5 mt-0 mb-0">
-                                                                    <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
+                                                            <div id="descuento-codigo-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                                <div class="row ">
+                                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                                        <label for="descuento-codigo" class="col-form-label">Descuento (Código):</label>
+                                                                    </div>
+                                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                                        <input type="text" name="descuento-codigo" id="descuento-codigo" password="" class="form-control percentage not-editable height-auto" disabled="disabled" value="0" tipo='porcentaje'>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        
-                                                        <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
-                                                            <div class="row ">
-                                                                <div class="form-group col-7 mt-0 mb-0">
-                                                                    <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado):</label>
-                                                                </div>
-                                                                <div class="form-group col-5 mt-0 mb-0">
-                                                                    <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
+                                                            
+                                                            <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                                <div class="row ">
+                                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                                        <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado):</label>
+                                                                    </div>
+                                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                                        <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
