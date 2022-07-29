@@ -116,37 +116,37 @@ function createReservacion(estatus) {
         'comentarios': reservacion.elements['comentarios'].value,
         'estatus': estatus,
         'reservacionArticulos': actvidadesArray
-    })
-        .then(function (response) {
-            if (response.data.result == 'Success') {
+    }).then(function (response) {
+        if (response.data.result == 'Success') {
+            if (estatus === 'pagar-reservar') {
                 getTicket();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Reservacion creada',
-                    showConfirmButton: true,
-                    footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        resetReservaciones();
-                        location.reload();
-                    }
-                })
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Reservacion fallida`,
-                    text: response.data.message,
-                    showConfirmButton: true
-                })
             }
-        })
-        .catch(function (error) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Reservacion creada',
+                showConfirmButton: true,
+                footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    resetReservaciones();
+                    location.reload();
+                }
+            })
+        } else {
             Swal.fire({
                 icon: 'error',
-                title: `Reservacion fallida E:${error.message}`,
+                title: `Reservacion fallida`,
+                text: response.data.message,
                 showConfirmButton: true
             })
-        });
+        }
+    }).catch(function (error) {
+        Swal.fire({
+            icon: 'error',
+            title: `Reservacion fallida E:${error.message}`,
+            showConfirmButton: true
+        })
+    });
 }
 
 function resetReservaciones() {

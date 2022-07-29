@@ -177,6 +177,9 @@ function createReservacion(estatus) {
     })
         .then(function (response) {
             if (response.data.result == 'Success') {
+                if (estatus === 'pagar') {
+                    getTicket();
+                }
                 Swal.fire({
                     icon: 'success',
                     title: 'Reservacion actualizada',
