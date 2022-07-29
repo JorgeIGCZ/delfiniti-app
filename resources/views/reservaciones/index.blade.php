@@ -11,7 +11,7 @@
                     })
                     .catch(function (error) {
                     });
-                }, 
+                },
                 columns: [
                     { data: 'id' },
                     { data: 'folio' },
@@ -20,18 +20,36 @@
                     { data: 'personas' },
                     { data: 'horario' },
                     { data: 'fecha' },
+                    { defaultContent: 'Estatus', 'render': function ( data, type, row )
+                        {
+                            let estatus = '';
+                            switch (row.estatusPago) {
+                                case 0:
+                                    estatus = "<p class='pending'>Pendiente</p>";
+                                    break;
+                                case 1:
+                                    estatus = "<p class='partial'>Parcial</p>";
+                                    break;
+                                case 2:
+                                    estatus = "<p class='paid'>Pagado</p>";
+                                    break;
+                            }
+                            return  estatus;
+                        }
+                    },
                     { data: 'fechaCreacion' },
                     { data: 'notas' },
-                    { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
+                    { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
                         {
-                            let removeRow = '';
+                            let payRow = '';
                             let editRow   = '';
-                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
-                                removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
-                            //}
-                            editRow = `<a href="reservaciones/${row.id}/edit">Editar</a>`;
-                            let view    =   `<small> 
+                            editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a>`;
+                            if(row.estatusPago !== 2){
+                                payRow = `| <a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
+                            }
+                            let view    =   `<small>
                                                 ${editRow}
+                                                ${payRow}
                                             </small>`;
                             return  view;
                         }
@@ -63,6 +81,7 @@
                                         <th>Personas</th>
                                         <th>Horario</th>
                                         <th>Fecha Actividad</th>
+                                        <th>Estatus</th>
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>

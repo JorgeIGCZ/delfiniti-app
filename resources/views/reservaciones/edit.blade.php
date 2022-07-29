@@ -2,6 +2,7 @@
 @section('scripts')
     <script>
         const env = 'edit';
+        const accion = '{{ (@$_GET["accion"] === "pago" ? "pago" : "edit"); }}';
         const reservacionId = () => {
             return {{$reservacion->id}};
         }
@@ -21,15 +22,15 @@
             return  '{{Auth::user()->email}}';
         }
         const nombreCliente = () =>{
-            return 
+            return
         }
         const direccion = () =>{
-            return 
+            return
         }
         const ciudad = () =>{
-            return 
+            return
         }
-        
+
         let actvidadesArray         = [];
         let reservacionesTableArray = [];
         let pagosArray              = [];
@@ -69,7 +70,7 @@
                 'tipoPagoId': '{{$pago->tipo_pago_id}}',
                 'fechaPago' : '{{$pago->created_at}}'
             }];
-            
+
             nombreTipoPagoArray = [...nombreTipoPagoArray,'{{$pago->tipoPago->nombre}}'];
         @endforeach
 
@@ -117,22 +118,22 @@
                                 <strong>Datos del cliente</strong>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1" value={{$reservacion->nombre_cliente}}>  
+                                <label for="nombre" class="col-form-label">Nombre</label>
+                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
-                                <label for="email" class="col-form-label">Email</label>    
-                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">  
+                                <label for="email" class="col-form-label">Email</label>
+                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>
-                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3" value={{$reservacion->email}}>
+                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->email}}">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento === $alojamiento->id ? 'selected="selected' : ""}} >{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
-                            </div>  
+                            </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
@@ -334,7 +335,7 @@
                                                             <div class="form-group col-5 mt-0 mb-0">
                                                                 <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="17">
                                                             </div>
-                                                            
+
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="cupon" class="col-form-label">Cupón:</label>
                                                             </div>
@@ -352,7 +353,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
+
                                                             <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
                                                                 <div class="row ">
                                                                     <div class="form-group col-7 mt-0 mb-0">
@@ -372,9 +373,9 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
                                                     </div-->
-                                                    
 
-                                                    
+
+
                                                     <div class="form-group col-12 mt-0 mb-0">
                                                         <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="19">Pagar</button>
                                                     </div>
@@ -394,5 +395,5 @@
             </div>
         </div>
     </div>
-    
-@endsection         
+
+@endsection

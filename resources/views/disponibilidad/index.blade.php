@@ -4,6 +4,7 @@
         $(function() {
             reloadInactividad();
             let reservaciones = new DataTable('.reservaciones-table', {
+                order: [[0, 'desc']],
                 searching: false,
                 paging: false,
                 info: false,
@@ -157,9 +158,9 @@
                                                 </thead>
                                                 <tbody>
                                                     @foreach ($actividadHorario->reservacion as $reservacion)
-                                                        @php 
+                                                        @php
                                                             $estatus = '';
-                                                            switch ($reservacion->estatus) {
+                                                            switch ($reservacion->estatus_pago) {
                                                                 case 0:
                                                                     $estatus = 'Pendiente';
                                                                     break;
@@ -178,11 +179,16 @@
                                                             }
                                                         @endphp
                                                         <tr>
-                                                            <td>{{ $reservacion->id }}</td>
+                                                            <td>{{ $reservacion->folio }}</td>
                                                             <td>{{ $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
                                                             <td>{{ $estatus }}</td>
-                                                            <td><a href="{{ url('reservaciones/'.$reservacion->id.'/edit') }}">Editar</a></td>
+                                                            <td>
+                                                                <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">Editar</a>
+                                                                @if($reservacion->estatus_pago !== 2)
+                                                                   | <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=pago#detalle-reservacion-contenedor') }}">Pagar</a>
+                                                                @endif
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

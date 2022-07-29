@@ -2592,7 +2592,7 @@ input[type="button"].btn-block {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center; }
-  
+
   .btn-group-vertical > .btn,
   .sp-container .btn-group-vertical > button,
   .btn-group-vertical > .btn-group {
@@ -11069,7 +11069,7 @@ textarea.parsley-success:focus {
   @media (min-width: 992px) {
     .az-footer .container {
       padding: 10px 0 0; } }
-  
+
   .az-footer .container-fluid,
   .az-footer .container-sm,
   .az-footer .container-md,
@@ -12144,7 +12144,7 @@ body {
     .az-navbar > .container {
       padding: 0; } }
   @media (min-width: 992px) {
-    
+
     .az-navbar > .container-fluid,
     .az-navbar > .container-sm,
     .az-navbar > .container-md,
@@ -45133,4 +45133,16 @@ input[type='checkbox']{
 }
 #toogle-info{
   float:right;
+}
+.paid{
+    color: green;
+    font-weight: 500;
+}
+.partial{
+    color: orange;
+    font-weight: 500;
+}
+.pending{
+    color: red;
+    font-weight: 500;
 }
