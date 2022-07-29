@@ -59,10 +59,10 @@ function setReservacionesTipoAccion() {
     let disabledFields = [];
     let hideFields = [];
     if (accion === 'pago') {
-        hideFields = ['add-actividad','actualizar'];
+        hideFields = ['add-actividad', 'actualizar'];
         disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'comisionista', 'cerrador'];
     } else {
-        hideFields = ['pagar','detallePagoContainer','add-descuento-personalizado','add-codigo-descuento'];
+        hideFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
         disabledFields = ['codigo-descuento'];
     }
     disabledFields.forEach((disabledField) => {
@@ -154,14 +154,21 @@ function createReservacion(estatus) {
         //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
         'cupon': {
             'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
+            'tipo': document.getElementById('descuento-codigo').getAttribute('tipo')
         },
         'descuentoCodigo': {
-            'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value')),
+            'cantidad': (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
+                ? convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value'))
+                : parseFloat(document.getElementById('descuento-codigo').getAttribute('value')),
             'password': document.getElementById('descuento-codigo').getAttribute('password'),
+            'valor': document.getElementById('descuento-codigo').value,
+            'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo')
         },
         'descuentoPersonalizado': {
             'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-personalizado'].getAttribute('value')),
             'password': document.getElementById('descuento-personalizado').getAttribute('password'),
+            'valor': document.getElementById('descuento-personalizado').value,
+            'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
         },
 
         'comentarios': reservacion.elements['comentarios'].value,
@@ -469,7 +476,9 @@ function getPagos() {
     const tarjeta = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
 
     const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-    const cantidadCodigo = convertPorcentageCantidad(descuentoCodigo); //(document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoCodigo/100)) : descuentoCodigo;
+    const cantidadCodigo = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
+        ? convertPorcentageCantidad(descuentoCodigo)
+        : parseFloat(descuentoCodigo);
 
     const cupon = parseFloat(document.getElementById('cupon').getAttribute('value'));
 
