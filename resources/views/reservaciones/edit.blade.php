@@ -21,6 +21,9 @@
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }
+        const logo = () =>{ 
+            return '{{asset("assets/img/logo.png")}}';
+        }
         const nombreCliente = () =>{
             return
         }
