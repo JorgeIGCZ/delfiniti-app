@@ -1,5 +1,5 @@
 let actividades = '';
-const format    = () => {
+const format    = (folio = '') => {
     return `
         <!DOCTYPE html>
         <html>
@@ -88,7 +88,7 @@ const format    = () => {
                         <br/>
                         C.P. 40884
                         <br/>
-                        <p class="f-15">FOLIO: 0000-B</p>
+                        <p class="f-15">FOLIO: ${folio}</p>
                         <br/>
                         LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
                         <br/>
@@ -214,9 +214,9 @@ function getTicketPagos(){
     return pagos;
 }
 
-function getTicket(){
+function getTicket(folio){
     let w = window.open();
-    w.document.write(format());
+    w.document.write(format(folio));
     w.window.print();
     w.document.close();
     return false;

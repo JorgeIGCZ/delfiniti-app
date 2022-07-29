@@ -119,7 +119,7 @@ function createReservacion(estatus) {
     }).then(function (response) {
         if (response.data.result == 'Success') {
             if (estatus === 'pagar-reservar') {
-                getTicket();
+                getTicket(response.data.reservacionFolio);
             }
             Swal.fire({
                 icon: 'success',

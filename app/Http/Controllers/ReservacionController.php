@@ -184,13 +184,14 @@ class ReservacionController extends Controller
 
             DB::commit();
 
+            $reservacion = Reservacion::find($reservacion['id']);
+            
             if($this->reservacionPagadaTotal($reservacion['id'])){
-                $reservacion              = Reservacion::find($reservacion['id']);
                 $reservacion->estatus_pago = 2;
                 $reservacion->save();
             }
 
-            return json_encode(['result' => 'Success','id' => $reservacion['id']]);
+            return json_encode(['result' => 'Success','id' => $reservacion['id'],'reservacionFolio' => $reservacion['folio']]);
         } catch (\Exception $e){
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
@@ -431,7 +432,7 @@ class ReservacionController extends Controller
                 $reservacion->save();
             }
 
-            return json_encode(['result' => "Success"]);
+            return json_encode(['result' => 'Success','reservacionFolio' => $reservacion['folio'] ]);
         } catch (\Exception $e){
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
