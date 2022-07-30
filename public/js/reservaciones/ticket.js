@@ -92,7 +92,7 @@ const format    = (folio = '') => {
                         <br/>
                         C.P. 40884
                         <br/>
-                        <p class="f-16 centrado">FOLIO: ${folio}</p>
+                        <p class="f-16 centrado ">FOLIO: ${folio}</p>
                         <br/>
                         LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
                         <br/>
