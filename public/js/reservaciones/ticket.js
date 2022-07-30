@@ -58,8 +58,8 @@ const format    = (folio = '') => {
                         align-content: center;
                     }
 
-                    .izquierda{
-                        text-align: left;
+                    .derecha{
+                        text-align: right;
                     }
 
                     .ticket {
@@ -170,10 +170,10 @@ function getTicketActividades(){
         actividades += `
         <tr>
             <td class="clave">${actividad.claveActividad}</td>
-            <td class="izquierda cantidad">${actividad.cantidad}</td>
+            <td class="derecha cantidad">${actividad.cantidad}</td>
             <td class="descripcion">${actividad.actividad}</td>
-            <td class="izquierda precio">${actividad.precio}</td>
-            <td class="izquierda importe">${actividad.cantidad * actividad.precio}</td>
+            <td class="derecha precio">${formatter.format(actividad.precio)}</td>
+            <td class="derecha importe">${formatter.format(actividad.cantidad * actividad.precio)}</td>
         </tr>
         `;
     });
