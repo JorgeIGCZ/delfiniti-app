@@ -166,7 +166,7 @@ function getTicketActividades(){
         actividades += `
         <tr>
             <td class="clave">${actividad.claveActividad}</td>
-            <td class="center cantidad">${actividad.cantidad}</td>
+            <td class="centrado cantidad">${actividad.cantidad}</td>
             <td class="descripcion">${actividad.actividad}</td>
             <td class="derecha precio">${formatter.format(actividad.precio)}</td>
             <td class="derecha importe">${formatter.format(actividad.cantidad * actividad.precio)}</td>
