@@ -6,18 +6,18 @@ const format    = (folio = '') => {
             <head>
                 <style>
                     * {
-                        font-size: 9px;
-                        font-family: 'Times New Roman';
+                        font-size: 12px;
+                        font-family: monospace;
                     }
 
-                    .f-15{
-                        font-size: 15px;
+                    .f-16{
+                        font-size: 16px;
                     }
 
                     .vacio{
                         width:40%;
                     }
-                    
+
                     table{
                         width:100%;
                     }
@@ -32,37 +32,37 @@ const format    = (folio = '') => {
                     table {
                         border-collapse: collapse;
                     }
-                    
+
                     td.producto,
                     th.producto {
                         width: 75px;
                         max-width: 75px;
                     }
-                    
+
                     td.cantidad,
                     th.cantidad {
                         width: 40px;
                         max-width: 40px;
                         word-break: break-all;
                     }
-                    
+
                     td.precio,
                     th.precio {
                         width: 40px;
                         max-width: 40px;
                         word-break: break-all;
                     }
-                    
+
                     .centrado {
                         text-align: center;
                         align-content: center;
                     }
-                    
+
                     .ticket {
-                        width: 215px;
-                        max-width: 215px;
+                        width: 315px;
+                        max-width: 315px;
                     }
-                    
+
                     img {
                         max-width: inherit;
                         width: inherit;
@@ -88,7 +88,7 @@ const format    = (folio = '') => {
                         <br/>
                         C.P. 40884
                         <br/>
-                        <p class="f-15">FOLIO: ${folio}</p>
+                        <p class="f-16 centrado">FOLIO: ${folio}</p>
                         <br/>
                         LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
                         <br/>
@@ -130,11 +130,11 @@ const format    = (folio = '') => {
                     </table>
                     <p class="border">
                         <br/>
-                        ESTE COMPROBANTE FORMA PARTE DE 
+                        ESTE COMPROBANTE FORMA PARTE DE
                         <br/>
                         LA FACTURA GLOBAL A PUBLICO
                         <br/>
-                        LA FACTURA GLOBAL A PUBLICO EN GENERAL. 
+                        LA FACTURA GLOBAL A PUBLICO EN GENERAL.
                         <br/>
                     </p>
                     <p class="border">
@@ -142,9 +142,9 @@ const format    = (folio = '') => {
                             <br/>
                             SI SE REQUIERE FACTURA FAVOR DE
                             <br/>
-                            COLICITARLA EN RECEPCIÓN EN EL 
+                            COLICITARLA EN RECEPCIÓN EN EL
                             <br/>
-                            MOMENTO, YA QUE NO SE PODRÁ 
+                            MOMENTO, YA QUE NO SE PODRÁ
                             <br/>
                             FACTURAR DIAS ANTERIORES.
                             <br/>
@@ -182,7 +182,7 @@ function getTicketPagos(){
     const tarjeta       = reservacion.elements['tarjeta'].value;
     const total         = reservacion.elements['total'].value;
     const cambio        = reservacion.elements['cambio'].value;
-    
+
     let pagos = `
         <tr class="izq">
             <td class="vacio"></td>
