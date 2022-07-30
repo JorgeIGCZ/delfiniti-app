@@ -41,15 +41,11 @@ const format    = (folio = '') => {
 
                     td.cantidad,
                     th.cantidad {
-                        width: 40px;
-                        max-width: 40px;
                         word-break: break-all;
                     }
 
                     td.precio,
                     th.precio {
-                        width: 40px;
-                        max-width: 40px;
                         word-break: break-all;
                     }
 
