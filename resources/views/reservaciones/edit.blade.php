@@ -21,7 +21,7 @@
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }
-        const logo = () =>{ 
+        const logo = () =>{
             return '{{asset("assets/img/logo.png")}}';
         }
         const detalleReservacion = () =>{
@@ -29,7 +29,7 @@
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
             const ciudad        = reservacion.elements['origen'].value;
-            
+
             return {
                 'cajero'    : '{{Auth::user()->name}}',
                 'cliente'   : nombreCliente,
@@ -315,15 +315,15 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="total-recibido" id="total-recibido" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
 
                                                     <div class="col-12" id="detallePagoContainer">
                                                         <div class="row">
-                                                            <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="resta" class="col-form-label"><strong>Resta:</strong></label>
-                                                            </div>
-                                                            <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                            </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>

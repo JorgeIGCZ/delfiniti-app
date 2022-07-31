@@ -50,10 +50,11 @@ class ReservacionController extends Controller
         $alojamientos     = Alojamiento::where('estatus',1)->get();
         $cerradores       = Cerrador::where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
-        $actividades      = Actividad::whereRaw('NOW() >= fecha_inicial')
-                            ->whereRaw('NOW() <= fecha_final')
-                            ->orWhere('duracion','indefinido')
-                            ->get();
+        $actividades      = Actividad::where('estatus',1)
+            ->whereRaw('NOW() >= fecha_inicial')
+            ->whereRaw('NOW() <= fecha_final')
+            ->orWhere('duracion','indefinido')
+            ->get();
         $comisionistas     = Comisionista::where('estatus',1)->get();
         $dolarPrecioCompra = TipoCambio::where('seccion_uso', 'general')->first();
 
@@ -185,7 +186,7 @@ class ReservacionController extends Controller
             DB::commit();
 
             $reservacion = Reservacion::find($reservacion['id']);
-            
+
             if($this->reservacionPagadaTotal($reservacion['id'])){
                 $reservacion->estatus_pago = 2;
                 $reservacion->save();
@@ -336,16 +337,17 @@ class ReservacionController extends Controller
      */
     public function edit(Reservacion $reservacion)
     {
-        $estados        = Estado::all();
-        $alojamientos   = Alojamiento::all();
-        $cerradores     = Cerrador::all();
-        $descuentosCodigo = DescuentoCodigo::all();
-        $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
-                            ->whereRaw('NOW() <= fecha_final')
-                            ->orWhere('duracion','indefinido')
-                            ->get();
-        $comisionistas   = Comisionista::all();
-        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+        $estados          = Estado::all();
+        $alojamientos     = Alojamiento::where('estatus',1)->get();
+        $cerradores       = Cerrador::where('estatus',1)->get();
+        $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
+        $actividades      = Actividad::where('estatus',1)
+            ->whereRaw('NOW() >= fecha_inicial')
+            ->whereRaw('NOW() <= fecha_final')
+            ->orWhere('duracion','indefinido')
+            ->get();
+        $comisionistas     = Comisionista::where('estatus',1)->get();
+        $dolarPrecioCompra = TipoCambio::where('seccion_uso', 'general')->first();
 
         return view('reservaciones.edit',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores, 'descuentosCodigo' => $descuentosCodigo]);
     }

@@ -50,10 +50,10 @@ window.onload = function() {
         event.preventDefault();
         addActividades();
     });
-    
+
     document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
         event.preventDefault();
-        //resetDescuentos(); 
+        //resetDescuentos();
 
         document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
     });
@@ -87,10 +87,10 @@ window.onload = function() {
         setTimeout(setOperacionResultados(),500);
     });
     document.getElementById('tarjeta').addEventListener('keyup', (event) =>{
-        if(getResta() < 0){
-            document.getElementById('tarjeta').value = '$0.00';
-            document.getElementById('tarjeta').setAttribute('value',0);
-        }
+        //if(getResta() < 0){
+        //    document.getElementById('tarjeta').value = '$0.00';
+        //    document.getElementById('tarjeta').setAttribute('value',0);
+        //}
         setTimeout(setOperacionResultados(),500);
     });
 
@@ -172,7 +172,7 @@ $('#comisionista').on('change', function (e) {
 
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
-    
+
         if($(this).attr("id") == "add-actividad"){
             addActividades();
         }
@@ -249,14 +249,14 @@ function setCodigoDescuento(descuento){
         document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
     }
     setOperacionResultados()
-    
+
 }
 
 function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
-    const total    = document.getElementById('total').getAttribute('value');
-    const subTotal = total - (cantidadCodigo+cupon);
+    const total    = parseFloat(document.getElementById('total').getAttribute('value'));
+    const subTotal = total - ((cantidadCodigo)+parseFloat(cupon));
 
-    return (subTotal/100) * descuentoPersonalizado;
+    return (subTotal/100) * parseFloat(descuentoPersonalizado);
 }
 
 function convertPorcentageCantidad(porcentaje){
@@ -289,11 +289,39 @@ function getDisponibilidad(){
         displayActividad()
         getActividadHorario()
         getActividadPrecio()
+        getActividadDisponibilidad()
         applyVariables()
     })
     .catch(function (error) {
         actividades = [];
     });
+}
+
+function getActividadPrecio() {
+    const actividad = document.getElementById('actividades').value;
+    let precio = document.getElementById('precio');
+    for (var i = 0; i < allActividades.length; i++) {
+        if (actividad == allActividades[i].actividad.id) {
+            precio.value = allActividades[i].actividad.precio;
+        }
+    }
+}
+
+function getActividadHorario() {
+    const actividad = document.getElementById('actividades').value;
+    let horarioSelect = document.getElementById('horarios');
+    let option;
+    horarioSelect.length = 0;
+    for (let i = 0; i < allActividades.length; i++) {
+        if (actividad == allActividades[i].actividad.id) {
+            for (let ii = 0; ii < allActividades[i].horarios.length; ii++) {
+                option = document.createElement('option');
+                option.value = allActividades[i].horarios[ii].id;
+                option.text = allActividades[i].horarios[ii].horario_inicial;
+                horarioSelect.add(option);
+            }
+        }
+    }
 }
 
 function formValidity(formId) {

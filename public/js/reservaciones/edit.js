@@ -31,29 +31,6 @@ pagosTabla = new DataTable('#pagos', {
 fillReservacionDetallesTabla();
 fillPagosTabla();
 
-
-document.getElementById('efectivo').addEventListener('keyup', (event) => {
-    if (getResta() < 0) {
-        document.getElementById('efectivo').value = '$0.00';
-        document.getElementById('efectivo').setAttribute('value', 0);
-    }
-    setTimeout(setOperacionResultados(), 500);
-});
-document.getElementById('efectivo-usd').addEventListener('keyup', (event) => {
-    //if(getResta() < 0){
-    //    document.getElementById('efectivo-usd').value = '$0.00';
-    //    document.getElementById('efectivo-usd').setAttribute('value',0);
-    //}
-    setTimeout(setOperacionResultados(), 500);
-});
-document.getElementById('tarjeta').addEventListener('keyup', (event) => {
-    if (getResta() < 0) {
-        document.getElementById('tarjeta').value = '$0.00';
-        document.getElementById('tarjeta').setAttribute('value', 0);
-    }
-    setTimeout(setOperacionResultados(), 500);
-});
-
 function setReservacionesTipoAccion() {
     const reservacion = document.getElementById('reservacion-form');
     let disabledFields = [];
@@ -130,6 +107,11 @@ function removeCupon(cupon) {
 
 function createReservacion(estatus) {
     const reservacion = document.getElementById('reservacion-form');
+    const codigoDescuentoCantidad = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
+        ? convertPorcentageCantidad(reserdescuentoPersonalizadovacion.elements['descuento-codigo'].getAttribute('value'))
+        : parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
+    const cuponCantidad = reservacion.elements['cupon'].getAttribute('value');
+    const descuentoPersonalizadoCantidad = reservacion.elements['descuento-personalizado'].getAttribute('value');
     const pagos = {
         'efectivo': reservacion.elements['efectivo'].getAttribute('value'),
         'efectivoUsd': reservacion.elements['efectio-usd'].getAttribute('value'),
@@ -157,20 +139,17 @@ function createReservacion(estatus) {
             'tipo': document.getElementById('descuento-codigo').getAttribute('tipo')
         },
         'descuentoCodigo': {
-            'cantidad': (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
-                ? convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value'))
-                : parseFloat(document.getElementById('descuento-codigo').getAttribute('value')),
+            'cantidad': codigoDescuentoCantidad,
             'password': document.getElementById('descuento-codigo').getAttribute('password'),
             'valor': document.getElementById('descuento-codigo').value,
             'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo')
         },
         'descuentoPersonalizado': {
-            'cantidad': convertPorcentageCantidad(reservacion.elements['descuento-personalizado'].getAttribute('value')),
+            'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad, codigoDescuentoCantidad, cuponCantidad),
             'password': document.getElementById('descuento-personalizado').getAttribute('password'),
             'valor': document.getElementById('descuento-personalizado').value,
             'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
         },
-
         'comentarios': reservacion.elements['comentarios'].value,
         'estatus': estatus,
         'reservacionArticulos': actvidadesArray
@@ -404,16 +383,6 @@ function blockDescuentos(nombre) {
     }
 }
 
-function getActividadPrecio() {
-    const actividad = document.getElementById('actividades').value;
-    let precio = document.getElementById('precio');
-    for (var i = 0; i < allActividades.length; i++) {
-        if (actividad == allActividades[i].actividad.id) {
-            precio.value = allActividades[i].actividad.precio;
-        }
-    }
-}
-
 function setTotal() {
     let total = 0;
     actvidadesArray.forEach(reservacion => {
@@ -507,23 +476,6 @@ function enableFinalizar($status) {
         ($status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled', 'disabled');
     } catch (error) {
 
-    }
-}
-
-function getActividadHorario() {
-    const actividad = document.getElementById('actividades').value;
-    let horarioSelect = document.getElementById('horarios');
-    let option;
-    horarioSelect.length = 0;
-    for (let i = 0; i < allActividades.length; i++) {
-        if (actividad == allActividades[i].actividad.id) {
-            for (let ii = 0; ii < allActividades[i].horarios.length; ii++) {
-                option = document.createElement('option');
-                option.value = allActividades[i].horarios[ii].id;
-                option.text = allActividades[i].horarios[ii].horario_inicial;
-                horarioSelect.add(option);
-            }
-        }
     }
 }
 
