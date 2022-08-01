@@ -6,7 +6,7 @@
             return {{$dolarPrecioCompra->precio_compra}};
         }
         const isAdmin = () => {
-            return {{!Auth::user()->hasRole('Administrador') ? 1 : 0}};
+            return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
         const token = () =>{
             return  '{{ csrf_token() }}';
@@ -14,7 +14,7 @@
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }
-        const logo = () =>{ 
+        const logo = () =>{
             return '{{asset("assets/img/logo.png")}}';
         }
         const detalleReservacion = () =>{
@@ -22,7 +22,7 @@
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
             const ciudad        = reservacion.elements['origen'].value;
-            
+
             return {
                 'cajero'    : '{{Auth::user()->name}}',
                 'cliente'   : nombreCliente,
@@ -57,7 +57,7 @@
         </div>
         </div><!-- modal-dialog -->
     </div>
-    
+
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">Nueva Reserva</h2>
@@ -74,12 +74,12 @@
                                 <strong>Datos del ciente</strong>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1">  
+                                <label for="nombre" class="col-form-label">Nombre</label>
+                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
-                                <label for="email" class="col-form-label">Email</label>    
-                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">  
+                                <label for="email" class="col-form-label">Email</label>
+                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>
@@ -89,7 +89,7 @@
                                         <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
-                            </div>  
+                            </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
@@ -133,7 +133,7 @@
 
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="9">
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -266,7 +266,7 @@
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón:</label>
                                                     </div>
-                                                    
+
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount height-auto" value="0" disabled="disabled" tipo='cantidad'>
                                                     </div>
@@ -320,5 +320,5 @@
             </div>
         </div>
     </div>
-    
+
 @endsection

@@ -471,20 +471,3 @@ function displayActividad() {
         actividadesClaveSelect.add(optionClave);
     }
 }
-
-function validateFecha() {
-    const fecha = document.getElementById('fecha');
-    const horario = document.getElementById('horarios');
-    const horarioOpcion = horario.options[horario.selectedIndex];
-    const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
-    const now = new Date();
-
-    if (now > fechaValor && isAdmin()) {
-        Swal.fire({
-            icon: 'warning',
-            title: `Fecha de reserva invalida`
-        })
-        fecha.value = null;
-        fecha.focus()
-    }
-}

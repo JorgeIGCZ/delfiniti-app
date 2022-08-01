@@ -202,11 +202,13 @@ class ReservacionController extends Controller
     }
 
     private function getCantidadPagada($request,$email){
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+
         $pagosAnteriores = (float)($request->pagosAnteriores) ?? 0;
         $pagado          = $pagosAnteriores
             + (
                   (float)$request->cupon['cantidad']
-                + (float)$request->pagos['efectivoUsd']
+                + (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
             );

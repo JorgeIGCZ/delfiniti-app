@@ -27,6 +27,23 @@ function isActividadDuplicada(nuevaActividad){
     });
     return duplicado;
 }
+function validateFecha() {
+    const fecha = document.getElementById('fecha');
+    const horario = document.getElementById('horarios');
+    const horarioOpcion = horario.options[horario.selectedIndex];
+    const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
+    const now = new Date();
+
+    if (fechaValor < now && !isAdmin()) {
+        Swal.fire({
+            icon: 'warning',
+            title: `Fecha de reserva invalida`
+        })
+        fecha.value = null;
+        fecha.focus()
+    }
+}
+
 
 let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,
@@ -49,6 +66,7 @@ window.onload = function() {
     document.getElementById('add-actividad').addEventListener('click', (event) =>{
         event.preventDefault();
         addActividades();
+        validateFecha();
     });
 
     document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
@@ -157,12 +175,15 @@ $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
 
  $('#clave-actividad').on('change', function (e) {
     changeActividad();
+     validateFecha();
 });
 $('#actividades').on('change', function (e) {
     changeClaveActividad();
+    validateFecha();
 });
 $('#horarios').on('change', function (e) {
     getActividadDisponibilidad();
+    validateFecha();
 });
 $('#comisionista').on('change', function (e) {
     changeCuponDetalle();
