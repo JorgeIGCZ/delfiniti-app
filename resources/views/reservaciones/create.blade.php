@@ -37,7 +37,7 @@
 @endsection
 @section('content')
     <div class="modal fade" id="alojamiento-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-m" role="document">
         <div class="modal-content">
             <div class="modal-header">
             <h6 class="modal-title">Verificación</h6>
@@ -47,22 +47,9 @@
             </div>
             <div class="modal-body">
                 <form class="row g-3 align-items-center f-auto" id="alojamientos-form">
-                    @csrf
-                    <div class="form-group col-3 mt-3">
-                        <label for="codigo" class="col-form-label">Código</label>    
-                        <input type="text" name="codigo" class="form-control" required="required">  
-                    </div>
-                    <div class="form-group col-9 mt-3">
+                    <div class="form-group col-7 mt-3">
                         <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
                         <input type="text" name="nombre" class="form-control" required="required">  
-                    </div>
-                    <div class="form-group col-9 mt-3">
-                        <label for="direccion" class="col-form-label">Dirección</label>
-                        <input type="text" name="direccion" class="form-control">
-                    </div>
-                    <div class="form-group col-3 mt-3">
-                        <label for="telefono" class="col-form-label">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control">
                     </div>
                     <div class="form-group col-5 mt-3">
                         <button class="btn btn-info btn-block mt-33" id="crear-alojamiento">Crear alojamiento</button>

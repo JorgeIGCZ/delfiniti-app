@@ -47,10 +47,7 @@ function validateFecha() {
 function createAlojamiento(alojamientos){
     axios.post('/alojamientos', {
         '_token'   : token(),
-        "codigo"   : alojamientos.elements['codigo'].value,
-        "nombre"   : alojamientos.elements['nombre'].value,
-        "direccion": alojamientos.elements['direccion'].value,
-        "telefono" : alojamientos.elements['telefono'].value
+        "nombre"   : alojamientos.elements['nombre'].value
     })
     .then(function (response) {
         if(response.data.result == "Success"){
