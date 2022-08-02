@@ -36,6 +36,42 @@
     <script src="{{ asset('js/reservaciones/ticket.js') }}"></script>
 @endsection
 @section('content')
+    <div class="modal fade" id="alojamiento-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h6 class="modal-title">Verificación</h6>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3 align-items-center f-auto" id="alojamientos-form">
+                    @csrf
+                    <div class="form-group col-3 mt-3">
+                        <label for="codigo" class="col-form-label">Código</label>    
+                        <input type="text" name="codigo" class="form-control" required="required">  
+                    </div>
+                    <div class="form-group col-9 mt-3">
+                        <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
+                        <input type="text" name="nombre" class="form-control" required="required">  
+                    </div>
+                    <div class="form-group col-9 mt-3">
+                        <label for="direccion" class="col-form-label">Dirección</label>
+                        <input type="text" name="direccion" class="form-control">
+                    </div>
+                    <div class="form-group col-3 mt-3">
+                        <label for="telefono" class="col-form-label">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control">
+                    </div>
+                    <div class="form-group col-5 mt-3">
+                        <button class="btn btn-info btn-block mt-33" id="crear-alojamiento">Crear alojamiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div><!-- modal-dialog -->
+    </div>
     <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
@@ -82,8 +118,14 @@
                                 <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
-                                <label for="alojamiento" class="col-form-label">Hotel</label>
-                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
+                                <label for="alojamiento" class="col-form-label">Hotel
+                                    <button id="add-alojamiento" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#alojamiento-modal" style="
+                                        height: 20px;
+                                        min-height: 20px;
+                                        font-size: 8px;
+                                    ">+</button>
+                                </label>
+                                <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>

@@ -54,7 +54,7 @@ class AlojamientoController extends Controller
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
-        return json_encode(['result' => is_numeric($alojamiento['id']) ? 'Success' : 'Error']);
+        return json_encode(['result' => is_numeric($alojamiento['id']) ? 'Success' : 'Error','id' => $alojamiento['id']]);
     }
 
     /**

@@ -44,6 +44,53 @@ function validateFecha() {
     }
 }
 
+function createAlojamiento(alojamientos){
+    axios.post('/alojamientos', {
+        '_token'   : token(),
+        "codigo"   : alojamientos.elements['codigo'].value,
+        "nombre"   : alojamientos.elements['nombre'].value,
+        "direccion": alojamientos.elements['direccion'].value,
+        "telefono" : alojamientos.elements['telefono'].value
+    })
+    .then(function (response) {
+        if(response.data.result == "Success"){
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro creado',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            addAlojamiento(response.data.id,alojamientos.elements['nombre'].value);
+            document.getElementById('alojamientos-form').reset();
+        }else{
+            Swal.fire({
+                icon: 'error',
+                title: 'Registro fallido',
+                html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                showConfirmButton: true
+            })
+        }
+    })
+    .catch(function (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Registro fallido',
+            html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+            showConfirmButton: true
+        })
+    });
+}
+
+function addAlojamiento(id,nombre){
+    document.getElementById('alojamiento').selectedIndex = "-1";
+    const alojamientos = document.getElementById('alojamiento');
+    const opcion = document.createElement("option");
+    opcion.value = id;
+    opcion.text = nombre;
+    opcion.setAttribute('selected', 'selected');
+    alojamientos.add(opcion, null);
+    $('#alojamiento-modal').modal('hide');
+}
 
 let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,
@@ -54,6 +101,12 @@ let reservacionesTable = new DataTable('#reservaciones', {
 window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
+
+    document.getElementById('alojamientos-form').addEventListener('submit', (event) =>{
+        event.preventDefault();
+        const alojamientos = document.getElementById('alojamientos-form');
+        createAlojamiento(alojamientos);
+    });
 
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
