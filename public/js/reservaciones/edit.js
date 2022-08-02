@@ -108,7 +108,7 @@ function removeCupon(cupon) {
 function createReservacion(estatus) {
     const reservacion = document.getElementById('reservacion-form');
     const codigoDescuentoCantidad = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
-        ? convertPorcentageCantidad(reserdescuentoPersonalizadovacion.elements['descuento-codigo'].getAttribute('value'))
+        ? convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value'))
         : parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
     const cuponCantidad = reservacion.elements['cupon'].getAttribute('value');
     const descuentoPersonalizadoCantidad = reservacion.elements['descuento-personalizado'].getAttribute('value');
