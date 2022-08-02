@@ -319,7 +319,7 @@ class ReservacionController extends Controller
             return json_encode(['data' => $reservacionDetalleArray]);
         }else{
             $estados        = Estado::all();
-            $alojamientos   = Alojamiento::all();
+            $alojamientos   = Alojamiento::orderBy('nombre','asc')->get();
             $cerradores     = Cerrador::all();
             $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
                                 ->whereRaw('NOW() <= fecha_final')
@@ -340,7 +340,7 @@ class ReservacionController extends Controller
     public function edit(Reservacion $reservacion)
     {
         $estados          = Estado::all();
-        $alojamientos     = Alojamiento::where('estatus',1)->get();
+        $alojamientos     = Alojamiento::orderBy('nombre','asc')->get();
         $cerradores       = Cerrador::where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)

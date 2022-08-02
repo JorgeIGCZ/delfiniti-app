@@ -40,7 +40,7 @@
         <div class="modal-dialog modal-m" role="document">
         <div class="modal-content">
             <div class="modal-header">
-            <h6 class="modal-title">Verificación</h6>
+            <h6 class="modal-title">Nuevo Alojamiento</h6>
             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
