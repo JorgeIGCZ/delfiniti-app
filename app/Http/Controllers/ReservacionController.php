@@ -47,7 +47,7 @@ class ReservacionController extends Controller
     public function create(Request $request)
     {
         $estados          = Estado::all();
-        $alojamientos     = Alojamiento::where('estatus',1)->get();
+        $alojamientos     = Alojamiento::where('estatus',1)->orderBy('nombre','asc')->get();
         $cerradores       = Cerrador::where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)
