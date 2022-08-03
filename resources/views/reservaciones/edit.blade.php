@@ -322,16 +322,16 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="resta" id="resta" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
-
+                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                    </div>
                                                     <div class="col-12" id="detallePagoContainer">
                                                         <div class="row">
 
-                                                            <div class="form-group col-7 mt-0 mb-0">
-                                                                <label for="cambio" class="col-form-label"><strong>Cambio:</strong></label>
-                                                            </div>
-                                                            <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                            </div>
+                                                            
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                             </div>
