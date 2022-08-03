@@ -24,6 +24,7 @@ use App\Models\TipoPago;
 use App\Models\User;
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Stmt\Break_;
 
 class ReservacionController extends Controller
 {
@@ -187,12 +188,15 @@ class ReservacionController extends Controller
 
             $reservacion = Reservacion::find($reservacion['id']);
 
-            if($this->reservacionPagadaTotal($reservacion['id'])){
-                $reservacion->estatus_pago = 2;
-                $reservacion->save();
-            }
+            $this->setEstatusPago($reservacion['id']);
 
-            return json_encode(['result' => 'Success','id' => $reservacion['id'],'reservacionFolio' => $reservacion['folio']]);
+            return json_encode(
+                [
+                    'result' => 'Success',
+                    'id' => $reservacion['id'],
+                    'reservacion' => $reservacion
+                ]
+            );
         } catch (\Exception $e){
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
@@ -222,6 +226,11 @@ class ReservacionController extends Controller
         }
 
         return $pagado;
+    }
+
+    public function getPagosAnteriores($id){
+        $factura = Factura::find($id);
+        return $factura['pagado'];
     }
 
     private function isValidDescuentoCupon($request){
@@ -368,7 +377,9 @@ class ReservacionController extends Controller
         DB::beginTransaction();
 
         try{
+            $pagosAnteriores = $this->getPagosAnteriores($id);
             $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
+            $pagado   = $pagado + $pagosAnteriores;
             $adeudo   = ((float)$request->total - (float)$pagado);
             $pagar    = ($request->estatus == "pagar");
 
@@ -430,13 +441,16 @@ class ReservacionController extends Controller
 
             DB::commit();
 
-            if($this->reservacionPagadaTotal($reservacion['id'])){
-                $reservacion               = Reservacion::find($reservacion['id']);
-                $reservacion->estatus_pago = 2;
-                $reservacion->save();
-            }
+            $reservacion = Reservacion::find($reservacion['id']);
 
-            return json_encode(['result' => 'Success','reservacionFolio' => $reservacion['folio'] ]);
+            $this->setEstatusPago($reservacion['id']);
+
+            return json_encode(
+                [
+                    'result' => 'Success',
+                    'reservacion' => $reservacion
+                ]
+            );
         } catch (\Exception $e){
             DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
@@ -446,10 +460,21 @@ class ReservacionController extends Controller
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
 
-    private function reservacionPagadaTotal($reservacionId){
-        $factura = Factura::where('reservacion_id',$reservacionId)->first();
+    private function setEstatusPago($reservacionId){
+        $reservacion               = Reservacion::find($reservacionId);
+        $reservacion->estatus_pago = $this->getEstatusPagoReservacion($reservacionId);
+        $reservacion->save();
+    }
 
-        return ($factura->pagado >= $factura->total);
+    private function getEstatusPagoReservacion($reservacionId){
+        $factura = Factura::where('reservacion_id',$reservacionId)->first();
+        if($factura->pagado == 0){
+            return 0;//'pendiente'
+        }else if($factura->pagado < $factura->total){
+            return 1;//'parcial'
+        }else if($factura->pagado >= $factura->total){
+            return 2;//'pagado'
+        }
     }
 
     private function isValidDescuentoCodigo($request,$email){

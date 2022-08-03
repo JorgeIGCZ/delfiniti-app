@@ -1,12 +1,12 @@
 let actividades = '';
-const format    = (folio = '') => {
+const format    = (reservacion) => {
     return `
         <!DOCTYPE html>
         <html>
             <head>
                 <style>
                     * {
-                        font-size: 12px;
+                        font-size: 13px;
                         font-family: monospace;
                     }
 
@@ -59,8 +59,8 @@ const format    = (folio = '') => {
                     }
 
                     .ticket {
-                        width: 315px;
-                        max-width: 315px;
+                        width: 320px;
+                        max-width: 320px;
                     }
 
                     img {
@@ -88,17 +88,26 @@ const format    = (folio = '') => {
                         <br/>
                         C.P. 40884
                         <br/>
-                        <p class="f-16 centrado ">FOLIO: ${folio}</p>
+                        <p class="f-16 centrado ">FOLIO: ${reservacion.folio}</p>
                         <br/>
                         LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
                         <br/>
-                        FECHA DE EXPEDICION: 00/MES/0000 hh:mm:ss A.M.
+                        FECHA DE EXPEDICION: ${new Date(reservacion.created_at).toLocaleDateString('es-MX',{
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                hour12: true
+                            }
+                        )}
                         <br/>
                         CAJERO: ${detalleReservacion().cajero}
                         <br/>
                         NOMBRE: ${detalleReservacion().cliente}
                         <br/>
-                        CIUDAD: ${detalleReservacion().ciudad}
+                        CIUDAD: ${(detalleReservacion().ciudad === undefined ? '' : detalleReservacion().ciudad)}
                         <br/>
                     </p>
                     <table>
@@ -137,7 +146,7 @@ const format    = (folio = '') => {
                         LA FACTURA GLOBAL A PUBLICO EN GENERAL.
                         <br/>
                     </p>
-                    <p class="border">
+                    <p class="border centrado">
                         <strong>
                             <br/>
                             SI SE REQUIERE FACTURA FAVOR DE
@@ -167,7 +176,7 @@ function getTicketActividades(){
         <tr>
             <td class="clave">${actividad.claveActividad}</td>
             <td class="centrado cantidad">${actividad.cantidad}</td>
-            <td class="descripcion">${actividad.actividad}</td>
+            <td class="descripcion">${actividad.actividadDetalle.slice(0,7)}...</td>
             <td class="derecha precio">${formatter.format(actividad.precio)}</td>
             <td class="derecha importe">${formatter.format(actividad.cantidad * actividad.precio)}</td>
         </tr>
@@ -177,27 +186,31 @@ function getTicketActividades(){
 }
 function getTicketPagos(){
     const reservacion   = document.getElementById('reservacion-form');
-    const efectivo      = reservacion.elements['efectivo'].value;
-    const efectivoUsd   = reservacion.elements['efectio-usd'].value;
-    const tarjeta       = reservacion.elements['tarjeta'].value;
-    const total         = reservacion.elements['total'].value;
-    const cambio        = reservacion.elements['cambio'].value;
+    const efectivo      = reservacion.elements['efectivo'];
+    const efectivoUsd   = reservacion.elements['efectio-usd'];
+    const tarjeta       = reservacion.elements['tarjeta'];
+    const total         = formatter.format(parseFloat(
+        parseFloat(tarjeta.getAttribute('value'))+
+        parseFloat(efectivoUsd.getAttribute('value'))+
+        parseFloat(efectivo.getAttribute('value'))
+    ).toFixed(2));
+    const cambio        = reservacion.elements['cambio'];
 
     let pagos = `
         <tr class="izq">
             <td class="vacio"></td>
             <td class="etiqueta">EFECTIVO M.N.</td>
-            <td class="importe">${efectivo}</td>
+            <td class="importe">${efectivo.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>
             <td class="etiqueta">EFECTIVO USD</td>
-            <td class="importe">${efectivoUsd}</td>
+            <td class="importe">${efectivoUsd.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>
             <td class="etiqueta">TARJ. CREDITO</td>
-            <td class="importe">${tarjeta}</td>
+            <td class="importe">${tarjeta.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>
@@ -207,17 +220,20 @@ function getTicketPagos(){
         <tr class="izq">
             <td class="vacio"></td>
             <td class="etiqueta">CAMBIO</td>
-            <td class="importe">${cambio}</td>
+            <td class="importe">${cambio.value}</td>
         </tr>
         `;
 
     return pagos;
 }
 
-function getTicket(folio){
-    let w = window.open();
-    w.document.write(format(folio));
-    w.window.print();
-    w.document.close();
-    return false;
+function getTicket(reservacion){
+    try{
+        let w = window.open();
+        w.document.write(format(reservacion));
+        w.window.print();
+        w.document.close();
+        return false;    
+    }catch(err) {
+    }
 }

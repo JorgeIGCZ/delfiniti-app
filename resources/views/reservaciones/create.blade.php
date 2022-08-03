@@ -21,7 +21,7 @@
             const reservacion   = document.getElementById('reservacion-form');
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
-            const ciudad        = reservacion.elements['origen'].value;
+            const ciudad        = reservacion.elements['origen'].text;
 
             return {
                 'cajero'    : '{{Auth::user()->name}}',
@@ -49,7 +49,7 @@
                 <form class="row g-3 align-items-center f-auto" id="alojamientos-form">
                     <div class="form-group col-7 mt-3">
                         <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
-                        <input type="text" name="nombre" class="form-control" required="required">  
+                        <input type="text" name="nombre" id="nombre-alojamiento" class="form-control" required="required">  
                     </div>
                     <div class="form-group col-5 mt-3">
                         <button class="btn btn-info btn-block mt-33" id="crear-alojamiento">Crear alojamiento</button>

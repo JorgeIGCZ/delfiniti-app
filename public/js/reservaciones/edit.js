@@ -51,60 +51,6 @@ function setReservacionesTipoAccion() {
     });
 }
 
-function applyVariables() {
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const fecha = urlParams.get('f');
-    const hora = urlParams.get('h');
-    const actividad = urlParams.get('id');
-    if (actividad === null) {
-        return;
-    }
-    document.getElementsByName('fecha')[0].value = fecha;
-
-    $('#actividades').val(actividad);
-    $('#actividades').trigger('change');
-
-    changeClaveActividad();
-
-    $('#horarios').val(hora);
-    $('#horarios').trigger('change');
-}
-
-function isLimite() {
-    const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-    const limite = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
-    //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
-    return limite >= descuento;
-}
-
-function resetDescuentos() {
-    document.getElementById('descuento-personalizado-container').classList.add("hidden");
-    document.getElementById('descuento-personalizado').setAttribute('limite', '');
-    document.getElementById('descuento-personalizado').setAttribute('password', '');
-    document.getElementById('descuento-personalizado').setAttribute('value', 0);
-    document.getElementById('descuento-personalizado').value = 0;
-
-    document.getElementById('descuento-codigo-container').classList.add("hidden");
-    document.getElementById('descuento-codigo').setAttribute('limite', '');
-    document.getElementById('descuento-codigo').setAttribute('password', '');
-    document.getElementById('descuento-codigo').setAttribute('value', 0);
-    document.getElementById('descuento-codigo').value = "0%";
-    setTimeout(setOperacionResultados(), 500);
-}
-
-function applyDescuentoPassword($elementId) {
-    document.getElementById($elementId).setAttribute('password', document.getElementById('password').value);
-}
-
-function removeCupon(cupon) {
-    cupon.setAttribute('disabled', 'disabled');
-    cupon.setAttribute('value', 0);
-    cupon.value = 0;
-    setTimeout(setOperacionResultados(), 500);
-}
-
 function createReservacion(estatus) {
     const reservacion = document.getElementById('reservacion-form');
     const codigoDescuentoCantidad = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
@@ -156,15 +102,18 @@ function createReservacion(estatus) {
     })
         .then(function (response) {
             if (response.data.result == 'Success') {
-                if (estatus === 'pagar') {
-                    getTicket(response.data.reservacionFolio);
-                }
                 Swal.fire({
                     icon: 'success',
                     title: 'Reservacion actualizada',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                    showConfirmButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+                });
+                if (estatus === 'pagar') {
+                    getTicket(response.data.reservacion);
+                }
                 location.reload();
             } else {
                 Swal.fire({
@@ -178,119 +127,6 @@ function createReservacion(estatus) {
             Swal.fire({
                 icon: 'error',
                 title: `Reservacion fallida E:${error.message}`,
-                showConfirmButton: true
-            })
-        });
-}
-
-function validateDescuentoPersonalizado() {
-    axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
-        '_token': token(),
-        'email': userEmail(),
-        'password': document.getElementById('descuento-personalizado').getAttribute('password')
-    })
-        .then(function (response) {
-            if (response.data.result == 'Success') {
-                switch (response.data.status) {
-                    case 'authorized':
-                        $('#verificacion-modal').modal('hide');
-                        setLimiteDescuentoPersonalizado(response.data.limite);
-                        document.getElementById('add-descuento-personalizado').checked = true;
-                        break;
-                    default:
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Codigo incorrecto',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        document.getElementById('add-descuento-personalizado').checked = false;
-                        break;
-                }
-                $('#descuento-personalizado').focus();
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Petición fallida`,
-                    showConfirmButton: true
-                })
-                document.getElementById('add-descuento-personalizado').checked = false;
-            }
-        })
-        .catch(function (error) {
-            Swal.fire({
-                icon: 'error',
-                title: `Autorización fallida E:${error.message}`,
-                showConfirmButton: true
-            })
-            document.getElementById('add-descuento-personalizado').checked = false;
-        });
-}
-
-function setLimiteDescuentoPersonalizado(limite) {
-    document.getElementById('descuento-personalizado').removeAttribute('disabled');
-    if (limite !== null) {
-        document.getElementById('descuento-personalizado').setAttribute('limite', limite);
-        document.getElementById('descuento-personalizado-container').classList.remove("hidden");
-    } else {
-        document.getElementById('descuento-personalizado-container').classList.add("hidden");
-    }
-    setOperacionResultados();
-}
-
-function getCodigoDescuento() {
-    const reservacion = document.getElementById('reservacion-form');
-    const nombre = reservacion.elements['nombre'].value;
-    const codigoDescuento = reservacion.elements['codigo-descuento'].value;
-    if (!formValidity('reservacion-form')) {
-        return false;
-    }
-    axios.post('/reservaciones/getCodigoDescuento', {
-        '_token': token(),
-        'email': userEmail(),
-        'password': document.getElementById('descuento-codigo').getAttribute('password'),
-        'codigoDescuento': reservacion.elements['codigo-descuento'].value
-    })
-        .then(function (response) {
-            if (response.data.result == 'Success') {
-                switch (response.data.status) {
-                    case 'authorized':
-                        if (response.data.descuento.descuento !== null) {
-
-                            $('#verificacion-modal').modal('hide');
-                            setCodigoDescuento(response.data.descuento);
-                            break;
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Codigo incorrecto',
-                                showConfirmButton: false,
-                                timer: 1500
-                            })
-                        }
-                    default:
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Credenciales incorrectas',
-                            showConfirmButton: false,
-                            timer: 1500
-                        })
-                        setCodigoDescuento(null);
-                        break;
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: `Petición fallida`,
-                    showConfirmButton: true
-                })
-                setCodigoDescuento(null);
-            }
-        })
-        .catch(function (error) {
-            Swal.fire({
-                icon: 'error',
-                title: `Autorización fallida E:${error.message}`,
                 showConfirmButton: true
             })
         });
@@ -317,6 +153,15 @@ function addActividades() {
         });
         return false;
     }
+    if(!isDisponible()){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡No hay disponibilidad para esta actividad en este horario!`,
+            showConfirmButton: false,
+            timer: 900
+        });
+        return false;
+    }
     reservacionesTable.row.add([
         claveActividad,
         actividadDetalle,
@@ -329,6 +174,7 @@ function addActividades() {
         .draw(false);
     actvidadesArray = [...actvidadesArray, {
         'claveActividad': claveActividad,
+        'actividadDetalle':actividadDetalle,
         'actividad': actividad,
         'cantidad': cantidad,
         'precio': precio,
@@ -395,14 +241,6 @@ function setTotal() {
     setOperacionResultados();
 }
 
-function setTotalRecibido() {
-    let totalRecibido = getPagos();
-    totalRecibido = parseFloat(totalRecibido).toFixed(2);
-
-    document.getElementById('total-recibido').setAttribute('value', totalRecibido);
-    document.getElementById('total-recibido').value = formatter.format(totalRecibido);
-}
-
 function setOperacionResultados() {
     const total = document.getElementById('total').getAttribute('value');
     setResta();
@@ -410,35 +248,6 @@ function setOperacionResultados() {
     //document.getElementById('reservacion-form').elements['descuento-general'].focus();
 
     enableFinalizar((getResta() < total) ? true : false);
-}
-
-function setCambio() {
-    const cambioCampo = document.getElementById('cambio');
-    const resta = getResta();
-    const cambio = getCambio(resta);
-    cambioCampo.setAttribute('value', cambio);
-    cambioCampo.value = formatter.format(cambio);
-}
-
-function getCambio(resta) {
-    return (resta < 0 ? resta : 0);
-}
-
-function setResta() {
-    const restaCampo = document.getElementById('resta');
-    const resta = getResta();
-    const restaTotal = (resta >= 0 ? resta : 0);
-    restaCampo.setAttribute('value', restaTotal);
-    restaCampo.value = formatter.format(restaTotal);
-
-    setTotalRecibido();
-}
-
-function getResta() {
-    const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const pagos = getPagos();
-    const resta = parseFloat(total - pagos);
-    return resta;
 }
 
 function getPagos() {
@@ -464,12 +273,6 @@ function getPagos() {
     return parseFloat(pagos);
 }
 
-function getMXNFromUSD(usd) {
-    const dolarPrecio = dolarPrecioCompra();
-
-    return usd * dolarPrecio;
-}
-
 function enableFinalizar($status) {
     try {
         let pagarReservar = document.getElementById('pagar');
@@ -488,23 +291,4 @@ function bloquearPagos() {
     })
     document.getElementById('pagar').remove();
     document.getElementById('detallePagoContainer').style.display = 'none';
-}
-
-function displayActividad() {
-    let actividadesClaveSelect = document.getElementById('clave-actividad');
-    let actividadesSelect = document.getElementById('actividades');
-    let optionNombre;
-    let optionClave;
-    let option;
-    for (var i = 0; i < allActividades.length; i++) {
-        option = document.createElement('option');
-        option.value = allActividades[i].actividad.id;
-        option.text = allActividades[i].actividad.nombre;
-        actividadesSelect.add(option);
-        optionClave = document.createElement('option');
-        optionClave.value = allActividades[i].actividad.id;
-        optionClave.text = allActividades[i].actividad.clave;
-        optionClave.actividadId = allActividades[i].actividad.id;
-        actividadesClaveSelect.add(optionClave);
-    }
 }

@@ -1,3 +1,248 @@
+function validateBotonGuardar(){
+    if(env == 'create'){
+        enableBtn('reservar',actvidadesArray.length > 0);
+    }else{
+        enableBtn('actualizar',actvidadesArray.length > 0);
+    }
+}
+
+function applyDescuentoPassword($elementId) {
+    document.getElementById($elementId).setAttribute('password', document.getElementById('password').value);
+}
+
+function removeCupon(cupon) {
+    cupon.setAttribute('disabled', 'disabled');
+    cupon.setAttribute('value', 0);
+    cupon.value = 0;
+    setTimeout(setOperacionResultados(), 500);
+}
+
+function resetReservaciones() {
+    const reservacion = document.getElementById('reservacion-form');
+    actvidadesArray = [];
+    reservacion.reset();
+    reservacionesTable.clear().draw();
+    document.getElementsByName('cantidad')[0].value = 1;
+    document.getElementsByName('disponibilidad')[0].value = 1;
+    document.getElementsByName('fecha')[0].value = new Date();
+
+    document.getElementById('efectivo').setAttribute('value', 0);
+    document.getElementById('efectivo-usd').setAttribute('value', 0);
+    document.getElementById('tarjeta').setAttribute('value', 0);
+    //document.getElementById('cupon').setAttribute('value',0);
+    document.getElementById('cupon').setAttribute('value', 0);
+    document.getElementById('descuento-personalizado').setAttribute('value', 0);
+    document.getElementById('descuento-codigo').setAttribute('value', 0);
+
+    document.getElementById('efectivo').value = 0;
+    document.getElementById('efectivo-usd').value = 0;
+    document.getElementById('tarjeta').value = 0;
+    //document.getElementById('cupon').value        = 0;
+    document.getElementById('cupon').value = 0;
+    document.getElementById('descuento-personalizado').value = 0;
+    document.getElementById('descuento-codigo').value = 0;
+
+    $('select[name="actividad"] option:nth-child(1)').attr('selected', 'selected');
+    $('select[name="actividad"]').trigger('change.select2');
+
+    $('select[name="alojamiento"] option:nth-child(1)').attr('selected', 'selected');
+    $('select[name="alojamiento"]').trigger('change.select2');
+
+    $('select[name="origen"] option:nth-child(1)').attr('selected', 'selected');
+    $('select[name="origen"]').trigger('change.select2');
+
+    $('select[name="comisionista"] option:nth-child(1)').attr('selected', 'selected');
+    $('select[name="comisionista"]').trigger('change.select2');
+
+    $('select[name="cerrador"] option:nth-child(1)').attr('selected', 'selected');
+
+
+    document.getElementById('descuento-personalizado').setAttribute('password', '');
+    document.getElementById('descuento-codigo').setAttribute('password', '');
+
+    changeClaveActividad();
+    changeActividad();
+    setOperacionResultados();
+    enableBtn('reservar', false);
+}
+
+function validateDescuentoPersonalizado() {
+    axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
+        '_token': token(),
+        'email': userEmail(),
+        'password': document.getElementById('descuento-personalizado').getAttribute('password')
+    })
+        .then(function (response) {
+            if (response.data.result == 'Success') {
+                switch (response.data.status) {
+                    case 'authorized':
+                        $('#verificacion-modal').modal('hide');
+                        setLimiteDescuentoPersonalizado(response.data.limite);
+                        document.getElementById('add-descuento-personalizado').checked = true;
+                        break;
+                    default:
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Codigo incorrecto',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        document.getElementById('add-descuento-personalizado').checked = false;
+                        break;
+                }
+                $('#descuento-personalizado').focus();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: `Petición fallida`,
+                    showConfirmButton: true
+                })
+                document.getElementById('add-descuento-personalizado').checked = false;
+            }
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: `Autorización fallida E:${error.message}`,
+                showConfirmButton: true
+            })
+            document.getElementById('add-descuento-personalizado').checked = false;
+        });
+}
+
+function setLimiteDescuentoPersonalizado(limite) {
+    document.getElementById('descuento-personalizado').removeAttribute('disabled');
+    if (limite !== null) {
+        document.getElementById('descuento-personalizado').setAttribute('limite', limite);
+        document.getElementById('descuento-personalizado-container').classList.remove("hidden");
+    } else {
+        document.getElementById('descuento-personalizado-container').classList.add("hidden");
+    }
+    setOperacionResultados();
+}
+
+function getCodigoDescuento() {
+    const reservacion = document.getElementById('reservacion-form');
+    const nombre = reservacion.elements['nombre'].value;
+    const codigoDescuento = reservacion.elements['codigo-descuento'].value;
+    if (!formValidity('reservacion-form')) {
+        return false;
+    }
+    axios.post('/reservaciones/getCodigoDescuento', {
+        '_token': token(),
+        'email': userEmail(),
+        'password': document.getElementById('descuento-codigo').getAttribute('password'),
+        'codigoDescuento': reservacion.elements['codigo-descuento'].value
+    })
+        .then(function (response) {
+            if (response.data.result == 'Success') {
+                switch (response.data.status) {
+                    case 'authorized':
+                        if (response.data.descuento.descuento !== null) {
+
+                            $('#verificacion-modal').modal('hide');
+                            setCodigoDescuento(response.data.descuento);
+                            break;
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Codigo incorrecto',
+                                showConfirmButton: false,
+                                timer: 1500
+                            })
+
+                            setCodigoDescuento(null);
+                        }
+                    default:
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Credenciales incorrectas',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        setCodigoDescuento(null);
+                        break;
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: `Petición fallida`,
+                    showConfirmButton: true
+                })
+                setCodigoDescuento(null);
+            }
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: `Autorización fallida E:${error.message}`,
+                showConfirmButton: true
+            })
+        });
+}
+
+function setTotalRecibido() {
+    let totalRecibido = getPagos();
+    totalRecibido = parseFloat(totalRecibido).toFixed(2);
+
+    document.getElementById('total-recibido').setAttribute('value', totalRecibido);
+    document.getElementById('total-recibido').value = formatter.format(totalRecibido);
+}
+
+function setCambio() {
+    const cambioCampo = document.getElementById('cambio');
+    const resta = getResta();
+    const cambio = getCambio(resta);
+    cambioCampo.setAttribute('value', cambio);
+    cambioCampo.value = formatter.format(cambio);
+}
+
+function getCambio(resta) {
+    return (resta < 0 ? resta : 0);
+}
+
+function setResta() {
+    const restaCampo = document.getElementById('resta');
+    const resta = getResta();
+    const restaTotal = (resta >= 0 ? resta : 0);
+    restaCampo.setAttribute('value', restaTotal);
+    restaCampo.value = formatter.format(restaTotal);
+
+    setTotalRecibido();
+}
+
+function getResta() {
+    const total = parseFloat(document.getElementById('total').getAttribute('value'));
+    const pagos = getPagos();
+    const resta = parseFloat(total - pagos);
+    return resta;
+}
+
+function getMXNFromUSD(usd) {
+    const dolarPrecio = dolarPrecioCompra();
+
+    return usd * dolarPrecio;
+}
+
+function displayActividad() {
+    let actividadesClaveSelect = document.getElementById('clave-actividad');
+    let actividadesSelect = document.getElementById('actividades');
+    let optionNombre;
+    let optionClave;
+    let option;
+    for (var i = 0; i < allActividades.length; i++) {
+        option = document.createElement('option');
+        option.value = allActividades[i].actividad.id;
+        option.text = allActividades[i].actividad.nombre;
+        actividadesSelect.add(option);
+        optionClave = document.createElement('option');
+        optionClave.value = allActividades[i].actividad.id;
+        optionClave.text = allActividades[i].actividad.clave;
+        optionClave.actividadId = allActividades[i].actividad.id;
+        actividadesClaveSelect.add(optionClave);
+    }
+}
+
 function getActividadDisponibilidad(){
     const actividad   = document.getElementById('actividades').value;
     const fecha       = document.getElementById('fecha').value;
@@ -44,38 +289,9 @@ function validateFecha() {
     }
 }
 
-function createAlojamiento(alojamientos){
-    axios.post('/alojamientos', {
-        '_token'   : token(),
-        "nombre"   : alojamientos.elements['nombre'].value
-    })
-    .then(function (response) {
-        if(response.data.result == "Success"){
-            Swal.fire({
-                icon: 'success',
-                title: 'Registro creado',
-                showConfirmButton: false,
-                timer: 1500
-            });
-            addAlojamiento(response.data.id,alojamientos.elements['nombre'].value);
-            document.getElementById('alojamientos-form').reset();
-        }else{
-            Swal.fire({
-                icon: 'error',
-                title: 'Registro fallido',
-                html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
-                showConfirmButton: true
-            })
-        }
-    })
-    .catch(function (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Registro fallido',
-            html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
-            showConfirmButton: true
-        })
-    });
+function isDisponible() {
+    const disponibilidad = document.getElementById('disponibilidad').value;
+    return (disponibilidad > 0);
 }
 
 function addAlojamiento(id,nombre){
@@ -99,12 +315,6 @@ window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
 
-    document.getElementById('alojamientos-form').addEventListener('submit', (event) =>{
-        event.preventDefault();
-        const alojamientos = document.getElementById('alojamientos-form');
-        createAlojamiento(alojamientos);
-    });
-
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
     });
@@ -115,8 +325,13 @@ window.onload = function() {
 
     document.getElementById('add-actividad').addEventListener('click', (event) =>{
         event.preventDefault();
-        addActividades();
         validateFecha();
+        addActividades();
+        validateBotonGuardar();
+    });
+
+    document.getElementById('add-alojamiento').addEventListener('click', (event) =>{
+        event.preventDefault();
     });
 
     document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
@@ -215,21 +430,17 @@ $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
         !result ? updated++ : '';
         return result;
     });
-    if(env == 'create'){
-        enableBtn('reservar',actvidadesArray.length > 0);
-    }else{
-        enableBtn('actualizar',actvidadesArray.length > 0);
-    }
+    validateBotonGuardar();
     setTotal();
 } );
 
  $('#clave-actividad').on('change', function (e) {
+    validateFecha();
     changeActividad();
-     validateFecha();
 });
 $('#actividades').on('change', function (e) {
-    changeClaveActividad();
     validateFecha();
+    changeClaveActividad();
 });
 $('#horarios').on('change', function (e) {
     getActividadDisponibilidad();

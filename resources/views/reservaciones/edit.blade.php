@@ -24,11 +24,11 @@
         const logo = () =>{
             return '{{asset("assets/img/logo.png")}}';
         }
-        const detalleReservacion = () =>{
+        const detalleReservacion = () =>{ 
             const reservacion   = document.getElementById('reservacion-form');
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
-            const ciudad        = reservacion.elements['origen'].value;
+            const ciudad        = reservacion.elements['origen'].text;
 
             return {
                 'cajero'    : '{{Auth::user()->name}}',
