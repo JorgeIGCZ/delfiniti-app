@@ -219,7 +219,7 @@ function fillPagosTabla() {
 
 function getCantiodadPago(pago){
     let cantidadPago = pago.cantidad;
-    if(pago.tipo == 2){
+    if(pago.tipoPagoId == 2){
         pago = parseFloat(parseFloat(cantidadPago) * parseFloat(pago.tipoCambioUSD)).toFixed(2);
     }
     return pago;
