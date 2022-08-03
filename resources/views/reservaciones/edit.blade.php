@@ -84,7 +84,8 @@
                 'id'        : '{{$pago->id}}',
                 'cantidad'  : '{{$pago->cantidad}}',
                 'tipoPagoId': '{{$pago->tipo_pago_id}}',
-                'fechaPago' : '{{$pago->created_at}}'
+                'fechaPago' : '{{$pago->created_at}}',
+                'tipoCambioUSD' : '{{$pago->tipo_cambio_usd}}'
             }];
 
             nombreTipoPagoArray = [...nombreTipoPagoArray,'{{$pago->tipoPago->nombre}}'];

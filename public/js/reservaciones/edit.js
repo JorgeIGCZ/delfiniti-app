@@ -195,6 +195,8 @@ function setCantidadPagada(cantidadPagada) {
 }
 
 function fillPagosTabla() {
+    let cantidadPago = 0;
+    let cantidadPagada = 0;
     //'1','efectivo'
     //'2','efectivoUsd'
     //'3','tarjeta'
@@ -204,7 +206,8 @@ function fillPagosTabla() {
     });
 
     pagosArray.forEach(function (pago) {
-        cantidadPagada += parseFloat(pago.cantidad);
+        cantidadPago = getCantiodadPago(pago);
+        cantidadPagada += parseFloat(cantidadPago);
         ;
     });
 
@@ -212,6 +215,14 @@ function fillPagosTabla() {
 
     setCantidadPagada(cantidadPagada);
     setTotal();
+}
+
+function getCantiodadPago(pago){
+    let pago = pago.cantidad;
+    if(pago.tipo == 2){
+        pago = parseFloat(parseFloat(pago) * parseFloat(pago.tipoCambioUSD)).toFixed(2);
+    }
+    return pago;
 }
 
 function blockDescuentos(nombre) {
