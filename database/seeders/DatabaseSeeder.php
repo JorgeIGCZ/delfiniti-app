@@ -21,6 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PaisSeeder::class);
         $this->call(EstadoSeeder::class);
         $this->call(TipoCambioSeeder::class);
-        $this->call(TipoPagoSeedersss::class);
+        $this->call(TipoPagoSeeders::class);
     }
 }
