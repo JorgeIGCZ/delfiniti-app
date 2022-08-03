@@ -276,7 +276,7 @@ function validateFecha() {
     const fecha = document.getElementById('fecha');
     const horario = document.getElementById('horarios');
     const horarioOpcion = horario.options[horario.selectedIndex];
-    const fechaValor = new Date(`${fecha.value} ${horarioOpcion.text}`);
+    const fechaValor = new Date(`${fecha.value} 23:59:000`);
     const now = new Date();
 
     if (fechaValor < now && !isAdmin()) {
