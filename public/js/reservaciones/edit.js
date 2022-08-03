@@ -206,7 +206,7 @@ function fillPagosTabla() {
     });
 
     pagosArray.forEach(function (pago) {
-        cantidadPago = getCantiodadPago(pago);
+        cantidadPago = parseFloat(getCantiodadPago(pago));
         cantidadPagada += parseFloat(cantidadPago);
         ;
     });
