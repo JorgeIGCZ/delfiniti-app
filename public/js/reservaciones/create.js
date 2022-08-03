@@ -3,12 +3,14 @@ let actvidadesArray = [];
 
 
 document.getElementById('pagar-reservar').addEventListener('click', (event) => {
+    validateFecha();
     if (formValidity('reservacion-form')) {
         createReservacion('pagar-reservar');
     }
 });
 
 document.getElementById('reservar').addEventListener('click', (event) => {
+    validateFecha();
     if (formValidity('reservacion-form')) {
         createReservacion('reservar');
     }
