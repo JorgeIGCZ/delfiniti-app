@@ -220,9 +220,9 @@ function fillPagosTabla() {
 function getCantiodadPago(pago){
     let cantidadPago = pago.cantidad;
     if(pago.tipoPagoId == 2){
-        pago = parseFloat(parseFloat(cantidadPago) * parseFloat(pago.tipoCambioUSD)).toFixed(2);
+        cantidadPago = parseFloat(parseFloat(cantidadPago) * parseFloat(pago.tipoCambioUSD)).toFixed(2);
     }
-    return pago;
+    return cantidadPago;
 }
 
 function blockDescuentos(nombre) {
