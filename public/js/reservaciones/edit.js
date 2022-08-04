@@ -36,7 +36,7 @@ function setReservacionesTipoAccion() {
     let disabledFields = [];
     let hideFields = [];
     if (accion === 'pago') {
-        hideFields = ['add-actividad', 'actualizar'];
+        hideFields = ['add-actividad', 'actualizar','actividad-container'];
         disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'comisionista', 'cerrador'];
     } else {
         hideFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
@@ -48,6 +48,7 @@ function setReservacionesTipoAccion() {
     });
     hideFields.forEach((hideField) => {
         document.getElementById(hideField).style.visibility = "hidden";
+        document.getElementById(hideField).style.height = "0";
     });
 }
 
