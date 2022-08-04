@@ -47,8 +47,7 @@ function setReservacionesTipoAccion() {
         reservacion.elements[disabledField].classList.add('not-editable');
     });
     hideFields.forEach((hideField) => {
-        document.getElementById(hideField).style.visibility = "hidden";
-        document.getElementById(hideField).style.height = "0";
+        document.getElementById(hideField).style.display = "none";
     });
 }
 

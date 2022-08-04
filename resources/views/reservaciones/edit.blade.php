@@ -164,14 +164,14 @@
                             <div class="col-12 mt-3">
                                 <strong>Datos de la reservación</strong>
                             </div>
-                            <div id="actividad-container" class="form-group col-12 mt-0 mb-0">
+                            <div id="actividad-container" class="form-group col-9 mt-0 mb-0">
                                 <div class="row">
                                     <div class="form-group col-2 mt-0 mb-0">
                                         <label for="clave" class="col-form-label">Clave</label>
                                         <select id="clave-actividad" name="clave" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="5">
                                         </select>
                                     </div>
-                                    <div class="form-group col-3 mt-0 mb-0">
+                                    <div class="form-group col-6 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Actividad</label>
                                         <select name="actividad" id="actividades"  class="form-control" data-show-subtext="true" data-live-search="true" tabindex="6">
                                         </select>
@@ -186,18 +186,20 @@
                                         <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="8">
                                     </div>
                                     <div class="form-group col-1 mt-0 mb-0">
-                                        <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
+                                        <label for="disponibilidad" class="col-form-label">Disp.</label>
                                         <input type="number" name="disponibilidad" id="disponibilidad" class="form-control" value="0" disabled="disabled" >
                                     </div>
-                                    <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="fecha" class="col-form-label">Fecha</label>
-                                        <input type="date" name="fecha" id="fecha" class="form-control" value="{{$reservacion->fecha}}" required="required" autocomplete="off" tabindex="9">
-                                    </div>
-                                    <input type="hidden" name="precio" id="precio" value="0">
-                                    <div class="form-group col-1 mt-0 mb-0">
-                                        <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
-                                    </div>
                                 </div>
+                            </div>
+
+
+                            <div class="form-group col-2 mt-0 mb-0">
+                                <label for="fecha" class="col-form-label">Fecha</label>
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{$reservacion->fecha}}" required="required" autocomplete="off" tabindex="9">
+                            </div>
+                            <input type="hidden" name="precio" id="precio" value="0">
+                            <div class="form-group col-1 mt-0 mb-0">
+                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
                             </div>
                             <div class="form-group col-12 mt-8 mb-2 bd-t">
                                 <div class="row">
