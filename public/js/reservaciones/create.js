@@ -1,6 +1,9 @@
 let allActividades = [];
 let actvidadesArray = [];
 
+document.getElementById('add-alojamiento').addEventListener('click', (event) =>{
+    event.preventDefault();
+});
 
 document.getElementById('pagar-reservar').addEventListener('click', (event) => {
     validateFecha();

@@ -345,10 +345,6 @@ window.onload = function() {
         validateBotonGuardar();
     });
 
-    document.getElementById('add-alojamiento').addEventListener('click', (event) =>{
-        event.preventDefault();
-    });
-
     document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
         event.preventDefault();
         //resetDescuentos();
