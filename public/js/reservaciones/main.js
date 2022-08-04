@@ -278,20 +278,22 @@ function validateFecha() {
     const horarioOpcion = horario.options[horario.selectedIndex];
     const fechaValor = new Date(`${fecha.value} 23:59:000`);
     const now = new Date();
-
+    
     if(fecha.value == ''){
         Swal.fire({
             icon: 'warning',
             title: `¡Fecha de reservación invalida!`
-        })
+        });
+        /*
         const year = (new Date()).toLocaleDateString('es-MX',{year: 'numeric'});
         const month = (new Date()).toLocaleDateString('es-MX',{month: '2-digit'});
         const day = (new Date()).toLocaleDateString('es-MX',{day: '2-digit'});
         fecha.value = `${year}-${month}-${day}`;
         fecha.focus()
         return false;
+        */
     }
-
+    
     if (fechaValor < now && !isAdmin()) {
         Swal.fire({
             icon: 'warning',
