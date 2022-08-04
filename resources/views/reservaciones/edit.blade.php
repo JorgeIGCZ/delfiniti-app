@@ -195,7 +195,7 @@
 
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{$reservacion->fecha}}" required="required" autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date_format(date_create($reservacion->fecha),'Y-m-d')}}" required="required" autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
