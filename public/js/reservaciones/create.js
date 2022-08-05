@@ -64,13 +64,7 @@ function createAlojamiento(alojamientos){
     });
 }
 
-function isLimite() {
-    const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-    const limite = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
-    //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
-    return limite >= descuento;
-}
+
 
 function createReservacion(estatus) {
     const reservacion = document.getElementById('reservacion-form');
@@ -121,16 +115,14 @@ function createReservacion(estatus) {
             Swal.fire({
                 icon: 'success',
                 title: 'Reservacion creada',
-                showConfirmButton: true,
-                footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    location.reload();
-                }
+                showConfirmButton: false,
+                footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`,
+                timer: 1500
             });
             if (estatus === 'pagar-reservar') {
                 getTicket(response.data.reservacion);
             }
+            location.reload();
         } else {
             Swal.fire({
                 icon: 'error',

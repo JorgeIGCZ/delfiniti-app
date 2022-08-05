@@ -39,7 +39,7 @@ function setReservacionesTipoAccion() {
         hideFields = ['add-actividad', 'actualizar','actividad-container'];
         disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
     } else {
-        hideFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
+        hideFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento','add-descuento-personalizado'];
         disabledFields = ['codigo-descuento'];
     }
     disabledFields.forEach((disabledField) => {
@@ -47,7 +47,7 @@ function setReservacionesTipoAccion() {
         reservacion.elements[disabledField].classList.add('not-editable');
     });
     hideFields.forEach((hideField) => {
-        document.getElementById(hideField).style.display = "none";
+        document.getElementById(hideField).style.setProperty('display', 'none', 'important');
     });
 }
 
@@ -102,19 +102,27 @@ function createReservacion(estatus) {
     })
         .then(function (response) {
             if (response.data.result == 'Success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Reservacion actualizada',
-                    showConfirmButton: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        location.reload();
-                    }
-                });
                 if (estatus === 'pagar') {
-                    getTicket(response.data.reservacion);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pago actualizado',
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(function() {
+                        if(getTicket(response.data.reservacion)){
+                            location.reload();
+                        } 
+                    });
+                }else{
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Reservacion actualizada',
+                        showConfirmButton: false,
+                        timer: 1000
+                    }).then(function() {
+                        location.reload();
+                    });
                 }
-                location.reload();
             } else {
                 Swal.fire({
                     icon: 'error',

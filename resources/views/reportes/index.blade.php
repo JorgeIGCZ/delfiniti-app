@@ -1,11 +1,5 @@
 @extends('layouts.app')
 @section('scripts')
-<!--script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/ionicons/ionicons.js"></script>
-<script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/jquery.flot/jquery.flot.js"></script>
-<script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/jquery.flot/jquery.flot.resize.js"></script>
-<script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/chart.js/Chart.bundle.min.js"></script>
-<script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/peity/jquery.peity.min.js"></script-->
-
 <script src="https://bootstrapdash.com/demo/azia/v1.0.0/lib/jquery-sparkline/jquery.sparkline.min.js"></script>
     <script>
         $(function(){
@@ -72,7 +66,7 @@
         <h2 class="az-content-title tx-24 mg-b-5 mg-b-lg-8">Hola {{Auth::user()->name}}!</h2>
         <p class="mg-b-0">Bienvenido a tu panel de administración.</p>
       </div>
-      <!--div class="az-dashboard-header-right">
+      <div class="az-dashboard-header-right">
         <div>
           <label class="tx-13">All Sales (Online)</label>
           <h5>431,007</h5>
@@ -81,7 +75,17 @@
           <label class="tx-13">All Sales (Offline)</label>
           <h5>932,210</h5>
         </div>
-      </div--><!-- az-dashboard-header-right -->
+          <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Reportes
+              </button>
+              <div class="dropdown-menu tx-13" aria-labelledby="dropdownMenuButton" style="">
+                  <a class="dropdown-item" href="/reportes/cortecaja">Corte de caja</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+          </div>
+      </div><!-- az-dashboard-header-right -->
     </div><!-- az-content-header -->
     <div class="az-content-body">
       <div class="card card-dashboard-seven">
@@ -250,7 +254,7 @@
                 <div class="card-body">
                   <h6 class="az-content-label tx-13 mg-b-5">Ingresos <span>(Este año)</span></h6>
                   <p class="mg-b-25">Ingresos percibidos durante el año actual.</p>
-  
+
                   <div class="chartjs-wrapper"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div><canvas id="chartBar6" width="1056" height="460" style="display: block; height: 230px; width: 528px;" class="chartjs-render-monitor"></canvas></div>
                 </div><!-- card-body -->
               </div>
@@ -259,7 +263,7 @@
             <div class="card card-dashboard-eight">
               <h6 class="card-title">Comisionistas</h6>
               <span class="d-block mg-b-20">Total de ventas ligadas a comisionistas</span>
-            
+
               <div class="table-responsive">
                 <table class="table">
                   <thead>
@@ -291,8 +295,8 @@
             </div>
         </div>
        </div><!-- row -->
-       
-    </div><!-- az-content-body -->  
+
+    </div><!-- az-content-body -->
   </div>
-   
+
 @endsection

@@ -1,3 +1,11 @@
+function isLimite() {
+    const total = parseFloat(document.getElementById('total').getAttribute('value'));
+    const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
+    const limite = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
+    //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
+    return limite >= descuento;
+}
+
 function validateBotonGuardar(){
     if(env == 'create'){
         enableBtn('reservar',actvidadesArray.length > 0);
@@ -261,6 +269,8 @@ function displayDisponibilidad(disponibilidad){
     const disponibilidadElement = document.getElementById('disponibilidad');
 
     cantidadElement.setAttribute('max',disponibilidad);
+    cantidadElement.value = (disponibilidad == 0 ? 0 : 1);
+    cantidadElement.setAttribute('min',(disponibilidad == 0 ? 0 : 1));
     disponibilidadElement.value = disponibilidad;
 }
 function isActividadDuplicada(nuevaActividad){

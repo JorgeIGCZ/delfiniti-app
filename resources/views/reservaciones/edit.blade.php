@@ -62,10 +62,11 @@
                 '{{$detalle->numero_personas}}',
                 '{{$detalle->PPU}}',
                 '{{$detalle->PPU}}'*'{{$detalle->numero_personas}}',
-                (env !== 'edit' ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` : '')
+                (accion !== 'pago' ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` : '')
             ]];
             actvidadesArray = [...actvidadesArray,{
                 'claveActividad': '{{$detalle->actividad->clave}}',
+                'actividadDetalle' : '{{$detalle->actividad->nombre}}',
                 'actividad'     : '{{$detalle->actividad_id}}',
                 'cantidad'      : '{{$detalle->numero_personas}}',
                 'precio'        : '{{$detalle->PPU}}',

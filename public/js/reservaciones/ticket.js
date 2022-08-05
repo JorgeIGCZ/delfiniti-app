@@ -233,7 +233,14 @@ function getTicket(reservacion){
         w.document.write(format(reservacion));
         w.window.print();
         w.document.close();
-        return false;    
+        return true;    
     }catch(err) {
+        Swal.fire({
+            icon: 'warning',
+            title: `Pago guardado, error en impresión de ticket`,
+            text: err,
+            showConfirmButton: true
+        });
+        return false;
     }
 }

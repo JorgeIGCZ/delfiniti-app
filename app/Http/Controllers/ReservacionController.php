@@ -209,8 +209,7 @@ class ReservacionController extends Controller
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
 
         $pagosAnteriores = (float)($request->pagosAnteriores) ?? 0;
-        $pagado          = $pagosAnteriores
-            + (
+        $pagado          = (
                   (float)$request->cupon['cantidad']
                 + (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
                 + (float)$request->pagos['efectivo']
@@ -269,7 +268,7 @@ class ReservacionController extends Controller
         }
         return $result;
     }
-    private function getTipoPagoId($tipoPago){
+    public function getTipoPagoId($tipoPago){
         $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
         return $tipoPagoId;
     }
@@ -379,7 +378,7 @@ class ReservacionController extends Controller
         try{
             $pagosAnteriores = $this->getPagosAnteriores($id);
             $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
-            $pagado   = $pagado + $pagosAnteriores;
+            $pagado   = ((float) $pagado + (float) $pagosAnteriores);
             $adeudo   = ((float)$request->total - (float)$pagado);
             $pagar    = ($request->estatus == "pagar");
 
