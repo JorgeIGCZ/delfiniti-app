@@ -118,11 +118,15 @@ function createReservacion(estatus) {
                 showConfirmButton: false,
                 footer: `<a href="/reservaciones/${response.data.id}/edit">Ver reservación</a>`,
                 timer: 1500
+            }).then(function() {
+                if (estatus === 'pagar-reservar') {
+                    if(getTicket(response.data.reservacion)){
+                        location.reload();
+                    } 
+                }else{
+                    location.reload();
+                }
             });
-            if (estatus === 'pagar-reservar') {
-                getTicket(response.data.reservacion);
-            }
-            location.reload();
         } else {
             Swal.fire({
                 icon: 'error',
