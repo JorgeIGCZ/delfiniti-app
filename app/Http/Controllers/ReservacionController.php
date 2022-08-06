@@ -19,6 +19,7 @@ use App\Classes\CustomErrorHandler;
 use App\Models\Cerrador;
 use App\Models\CodigoAutorizacionPeticion;
 use App\Models\DescuentoCodigo;
+use App\Models\ReservacionTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
@@ -358,8 +359,19 @@ class ReservacionController extends Controller
             ->get();
         $comisionistas     = Comisionista::where('estatus',1)->get();
         $dolarPrecioCompra = TipoCambio::where('seccion_uso', 'general')->first();
+        $tickets           = ReservacionTicket::where('reservacion_id',$reservacion->id)->get();
 
-        return view('reservaciones.edit',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores, 'descuentosCodigo' => $descuentosCodigo]);
+        return view('reservaciones.edit',[
+            'reservacion' => $reservacion,
+            'estados' => $estados,
+            'actividades' => $actividades,
+            'alojamientos' => $alojamientos,
+            'comisionistas' => $comisionistas,
+            'dolarPrecioCompra' => $dolarPrecioCompra,
+            'cerradores' => $cerradores,
+            'descuentosCodigo' => $descuentosCodigo,
+            'tickets' => $tickets
+        ]);
     }
     /**
      * Update the specified resource in storage.

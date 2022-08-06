@@ -16,6 +16,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\ReservacionTicketController;
 use App\Models\Actividad;
 
 /*
@@ -150,6 +151,16 @@ Route::controller(CheckinController::class)->middleware(['auth'])->group(functio
     Route::resource('checkin',CheckinController::class, [
         'parameters' => [
             'reservaciones' => 'reservacion'
+        ]
+    ]);
+});
+
+Route::controller(ReservacionTicketController::class)->middleware(['auth'])->group(function () {
+    Route::get('reservacionticket/show/{reservacionticket?}', 'show');
+    Route::patch('reservacionticket/estatus/{reservacionticket}', 'updateEstatus');
+    Route::resource('reservacionticket',ReservacionTicketController::class, [
+        'parameters' => [
+            'reservacionestickets' => 'reservacionTicket'
         ]
     ]);
 });

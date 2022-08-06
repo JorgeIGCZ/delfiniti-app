@@ -228,12 +228,13 @@ function getTicketPagos(){
 }
 
 function getTicket(reservacion){
+    let result = true;
     try{
         let w = window.open();
         w.document.write(format(reservacion));
         w.window.print();
         w.document.close();
-        return true;    
+        result = true;    
     }catch(err) {
         Swal.fire({
             icon: 'warning',
@@ -241,6 +242,38 @@ function getTicket(reservacion){
             text: err,
             showConfirmButton: true
         });
-        return false;
+        result = false;
     }
+    saveTicket(reservacion.id,format(reservacion));
+    return result;
+}
+
+function imprimirTicket(id){
+    axios.get(`/reservacionticket/${id}`)
+    .then(function (response) {
+        let w = window.open();
+        w.document.write(response.data.ticket);
+        w.window.print();
+        w.document.close();
+        result = true;    
+    })
+    .catch(function (error) {
+
+    });
+}
+
+function saveTicket(reservacionId,ticket){
+    axios.post('/reservacionticket', {
+        '_token': token(),
+        'ticket': ticket,
+        'reservacionId': reservacionId
+    }).then(function (response) {
+        if (response.data.result == 'Success') {
+            
+        } else {
+           
+        }
+    }).catch(function (error) {
+        
+    });
 }
