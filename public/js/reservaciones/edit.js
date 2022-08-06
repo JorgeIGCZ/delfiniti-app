@@ -310,4 +310,5 @@ function bloquearPagos() {
     })
     document.getElementById('pagar').remove();
     document.getElementById('detallePagoContainer').style.display = 'none';
+    document.getElementById('anticipo-container').style.display = 'none';
 }

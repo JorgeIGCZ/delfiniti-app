@@ -92,9 +92,9 @@ const format    = (reservacion) => {
                         <br/>
                         LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
                         <br/>
-                        FECHA DE EXPEDICION: ${new Date(reservacion.created_at).toLocaleDateString('es-MX',{
+                        FECHA DE EXPEDICION: ${new Date().toLocaleDateString('es-MX',{
                                 day: '2-digit',
-                                month: 'long',
+                                month: 'numeric',
                                 year: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit',

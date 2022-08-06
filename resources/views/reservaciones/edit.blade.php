@@ -28,10 +28,10 @@
             const reservacion   = document.getElementById('reservacion-form');
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
-            const ciudad        = reservacion.elements['origen'].text;
+            const ciudad        = reservacion.elements['origen'].value;
 
             return {
-                'cajero'    : '{{Auth::user()->name}}',
+                'cajero'    : '{{Auth::user()->username}}',
                 'cliente'   : nombreCliente,
                 'dirección' : direccion,
                 'ciudad'    : ciudad
@@ -158,7 +158,7 @@
                                 <input list="ciudades" name="origen" class="form-control" tabindex="4" value="{{$reservacion->origen}}"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
-                                        <option value="{{$estado->nombre}} ({{$estado->pais->nombre}})">
+                                        <option value="{{$estado->nombre}}">
                                     @endforeach
                                 </datalist>
                             </div>
@@ -249,7 +249,7 @@
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="agente" class="col-form-label">Reservado por</label>
                                                 <select name="agente" class="form-control" tabindex="11">
-                                                    <option value="{{Auth::user()->id}}" selected="selected" disabled="disabled">
+                                                    <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
                                                         {{Auth::user()->name}} ({{Auth::user()->email}})
                                                     </option>
                                                 </select>
@@ -309,14 +309,16 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="anticipo" class="col-form-label"><strong>Anticipo:</strong></label>
+                                                    <div class="col-12" id="anticipo-container">
+                                                        <div class="row">
+                                                            <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="anticipo" class="col-form-label"><strong>Anticipo:</strong></label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="anticipo" id="anticipo" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="anticipo" id="anticipo" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="total-recibido" class="col-form-label"><strong>Total pagado:</strong></label>
                                                     </div>
@@ -337,13 +339,11 @@
                                                     </div>
                                                     <div class="col-12" id="detallePagoContainer">
                                                         <div class="row">
-
-                                                            
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
+                                                                <input type="text" name="efecname="agente"tivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="15">
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">

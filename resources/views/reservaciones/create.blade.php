@@ -21,10 +21,10 @@
             const reservacion   = document.getElementById('reservacion-form');
             const nombreCliente = reservacion.elements['nombre'].value;
             const direccion     = reservacion.elements['alojamiento'].value;
-            const ciudad        = reservacion.elements['origen'].text;
+            const ciudad        = reservacion.elements['origen'].value;
 
             return {
-                'cajero'    : '{{Auth::user()->name}}',
+                'cajero'    : '{{Auth::user()->username}}',
                 'cliente'   : nombreCliente,
                 'dirección' : direccion,
                 'ciudad'    : ciudad
@@ -125,7 +125,7 @@
                                 <input list="ciudades" name="origen" class="form-control" tabindex="4"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
-                                        <option value="{{$estado->nombre}} ({{$estado->pais->nombre}})">
+                                        <option value="{{$estado->nombre}}">
                                     @endforeach
                                 </datalist>
                             </div>
@@ -190,7 +190,7 @@
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="agente" class="col-form-label">Reservado por</label>
                                                 <select name="agente" class="form-control" tabindex="11">
-                                                    <option value="{{Auth::user()->id}}" selected="selected" disabled="disabled">
+                                                    <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
                                                         {{Auth::user()->name}} ({{Auth::user()->email}})
                                                     </option>
                                                 </select>
