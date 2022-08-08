@@ -141,17 +141,10 @@ function createReservacion(estatus) {
 }
 
 function addActividades() {
-    let actividadDetalle = document.getElementById('actividades');
-    actividadDetalle = actividadDetalle.options[actividadDetalle.selectedIndex].text;
-    let horarioDetalle = document.getElementById('horarios');
-    horarioDetalle = horarioDetalle.options[horarioDetalle.selectedIndex].text;
     let claveActividad = document.getElementById('clave-actividad');
-    claveActividad = claveActividad.options[claveActividad.selectedIndex].text;
-    const actividad = document.getElementById('actividades').value;
-    const cantidad = document.getElementById('cantidad').value;
-    const precio = document.getElementById('precio').value;
-    const horario = document.getElementById('horarios').value;
-    const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`
+    claveActividad     = claveActividad.options[claveActividad.selectedIndex].text;
+    const horario      = document.getElementById('horarios').value;
+
     if (isActividadDuplicada({'claveActividad': claveActividad, 'horario': horario})) {
         Swal.fire({
             icon: 'warning',
@@ -162,34 +155,9 @@ function addActividades() {
         return false;
     }
     if(!isDisponible()){
-        Swal.fire({
-            icon: 'warning',
-            title: `¡No hay disponibilidad para esta actividad en este horario!`,
-            showConfirmButton: false,
-            timer: 900
-        });
         return false;
     }
-    reservacionesTable.row.add([
-        claveActividad,
-        actividadDetalle,
-        horarioDetalle,
-        cantidad,
-        precio,
-        precio * cantidad,
-        acciones
-    ])
-        .draw(false);
-    actvidadesArray = [...actvidadesArray, {
-        'claveActividad': claveActividad,
-        'actividadDetalle':actividadDetalle,
-        'actividad': actividad,
-        'cantidad': cantidad,
-        'precio': precio,
-        'horario': horario
-    }];
-    //enableBtn('enableBtn',actvidadesArray.length > 0);
-    setTotal();
+    addActividad();
 }
 
 function fillReservacionDetallesTabla() {

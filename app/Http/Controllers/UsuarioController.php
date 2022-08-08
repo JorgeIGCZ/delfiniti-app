@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use App\Classes\CustomErrorHandler;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
@@ -23,6 +24,14 @@ class UsuarioController extends Controller
         return view('usuarios.index',['roles' => $roles]);
     }
 
+    public function validateUsuario(Request $request){
+        if(Auth::attempt(['email'=>$request->email,'password'=>$request->password]))
+        {
+            return json_encode(['result' => "Autorized"]);
+        }
+        return json_encode(['result' => "Error"]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -31,6 +40,11 @@ class UsuarioController extends Controller
     public function create()
     {
         //
+    }
+    
+    public function getUsuarioNombre($id){
+        $user = User::find($id);
+        return $user->name." ({$user->email})";
     }
 
     /**

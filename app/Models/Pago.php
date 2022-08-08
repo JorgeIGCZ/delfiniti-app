@@ -24,4 +24,9 @@ class Pago extends Model
     {
         return $this->hasOne(TipoPago::class,'id','tipo_pago_id');
     }
+
+    public function reservacion()
+    {
+        return $this->belongsTo(Reservacion::class,'reservacion_id', 'id');
+    }
 }

@@ -65,7 +65,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::get('/reservacion/edit/{reservacion}', 'edit');
     Route::post('/reservacion/update/{reservacion}', 'update')->name('reservacionesUpdate');
     */
-
+    Route::post('reservaciones/removeActividad', 'removeActividad');
     Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
     Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::get('reservaciones/show/{reservacion?}', 'show');
@@ -87,6 +87,7 @@ Route::controller(AlojamientoController::class)->middleware(['auth'])->group(fun
 });
 
 Route::controller(UsuarioController::class)->middleware(['auth'])->group(function () {
+    Route::post('usuarios/validateUsuario', 'validateUsuario');
     Route::get('/usuarios/show/{usuario?}', 'show');
     Route::resource('usuarios',UsuarioController::class, [
         'parameters' => [

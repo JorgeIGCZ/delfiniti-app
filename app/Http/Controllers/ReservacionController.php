@@ -65,12 +65,8 @@ class ReservacionController extends Controller
 
     public function getDescuentoPersonalizadoValidacion(Request $request){
         try{
-            if($this->verifyUserAuth($request)){
-                $limite = $this->getLimitesDescuentoPersonalizado($request);
-                return json_encode(['result' => "Success",'status' => 'authorized','limite' => $limite]);
-            }else{
-                return json_encode(['result' => "Error"]);
-            }
+            $limite = $this->getLimitesDescuentoPersonalizado($request);
+            return json_encode(['result' => "Success",'limite' => $limite]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
@@ -86,12 +82,8 @@ class ReservacionController extends Controller
         $codigoDescuento = $request->codigoDescuento;
         if($codigoDescuento !== ""){
             try{
-                if($this->verifyUserAuth($request)){
-                    $descuento = $this->getDescuento($codigoDescuento);
-                    return json_encode(['result' => "Success",'status' => 'authorized','descuento' => $descuento]);
-                }else{
-                    return json_encode(['result' => "Error"]);
-                }
+                $descuento = $this->getDescuento($codigoDescuento);
+                return json_encode(['result' => "Success",'descuento' => $descuento]);
             } catch (\Exception $e){
                 $CustomErrorHandler = new CustomErrorHandler();
                 $CustomErrorHandler->saveError($e->getMessage(),$request);
@@ -372,6 +364,24 @@ class ReservacionController extends Controller
             'descuentosCodigo' => $descuentosCodigo,
             'tickets' => $tickets
         ]);
+    }
+    
+    public function removeActividad(Request $request){
+        try{
+            $actividad = Actividad::where('clave',$request->actividadClave)->get()[0];
+            
+            ReservacionDetalle::where('reservacion_id', $request->reservacionId)
+                ->where('actividad_id', $actividad['id'])->delete();
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
     }
     /**
      * Update the specified resource in storage.
