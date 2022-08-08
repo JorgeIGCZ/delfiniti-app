@@ -145,7 +145,8 @@ function resetReservaciones() {
 
 function validateDescuentoPersonalizado() {
     axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
-        '_token': token()
+        '_token': token(),
+        'email': userEmail()
     })
         .then(function (response) {
             if (response.data.result == 'Success') {
