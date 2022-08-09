@@ -45150,10 +45150,10 @@ input[type='checkbox']{
 table.dataTable.stripe>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>* {
     box-shadow: inset 0 0 0 9999px rgb(0 0 0 / 7%);
 }
-table.dataTable.cell-border tbody tr:first-child th, table.dataTable.cell-border tbody tr:first-child td {
+table.dataTable.stripe tbody tr:first-child th, table.dataTable.stripe tbody tr:first-child td {
   border-top: none;
 }
-table.dataTable.cell-border tbody th, table.dataTable.cell-border tbody td {
+table.dataTable.stripe tbody th, table.dataTable.stripe tbody td {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
   border-right: 1px solid rgba(0, 0, 0, 0.15);
 }
