@@ -45154,6 +45154,6 @@ table.dataTable tbody tr:first-child th, table.dataTable tbody tr:first-child td
   border-top: none;
 }
 table.dataTable tbody th, table.dataTable tbody td {
-  border-top: 1px solid rgba(0, 0, 0, 0.15);
-  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgb(0, 0, 0);
+  border-right: 1px solid rgb(0, 0, 0);
 }
