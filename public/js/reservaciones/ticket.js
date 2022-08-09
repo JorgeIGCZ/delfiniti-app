@@ -96,7 +96,6 @@ const format    = (reservacion) => {
                         <p class="f-16 centrado ">FOLIO: ${reservacion.folio}</p>
                         <br/>
                         <p class="f-11">LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO</p>
-                        <br/>
                         <p class="f-11">
                         FECHA DE EXPEDICIÓN: ${new Date().toLocaleDateString('es-MX',{
                                 day: '2-digit',
