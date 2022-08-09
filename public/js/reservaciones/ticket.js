@@ -16,6 +16,7 @@ const format    = (reservacion) => {
 
                     .f-11{
                         font-size: 11px;
+                        margin: 0;
                     }
 
                     .vacio{

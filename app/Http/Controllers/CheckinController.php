@@ -48,7 +48,7 @@ class CheckinController extends Controller
     public function show(Reservacion  $reservacion = null)
     {   
         if(is_null($reservacion)){
-            $reservaciones           = Reservacion::where('fecha',date("Y-m-d"))->orderByDesc('id')->get();
+            $reservaciones           = Reservacion::where('fecha',date("Y-m-d"))->where('estatus',1)->orderByDesc('id')->get();
             $reservacionDetalleArray = [];
             foreach($reservaciones as $reservacion){
                 $numeroPersonas = 0;

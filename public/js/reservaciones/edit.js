@@ -3,6 +3,15 @@ let allActividades = [];
 
 setReservacionesTipoAccion();
 
+document.getElementById('actualizar-estatus-reservacion').addEventListener('click', (event) =>{
+    event.preventDefault();
+    if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
+        validateCancelarReservacion();
+        return true;
+    }
+    validateActivarReservacion();
+});
+
 document.getElementById('actualizar').addEventListener('click', (event) => {
     event.preventDefault();
     if (formValidity('reservacion-form')) {
@@ -30,6 +39,23 @@ pagosTabla = new DataTable('#pagos', {
 
 fillReservacionDetallesTabla();
 fillPagosTabla();
+
+function validateCancelarReservacion(){
+    Swal.fire({
+        title: '¿Cancelar?',
+        text: "La reservación será cancelada, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cancelar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','cancelar-reservacion');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
 
 function setReservacionesTipoAccion() {
     const reservacion = document.getElementById('reservacion-form');

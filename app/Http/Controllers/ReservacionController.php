@@ -197,6 +197,8 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
+            $this->setCheckin($reservacion);
+
             return json_encode(
                 [
                     'result' => 'Success',
@@ -480,6 +482,8 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
+            $this->setCheckin($reservacion);
+
             return json_encode(
                 [
                     'result' => 'Success',
@@ -493,6 +497,17 @@ class ReservacionController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
+    }
+
+    private function setCheckin($reservacion){
+        $estatusPago    = $this->getEstatusPagoReservacion($reservacion['id']);
+        $fechaActividad = $reservacion['fecha'];
+        $today          = date("Y-m-d");
+        if($estatusPago == 2 && $fechaActividad == $today){
+            $reservacion           = Reservacion::find($reservacion['id']);
+            $reservacion->check_in = 1;
+            $reservacion->save();
+        }
     }
 
     private function setEstatusPago($reservacionId){

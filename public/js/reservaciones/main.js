@@ -1,19 +1,3 @@
-function validateCancelarReservacion(){
-    Swal.fire({
-        title: '¿Cancelar?',
-        text: "La reservación será cancelada, ¿desea proceder?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, cancelar!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','cancelar-reservacion');
-            $('#verificacion-modal').modal('show');
-        }
-    });
-}
 function validateActivarReservacion(){
     Swal.fire({
         title: '¿Activar?',
@@ -471,15 +455,6 @@ let reservacionesTable = new DataTable('#reservaciones', {
 window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
-
-    document.getElementById('actualizar-estatus-reservacion').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
-            validateCancelarReservacion();
-            return true;
-        }
-        validateActivarReservacion();
-    });
 
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
