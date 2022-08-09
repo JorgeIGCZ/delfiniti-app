@@ -45147,13 +45147,13 @@ input[type='checkbox']{
     font-weight: 500;
 }
 
-table.dataTable.stripe>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>* {
+table.dataTable>tbody>tr.odd>*, table.dataTable.display>tbody>tr.odd>* {
     box-shadow: inset 0 0 0 9999px rgb(0 0 0 / 7%);
 }
-table.dataTable.stripe tbody tr:first-child th, table.dataTable.stripe tbody tr:first-child td {
+table.dataTable tbody tr:first-child th, table.dataTable tbody tr:first-child td {
   border-top: none;
 }
-table.dataTable.stripe tbody th, table.dataTable.stripe tbody td {
+table.dataTable tbody th, table.dataTable tbody td {
   border-top: 1px solid rgba(0, 0, 0, 0.15);
   border-right: 1px solid rgba(0, 0, 0, 0.15);
 }
