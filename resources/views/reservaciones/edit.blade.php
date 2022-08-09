@@ -172,15 +172,15 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
-                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">
+                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>
-                                <select name="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->email}}">
+                                <select name="alojamiento" class="form-control to-uppercase" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->email}}">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento == $alojamiento->id ? 'selected="selected' : ""}} >{{$alojamiento->nombre}}</option>
@@ -190,7 +190,7 @@
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control" tabindex="4" value="{{$reservacion->origen}}"/>
+                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$reservacion->origen}}"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}}">
@@ -327,7 +327,7 @@
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>
+                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -350,7 +350,7 @@
                                                                 <label for="anticipo" class="col-form-label"><strong>Anticipo:</strong></label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="anticipo" id="anticipo" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                                <input type="text" name="anticipo" id="anticipo" class="form-control amount not-editable height-auto to-uppercase" disabled="disabled" value="0.00">
                                                             </div>
                                                         </div>
                                                     </div>

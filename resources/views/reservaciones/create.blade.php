@@ -49,7 +49,7 @@
                 <form class="row g-3 align-items-center f-auto" id="alojamientos-form">
                     <div class="form-group col-7 mt-3">
                         <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
-                        <input type="text" name="nombre" id="nombre-alojamiento" class="form-control" required="required">  
+                        <input type="text" name="nombre" id="nombre-alojamiento" class="form-control to-uppercase" required="required">  
                     </div>
                     <div class="form-group col-5 mt-3">
                         <button class="btn btn-info btn-block mt-33" id="crear-alojamiento">Crear alojamiento</button>
@@ -98,15 +98,15 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>
-                                <input type="text" name="nombre" class="form-control" required="required" autocomplete="off" tabindex="1">
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
-                                <input type="email" name="email" class="form-control" autocomplete="off" tabindex="2">
+                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel
-                                    <button id="add-alojamiento" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#alojamiento-modal" style="
+                                    <button id="add-alojamiento" class="btn btn-info to-uppercase" data-bs-toggle="modal" data-bs-target="#alojamiento-modal" style="
                                         height: 20px;
                                         min-height: 20px;
                                         font-size: 8px;
@@ -122,7 +122,7 @@
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control" tabindex="4"/>
+                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}}">
@@ -149,7 +149,7 @@
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="cantidad" class="col-form-label">Cantidad</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="8">
+                                <input type="number" name="cantidad" id="cantidad" class="form-control to-uppercase" value="1" min="1" max="200" autocomplete="off" tabindex="8">
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
@@ -162,7 +162,7 @@
 
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="9">
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -233,7 +233,7 @@
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" rows="5" style="width:100%;"></textarea>
+                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;"></textarea>
                                             </div>
                                         </div>
                                     </div>
