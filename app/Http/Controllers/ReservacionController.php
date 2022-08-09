@@ -63,6 +63,20 @@ class ReservacionController extends Controller
         return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecioCompra' => $dolarPrecioCompra, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo]);
     }
 
+    public function updateEstatusReservacion(Request $request){
+        try{
+            $reservacion          = Reservacion::find($request->reservacionId);
+            $reservacion->estatus = ($request->accion == 'cancelar' ? 0 : 1);
+            $reservacion->save();
+            
+            return json_encode(['result' => "Success"]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        } 
+    }
+
     public function getDescuentoPersonalizadoValidacion(Request $request){
         try{
             $limite = $this->getLimitesDescuentoPersonalizado($request);
@@ -292,7 +306,7 @@ class ReservacionController extends Controller
             }
             return json_encode(['data' => $reservacionDetalleArray]);
             */
-            $reservaciones           = Reservacion::orderByDesc('id')->get();
+            $reservaciones           = Reservacion::orderByDesc('id')->where('estatus',1)->get();
             $reservacionDetalleArray = [];
             foreach($reservaciones as $reservacion){
                 $numeroPersonas = 0;

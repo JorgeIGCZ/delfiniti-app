@@ -123,17 +123,40 @@
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">FOLIO: {{$reservacion->folio}}</h2>
-            @if(count($tickets)>0)
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Reimprimir Tickets
-                    </button>
-                    <div class="dropdown-menu tx-13" id="lista-tickets" aria-labelledby="dropdownMenuButton" style="">
-                        @foreach($tickets as $ticket)
-                            <a href="#!" class="dropdown-item" onclick="imprimirTicket({{$ticket->id}})" ticket-id="{{$ticket->id}}">{{$ticket->created_at}}</a>
-                        @endforeach
-                    </div>
-                </div>
+        </div>
+        <div class="az-content-header-right">
+            <div class="media">
+                <div class="media-body">
+                    <label>Fecha de creación</label>
+                    <h6>{{date_format(date_create($reservacion->fecha_creacion),"d/m/Y")}}</h6>
+                </div><!-- media-body -->
+            </div><!-- media -->
+            <div class="media">
+                <div class="media-body">
+                    <label>Fecha de actividad</label>
+                    <h6>{{date_format(date_create($reservacion->fecha),"d/m/Y")}}</h6>
+                </div><!-- media-body -->
+            </div><!-- media -->
+            <div class="media">
+                <div class="media-body">
+                    @if(count($tickets)>0)
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Reimprimir Tickets
+                            </button>
+                            <div class="dropdown-menu tx-13" id="lista-tickets" aria-labelledby="dropdownMenuButton" style="">
+                                @foreach($tickets as $ticket)
+                                    <a href="#!" class="dropdown-item" onclick="imprimirTicket({{$ticket->id}})" ticket-id="{{$ticket->id}}">{{$ticket->created_at}}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div><!-- media-body -->
+            </div><!-- media -->
+            @if($reservacion->estatus)
+                <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar reservación</button>
+            @else
+                <button class="btn btn-success" id="actualizar-estatus-reservacion" accion='reactivar'>Activar reservación</button>
             @endif
         </div>
     </div><!-- az-dashboard-one-title -->

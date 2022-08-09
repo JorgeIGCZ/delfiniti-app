@@ -1,3 +1,67 @@
+function validateCancelarReservacion(){
+    Swal.fire({
+        title: '¿Cancelar?',
+        text: "La reservación será cancelada, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cancelar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','cancelar-reservacion');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+function validateActivarReservacion(){
+    Swal.fire({
+        title: '¿Activar?',
+        text: "La reservación será activada, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, activar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','activar-reservacion');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+function updateEstatusReservacion(accion){
+    const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
+    axios.post('/reservaciones/updateestatusreservacion', {
+        '_token': token(),
+        'reservacionId': reservacionId(),
+        'accion': accion,
+    })
+    .then(function (response) {
+        if (response.data.result == 'Success') {
+            Swal.fire({
+                icon: 'success',
+                title: `Reservación ${title}`,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            location.reload();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: `Petición fallida`,
+                showConfirmButton: true
+            })
+        }
+    })
+    .catch(function (error) {
+        Swal.fire({
+            icon: 'error',
+            title: `Autorización fallida E:${error.message}`,
+            showConfirmButton: true
+        })
+    });
+}
 async function eliminarActividadReservacion(row,clave){
     result = await axios.post('/reservaciones/removeActividad', {
         '_token': token(),
@@ -408,6 +472,15 @@ window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
 
+    document.getElementById('actualizar-estatus-reservacion').addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
+            validateCancelarReservacion();
+            return true;
+        }
+        validateActivarReservacion();
+    });
+
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
     });
@@ -652,6 +725,10 @@ async function validarVerificacion(){
                 getCodigoDescuento();
             }else if(action === 'add-actividad-disponibilidad'){
                 addActividad();
+            }else if(action === 'cancelar-reservacion'){
+                updateEstatusReservacion('cancelar');
+            }else if(action === 'activar-reservacion'){
+                updateEstatusReservacion('activar');
             }
         }else{
             Swal.fire({

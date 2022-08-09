@@ -14,6 +14,10 @@ const format    = (reservacion) => {
                         font-size: 16px;
                     }
 
+                    .f-11{
+                        font-size: 11px;
+                    }
+
                     .vacio{
                         width:40%;
                     }
@@ -90,9 +94,10 @@ const format    = (reservacion) => {
                         <br/>
                         <p class="f-16 centrado ">FOLIO: ${reservacion.folio}</p>
                         <br/>
-                        LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO
+                        <p class="f-11">LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO</p>
                         <br/>
-                        FECHA DE EXPEDICION: ${new Date().toLocaleDateString('es-MX',{
+                        <p class="f-11">
+                        FECHA DE EXPEDICIÓN: ${new Date().toLocaleDateString('es-MX',{
                                 day: '2-digit',
                                 month: 'numeric',
                                 year: 'numeric',
@@ -102,6 +107,7 @@ const format    = (reservacion) => {
                                 hour12: true
                             }
                         )}
+                        </p>
                         <br/>
                         CAJERO: ${detalleReservacion().cajero}
                         <br/>
