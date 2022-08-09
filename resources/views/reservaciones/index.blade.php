@@ -71,7 +71,7 @@
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
                         <div class="col-12">
-                            <table id="reservaciones" class="display" style="width:100%">
+                            <table id="reservaciones" class="stripe" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
