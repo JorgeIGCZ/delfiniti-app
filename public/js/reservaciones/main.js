@@ -456,6 +456,13 @@ window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
 
+    $('input').keyup(function() {
+        this.value = this.value.toUpperCase();
+    });
+    $('textarea').keyup(function() {
+        this.value = this.value.toUpperCase();
+    });
+
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
     });
