@@ -22,15 +22,22 @@ class DisponibilidadController extends Controller
     {
         $fechaActividades    = (is_null($request->fecha_actividades) ? date('Y-m-d') : $request->fecha_actividades);
         $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
-        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->count();
+
+        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->count();
         
-        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',2)->count();
+        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->count();
+
+        $cortesias           = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
+            $query
+                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+        })->count();
         
         return view("disponibilidad.index",[
             'actividadesHorarios' => $actividadesHorarios,
             'fechaActividades'    => $fechaActividades,
             'reservaciones'       => $reservaciones,
-            'reservacionesPagadas'=> $reservacionesPagadas
+            'reservacionesPagadas'=> $reservacionesPagadas,
+            'cortesias'           => $cortesias
         ]);
     }
 

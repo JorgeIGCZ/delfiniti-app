@@ -69,6 +69,48 @@ async function eliminarActividadReservacion(row,clave){
 
     return true;
 }
+async function eliminarDescuentoReservacion(row,pagoId){
+    result = await axios.post('/reservaciones/removeDescuento', {
+        '_token': token(),
+        'reservacionId': reservacionId(),
+        'pagoId': pagoId
+    });
+
+
+    if(result.data.result == "Success"){
+        Swal.fire({
+            icon: 'success',
+            title: `Descuento eliminado!`,
+            showConfermButton: false,
+            timer: 1000
+        })
+        location.reload();
+    }else{
+        Swal.fire({
+            icon: 'error',
+            title: `Petición fallida`,
+            showConfirmButton: true
+        })
+    }
+
+    return true;
+}
+function removeDescuento(row){
+    pagosTabla
+        .row( $(row).parents('tr') )
+        .remove()
+        .draw();
+
+    //remove clave from the array
+    const id   = $(row).parents('tr')[0].firstChild.innerText;
+    let updated   = 0;
+    pagosArray = pagosArray.filter(function (pagos) {
+        let result = (pagos.id !== id);
+        updated > 0 ? result = true : '';
+        !result ? updated++ : '';
+        return result;
+    });
+}
 function removeActividad(row){
     reservacionesTable
         .row( $(row).parents('tr') )
@@ -574,6 +616,26 @@ $('#reservaciones').on( 'click', '.eliminar-celda', function (event) {
         removeActividad(this);
         validateBotonGuardar();
         setTotal();
+    }
+} );
+
+//jQuery
+$('#pagos').on( 'click', '.eliminar-celda', function (event) {
+    event.preventDefault();
+    if(env == 'edit'){
+        Swal.fire({
+            title: '¿Eliminiar?',
+            text: "El descuento será eliminado de la reservación, ¿desea proceder?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#17a2b8',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                eliminarDescuentoReservacion(this,$(this).parents('tr')[0].firstChild.innerText)
+            }
+        });
     }
 } );
 

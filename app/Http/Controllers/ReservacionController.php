@@ -256,8 +256,10 @@ class ReservacionController extends Controller
 
     private function isDescuentoValid($total,$email){
         $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
-        $maximoDescuento = ($total/100) * $limite;
-        return ($total >= $maximoDescuento);
+        $maximoDescuento = (float)(($total/100) * $limite);
+        $total = (float)$total;
+
+        return (round($total,2) >= round($maximoDescuento,2));
     }
 
     private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
@@ -399,6 +401,36 @@ class ReservacionController extends Controller
                 ]
             );
         } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+    }
+
+    public function removeDescuento(Request $request){
+        try{
+            DB::beginTransaction(); 
+
+            $pago = Pago::find($request->pagoId);
+
+            $factura                 = Factura::find($request->reservacionId);
+            $factura->pagado         = (float)$factura->pagado - (float)$pago['cantidad'];
+            $factura->adeudo         = (float)$factura->adeudo + (float)$pago['cantidad'];
+            $factura->save();
+
+            $pago->delete();
+
+            DB::commit();
+            
+            $this->setEstatusPago($request->reservacionId);
+            
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);

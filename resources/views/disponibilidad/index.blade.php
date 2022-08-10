@@ -102,7 +102,7 @@
                             </div>
                             <div>
                                 <label class="col-form-label">Cortesias:</label>
-                                <strong>-</strong>
+                                <strong>{{$cortesias}}</strong>
                             </div>
                         </div>
                         <div>

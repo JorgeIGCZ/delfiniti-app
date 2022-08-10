@@ -61,15 +61,27 @@ class Reservacion extends Model
             'id' //local key ReservacionDetalle
         );
     }
-    public function horario()
+    // está mal
+    // public function horario()
+    // {
+    //     return $this->hasManyThrough(
+    //         ActividadHorario::class,
+    //         ReservacionDetalle::class,
+    //         'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
+    //         'actividad_id', // FK Actividad como comunica a ReservacionDetalle
+    //         'id', //local key Reservacion
+    //         'id' //local key ReservacionDetalle
+    //     );
+    // }
+    public function descuentoCodigo()
     {
-        return $this->hasManyThrough(
-            ActividadHorario::class,
-            ReservacionDetalle::class,
-            'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
-            'actividad_id', // FK Actividad como comunica a ReservacionDetalle
-            'id', //local key Reservacion
-            'id' //local key ReservacionDetalle
+        return $this->hasOneThrough(
+            DescuentoCodigo::class,
+            Pago::class,
+            'reservacion_id', // FK Pago como comunica a Reservacion
+            'id', // FK  como comunica a DescuentoCodigo
+            'id', //local key Reservaciones
+            'descuento_codigo_id' //local key Pago
         );
     }
     public function tipoPago()
@@ -78,9 +90,9 @@ class Reservacion extends Model
             TipoPago::class,
             Pago::class,
             'reservacion_id', // FK Pago como comunica a Reservacion
-            'id', // FK TipoPago como comunica a Pago
+            'id', // FK Pago como comunica a TipoPago
             'id', //local key TipoPago
-            'id' //local key Pago
+            'tipo_pago_id' //local key Pago
         );
     }
 }

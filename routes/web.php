@@ -67,6 +67,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     */
     Route::post('reservaciones/updateestatusreservacion', 'updateEstatusReservacion');
     Route::post('reservaciones/removeActividad', 'removeActividad');
+    Route::post('reservaciones/removeDescuento', 'removeDescuento');
     Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
     Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::get('reservaciones/show/{reservacion?}', 'show');

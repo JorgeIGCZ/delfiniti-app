@@ -60,8 +60,8 @@
                 '{{$detalle->actividad->nombre}}',
                 '{{$detalle->horario->horario_inicial}}',
                 '{{$detalle->numero_personas}}',
-                '{{$detalle->PPU}}',
-                '{{$detalle->PPU}}'*'{{$detalle->numero_personas}}',
+                formatter.format('{{$detalle->PPU}}'),
+                formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
                 (accion !== 'pago' ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` : '')
             ]];
             actvidadesArray = [...actvidadesArray,{
@@ -77,9 +77,12 @@
         @forEach($reservacion->pagos as $pago)
             pagosTablaArray = [...pagosTablaArray,[
                 '{{$pago->id}}',
-                ('{{$pago->id}}' == '2' ? `${'{{$pago->cantidad}}'}USD * ${'{{$pago->tipo_cambio_usd}}'}` : '{{$pago->cantidad}}'),
-                '{{$pago->tipoPago->nombre}} ({{$pago->descuentoCodigo->nombre}})',
-                '{{$pago->created_at}}'
+                ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
+                '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
+                '{{$pago->created_at}}',
+                ((accion === 'pago' && ![1,2,3].includes({{$pago->tipo_pago_id}})) 
+                    ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
+                    : '')
             ]];
             pagosArray = [...pagosArray,{
                 'id'            : '{{$pago->id}}',
@@ -89,7 +92,7 @@
                 'tipoCambioUSD' : '{{$pago->tipo_cambio_usd}}'
             }];
 
-            nombreTipoPagoArray = [...nombreTipoPagoArray,'{{$pago->tipoPago->nombre}}'];
+            nombreTipoPagoArray = [...nombreTipoPagoArray,'{{@$pago->tipoPago->nombre}}'];
         @endforeach
 
     </script>
@@ -270,6 +273,7 @@
                                                     <th>Cantidad</th>
                                                     <th>Tipo de pago</th>
                                                     <th>Fecha pago</th>
+                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                         </table>
