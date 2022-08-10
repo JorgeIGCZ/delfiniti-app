@@ -16,7 +16,8 @@ class Pago extends Model
         'tipo_pago_id',
         'tipo_cambio_usd',
         'valor',
-        'tipo_valor'
+        'tipo_valor',
+        'descuento_codigo_id'
     ];
     protected $primaryKey = 'id';
 
@@ -28,5 +29,10 @@ class Pago extends Model
     public function reservacion()
     {
         return $this->belongsTo(Reservacion::class,'reservacion_id', 'id');
+    }
+
+    public function descuentoCodigo()
+    {
+        return $this->hasOne(DescuentoCodigo::class,'id','descuento_codigo_id');
     }
 }

@@ -221,7 +221,7 @@
                                                     <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
                                                         <option value='0' selected="true">Seleccionar codigo</option>
                                                         @foreach($descuentosCodigo as $descuentoCodigo)
-                                                            <option value="{{$descuentoCodigo->nombre}}" >{{$descuentoCodigo->nombre}}</option>
+                                                            <option value="{{$descuentoCodigo->id}}" >{{$descuentoCodigo->nombre}}</option>
                                                         @endforeach
                                                     </select>
                                                     <button id="add-codigo-descuento" class="btn btn-info btn-block form-control" data-bs-toggle="modal" data-bs-target="#verificacion-modal">verificar</button>

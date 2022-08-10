@@ -87,6 +87,7 @@ class ReservacionController extends Controller
             return json_encode(['result' => "Error"]);
         }
     }
+
     private function getLimitesDescuentoPersonalizado($request){
         $descuento = User::where('email', $request['email'])->first();
         return $descuento->limite_descuento;
@@ -106,10 +107,12 @@ class ReservacionController extends Controller
         }
         return json_encode(['result' => "Error"]);
     }
+
     private function getDescuento($codigoDescuento){
-        $descuento = DescuentoCodigo::where('nombre', $codigoDescuento)->first();
+        $descuento = DescuentoCodigo::where('id', $codigoDescuento)->first();
         return $descuento;
     }
+
     private function verifyUserAuth($request){
         if(Auth::attempt(['email'=>$request->email,'password'=>$request->password]))
         {
@@ -270,13 +273,15 @@ class ReservacionController extends Controller
                 'tipo_pago_id'   =>  $tipoPagoId,
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
                 'valor'          =>  $request[$tipoPago]['valor'] ?? '',
-                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
+                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
+                'descuento_codigo_id' => $request[$tipoPago]['descuentoCodigoId'] ?? ''
             ]);
             $result = is_numeric($pago['id']);
 
         }
         return $result;
     }
+
     public function getTipoPagoId($tipoPago){
         $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
         return $tipoPagoId;

@@ -104,17 +104,16 @@ function createReservacion(estatus) {
         'pagosAnteriores': reservacion.elements['anticipo'].getAttribute('value'),
         'fecha': reservacion.elements['fecha'].value,
         'pagos': estatus === 'pagar' ? pagos : {},
-
-        //'cupon'        : reservacion.elements['cupon'].getAttribute('value'),
         'cupon': {
             'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
-            'tipo': document.getElementById('descuento-codigo').getAttribute('tipo')
+            'tipo': reservacion.elements['cupon'].getAttribute('tipo')
         },
         'descuentoCodigo': {
             'cantidad': codigoDescuentoCantidad,
             'password': document.getElementById('descuento-codigo').getAttribute('password'),
             'valor': document.getElementById('descuento-codigo').value,
-            'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo')
+            'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo'),
+            'descuentoCodigoId': document.getElementById('codigo-descuento').value
         },
         'descuentoPersonalizado': {
             'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad, codigoDescuentoCantidad, cuponCantidad),

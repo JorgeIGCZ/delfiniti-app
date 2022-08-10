@@ -78,14 +78,14 @@
             pagosTablaArray = [...pagosTablaArray,[
                 '{{$pago->id}}',
                 ('{{$pago->id}}' == '2' ? `${'{{$pago->cantidad}}'}USD * ${'{{$pago->tipo_cambio_usd}}'}` : '{{$pago->cantidad}}'),
-                '{{$pago->tipoPago->nombre}}',
+                '{{$pago->tipoPago->nombre}} ({{$pago->descuentoCodigo->nombre}})',
                 '{{$pago->created_at}}'
             ]];
             pagosArray = [...pagosArray,{
-                'id'        : '{{$pago->id}}',
-                'cantidad'  : '{{$pago->cantidad}}',
-                'tipoPagoId': '{{$pago->tipo_pago_id}}',
-                'fechaPago' : '{{$pago->created_at}}',
+                'id'            : '{{$pago->id}}',
+                'cantidad'      : '{{$pago->cantidad}}',
+                'tipoPagoId'    : '{{$pago->tipo_pago_id}}',
+                'fechaPago'     : '{{$pago->created_at}}',
                 'tipoCambioUSD' : '{{$pago->tipo_cambio_usd}}'
             }];
 
@@ -315,7 +315,7 @@
                                                     <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
                                                         <option value='0' selected="true">Seleccionar codigo</option>
                                                         @foreach($descuentosCodigo as $descuentoCodigo)
-                                                            <option value="{{$descuentoCodigo->nombre}}" >{{$descuentoCodigo->nombre}}</option>
+                                                            <option value="{{$descuentoCodigo->id}}" >{{$descuentoCodigo->nombre}}</option>
                                                         @endforeach
                                                     </select>
                                                     <button id="add-codigo-descuento" class="btn btn-info btn-block form-control" data-bs-toggle="modal" data-bs-target="#verificacion-modal">verificar</button>
