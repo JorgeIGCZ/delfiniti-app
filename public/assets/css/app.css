@@ -45123,12 +45123,12 @@ input[type='checkbox']{
 }
 #disponibilidad-settings-container{
   display: grid;
-  grid-template-columns: 1fr 400px 1fr;
+  grid-template-columns: 1fr 500px 1fr;
   align-items: center;
 }
 #contenedor-informacion-disponibilidad{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     justify-items: center;
 }
 #toogle-info{

@@ -27,6 +27,8 @@ class DisponibilidadController extends Controller
         
         $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->count();
 
+        $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->count();
+
         $cortesias           = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
                 ->whereRaw("nombre LIKE '%CORTESIA%' ");
@@ -37,6 +39,7 @@ class DisponibilidadController extends Controller
             'fechaActividades'    => $fechaActividades,
             'reservaciones'       => $reservaciones,
             'reservacionesPagadas'=> $reservacionesPagadas,
+            'reservacionesPendientes'=> $reservacionesPendientes,
             'cortesias'           => $cortesias
         ]);
     }

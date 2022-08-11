@@ -98,7 +98,11 @@
                             </div>
                             <div>
                                 <label class="col-form-label">Pagados:</label>
-                                <strong>{{$reservacionesPagadas}}</strong>
+                                <strong>{{$reservacionesPagadas - $cortesias}}</strong>
+                            </div>
+                            <div>
+                                <label class="col-form-label">Pendientes:</label>
+                                <strong>{{$reservacionesPendientes}}</strong>
                             </div>
                             <div>
                                 <label class="col-form-label">Cortesias:</label>
@@ -133,7 +137,9 @@
                                                                 $numeroReservaciones = 0;
                                                                 foreach ($actividadHorario->reservacion as $reservacion) {
                                                                     foreach ($reservacion->reservacionDetalle as $reservacionDetalle){
-                                                                        $numeroReservaciones += $reservacionDetalle->numero_personas;
+                                                                        if($reservacionDetalle->actividad_id == $actividadHorario->actividad->id){
+                                                                            $numeroReservaciones += $reservacionDetalle->numero_personas;
+                                                                        }
                                                                     }
                                                                 }
                                                             @endphp
