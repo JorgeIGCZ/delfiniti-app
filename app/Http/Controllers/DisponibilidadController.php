@@ -23,24 +23,51 @@ class DisponibilidadController extends Controller
         $fechaActividades    = (is_null($request->fecha_actividades) ? date('Y-m-d') : $request->fecha_actividades);
         $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
 
-        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->count();
+        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->get();
+        $reservacionesPersonas = 0;
+        foreach($reservaciones as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $reservacionesPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
         
-        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->count();
-
-        $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->count();
+        $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->get();
+        $reservacionesPendientesPersonas = 0;
+        foreach($reservacionesPendientes as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $reservacionesPendientesPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
 
         $cortesias           = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
                 ->whereRaw("nombre LIKE '%CORTESIA%' ");
-        })->count();
+        })->get();
+        $cortesiasPersonas = 0;
+        foreach($cortesias as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $cortesiasPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
+
+
+        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->get();
+        $reservacionesPagadasPersonas = 0;
+        $reservacionesPagadasSinCortesiasPersonas = 0;
+        foreach($reservacionesPagadas as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $reservacionesPagadasPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
+        $reservacionesPagadasSinCortesiasPersonas = $reservacionesPagadasPersonas - $cortesiasPersonas;
         
         return view("disponibilidad.index",[
             'actividadesHorarios' => $actividadesHorarios,
             'fechaActividades'    => $fechaActividades,
-            'reservaciones'       => $reservaciones,
-            'reservacionesPagadas'=> $reservacionesPagadas,
-            'reservacionesPendientes'=> $reservacionesPendientes,
-            'cortesias'           => $cortesias
+            'reservaciones'       => $reservacionesPersonas,
+            'reservacionesPagadas'=> $reservacionesPagadasSinCortesiasPersonas,
+            'reservacionesPendientes'=> $reservacionesPendientesPersonas,
+            'cortesias'           => $cortesiasPersonas
         ]);
     }
 

@@ -98,7 +98,7 @@
                             </div>
                             <div>
                                 <label class="col-form-label">Pagados:</label>
-                                <strong>{{$reservacionesPagadas - $cortesias}}</strong>
+                                <strong>{{$reservacionesPagadas}}</strong>
                             </div>
                             <div>
                                 <label class="col-form-label">Pendientes:</label>
