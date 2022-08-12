@@ -12,6 +12,11 @@
                     .catch(function (error) {
                     });
                 },
+                rowCallback: function( row, data, index ) {
+                    if ( data.cortesia == "Cortesia" ) {
+                        $(row).addClass("highlight");
+                    }
+                },
                 columns: [
                     { data: 'id' },
                     { data: 'folio' },
@@ -35,6 +40,10 @@
                                     break;
                             }
                             return  estatus;
+                        }
+                    },{ defaultContent: 'Cortesias', 'render': function ( data, type, row )
+                        {
+                            return  (row.cortesia !== '' ? `<p class='paid'>${row.cortesia}</p>` : '');
                         }
                     },
                     { data: 'fechaCreacion' },
@@ -82,6 +91,7 @@
                                         <th>Horario</th>
                                         <th>Fecha Actividad</th>
                                         <th>Estatus</th>
+                                        <th>Cortesia</th>
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>

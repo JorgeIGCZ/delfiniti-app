@@ -45157,3 +45157,6 @@ table.dataTable tbody th, table.dataTable tbody td {
   border-top: 1px solid rgb(0, 0, 0);
   border-right: 1px solid rgb(0, 0, 0);
 }
+table .highlight{
+  background: #daffdb;
+}

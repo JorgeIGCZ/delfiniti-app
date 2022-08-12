@@ -315,9 +315,12 @@ class ReservacionController extends Controller
             }
             return json_encode(['data' => $reservacionDetalleArray]);
             */
-            $reservaciones           = Reservacion::orderByDesc('id')->where('estatus',1)->get();
+            $reservaciones           = Reservacion::with(['descuentoCodigo' => function ($query) {
+                    $query->where("nombre",'like',"%CORTESIA%");
+                }])->orderByDesc('id')->where('estatus',1)->get();
+
             $reservacionDetalleArray = [];
-            foreach($reservaciones as $reservacion){
+            foreach($reservaciones as $reservacion){ 
                 $numeroPersonas = 0;
                 $horario        = "";
                 $actividades    = "";
@@ -337,6 +340,7 @@ class ReservacionController extends Controller
                     'personas'     => $numeroPersonas,
                     'notas'        => @$reservacion->comentarios,
                     'estatus'      => @$reservacion->comentarios,
+                    'cortesia'     => @($reservacion->descuentoCodigo->id > 0) ? 'Cortesia' : '',
                     'estatusPago'  => @$reservacion->estatus_pago
                 ];
             }
