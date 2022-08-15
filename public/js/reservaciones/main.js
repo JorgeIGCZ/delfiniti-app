@@ -531,6 +531,13 @@ window.onload = function() {
             document.getElementById('add-descuento-personalizado').checked = false;
             document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
             document.getElementById('password').focus();
+        }else{
+            document.getElementById('descuento-personalizado').setAttribute('disabled','disabled');
+            document.getElementById('descuento-personalizado').setAttribute('limite','0');
+            document.getElementById('descuento-personalizado-container').classList.add("hidden");
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+            setOperacionResultados();
         }
     });
     document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
