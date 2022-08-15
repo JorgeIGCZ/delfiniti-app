@@ -84,16 +84,33 @@ class CheckinController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function registroVisita(Request $request, $id){
+        $CustomErrorHandler = new CustomErrorHandler();
         try{
+            $comisiones            = new ComisionController();
             $Alojamiento           = Reservacion::find($id);
             $Alojamiento->check_in = $request->estatus;
             $Alojamiento->save();
+
+            $comisiones->setComisiones($id);
         } catch (\Exception $e){
-            $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => 'Success']);
+    }
+
+    public function setCheckin($reservacion){
+        $reservaciones  = new ReservacionController();
+        $comisiones     = new ComisionController();
+        $estatusPago    = $reservaciones->getEstatusPagoReservacion($reservacion['id']);
+        $fechaActividad = $reservacion['fecha'];
+        $today          = date("Y-m-d");
+        if($estatusPago == 2 && $fechaActividad == $today){
+            $reservacion           = Reservacion::find($reservacion['id']);
+            $reservacion->check_in = 1;
+            $reservacion->save();
+            $comisiones->setComisiones($reservacion['id']);
+        }
     }
 
     /**

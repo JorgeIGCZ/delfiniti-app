@@ -219,7 +219,7 @@
                                     </div>
                                     <div class="form-group col-1 mt-0 mb-0">
                                         <label for="cantidad" class="col-form-label">Cantidad</label>
-                                        <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="8">
+                                        <input type="number" name="cantidad" id="cantidad" class="form-control" value="1"  max="200" autocomplete="off" tabindex="8">
                                     </div>
                                     <div class="form-group col-1 mt-0 mb-0">
                                         <label for="disponibilidad" class="col-form-label">Disp.</label>

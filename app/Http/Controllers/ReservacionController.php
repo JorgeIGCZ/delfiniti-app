@@ -129,8 +129,9 @@ class ReservacionController extends Controller
     public function store(Request $request)
     {
         $actividad = new ActividadController();
-        $email    = Auth::user()->email;
-        $password = "";
+        $checkin   = new CheckinController();
+        $email     = Auth::user()->email;
+        $password  = "";
         $estatusPago  = ($request->estatus == "pagar-reservar");
         $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
@@ -200,7 +201,7 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
-            $this->setCheckin($reservacion);
+            $checkin->setCheckin($reservacion);
 
             return json_encode(
                 [
@@ -451,6 +452,7 @@ class ReservacionController extends Controller
     {
         $email    = Auth::user()->email;
         $password = "";
+        $checkin   = new CheckinController();
 
         DB::beginTransaction();
 
@@ -523,7 +525,7 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
-            $this->setCheckin($reservacion);
+            $checkin->setCheckin($reservacion);
 
             return json_encode(
                 [
@@ -539,17 +541,7 @@ class ReservacionController extends Controller
         }
         return json_encode(['result' => is_numeric($reservacion['id']) ? 'Success' : 'Error']);
     }
-
-    private function setCheckin($reservacion){
-        $estatusPago    = $this->getEstatusPagoReservacion($reservacion['id']);
-        $fechaActividad = $reservacion['fecha'];
-        $today          = date("Y-m-d");
-        if($estatusPago == 2 && $fechaActividad == $today){
-            $reservacion           = Reservacion::find($reservacion['id']);
-            $reservacion->check_in = 1;
-            $reservacion->save();
-        }
-    }
+    
 
     private function setEstatusPago($reservacionId){
         $reservacion               = Reservacion::find($reservacionId);
@@ -557,7 +549,7 @@ class ReservacionController extends Controller
         $reservacion->save();
     }
 
-    private function getEstatusPagoReservacion($reservacionId){
+    public function getEstatusPagoReservacion($reservacionId){
         $factura = Factura::where('reservacion_id',$reservacionId)->first();
         if($factura->pagado == 0){
             return 0;//'pendiente'

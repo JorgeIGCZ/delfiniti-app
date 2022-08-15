@@ -9,6 +9,7 @@ use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AlojamientoController;
 use App\Http\Controllers\CerradorController;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\ComisionistaTipoController;
@@ -143,6 +144,17 @@ Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group
     Route::resource('descuentocodigos',DescuentoCodigoController::class, [
         'parameters' => [
             'descuentocodigos' => 'descuentocodigo'
+        ]
+    ]);
+    
+});
+
+Route::controller(ComisionController::class)->middleware(['auth'])->group(function () {
+    Route::get('comisiones/show/{comision?}', 'show');
+    Route::patch('comisiones/estatus/{actividad}', 'updateComisiones');
+    Route::resource('comisiones',ComisionController::class, [
+        'parameters' => [
+            'comisiones' => 'comision'
         ]
     ]);
     

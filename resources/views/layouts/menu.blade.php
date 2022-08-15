@@ -37,6 +37,11 @@
     </li>
     @endcan
 
+
+    <li class="nav-item {{url()->current() == url('comisiones') ? 'active' : ''}}">
+      <a href="{{ url('comisiones') }}" class="nav-link"><i class="typcn typcn-group-outline"></i> Comisiones</a>
+    </li>
+
     <li class="nav-item">
       <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
       <div class="az-menu-sub az-menu-sub-mega">
