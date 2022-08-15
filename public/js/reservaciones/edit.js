@@ -151,7 +151,7 @@ function createReservacion(estatus) {
             } else {
                 Swal.fire({
                     icon: 'error',
-                    title: `Reservacion fallida`,
+                    title: `Reservacion fallida E:${response.data.message}`,
                     showConfirmButton: true
                 })
             }
