@@ -766,6 +766,7 @@ async function validarVerificacion(){
                 getCodigoDescuento();
             }else if(action === 'add-actividad-disponibilidad'){
                 addActividad();
+                validateBotonGuardar();
             }else if(action === 'cancelar-reservacion'){
                 updateEstatusReservacion('cancelar');
             }else if(action === 'activar-reservacion'){
