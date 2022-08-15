@@ -591,6 +591,7 @@ window.onload = function() {
     });
 
     document.getElementById('fecha').addEventListener('focusout', (event) =>{
+        getActividadDisponibilidad();
         setTimeout(validateFecha(),500);
     });
 };
