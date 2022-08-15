@@ -24,9 +24,9 @@
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus == 1){
-                                return 'Cobrado';
+                                return 'Cobrado (pendiente pago)';
                             }else if(row.estatus == 2){
-                                return 'Colorado';
+                                return 'Pagado';
                             }
                             return '';
                         }
