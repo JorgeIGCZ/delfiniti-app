@@ -8,9 +8,6 @@
         const isAdmin = () => {
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
-        const token = () =>{
-            return  '{{ csrf_token() }}';
-        }
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }

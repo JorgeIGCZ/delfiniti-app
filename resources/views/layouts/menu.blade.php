@@ -1,7 +1,12 @@
 <ul class="nav">
     @can('Reportes.index')
     <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
-      <a href="{{ url('reportes') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
+      <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
+      <div class="az-menu-sub">
+        <nav class="nav">
+          <a href="#!" class="nav-link" data-bs-toggle="modal" data-bs-target="#reportes-modal">Corte de caja</a>
+        </nav>
+      </div>
     </li>
     @endcan
 

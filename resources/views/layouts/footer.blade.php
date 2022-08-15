@@ -22,6 +22,7 @@
   <script src="{{asset('assets/js/chart.flot.sampledata.js')}}"></script>
   <script src="{{asset('assets/js/dashboard.sampledata.js')}}"></script>
   <script src="{{asset('js/app.js')}}"></script>
+  <script src="{{asset('js/reportes/main.js') }}"></script>
   @yield('scripts');
   <script>
     $(function(){

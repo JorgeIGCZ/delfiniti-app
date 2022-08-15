@@ -48,12 +48,44 @@
     <!-- azia CSS -->
     <link rel="stylesheet" href="{{asset('assets/css/app.css')}}">
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
+    <script>
+      const token = () =>{
+        return  '{{ csrf_token() }}';
+      }
+    </script>
   </head>
   <body>
     @include('layouts.header')
     <div class="az-content az-content-dashboard">
       <div class="container">
         <div class="az-content-body">
+          <div class="modal fade" id="reportes-modal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+            <div class="modal-dialog modal-m" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                  <h6 class="modal-title">Exportar Reporte</h6>
+                  <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">×</span>
+                  </button>
+                  </div>
+                  <div class="modal-body">
+                      <form class="row g-3 align-items-center f-auto">
+                          <div class="form-group col-6 mt-3">
+                            <label for="nombre" class="col-form-label">Fecha inicio</label>    
+                            <input type="date" name="fecha-inicio" id="report-fecha-inicio" class="form-control" required="required" value="{{date('Y-m-d')}}">  
+                          </div>
+                          <div class="form-group col-6 mt-3">
+                              <label for="nombre" class="col-form-label">Fecha final</label>    
+                              <input type="date" name="fecha-inicio" id="report-fecha-final" class="form-control" required="required" value="{{date('Y-m-d')}}">  
+                          </div>
+                          <div class="form-group col-4 mt-3">
+                              <button class="btn btn-info btn-block mt-33" id="crear-reporte">Exportar</button>
+                          </div>
+                      </form>
+                  </div>
+              </div>
+            </div><!-- modal-dialog -->
+          </div>
           @yield('content')
         </div>
       </div>

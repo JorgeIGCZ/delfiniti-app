@@ -24,7 +24,7 @@ class Actividad extends Model
 
     public function reservacionDetalle()
     {
-        return $this->hasMany(ReservacionDetalle::class,'actividad_id');
+        return $this->hasMany(ReservacionDetalle::class,'actividad_id','id');
     }
 
     public function horarios()

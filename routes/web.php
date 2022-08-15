@@ -118,7 +118,7 @@ Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->grou
 });
 
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
-Route::get('/reportes/cortecaja',[ReporteController::class,'corteCaja'])->middleware(['auth'])->name('cortecaja');
+Route::post('/reportes/cortecaja',[ReporteController::class,'corteCaja'])->middleware(['auth'])->name('cortecaja');
 
 Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');
