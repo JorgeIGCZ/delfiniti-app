@@ -517,6 +517,18 @@ window.onload = function() {
         validateBotonGuardar();
     });
 
+    $('#codigo-descuento').on('change', function (e) {
+        const codigoDescuento = document.getElementById('codigo-descuento').value;
+        if(codigoDescuento == 0){
+            document.getElementById('descuento-codigo-container').classList.add("hidden");
+            document.getElementById('descuento-codigo').setAttribute('value',0);
+            document.getElementById('descuento-codigo').value = 0;
+            document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
+        }
+        setOperacionResultados()
+    });
+
+
     document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
         event.preventDefault();
         //resetDescuentos();
