@@ -49,7 +49,7 @@ class Actividad extends Model
         return $this->hasManyThrough(
             Reservacion::class,
             ReservacionDetalle::class,
-            'actividad_id', // FK ReservacionDetalle como comunica a ReservacionDetalle
+            'actividad_id', // FK ReservacionDetalle como comunica a Actividad
             'id', // FK Reservacion como comunica a ReservacionDetalle
             'id', //local key ReservacionDetalle
             'reservacion_id' //ReservacionDetalle como comunica a Reservacion

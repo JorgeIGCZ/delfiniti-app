@@ -44,7 +44,7 @@ class UsuarioController extends Controller
     
     public function getUsuarioNombre($id){
         $user = User::find($id);
-        return $user->name." ({$user->email})";
+        return $user->username;
     }
 
     /**
