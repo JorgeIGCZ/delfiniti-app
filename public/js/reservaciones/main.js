@@ -136,7 +136,7 @@ function addActividad(){
     let claveActividad = document.getElementById('clave-actividad');
     claveActividad = claveActividad.options[claveActividad.selectedIndex].text;
     const actividad = document.getElementById('actividades').value;
-    const cantidad = document.getElementById('cantidad').value;
+    const cantidad = document.getElementById('cantidad').text;
     const precio = document.getElementById('precio').value;
     const horario = document.getElementById('horarios').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
@@ -680,9 +680,11 @@ $('#comisionista').on('change', function (e) {
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
 
-        if($(this).attr("id") == "add-actividad"){
-            addActividades();
-        }
+        // if($(this).attr("id") == "add-actividad"){
+        //     validateFecha();
+        //     validateBotonGuardar();
+        //     addActividades();
+        // }
         if($(this).attr("id") == "password"){
             validarVerificacion();
         }
