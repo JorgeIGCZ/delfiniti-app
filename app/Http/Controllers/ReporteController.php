@@ -283,9 +283,7 @@ class ReporteController extends Controller
         $initialRowNumber = $rowNumber;
 
         foreach($actividadesPagadas as $actividad){
-            $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->get();
-
+            $reservaciones = $actividad->reservaciones;
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -299,23 +297,23 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
 
             
-            // $totalEfectivo = 0;
-            // $totalEfectivoUSD = 0;
-            // $totalTarjeta = 0;
-            // $totalCupon = 0;
-            // foreach($reservaciones as $reservacion){
-            //     $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
-            //     $totalEfectivo    += $pagosEfectivoResult['pago'];
+            $totalEfectivo = 0;
+            $totalEfectivoUSD = 0;
+            $totalTarjeta = 0;
+            $totalCupon = 0;
+            foreach($reservaciones as $reservacion){
+                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
+                $totalEfectivo    += $pagosEfectivoResult['pago'];
 
-            //     $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
-            //     $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
+                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
+                $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
 
-            //     $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
-            //     $totalTarjeta     += $pagosTarjetaResult['pago'];
+                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
+                $totalTarjeta     += $pagosTarjetaResult['pago'];
 
-            //     $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
-            //     $totalCupon       += $pagosCuponResult['pago'];
-            // }
+                $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
+                $totalCupon       += $pagosCuponResult['pago'];
+            }
             // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $totalEfectivo);
             // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $totalEfectivoUSD);
             // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $totalTarjeta);
@@ -347,14 +345,14 @@ class ReporteController extends Controller
         $pagados = 0;
         foreach($reservaciones as $reservacion){
             $isCortesia = 0; 
-            //echo("<br><br>".$reservacion->folio."<br>");
+            // echo("<br><br>".$reservacion->folio."<br>");
             foreach($reservacion->pagos as $pago){
                 if($pago->tipo_pago_id == 6){
                     $isCortesia = 1;
                     continue;
                 }
             }
-            //echo($isCortesia);
+            // echo($isCortesia);
             if($isCortesia === 0){
                 $pagados += 1;
             }else{
