@@ -137,9 +137,9 @@ class ReservacionController extends Controller
         $adeudo   = ((float)$request->total - (float)$pagado);
         DB::beginTransaction();
         try{
-            if(!$actividad->isDisponible($request)){
-                return json_encode(['result' => 'Error','message' => 'No hay disponibilidad suficiente en la actividad seleccionada para ese horario.']);
-            }
+            // if(!$actividad->isDisponible($request)){
+            //     return json_encode(['result' => 'Error','message' => 'No hay disponibilidad suficiente en la actividad seleccionada para ese horario.']);
+            // }
             $reservacion = Reservacion::create([
                 'nombre_cliente'  => $request->nombre,
                 'email'           => $request->email,
