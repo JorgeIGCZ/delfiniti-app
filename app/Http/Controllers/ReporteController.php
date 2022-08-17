@@ -46,8 +46,8 @@ class ReporteController extends Controller
         //$spreadsheet = new Spreadsheet();
         $usuario = new UsuarioController();
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template-corte-caja.xlsx');
-        $fechaInicio = $request->fechaInicio." 00:00:00:000";
-        $fechaFinal = $request->fechaFinal." 23:59:00:000";
+        $fechaInicio = $request->fechaInicio." 00:00:00";
+        $fechaFinal = $request->fechaFinal." 23:59:00";
         // $fechaInicio = '2022-08-15 00:00:00';
         // $fechaFinal = '2022-08-15 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
