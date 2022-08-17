@@ -46,16 +46,17 @@ class ReporteController extends Controller
         //$spreadsheet = new Spreadsheet();
         $usuario = new UsuarioController();
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template-corte-caja.xlsx');
-        // $fechaInicio = $request->fechaInicio." 00:00:00:000";
-        // $fechaFinal = $request->fechaFinal." 23:59:00:000";
-        $fechaInicio = '2022-08-15 00:00:00:000';
-        $fechaFinal = '2022-08-15 23:59:00:000';
-
+        $fechaInicio = $request->fechaInicio." 00:00:00:000";
+        $fechaFinal = $request->fechaFinal." 23:59:00:000";
+        // $fechaInicio = '2022-08-15 00:00:00';
+        // $fechaFinal = '2022-08-15 23:59:00';
+        $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
+        $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
         $actividadesPagadas = $this->getActividadesPagadas($fechaInicio,$fechaFinal);
 
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$fechaInicio} al {$fechaFinal}");				
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");				
         
 
         // foreach($actividades as $actividad){
@@ -149,8 +150,14 @@ class ReporteController extends Controller
                 $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCambioResult['pago']);
 
                 $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $usuario->getUsuarioNombre($reservacion->agente_id));
+
                 $rowNumber += 1;
             }
+
+            $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                
             
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                 ->getFill()
@@ -232,6 +239,15 @@ class ReporteController extends Controller
             $rowNumber += 1;
         }
 
+        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FABF8F');
+
         $sumrangeB = 'B' . $initialRowNumber . ':B' . $rowNumber-1;
         $sumrangeC = 'C' . $initialRowNumber . ':C' . $rowNumber-1;
         $sumrangeD = 'D' . $initialRowNumber . ':D' . $rowNumber-1;
@@ -309,6 +325,16 @@ class ReporteController extends Controller
             // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'B' . $rowNumber . ':E' . $rowNumber . ')');
             $rowNumber += 1;
         }
+
+        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:D{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FABF8F');
+
         //Calculo totales
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
