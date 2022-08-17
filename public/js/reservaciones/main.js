@@ -136,7 +136,7 @@ function addActividad(){
     let claveActividad = document.getElementById('clave-actividad');
     claveActividad = claveActividad.options[claveActividad.selectedIndex].text;
     const actividad = document.getElementById('actividades').value;
-    const cantidad = document.getElementById('cantidad').text;
+    const cantidad = document.getElementById('cantidad').value;
     const precio = document.getElementById('precio').value;
     const horario = document.getElementById('horarios').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
@@ -185,52 +185,52 @@ function removeCupon(cupon) {
 }
 
 function resetReservaciones() {
-    const reservacion = document.getElementById('reservacion-form');
-    actvidadesArray = [];
-    reservacion.reset();
-    reservacionesTable.clear().draw();
-    document.getElementsByName('cantidad')[0].value = 1;
-    document.getElementsByName('disponibilidad')[0].value = 1;
-    document.getElementsByName('fecha')[0].value = new Date();
+    // const reservacion = document.getElementById('reservacion-form');
+    // actvidadesArray = [];
+    // reservacion.reset();
+    // reservacionesTable.clear().draw();
+    // document.getElementsByName('cantidad')[0].value = 1;
+    // document.getElementsByName('disponibilidad')[0].value = 1;
+    // document.getElementsByName('fecha')[0].value = new Date();
 
-    document.getElementById('efectivo').setAttribute('value', 0);
-    document.getElementById('efectivo-usd').setAttribute('value', 0);
-    document.getElementById('tarjeta').setAttribute('value', 0);
-    //document.getElementById('cupon').setAttribute('value',0);
-    document.getElementById('cupon').setAttribute('value', 0);
-    document.getElementById('descuento-personalizado').setAttribute('value', 0);
-    document.getElementById('descuento-codigo').setAttribute('value', 0);
+    // document.getElementById('efectivo').setAttribute('value', 0);
+    // document.getElementById('efectivo-usd').setAttribute('value', 0);
+    // document.getElementById('tarjeta').setAttribute('value', 0);
+    // //document.getElementById('cupon').setAttribute('value',0);
+    // document.getElementById('cupon').setAttribute('value', 0);
+    // document.getElementById('descuento-personalizado').setAttribute('value', 0);
+    // document.getElementById('descuento-codigo').setAttribute('value', 0);
 
-    document.getElementById('efectivo').value = 0;
-    document.getElementById('efectivo-usd').value = 0;
-    document.getElementById('tarjeta').value = 0;
-    //document.getElementById('cupon').value        = 0;
-    document.getElementById('cupon').value = 0;
-    document.getElementById('descuento-personalizado').value = 0;
-    document.getElementById('descuento-codigo').value = 0;
+    // document.getElementById('efectivo').value = 0;
+    // document.getElementById('efectivo-usd').value = 0;
+    // document.getElementById('tarjeta').value = 0;
+    // //document.getElementById('cupon').value        = 0;
+    // document.getElementById('cupon').value = 0;
+    // document.getElementById('descuento-personalizado').value = 0;
+    // document.getElementById('descuento-codigo').value = 0;
 
-    $('select[name="actividad"] option:nth-child(1)').attr('selected', 'selected');
-    $('select[name="actividad"]').trigger('change.select2');
+    // $('select[name="actividad"] option:nth-child(1)').attr('selected', 'selected');
+    // $('select[name="actividad"]').trigger('change.select2');
 
-    $('select[name="alojamiento"] option:nth-child(1)').attr('selected', 'selected');
-    $('select[name="alojamiento"]').trigger('change.select2');
+    // $('select[name="alojamiento"] option:nth-child(1)').attr('selected', 'selected');
+    // $('select[name="alojamiento"]').trigger('change.select2');
 
-    $('select[name="origen"] option:nth-child(1)').attr('selected', 'selected');
-    $('select[name="origen"]').trigger('change.select2');
+    // $('select[name="origen"] option:nth-child(1)').attr('selected', 'selected');
+    // $('select[name="origen"]').trigger('change.select2');
 
-    $('select[name="comisionista"] option:nth-child(1)').attr('selected', 'selected');
-    $('select[name="comisionista"]').trigger('change.select2');
+    // $('select[name="comisionista"] option:nth-child(1)').attr('selected', 'selected');
+    // $('select[name="comisionista"]').trigger('change.select2');
 
-    $('select[name="cerrador"] option:nth-child(1)').attr('selected', 'selected');
+    // $('select[name="cerrador"] option:nth-child(1)').attr('selected', 'selected');
 
 
-    document.getElementById('descuento-personalizado').setAttribute('password', '');
-    document.getElementById('descuento-codigo').setAttribute('password', '');
+    // document.getElementById('descuento-personalizado').setAttribute('password', '');
+    // document.getElementById('descuento-codigo').setAttribute('password', '');
 
-    changeClaveActividad();
-    changeActividad();
-    setOperacionResultados();
-    enableBtn('reservar', false);
+    // changeClaveActividad();
+    // changeActividad();
+    // setOperacionResultados();
+    // enableBtn('reservar', false);
 }
 
 function validateDescuentoPersonalizado() {
@@ -407,7 +407,6 @@ function displayDisponibilidad(disponibilidad){
     const disponibilidadElement = document.getElementById('disponibilidad');
 
     cantidadElement.setAttribute('maximo',disponibilidad);
-    cantidadElement.value = (disponibilidad == 0 ? 0 : 1);
     cantidadElement.setAttribute('minimo',(disponibilidad == 0 ? 0 : 1));
     disponibilidadElement.value = disponibilidad;
 }
@@ -680,11 +679,11 @@ $('#comisionista').on('change', function (e) {
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
 
-        // if($(this).attr("id") == "add-actividad"){
-        //     validateFecha();
-        //     validateBotonGuardar();
-        //     addActividades();
-        // }
+        if($(this).attr("id") == "add-actividad"){
+            validateFecha();
+            addActividades();
+            validateBotonGuardar();
+        }
         if($(this).attr("id") == "password"){
             validarVerificacion();
         }
