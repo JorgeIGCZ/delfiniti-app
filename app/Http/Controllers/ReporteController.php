@@ -284,6 +284,7 @@ class ReporteController extends Controller
 
         foreach($actividadesPagadas as $actividad){
             $reservaciones = $actividad->reservaciones;
+
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -341,25 +342,36 @@ class ReporteController extends Controller
 
     private function getReservacionesTotales($reservaciones){
         //CORTESIA ID = 6
-        $cortesias = 0;
-        $pagados = 0;
-        foreach($reservaciones as $reservacion){
-            $isCortesia = 0; 
-            // echo("<br><br>".$reservacion->folio."<br>");
-            foreach($reservacion->pagos as $pago){
-                if($pago->tipo_pago_id == 6){
-                    $isCortesia = 1;
-                    continue;
-                }
-            }
-            // echo($isCortesia);
-            if($isCortesia === 0){
-                $pagados += 1;
-            }else{
-                $cortesias += 1;
+        $cortesiasPersonas = 0;
+        $pagados = count($reservaciones);
+        // foreach($reservaciones as $reservacion){
+        //     $isCortesia = 0; 
+        //     // echo("<br><br>".$reservacion->folio."<br>");
+        //     foreach($reservacion->pagos as $pago){
+        //         if($pago->tipo_pago_id == 6){
+        //             $isCortesia = 1;
+        //             continue;
+        //         }
+        //     }
+        //     // echo($isCortesia);
+        //     if($isCortesia === 0){
+        //         $pagados += 1;
+        //     }else{
+        //         $cortesias += 1;
+        //     }
+        // }
+        $reservacionesArray = $reservaciones->pluck('id');
+        
+        $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->whereHas('descuentoCodigo', function (Builder $query) {
+            $query
+                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+        })->get();
+        foreach($cortesias as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $cortesiasPersonas += $reservacionDetalle->numero_personas;
             }
         }
-        return ['cortesias' => $cortesias,'pagados' => $pagados];
+        return ['cortesias' => $cortesiasPersonas,'pagados' => $pagados];
     }
 
     private function getPagosTotalesByType($reservacion,$actividad,$pagoTipoNombre,$pendiente = 0){
