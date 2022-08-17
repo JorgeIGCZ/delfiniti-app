@@ -56,18 +56,7 @@ class ReporteController extends Controller
         $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
         $actividadesPagadas = $this->getActividadesPagadas($fechaInicio,$fechaFinal);
 
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");				
-        
-
-        // foreach($actividades as $actividad){
-        //     echo($actividad->nombre."<br>");
-        //     foreach($actividad->pagos as $pagos){
-        //         echo($pagos->created_at."<br>");
-        //         echo("<br>");
-        //     }
-        //     echo("<br><br>");
-        // }
-
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");		
 
         $rowNumber = 3;
         foreach($actividadesPagos as $actividad){
@@ -77,20 +66,6 @@ class ReporteController extends Controller
             $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
             $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->get();
             
-            // echo($actividad->nombre."<br>");
-            // echo($actividad->folio."<br>");
-            // foreach($actividad->pagos as $pagos){
-            //     echo($pagos->created_at."<br>");
-            //     echo($pagos->reservacion->folio."<br>");
-            //     echo("<br>");
-            // }
-            // $reservaciones = $actividad->pagos->groupBy('reservacion.folio');
-
-            // foreach($pagosReservaciones as $pagos){
-            //     dd($pagos[0]->reservacion);
-            // }
-            // echo("<br><br>");
-
             $rowNumber += 2;
             //Estilo de encabezado
             $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:G{$rowNumber}");
@@ -315,13 +290,7 @@ class ReporteController extends Controller
                 $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
                 $totalCupon       += $pagosCuponResult['pago'];
             }
-            // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $totalEfectivo);
-            // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $totalEfectivoUSD);
-            // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $totalTarjeta);
-            // $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $totalCupon);
             
-            // //Calculo totales
-            // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'B' . $rowNumber . ':E' . $rowNumber . ')');
             $rowNumber += 1;
         }
                 
@@ -344,22 +313,7 @@ class ReporteController extends Controller
         //CORTESIA ID = 6
         $cortesiasPersonas = 0;
         $pagados = count($reservaciones);
-        // foreach($reservaciones as $reservacion){
-        //     $isCortesia = 0; 
-        //     // echo("<br><br>".$reservacion->folio."<br>");
-        //     foreach($reservacion->pagos as $pago){
-        //         if($pago->tipo_pago_id == 6){
-        //             $isCortesia = 1;
-        //             continue;
-        //         }
-        //     }
-        //     // echo($isCortesia);
-        //     if($isCortesia === 0){
-        //         $pagados += 1;
-        //     }else{
-        //         $cortesias += 1;
-        //     }
-        // }
+        
         $reservacionesArray = $reservaciones->pluck('id');
         
         $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->whereHas('descuentoCodigo', function (Builder $query) {
@@ -375,9 +329,6 @@ class ReporteController extends Controller
     }
 
     private function getPagosTotalesByType($reservacion,$actividad,$pagoTipoNombre,$pendiente = 0){
-        // if($pendiente == 0){
-        //     return ['pago' => 0,'pendiente' => 0];
-        // }
 
         $pagos         = $reservacion->pagos;
         $reservaciones = new ReservacionController();
@@ -386,25 +337,10 @@ class ReporteController extends Controller
         $totalPagado   = 0;
         foreach($pagos as $pago){
             if($pago->tipo_pago_id == $pagoTipoId){
-                // if($actividad->nombre == 'FAMILY CLUB MED' && $reservacion->id == '10' && $pagoTipoNombre == 'tarjeta'){
-                //     echo('<br>PAGO;'.$pagoTipoNombre." ACT;   ".$actividad->nombre.'<br>'.$pagoTipoNombre.': '.$pago->cantidad);
-                // }
-                // if($actividad->nombre == 'FAMILY CLUB MED' && $reservacion->id == '10' && $pagoTipoNombre == 'efectivo'){
-                //     echo('<br>PAGO;'.$pagoTipoNombre." ACT;   ".$actividad->nombre.'<br>'.$pagoTipoNombre.': '.$pago->cantidad);
-                // }
-
-                // if($actividad->nombre == 'EXPERIENCIA' && $reservacion->id == '10' && $pagoTipoNombre == 'tarjeta'){
-                //     echo('<br>PAGO;'.$pagoTipoNombre." ACT;   ".$actividad->nombre.'<br>'.$pagoTipoNombre.': '.$pago->cantidad);
-                // }
-                // if($actividad->nombre == 'EXPERIENCIA' && $reservacion->id == '10' && $pagoTipoNombre == 'efectivo'){
-                //     echo('<br>PAGO;'.$pagoTipoNombre." ACT;   ".$actividad->nombre.'<br>'.$pagoTipoNombre.': '.$pago->cantidad);
-                // }
                 $totalPagado += $pago->cantidad;
             }
         }
-		// if($reservacion->id == '10'){
-		// 	echo('<br><br>Reserv '.$reservacion->id.' Actividad '.$actividad->nombre.' PAGO; '.$pagoTipoNombre.'<br>');
-		// }
+        
         $totalActividad = $this->getPagoActividadIndividual($reservacion,$actividad,$totalPagado,$pendiente);
         return ['pago' => $totalActividad[0],'pendiente' => $totalActividad[1]];
     }
@@ -418,9 +354,7 @@ class ReporteController extends Controller
 		}
 		
         foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-			// if($reservacion->id == '10'){
-			// 	echo('<br><br>Reserv '.$reservacion->id.' Actividad '.$reservacionDetalle->actividad->nombre.'<br>');
-			// }
+            
             $actividadPrecio = ($reservacionDetalle->actividad->precio * $reservacionDetalle->numero_personas);
 
             if($pendiente > 0){
@@ -455,32 +389,19 @@ class ReporteController extends Controller
                 $actividadIndividualPendiente = $pendiente;
 			}
             
-			//if($totalPagado >= $actividadPago){
             $totalPagado = (round($totalPagado,2) - round($actividadPago,2));
-            //}
         }
 
         return [$actividadIndividualPago,$actividadIndividualPendiente];
     }
 
     private function getActividadesFechaPagos($fechaInicio,$fechaFinal){
-        // DB::enableQueryLog();
-        // $pagos = Pago::whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])->get();
-
-        // dd(DB::getQueryLog());
+        
         $actividades = Actividad::with(['pagos' => function ($query) use ($fechaInicio,$fechaFinal) {
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal]);
         }])->get();
-
-        // foreach($actividades as $actividad){
-        //     echo($actividad->nombre."<br>");
-        //     foreach($actividad->pagos as $pagos){
-        //         echo($pagos->created_at."<br>");
-        //         echo("<br>");
-        //     }
-        //     echo("<br><br>");
-        // }
+        
         return $actividades;
     }
 
@@ -494,16 +415,6 @@ class ReporteController extends Controller
             ->where("fecha_creacion",">=",$fechaInicio);
         }])->get();
 
-        //dd($actividadesPagadas->reservaciones,2);
-        // foreach($actividadesPagadas as $actividadPagada){
-        //     foreach($actividadPagada->reservaciones as $reservacion){
-        //         echo($reservacion->estatus."<br>");
-        //         echo($reservacion->estatus_pago."<br>");
-        //         echo($reservacion->fecha_creacion."<br>");
-        //         echo("<br>");
-        //     }
-        //     echo("<br><br>");
-        // }
         return $actividadesPagadas;
     }
 }
