@@ -325,10 +325,6 @@ class ReporteController extends Controller
             // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'B' . $rowNumber . ':E' . $rowNumber . ')');
             $rowNumber += 1;
         }
-
-        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:D{$rowNumber}")
-                ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
                 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
                 ->getFill()
