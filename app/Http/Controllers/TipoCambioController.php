@@ -73,17 +73,17 @@ class TipoCambioController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $actividad                  = TipoCambio::find($id);
-            $actividad->precio_compra   = $request->precio_compra;
-            $actividad->precio_venta    = $request->precio_venta;
-            $actividad->save();
+            $tipoCambio                  = TipoCambio::find($id);
+            $tipoCambio->precio_compra   = $request->precio_compra;
+            $tipoCambio->precio_venta    = $request->precio_venta;
+            $tipoCambio->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return json_encode(['result' => is_numeric($actividad['id']) ? 'Success' : 'Error']);
+        return json_encode(['result' => is_numeric($tipoCambio['id']) ? 'Success' : 'Error']);
     }
 
     /**

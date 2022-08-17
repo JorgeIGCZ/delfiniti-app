@@ -6,6 +6,12 @@
         const tipoCambio = document.getElementById('tipo-cambio');
         updateTpoCambio(tipoCambio);
     });
+    document.getElementById('tipo-cambio-reportes').addEventListener('submit', (event) =>{
+        event.preventDefault();
+        const tipoCambio = document.getElementById('tipo-cambio-reportes');
+        updateTpoCambio(tipoCambio);
+    });
+    
     function updateTpoCambio(tipoCambio){
         axios.post(`/tiposcambio/${tipoCambio.elements['id'].value}`, {
             '_token'       : '{{ csrf_token() }}',
@@ -70,6 +76,26 @@
                                     </div><div class="form-group col-2">
                                         <label for="precio_compra" class="col-form-label">Precio Venta</label>
                                         <input type="text" name="precio_venta" class="form-control" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <button class="btn btn-info btn-block mt-33">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-xl-12">
+                            <div class="az-content-label tx-13 mg-b-15">Reportes</div>
+                            <div>
+                                <form method="POST" class="row g-3 align-items-center f-auto" id="tipo-cambio-reportes">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{$tiposCambio['reportes'][0]->id}}">
+                                    <div class="form-group col-1">
+                                        <label for="divisa" class="col-form-label">Divisa</label>
+                                        <input type="text" name="divisa" class="form-control" value="{{$tiposCambio['reportes'][0]->divisa}}" disabled="disabled">
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="precio_compra" class="col-form-label">Precio Compra</label>
+                                        <input type="text" name="precio_compra" class="form-control" value="{{$tiposCambio['reportes'][0]->precio_compra}}" required="required">
                                     </div>
                                     <div class="form-group col-2">
                                         <button class="btn btn-info btn-block mt-33">Guardar</button>
