@@ -130,7 +130,7 @@ class ReporteController extends Controller
 
         $rowNumber += 3;
 
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F0F000');
@@ -138,8 +138,9 @@ class ReporteController extends Controller
         //Titulos
         $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
-        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'CORTESIAS');
-        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'TOTAL');
+        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'PENDIENTES');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'CORTESIAS');
+        $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'TOTAL');
         
         $rowNumber += 1;
         $initialRowNumber = $rowNumber;
@@ -152,31 +153,13 @@ class ReporteController extends Controller
             $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
             $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
 
-            $reservacionesTotales = $this->getReservacionesTotales($reservaciones);
+            $reservacionesTotales = $this->getReservacionesTotalesGeneral($reservaciones);
             
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['cortesias']);
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
-
-            
-            $totalEfectivo = 0;
-            $totalEfectivoUSD = 0;
-            $totalTarjeta = 0;
-            $totalCupon = 0;
-            foreach($reservaciones as $reservacion){
-                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
-                $totalEfectivo    += $pagosEfectivoResult['pago'];
-
-                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
-                $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
-
-                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
-                $totalTarjeta     += $pagosTarjetaResult['pago'];
-
-                $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
-                $totalCupon       += $pagosCuponResult['pago'];
-            }
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
             
             $rowNumber += 1;
         }
@@ -205,6 +188,25 @@ class ReporteController extends Controller
         }
         
         return $numeroPersonas;
+    }
+
+    private function getReservacionesTotalesGeneral($reservaciones){
+        $reservacionesArray = $reservaciones->pluck('id');
+        //CORTESIA ID = 6
+        $cortesiasPersonas = 0;
+        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',2)->count();
+        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->whereIn('estatus',[0,1])->count();
+        
+        $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
+            $query
+                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+        })->get();
+        foreach($cortesias as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $cortesiasPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
+        return ['cortesias' => $cortesiasPersonas,'pagados' => $pagados,'pendientes' => $pendientes];
     }
 
     private function getActividadesHorarios($fechaInicio,$fechaFinal){
