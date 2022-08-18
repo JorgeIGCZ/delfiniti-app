@@ -264,6 +264,7 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal);
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "CORTE DE CAJA");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");
@@ -447,66 +448,36 @@ class ReporteController extends Controller
         $rowNumber += 2;
         
         //# PROGRAMAS PAGADOS
-        
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-            ->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('FABF8F');
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-            ->getAlignment()
-            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
-            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
-            ->setWrapText(true);
-        
-        //Titulos
-        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
-        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
-        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'CORTESIAS');
-        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'TOTAL');
-        
-        $rowNumber += 1;
-        $initialRowNumber = $rowNumber;
-
-
-        foreach($actividadesPagos as $actividad){
-            if(!count($actividad->pagos) ){
-                continue;
-            }
-            $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
-
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F0F000');
 
-            $reservacionesTotales = $this->getReservacionesTotales($reservaciones);
-            
-            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['cortesias']);
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
+        //Titulos
+        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
+        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
+        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'PENDIENTES');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'CORTESIAS');
+        $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'TOTAL');
+        
+        $rowNumber += 1;
+        $initialRowNumber = $rowNumber;
 
-            
-            $totalEfectivo = 0;
-            $totalEfectivoUSD = 0;
-            $totalTarjeta = 0;
-            $totalCupon = 0;
-            foreach($reservaciones as $reservacion){
-                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
-                $totalEfectivo    += $pagosEfectivoResult['pago'];
-
-                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
-                $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
-
-                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
-                $totalTarjeta     += $pagosTarjetaResult['pago'];
-
-                $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
-                $totalCupon       += $pagosCuponResult['pago'];
-            }
-            
-            $rowNumber += 1;
+        foreach($actividadesFechaReservaciones as $actividad){
+                if(!count($actividad->reservaciones) ){
+                    continue;
+                }
+                
+                $reservaciones = $actividad->reservaciones;
+                $reservacionesTotales = $this->getReservacionesTotalesGeneral($actividad,$reservaciones);
+                    
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
+                    
+                $rowNumber += 1;
         }
                 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
@@ -518,7 +489,80 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+
+        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+        //     ->getFill()
+        //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        //     ->getStartColor()->setARGB('FABF8F');
+        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+        //     ->getAlignment()
+        //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
+        //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
+        //     ->setWrapText(true);
         
+        // //Titulos
+        // $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
+        // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
+        // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'CORTESIAS');
+        // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'TOTAL');
+        
+        // $rowNumber += 1;
+        // $initialRowNumber = $rowNumber;
+
+
+        // foreach($actividadesPagos as $actividad){
+        //     if(!count($actividad->pagos) ){
+        //         continue;
+        //     }
+        //     $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
+        //     $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
+
+        //     $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
+        //         ->getFill()
+        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        //         ->getStartColor()->setARGB('F0F000');
+
+        //     $reservacionesTotales = $this->getReservacionesTotales($reservaciones);
+            
+        //     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
+        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
+        //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['cortesias']);
+        //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
+
+            
+        //     $totalEfectivo = 0;
+        //     $totalEfectivoUSD = 0;
+        //     $totalTarjeta = 0;
+        //     $totalCupon = 0;
+        //     foreach($reservaciones as $reservacion){
+        //         $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
+        //         $totalEfectivo    += $pagosEfectivoResult['pago'];
+
+        //         $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
+        //         $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
+
+        //         $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
+        //         $totalTarjeta     += $pagosTarjetaResult['pago'];
+
+        //         $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
+        //         $totalCupon       += $pagosCuponResult['pago'];
+        //     }
+            
+        //     $rowNumber += 1;
+        // }
+                
+        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+        //         ->getFill()
+        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        //         ->getStartColor()->setARGB('FABF8F');
+
+        // //Calculo totales
+        // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
+        // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
+        // $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        
+
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/corte_de_caja/corte-de-caja.xlsx");
         return ['data'=>true];
