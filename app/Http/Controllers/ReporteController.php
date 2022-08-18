@@ -194,19 +194,35 @@ class ReporteController extends Controller
         $reservacionesArray = $reservaciones->pluck('id');
         //CORTESIA ID = 6
         $cortesiasPersonas = 0;
-        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->where('estatus_pago',2)->count();
-        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereIn('estatus_pago',[0,1])->count();
+        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->where('estatus_pago',2)->get();
+        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereIn('estatus_pago',[0,1])->get();
         
         $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
                 ->whereRaw("nombre LIKE '%CORTESIA%' ");
         })->get();
+
+        $cortesiasPersonas = 0;
         foreach($cortesias as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
                 $cortesiasPersonas += $reservacionDetalle->numero_personas;
             }
         }
-        return ['cortesias' => $cortesiasPersonas,'pagados' => $pagados,'pendientes' => $pendientes];
+
+        $numeroPersonasPagado = 0;
+        foreach($pagados as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $numeroPersonasPagado += $reservacionDetalle->numero_personas;
+            }
+        }
+
+        $numeroPersonasPendiente = 0;
+        foreach($pendientes as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
+            }
+        }
+        return ['cortesias' => $cortesiasPersonas,'pagados' => $numeroPersonasPagado,'pendientes' => $numeroPersonasPendiente];
     }
 
     private function getActividadesHorarios($fechaInicio,$fechaFinal){
