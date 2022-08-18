@@ -2,6 +2,7 @@ let pagosTabla;
 let allActividades = [];
 
 setReservacionesTipoAccion();
+changeCuponDetalle();
 
 document.getElementById('actualizar-estatus-reservacion').addEventListener('click', (event) =>{
     event.preventDefault();
