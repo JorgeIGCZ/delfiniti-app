@@ -54,7 +54,7 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
-        $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
+        $reservacionesFecha = $this->getReservacionesFecha($fechaInicio,$fechaFinal);
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
@@ -146,7 +146,7 @@ class ReporteController extends Controller
         $initialRowNumber = $rowNumber;
 
 
-        foreach($actividadesPagos as $actividad){
+        foreach($reservacionesFecha->actividad as $actividad){
             if(!count($actividad->pagos) ){
                 continue;
             }
@@ -191,6 +191,13 @@ class ReporteController extends Controller
         return $numeroPersonas;
     }
 
+    private function getReservacionesFecha($fechaInicio,$fechaFinal){
+        
+        $reservaciones = Reservacion::where('estatus',1)->whereBetween("fecha", [$fechaInicio,$fechaFinal])->get();
+        
+        return $reservaciones;
+    }
+    
     private function getReservacionesTotalesGeneral($reservaciones){
         $reservacionesArray = $reservaciones->pluck('id');
         //CORTESIA ID = 6
