@@ -62,7 +62,6 @@ class ReporteController extends Controller
 
         $rowNumber = 5;
 
-        // dd($actividadesHorarios['10:00:00'][1]->reservacion);
         foreach ($actividadesHorarios as $actividadesHorario){
             foreach ($actividadesHorario as $actividadHorario){
                 if(count($actividadHorario->reservacion) == 0){
@@ -151,8 +150,7 @@ class ReporteController extends Controller
                 }
                 
                 $reservaciones = $actividad->reservaciones;
-        
-                $reservacionesTotales = $this->getReservacionesTotalesGeneral($reservaciones);
+                $reservacionesTotales = $this->getReservacionesTotalesGeneral($actividad,$reservaciones);
                     
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
@@ -201,7 +199,7 @@ class ReporteController extends Controller
         return $actividades;
     }
     
-    private function getReservacionesTotalesGeneral($reservaciones){
+    private function getReservacionesTotalesGeneral($actividad,$reservaciones){
         $reservacionesArray = $reservaciones->pluck('id');
         //CORTESIA ID = 6
         $cortesiasPersonas = 0;
@@ -216,21 +214,28 @@ class ReporteController extends Controller
         $cortesiasPersonas = 0;
         foreach($cortesias as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                $cortesiasPersonas += $reservacionDetalle->numero_personas;
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $cortesiasPersonas += $reservacionDetalle->numero_personas;
+                }
             }
         }
 
         $numeroPersonasPagado = 0;
         foreach($pagados as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                $numeroPersonasPagado += $reservacionDetalle->numero_personas;
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $numeroPersonasPagado += $reservacionDetalle->numero_personas;
+                }
+                
             }
         }
 
         $numeroPersonasPendiente = 0;
         foreach($pendientes as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
+                }
             }
         }
         return ['cortesias' => $cortesiasPersonas,'pagados' => ($numeroPersonasPagado-$cortesiasPersonas),'pendientes' => $numeroPersonasPendiente];
