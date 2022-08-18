@@ -63,7 +63,7 @@ class Reservacion extends Model
             'reservacion_id', // FK ReservacionDetalle como comunica a Reservacion
             'id', // FK Actividad como comunica a ReservacionDetalle
             'id', //local key Reservacion
-            'id' //local key ReservacionDetalle
+            'actividad_id' //local key ReservacionDetalle
         );
     }
     // está mal

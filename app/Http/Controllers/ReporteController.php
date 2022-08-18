@@ -54,7 +54,7 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
-        $reservacionesFecha = $this->getReservacionesFecha($fechaInicio,$fechaFinal);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal);
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
@@ -145,23 +145,22 @@ class ReporteController extends Controller
         $rowNumber += 1;
         $initialRowNumber = $rowNumber;
 
-
-        foreach($reservacionesFecha->actividad as $actividad){
-            if(!count($actividad->pagos) ){
-                continue;
-            }
-            $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->get();
-
-            $reservacionesTotales = $this->getReservacionesTotalesGeneral($reservaciones);
-            
-            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
-            
-            $rowNumber += 1;
+        foreach($actividadesFechaReservaciones as $actividad){
+                if(!count($actividad->reservaciones) ){
+                    continue;
+                }
+                
+                $reservaciones = $actividad->reservaciones;
+        
+                $reservacionesTotales = $this->getReservacionesTotalesGeneral($reservaciones);
+                    
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
+                    
+                $rowNumber += 1;
         }
                 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
@@ -191,11 +190,15 @@ class ReporteController extends Controller
         return $numeroPersonas;
     }
 
-    private function getReservacionesFecha($fechaInicio,$fechaFinal){
+    private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal){
         
-        $reservaciones = Reservacion::where('estatus',1)->whereBetween("fecha", [$fechaInicio,$fechaFinal])->get();
+        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal) {
+            $query
+                ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
+                ->where('estatus',1);
+        }])->get();
         
-        return $reservaciones;
+        return $actividades;
     }
     
     private function getReservacionesTotalesGeneral($reservaciones){
