@@ -1,12 +1,36 @@
+document.getElementById('reporte-corte-caja').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('crear-reporte').setAttribute('action','corte-caja');
+});
+
+document.getElementById('reporte-reservaciones').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('crear-reporte').setAttribute('action','reservaciones');
+});
+
 document.getElementById('crear-reporte').addEventListener('click', (event) => {
     event.preventDefault();
 
     const fechaInicio = document.getElementById('report-fecha-inicio').value;
     const fechaFinal  = document.getElementById('report-fecha-final').value;
+    const action      = document.getElementById('crear-reporte').getAttribute('action');
+    let documentPath  = ''; 
+    let url           = '';
+
+    switch (action) {
+        case 'corte-caja':
+            url          = '/reportes/cortecaja';
+            documentPath = `/Reportes/corte_de_caja/corte-de-caja.xlsx`;
+            break;
+        case 'reservaciones':
+            url          = '/reportes/totalreservaciones';
+            documentPath = `/Reportes/reservaciones/reservaciones.xlsx`;
+            break;
+    }
 
     $.ajax({
         type: 'POST',
-        url: '/reportes/cortecaja',
+        url: url,
         dataType: 'json',
         data:
         {
@@ -15,7 +39,7 @@ document.getElementById('crear-reporte').addEventListener('click', (event) => {
             'fechaFinal' : fechaFinal
         },
         success: function (result) {
-            window.open(`/Reportes/corte_de_caja/corte-de-caja.xlsx`, '_blank').focus();
+            window.open(documentPath, '_blank').focus();
         },
         error: function (xhr, ajaxOptions, thrownError) {
             Swal.fire({

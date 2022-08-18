@@ -49,6 +49,11 @@ class Reservacion extends Model
     {
         return $this->hasOne(Alojamiento::class,'id','alojamiento');
     }
+
+    public function comisionista()
+    {
+        return $this->hasOne(Comisionista::class,'id','comisionista_id');
+    }
     
     public function actividad()
     {

@@ -79,7 +79,7 @@
                               <input type="date" name="fecha-inicio" id="report-fecha-final" class="form-control" required="required" value="{{date('Y-m-d')}}">  
                           </div>
                           <div class="form-group col-4 mt-3">
-                              <button class="btn btn-info btn-block mt-33" id="crear-reporte">Exportar</button>
+                              <button class="btn btn-info btn-block mt-33" action="" id="crear-reporte">Exportar</button>
                           </div>
                       </form>
                   </div>

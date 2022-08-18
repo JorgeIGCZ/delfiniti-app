@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Actividad;
+use App\Models\ActividadHorario;
 use App\Models\Reservacion;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -41,11 +42,186 @@ class ReporteController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function corteCaja(Request $request)
+    public function reporteReservaciones(Request $request){
+        //$spreadsheet = new Spreadsheet();
+        $usuario = new UsuarioController();
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
+        $fechaInicio = $request->fechaInicio." 00:00:00";
+        $fechaFinal = $request->fechaFinal." 23:59:00";
+        // $fechaInicio = '2022-08-15 00:00:00';
+        // $fechaFinal = '2022-08-15 23:59:00';
+        $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
+        $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
+
+        $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
+        $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
+        
+
+        $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");		
+
+        $rowNumber = 5;
+
+        // dd($actividadesHorarios['10:00:00'][1]->reservacion);
+        foreach ($actividadesHorarios as $actividadesHorario){
+            foreach ($actividadesHorario as $actividadHorario){
+                if(count($actividadHorario->reservacion) == 0){
+                    continue;
+                }
+
+                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:C{$rowNumber}");
+
+                // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
+                //     ->getBorders()
+                //     ->getOutline()
+                //     ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('FABF8F');
+                    
+                //Actividad
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadHorario->actividad->nombre." ".$actividadesHorario[0]->horario_inicial);
+                $rowNumber += 1;
+
+                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('FFFFCC');
+
+                //Titulos
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'CLIENTE');
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'ORIGEN');
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'PAX');
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'AGENTE/AGENCIA');
+                // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'DESCUENTO');
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'T. PAGO');
+                $rowNumber += 1;
+
+                $initialRowNumber = $rowNumber;
+
+                foreach ($actividadHorario->reservacion as $reservacion) {
+                    $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
+
+                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    // ->getBorders()
+                    // ->getOutline()
+                    // ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+
+                    $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('CCFFFF');
+
+                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->nombre_cliente);
+                    $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", @$reservacion->origen);
+                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
+                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", @$reservacion->comisionista->nombre);
+                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
+                    $rowNumber += 1;
+                }
+                $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+                $rowNumber += 2;
+            }
+        }
+
+        $rowNumber += 3;
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('F0F000');
+
+        //Titulos
+        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
+        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
+        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'CORTESIAS');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'TOTAL');
+        
+        $rowNumber += 1;
+        $initialRowNumber = $rowNumber;
+
+
+        foreach($actividadesPagos as $actividad){
+            if(!count($actividad->pagos) ){
+                continue;
+            }
+            $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
+            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
+
+            $reservacionesTotales = $this->getReservacionesTotales($reservaciones);
+            
+            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['cortesias']);
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
+
+            
+            $totalEfectivo = 0;
+            $totalEfectivoUSD = 0;
+            $totalTarjeta = 0;
+            $totalCupon = 0;
+            foreach($reservaciones as $reservacion){
+                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
+                $totalEfectivo    += $pagosEfectivoResult['pago'];
+
+                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
+                $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
+
+                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
+                $totalTarjeta     += $pagosTarjetaResult['pago'];
+
+                $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
+                $totalCupon       += $pagosCuponResult['pago'];
+            }
+            
+            $rowNumber += 1;
+        }
+                
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('FABF8F');
+
+        //Calculo totales
+        $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("Reportes/reservaciones/reservaciones.xlsx");
+        return ['data'=>true];
+    }
+
+    private function getNumeroPersonas($actividadHorario,$reservacionDetalle){
+        $numeroPersonas = 0;
+        foreach($reservacionDetalle as $reservacionDetalle){
+            if($reservacionDetalle->actividad_id == $actividadHorario->actividad->id){
+                $numeroPersonas = $reservacionDetalle->numero_personas;
+            }
+        }
+        
+        return $numeroPersonas;
+    }
+
+    private function getActividadesHorarios($fechaInicio,$fechaFinal){
+        $actividadesHorarios = ActividadHorario::with(['reservacion' => function ($query) use ($fechaInicio,$fechaFinal) {
+                $query
+                    ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
+                    ->where('estatus',1);
+        }])->orderBy('horario_inicial', 'asc')->orderBy('id', 'asc')->get()->groupBy('horario_inicial');
+
+        return $actividadesHorarios;
+    }
+
+    public function reporteCorteCaja(Request $request)
     {
         //$spreadsheet = new Spreadsheet();
         $usuario = new UsuarioController();
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template-corte-caja.xlsx');
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal = $request->fechaFinal." 23:59:00";
         // $fechaInicio = '2022-08-15 00:00:00';
@@ -55,7 +231,8 @@ class ReporteController extends Controller
 
         $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal);
 
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");		
+        $spreadsheet->getActiveSheet()->setCellValue("A2", "CORTE DE CAJA");
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");
 
         $rowNumber = 3;
         foreach($actividadesPagos as $actividad){
@@ -403,7 +580,7 @@ class ReporteController extends Controller
         $actividades = Actividad::with(['pagos' => function ($query) use ($fechaInicio,$fechaFinal) {
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
-                ->whereIn('tipo_pago_id',[1,2,3,4,5])->count();;
+                ->whereIn('tipo_pago_id',[1,2,3,4,5])->count();
         }])->get();
         
         return $actividades;
