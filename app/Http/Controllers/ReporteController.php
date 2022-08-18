@@ -194,8 +194,8 @@ class ReporteController extends Controller
         $reservacionesArray = $reservaciones->pluck('id');
         //CORTESIA ID = 6
         $cortesiasPersonas = 0;
-        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',2)->count();
-        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->whereIn('estatus',[0,1])->count();
+        $pagados = Reservacion::whereIn('id',$reservacionesArray->where('estatus',1))->where('estatus_pago',2)->count();
+        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereIn('estatus_pago',[0,1])->count();
         
         $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
