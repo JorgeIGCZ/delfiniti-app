@@ -151,7 +151,7 @@ class ReporteController extends Controller
                 continue;
             }
             $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
+            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->get();
 
             $reservacionesTotales = $this->getReservacionesTotalesGeneral($reservaciones);
             
@@ -173,6 +173,7 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
 
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/reservaciones/reservaciones.xlsx");
@@ -222,7 +223,7 @@ class ReporteController extends Controller
                 $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
             }
         }
-        return ['cortesias' => $cortesiasPersonas,'pagados' => $numeroPersonasPagado,'pendientes' => $numeroPersonasPendiente];
+        return ['cortesias' => $cortesiasPersonas,'pagados' => ($numeroPersonasPagado-$cortesiasPersonas),'pendientes' => $numeroPersonasPendiente];
     }
 
     private function getActividadesHorarios($fechaInicio,$fechaFinal){
