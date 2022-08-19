@@ -45164,13 +45164,13 @@ table.dataTable td, table.dataTable th{
 
 tr.Pendiente{
   color: white;
-  background: #c13939;
+  background: #cf4141;
 }
 tr.Parcial{
   color: white;
-  background: #ff9800;
+  background: #e98b00;
 }
 tr.Pagado{
   color: white;
-  background: #cf4141;
+  background: #208d25;
 }
