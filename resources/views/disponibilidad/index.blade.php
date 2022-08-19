@@ -102,11 +102,11 @@
                                 <strong>{{$reservaciones}}</strong>
                             </div>
                             <div>
-                                <label class="col-form-label">Pagados:</label>
+                                <label class="col-form-label paid">Pagados:</label>
                                 <strong>{{$reservacionesPagadas}}</strong>
                             </div>
                             <div>
-                                <label class="col-form-label">Pendientes:</label>
+                                <label class="col-form-label partial">Pendientes:</label>
                                 <strong>{{$reservacionesPendientes}}</strong>
                             </div>
                             <div>
