@@ -96,6 +96,7 @@
                                     <div class="form-group col-2">
                                         <label for="precio_compra" class="col-form-label">Precio Compra</label>
                                         <input type="text" name="precio_compra" class="form-control" value="{{$tiposCambio['reportes'][0]->precio_compra}}" required="required">
+                                        <input type="hidden" name="precio_venta" class="form-control" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
                                     </div>
                                     <div class="form-group col-2">
                                         <button class="btn btn-info btn-block mt-33">Guardar</button>
