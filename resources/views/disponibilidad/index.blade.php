@@ -194,7 +194,7 @@
                                                         @endphp
                                                         <tr class={{$estatus}}>
                                                             <td>
-                                                                <a class="p-title" href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
+                                                                <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
                                                             <td>{{ $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
