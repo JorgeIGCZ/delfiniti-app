@@ -137,13 +137,22 @@
                     <h6>{{date_format(date_create($reservacion->fecha),"d/m/Y")}}</h6>
                 </div><!-- media-body -->
             </div><!-- media -->
-            @if($reservacion->estatus_pago !== 2)
+            @if($reservacion->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
-                        <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=pago#detalle-reservacion-contenedor') }}" class="btn btn-success btn-block" style="padding-top: 5px;">Pagar</a>
+                        <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=pago#detalle-reservacion-contenedor') }}" class="btn btn-secondary btn-block" style="padding-top: 5px;">Pagar</a>
                     </div>
                 </div>
             @endif
+
+            @if(@$_GET["accion"] === "pago")
+                <div class="media">
+                    <div class="media-body">
+                        <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}"  class="btn btn-secondary btn-block" style="padding-top: 5px;">Editar</a>
+                    </div>
+                </div>
+            @endif
+            
             @if($reservacion->estatus)
                 <div class="media">
                     <div class="media-body">
