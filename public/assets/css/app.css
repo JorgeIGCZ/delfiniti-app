@@ -1944,8 +1944,8 @@ fieldset:disabled a.btn {
 
 .btn-success {
   color: #fff;
-  background-color: #3bb001;
-  border-color: #3bb001; }
+  background-color: #349c00;
+  border-color: #256f00; }
   .btn-success:hover {
     color: #fff;
     background-color: #2e8a01;
@@ -45163,11 +45163,14 @@ table.dataTable td, table.dataTable th{
 }
 
 tr.Pendiente{
-  background: #ffbebe;
+  color: white;
+  background: #c13939;
 }
 tr.Parcial{
-  background: #ffe3b0;
+  color: white;
+  background: #ff9800;
 }
 tr.Pagado{
-  background: #7ad47a;
+  color: white;
+  background: #cf4141;
 }
