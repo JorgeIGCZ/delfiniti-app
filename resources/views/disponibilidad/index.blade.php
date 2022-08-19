@@ -101,12 +101,12 @@
                                 <label class="col-form-label">Total diario:</label>
                                 <strong>{{$reservaciones}}</strong>
                             </div>
-                            <div>
-                                <label class="col-form-label paid">Pagados:</label>
+                            <div class="paid">
+                                <label class="col-form-label">Pagados:</label>
                                 <strong>{{$reservacionesPagadas}}</strong>
                             </div>
-                            <div>
-                                <label class="col-form-label partial">Pendientes:</label>
+                            <div class="partial">
+                                <label class="col-form-label">Pendientes:</label>
                                 <strong>{{$reservacionesPendientes}}</strong>
                             </div>
                             <div>
