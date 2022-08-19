@@ -165,7 +165,7 @@
                                             <table class="display reservaciones-table" style="width:100%">
                                                 <thead>
                                                     <tr>
-                                                        <th class="folio-link">Folio</th>
+                                                        <th>Folio</th>
                                                         <th>Cliente</th>
                                                         <th>Per.</th>
                                                     </tr>
@@ -193,7 +193,7 @@
                                                             }
                                                         @endphp
                                                         <tr class={{$estatus}}>
-                                                            <td>
+                                                            <td class="folio-link">
                                                                 <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
                                                             <td>{{ $reservacion->nombre_cliente }}</td>
