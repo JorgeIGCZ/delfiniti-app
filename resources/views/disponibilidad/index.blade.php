@@ -165,7 +165,7 @@
                                             <table class="display reservaciones-table" style="width:100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Folio</th>
+                                                        <th class="folio-link">Folio</th>
                                                         <th>Cliente</th>
                                                         <th>Per.</th>
                                                     </tr>
