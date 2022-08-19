@@ -137,6 +137,26 @@
                     <h6>{{date_format(date_create($reservacion->fecha),"d/m/Y")}}</h6>
                 </div><!-- media-body -->
             </div><!-- media -->
+            @if($reservacion->estatus_pago !== 2)
+                <div class="media">
+                    <div class="media-body">
+                        <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=pago#detalle-reservacion-contenedor') }}" class="btn btn-success btn-block" style="padding-top: 5px;">Pagar</a>
+                    </div>
+                </div>
+            @endif
+            @if($reservacion->estatus)
+                <div class="media">
+                    <div class="media-body">
+                        <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar reservación</button>
+                    </div>
+                </div>
+            @else
+                <div class="media">
+                    <div class="media-body">
+                        <button class="btn btn-success" id="actualizar-estatus-reservacion" accion='reactivar'>Activar reservación</button>
+                    </div>
+                </div>
+            @endif
             <div class="media">
                 <div class="media-body">
                     @if(count($tickets)>0)
@@ -153,11 +173,6 @@
                     @endif
                 </div><!-- media-body -->
             </div><!-- media -->
-            @if($reservacion->estatus)
-                <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar reservación</button>
-            @else
-                <button class="btn btn-success" id="actualizar-estatus-reservacion" accion='reactivar'>Activar reservación</button>
-            @endif
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">

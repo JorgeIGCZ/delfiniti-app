@@ -5,11 +5,16 @@
             reloadInactividad();
             let reservaciones = new DataTable('.reservaciones-table', {
                 order: [[0, 'desc']],
+                ordering: false,
                 searching: false,
                 paging: false,
                 info: false,
                 columnDefs: [{
                         targets: 0,
+                        className: 'dt-body-center'
+                    },
+                    {
+                        targets: 2,
                         className: 'dt-body-center'
                     },
                     {
@@ -127,6 +132,11 @@
                                 </div>
                                 <div class="col-programas">
                                     @foreach ($actividadesHorario as $actividadHorario)
+                                        @php
+                                        if(count($actividadHorario->reservacion) < 1){
+                                            continue;
+                                        }
+                                        @endphp
                                         <div class="programa">
                                             <strong class="p-title"><a
                                                     href="reservaciones/create/?id={{ $actividadHorario->actividad->id }}&h={{ $actividadHorario->id }}&f={{ $fechaActividades }}">{{ $actividadHorario->actividad->nombre }}</a></strong>
@@ -155,11 +165,9 @@
                                             <table class="display reservaciones-table" style="width:100%">
                                                 <thead>
                                                     <tr>
-                                                        <th>Reserva</th>
+                                                        <th>Folio</th>
                                                         <th>Cliente</th>
-                                                        <th>Personas</th>
-                                                        <th>Estatus</th>
-                                                        <th>Acciones</th>
+                                                        <th>Per.</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -184,17 +192,12 @@
                                                                 }
                                                             }
                                                         @endphp
-                                                        <tr>
-                                                            <td>{{ $reservacion->folio }}</td>
+                                                        <tr class={{$estatus}}>
+                                                            <td>
+                                                                <a class="p-title" href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
+                                                            </td>
                                                             <td>{{ $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
-                                                            <td>{{ $estatus }}</td>
-                                                            <td>
-                                                                <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">Editar</a>
-                                                                @if($reservacion->estatus_pago !== 2)
-                                                                   | <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=pago#detalle-reservacion-contenedor') }}">Pagar</a>
-                                                                @endif
-                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

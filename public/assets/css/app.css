@@ -17532,8 +17532,6 @@ ul.list-ckeck-soft {
     margin-left: 20px;
     padding-left: 20px;
     border-left: 1px solid #cdd4e0; }
-  .az-content-header-right .btn:first-of-type, .az-content-header-right .sp-container button:first-of-type, .sp-container .az-content-header-right button:first-of-type {
-    margin-left: 30px; }
   .az-content-header-right .btn + .btn, .az-content-header-right .sp-container button + .btn, .sp-container .az-content-header-right button + .btn, .az-content-header-right .sp-container .btn + button, .sp-container .az-content-header-right .btn + button, .az-content-header-right .sp-container button + button, .sp-container .az-content-header-right button + button {
     margin-left: 5px; }
 
@@ -45159,4 +45157,17 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 table .highlight{
   background: #daffdb;
+}
+table.dataTable td, table.dataTable th{
+  padding: 0 2px;
+}
+
+tr.Pendiente{
+  background: #ffbebe;
+}
+tr.Parcial{
+  background: #ffe3b0;
+}
+tr.Pagado{
+  background: #7ad47a;
 }
