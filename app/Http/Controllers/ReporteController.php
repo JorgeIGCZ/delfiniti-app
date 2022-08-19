@@ -284,7 +284,7 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
                 ->getFont()->setSize(16);
 
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}")
                 ->getNumberFormat()
                 ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
