@@ -45178,3 +45178,6 @@ tr.Pagado{
   font-weight: 700;
   color: white;
 }
+.folio-link:hover {
+  color: #ffffff;
+}
