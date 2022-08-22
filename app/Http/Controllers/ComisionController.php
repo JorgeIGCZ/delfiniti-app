@@ -144,7 +144,7 @@ class ComisionController extends Controller
                     'iva'               => $comision->iva,
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
-                    'fecha'             => date_format($comision->created_at,'d/m/Y'),
+                    'fecha'             => date_format($comision->created_at,'d-m-Y'),
                     'estatus'           => $comision->estatus
                 ];
             }
