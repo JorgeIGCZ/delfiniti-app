@@ -9,6 +9,7 @@ use App\Models\Reservacion;
 use finfo;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
+use App\Models\Cerrador;
 
 class ComisionController extends Controller
 {
@@ -29,6 +30,11 @@ class ComisionController extends Controller
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta')");
         })->get();
 
+        $this->setComisionComisionista($reservacion,$pagos);
+        $this->setComisionCerrador($reservacion,$pagos);
+    }
+
+    private function setComisionComisionista($reservacion,$pagos){
         if($reservacion['comisionista_id'] == 0){
             return true;
         }
@@ -48,6 +54,37 @@ class ComisionController extends Controller
 
         $comsion = Comision::create([
             'comisionista_id'         =>  $reservacion['comisionista_id'],
+            'reservacion_id'          =>  $reservacion['id'],
+            'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+            'iva'                     =>  (float)$ivaCantidad,
+            'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+            'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'estatus'                 =>  1
+        ]);
+
+        return is_numeric($comsion['id']);
+    }
+
+    private function setComisionCerrador($reservacion,$pagos){
+        if($reservacion['cerrador_id'] == 0){
+            return true;
+        }
+        
+        $cerrador = Comisionista::find($reservacion['cerrador_id']);
+        
+
+        $totalPagoReservacion = 0;
+        foreach($pagos as $pago){
+            $totalPagoReservacion += $pago['cantidad'];
+        }
+
+        $cantidadComisionBruta     = number_format((($totalPagoReservacion * $cerrador['comision']) / 100),2);
+        $ivaCantidad               = number_format((($cantidadComisionBruta * $cerrador['iva']) / 100),2);
+        $descuentoImpuestoCantidad = number_format((($cantidadComisionBruta * $cerrador['descuento_impuesto']) / 100),2);
+        $cantidadComisionNeta      = number_format(($cantidadComisionBruta - ($ivaCantidad + $descuentoImpuestoCantidad)),2);
+
+        $comsion = Comision::create([
+            'comisionista_id'         =>  $reservacion['cerrador_id'],
             'reservacion_id'          =>  $reservacion['id'],
             'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
             'iva'                     =>  (float)$ivaCantidad,
@@ -90,7 +127,12 @@ class ComisionController extends Controller
     {
         // dd($comision);
         // if(is_null($comision)){
-            $comisiones      = Comision::all();
+
+            $comisiones      = Comision::whereHas('reservacion',function ($query){
+                $query
+                    ->where("estatus", 1);
+            })->orderBy('id','desc')->get();
+
             $comisionesArray = [];
             foreach ($comisiones as $comision) {
                 $comisionesArray[] = [
@@ -102,6 +144,7 @@ class ComisionController extends Controller
                     'iva'               => $comision->iva,
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
+                    'fecha'             => date_format($comision->created_at,'d/m/Y'),
                     'estatus'           => $comision->estatus
                 ];
             }

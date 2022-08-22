@@ -121,6 +121,7 @@ Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->grou
 Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
 Route::post('/reportes/cortecaja',[ReporteController::class,'reporteCorteCaja'])->middleware(['auth'])->name('reportecortecaja');
 Route::post('/reportes/totalreservaciones',[ReporteController::class,'reporteReservaciones'])->middleware(['auth'])->name('reportereservaciones');
+Route::post('/reportes/totalcomisiones',[ReporteController::class,'reporteComisiones'])->middleware(['auth'])->name('reportecomisiones');
 
 Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');

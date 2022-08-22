@@ -30,4 +30,17 @@ class Comision extends Model
     {
         return $this->belongsTo(Comisionista::class,'comisionista_id');
     }
+
+    public function comisionistaTipo()
+    {
+        return $this->hasOneThrough(
+            ComisionistaTipo::class,
+            Comisionista::class,
+            'id', // Foreign key on the Comisionista table...
+            'id', // Foreign key on the ComisionistaTipo table...
+            'id', // Local key on the Comision table...
+            'id' // Local key on the Comisionista table...
+        );
+
+    }
 }

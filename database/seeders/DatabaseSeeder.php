@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EstadoSeeder::class);
         $this->call(TipoCambioSeeder::class);
         $this->call(TipoPagoSeeder::class);
+        $this->call(ComisionistaTipoSeeder::class);
     }
 }

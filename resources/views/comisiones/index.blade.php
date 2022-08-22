@@ -13,6 +13,7 @@
                     .catch(function (error) {
                     });
                 },
+                order: [[0, 'desc']],
                 columns: [
                     { data: 'id' },
                     { data: 'comisionista' },
@@ -21,6 +22,7 @@
                     { data: 'iva' },
                     { data: 'descuentoImpuesto' },
                     { data: 'comisionNeta' },
+                    { data: 'fecha' },
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus == 1){
@@ -79,6 +81,7 @@
                                         <th>Iva</th>
                                         <th>Descuento impuesto</th>
                                         <th>Comision neta</th>
+                                        <th>Fecha registro comisión</th>
                                         <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>

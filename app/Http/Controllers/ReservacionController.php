@@ -50,7 +50,9 @@ class ReservacionController extends Controller
     {
         $estados          = Estado::all();
         $alojamientos     = Alojamiento::where('estatus',1)->orderBy('nombre','asc')->get();
-        $cerradores       = Cerrador::where('estatus',1)->get();
+        $cerradores       = Comisionista::whereHas('tipo', function ($query) {
+                $query->where("nombre","CERRADORES");
+            })->where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)
             ->whereRaw('NOW() >= fecha_inicial')
@@ -349,7 +351,9 @@ class ReservacionController extends Controller
         }else{
             $estados        = Estado::all();
             $alojamientos   = Alojamiento::orderBy('nombre','asc')->get();
-            $cerradores     = Cerrador::all();
+            $cerradores     = Comisionista::whereHas('tipo', function ($query) {
+                $query->where("nombre","CERRADORES");
+            })->where('estatus',1)->get();
             $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
                                 ->whereRaw('NOW() <= fecha_final')
                                 ->orWhere('duracion','indefinido')
@@ -370,7 +374,9 @@ class ReservacionController extends Controller
     {
         $estados          = Estado::all();
         $alojamientos     = Alojamiento::orderBy('nombre','asc')->get();
-        $cerradores       = Cerrador::where('estatus',1)->get();
+        $cerradores       = Comisionista::whereHas('tipo', function ($query) {
+                $query->where("nombre","CERRADORES");
+            })->where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)
             ->whereRaw('NOW() >= fecha_inicial')
