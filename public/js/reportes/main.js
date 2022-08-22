@@ -8,6 +8,11 @@ document.getElementById('reporte-reservaciones').addEventListener('click', (even
     document.getElementById('crear-reporte').setAttribute('action','reservaciones');
 });
 
+document.getElementById('reporte-comisiones').addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('crear-reporte').setAttribute('action','comisiones');
+});
+
 document.getElementById('crear-reporte').addEventListener('click', (event) => {
     event.preventDefault();
 
@@ -25,6 +30,10 @@ document.getElementById('crear-reporte').addEventListener('click', (event) => {
         case 'reservaciones':
             url          = '/reportes/totalreservaciones';
             documentPath = `/Reportes/reservaciones/reservaciones.xlsx`;
+            break;
+        case 'comisiones':
+            url          = '/reportes/totalcomisiones';
+            documentPath = `/Reportes/comisiones/comisiones.xlsx`;
             break;
     }
 
