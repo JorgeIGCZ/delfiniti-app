@@ -51,12 +51,13 @@ class ReporteController extends Controller
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal = $request->fechaFinal." 23:59:00";
-        // $fechaInicio = '2022-08-15 00:00:00';
-        // $fechaFinal = '2022-08-15 23:59:00';
+        $fechaInicio = '2022-08-19 00:00:00';
+        $fechaFinal = '2022-08-19 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $comisionesTipo = $this->getComisionesTipo($fechaInicio,$fechaFinal);
+        dd($comisionesTipo);
         // $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal);
         
 
@@ -139,17 +140,24 @@ class ReporteController extends Controller
                 ->where("estatus", 1);
         })->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
 
-        /*
-        $comisiones = ComisionistaTipo::whereHas('reservacion',function ($query){
-            $query
-                ->where("estatus", 1);
-        })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
-            $query
-                ->whereBetween("created_at", [$fechaInicio,$fechaFinal]);
-        })->get();
-        */
-        // dd($comisiones->groupBy('comisionistaTipo.nombre'));
-        return $comisiones->groupBy('comisionistaTipo.nombre');
+        
+        // $comisiones = ComisionistaTipo::whereHas('reservacion',function ($query){
+        //     $query
+        //         ->where("estatus", 1);
+        // })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
+        //     $query
+        //         ->whereBetween("created_at", [$fechaInicio,$fechaFinal]);
+        // })->get();
+        // dd($comisiones);
+        
+        foreach($comisiones as $comision){
+            echo("<br>");
+            print_r($comision->comisionista->comisionistaTipo->nombre);
+            echo("<br>");
+            print_r($comision->comisionistaTipo->nombre);
+            echo("<br>");
+        }
+        //return $comisiones->groupBy('comisionistaTipo.nombre');
     }
 
     /**
@@ -184,7 +192,7 @@ class ReporteController extends Controller
                     continue;
                 }
 
-                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:C{$rowNumber}");
+                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
 
                 // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
                 //     ->getBorders()
@@ -194,51 +202,54 @@ class ReporteController extends Controller
                 $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('FABF8F');
+                    ->getStartColor()->setARGB('538DD5');
                     
                 //Actividad
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadHorario->actividad->nombre." ".$actividadesHorario[0]->horario_inicial);
                 $rowNumber += 1;
 
-                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
+                $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
 
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('FFFFCC');
+                    ->getStartColor()->setARGB('8DB4E2');
 
                 //Titulos
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'CLIENTE');
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'ORIGEN');
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'PAX');
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'AGENTE/AGENCIA');
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'FECHA');
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'CLIENTE');
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'ORIGEN');
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'PAX');
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'AGENTE/AGENCIA');
                 // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'DESCUENTO');
-                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'T. PAGO');
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'T. PAGO');
                 $rowNumber += 1;
 
                 $initialRowNumber = $rowNumber;
 
                 foreach ($actividadHorario->reservacion as $reservacion) {
-                    $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
+                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->fecha);
+
+                    $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
 
                     // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                     // ->getBorders()
                     // ->getOutline()
                     // ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
 
-                    $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('CCFFFF');
+                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    // ->getFill()
+                    // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    // ->getStartColor()->setARGB('CCFFFF');
 
-                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->nombre_cliente);
-                    $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", @$reservacion->origen);
-                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
-                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", @$reservacion->comisionista->nombre);
-                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
+                    $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacion->nombre_cliente);
+                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", @$reservacion->origen);
+                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
+                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
+                    $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
                     $rowNumber += 1;
                 }
-                $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+                $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
                 $rowNumber += 2;
             }
         }
@@ -277,7 +288,7 @@ class ReporteController extends Controller
                 $rowNumber += 1;
         }
                 
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('FABF8F');
@@ -388,24 +399,6 @@ class ReporteController extends Controller
 
         $rowNumber = 5;
         
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('00B050');
-
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
-                ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
-                ->getFont()->setSize(16);
-
-        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}")
-                ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-        $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", "Tipo de cambio: ");
-        $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $tipoCambio);
-        
         $rowNumber += 1;
         foreach($actividadesPagos as $actividad){
             if(!count($actividad->pagos) ){
@@ -501,25 +494,47 @@ class ReporteController extends Controller
 
             $rowNumber += 1; 
 
-            $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('00B050');
+            // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
+            //     ->getFill()
+            //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            //     ->getStartColor()->setARGB('00B050');
 
-            $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-                    ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+            // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
+            //         ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
 
-            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
-                    ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+            // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
+            //         ->getNumberFormat()
+            //         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
-            $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
+            // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
+            // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
 
             $rowNumber += 3;
         }
         
-        $rowNumber += 2;
+        $rowNumber += 1;
+
+        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('00B050');
+
+        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+                ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+
+        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setSize(16);
+
+        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        $tipoCambioRowNumber = $rowNumber;
+
+        $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", "Tipo de cambio: ");
+        $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $tipoCambio);
+        
+        $rowNumber += 1;
 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
             ->getFill()
@@ -554,6 +569,7 @@ class ReporteController extends Controller
             $totalEfectivoUSD = 0;
             $totalTarjeta = 0;
             $totalCupon = 0;
+
             foreach($reservaciones as $reservacion){
                 
                 $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivo',0);
@@ -575,7 +591,7 @@ class ReporteController extends Controller
             
             //Calculo totales
             // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'B' . $rowNumber . ':E' . $rowNumber . ')');
-            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * G5 ) ,D' . $rowNumber . ' ,E' . $rowNumber . ')');
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * G'. $tipoCambioRowNumber .' ) ,D' . $rowNumber . ' ,E' . $rowNumber . ')');
 
             $rowNumber += 1;
         }
@@ -602,20 +618,20 @@ class ReporteController extends Controller
         
         $rowNumber += 1;
         
-        $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('00B050');
+        // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
+        //         ->getFill()
+        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        //         ->getStartColor()->setARGB('00B050');
 
-        $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-                ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+        // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
+        //         ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
 
-        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
-                ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+        // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
+        //         ->getNumberFormat()
+        //         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-        $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
-        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
+        // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
+        // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
 
         $rowNumber += 2;
         
