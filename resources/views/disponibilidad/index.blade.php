@@ -9,7 +9,8 @@
                 searching: false,
                 paging: false,
                 info: false,
-                columnDefs: [{
+                columnDefs: [
+                    {
                         targets: 0,
                         className: 'dt-body-center'
                     },
@@ -105,7 +106,7 @@
                                 <label class="col-form-label">Pagados:</label>
                                 <strong>{{$reservacionesPagadas}}</strong>
                             </div>
-                            <div class="partial">
+                            <div class="pending">
                                 <label class="col-form-label">Pendientes:</label>
                                 <strong>{{$reservacionesPendientes}}</strong>
                             </div>
@@ -196,7 +197,7 @@
                                                             <td class="folio-link">
                                                                 <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
-                                                            <td>{{ $reservacion->nombre_cliente }}</td>
+                                                            <td>{{ strlen($reservacion->nombre_cliente) > 15 ? substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
                                                         </tr>
                                                     @endforeach

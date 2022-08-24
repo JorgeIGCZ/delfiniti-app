@@ -45059,6 +45059,7 @@ ul.list-ckeck-soft {
 }
 .col-programas .programa{
   max-width: 300px;
+  width: 300px;
   display: inline-table;
   margin-right: 12px;
   border-right: 2px solid #dfdfdf;
@@ -45141,7 +45142,7 @@ input[type='checkbox']{
     font-weight: 500;
 }
 .pending{
-    color: red;
+    color: #cf4141;
     font-weight: 500;
 }
 
@@ -45178,6 +45179,7 @@ tr.Pagado{
   font-weight: 700;
   color: white;
 }
-.folio-link:hover {
-  color: #ffffff;
+.folio-link > a:hover {
+  color: #57e300!important;
+  text-decoration: underline!important;
 }
