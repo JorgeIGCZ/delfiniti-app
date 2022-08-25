@@ -100,6 +100,7 @@ class ReporteController extends Controller
                         'descuentoImpuesto'  => $comision->descuento_impuesto,
                         'cantidadNeta'       => $comision->cantidad_comision_neta
                     ];
+                    continue;
                 }
 
                 $comisionesGenerales[$comisionKey][] = [
