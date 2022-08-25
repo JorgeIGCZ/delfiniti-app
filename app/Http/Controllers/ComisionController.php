@@ -86,6 +86,7 @@ class ComisionController extends Controller
         $comsion = Comision::create([
             'comisionista_id'         =>  $reservacion['cerrador_id'],
             'reservacion_id'          =>  $reservacion['id'],
+            'pago_total'              =>  $totalPagoReservacion,
             'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
             'iva'                     =>  (float)$ivaCantidad,
             'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,

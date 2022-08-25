@@ -15,6 +15,7 @@ class Actividad extends Model
         'precio',
         'capacidad',
         'duracion',
+        'reporte_orden',
         'fecha_inicial',
         'fecha_final'
     ];

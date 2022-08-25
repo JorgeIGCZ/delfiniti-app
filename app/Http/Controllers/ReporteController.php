@@ -51,18 +51,25 @@ class ReporteController extends Controller
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal = $request->fechaFinal." 23:59:00";
-        $fechaInicio = '2022-08-19 00:00:00';
-        $fechaFinal = '2022-08-19 23:59:00';
+        // $fechaInicio = '2022-08-19 00:00:00';
+        // $fechaFinal = '2022-08-19 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $comisionesTipo = $this->getComisionesTipo($fechaInicio,$fechaFinal);
-        dd($comisionesTipo);
+        // dd($comisionesTipo);
         // $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal);
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE COMISIONES");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
 
         $rowNumber = 5;
 
@@ -71,33 +78,94 @@ class ReporteController extends Controller
         $sumaC = [];
         $sumaD = [];
         $sumaE = [];
-        foreach($comisionesTipo as $key => $comisionTipo){
+        $sumaF = [];
+
+        $tipoComisionesGenerales = [];
+        $comisionesGenerales = [];
+        foreach($comisionesTipo as $comisionTipo){
+            foreach($comisionTipo->comisiones as $comision){
+                $comsisionNombre = $comisionTipo->nombre;
+                $comsision = $comision->comisionista->comision;
+                $comisionKey = $comsisionNombre.' - '.$comsision.'%';
+                
+                if(!in_array($comisionKey,$tipoComisionesGenerales)){
+                    $tipoComisionesGenerales[] = [$comisionKey];
+
+                    $comisionesGenerales[$comisionKey][] = [
+                        'comisionistaId'     => $comision->comisionista->id,
+                        'comisionistaNombre' => $comision->comisionista->nombre,
+                        'pagoTotal'          => $comision->pago_total,
+                        'comisionBruta'      => $comision->cantidad_comision_bruta,
+                        'descuentoImpuesto'  => $comision->descuento_impuesto,
+                        'cantidadNeta'       => $comision->cantidad_comision_neta
+                    ];
+                }
+
+                $comisionesGenerales[$comisionKey][] = [
+                    'comisionistaId'     => $comision->comisionista->id,
+                    'comisionistaNombre' => $comision->comisionista->nombre,
+                    'pagoTotal'          => $comision->pago_total,
+                    'comisionBruta'      => $comision->cantidad_comision_bruta,
+                    'descuentoImpuesto'  => $comision->descuento_impuesto,
+                    'cantidadNeta'       => $comision->cantidad_comision_neta
+                ];
+            }
+        }
+
+        foreach($comisionesGenerales as $key => $comisionGeneral){
             //Titulos
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                 ->getFont()->setBold(true);
 
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $key);
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'COM. BRUTA');
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", '4%');
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'A PAGAR');
-            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'OBSERVACIONES');
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'TOTAL PAGADO');
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COM. BRUTA');
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '4%');
+            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'A PAGAR');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'OBSERVACIONES');
 
             $rowNumber += 1;
             $index = 1;
 
             $initialRowNumber = $rowNumber;
-            foreach($comisionTipo as $comision){
+            $comisionistasId     = [];
+            $comisionesAgrupadas = [];
+
+            foreach($comisionGeneral as $comisionTipo){
+                
+                $comisionistaId = $comisionTipo["comisionistaId"];
+
+                if(!in_array($comisionistaId,$comisionistasId)){
+                    $comisionistasId[]     = $comisionistaId;
+                    $comisionesAgrupadas[$comisionistaId] = [
+                        'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
+                        'pagoTotal'          => $comisionTipo['pagoTotal'],
+                        'comisionBruta'      => $comisionTipo['comisionBruta'],
+                        'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
+                        'cantidadNeta'       => $comisionTipo['cantidadNeta']
+                    ];
+                    continue;
+                }
+
+                $comisionesAgrupadas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
+                $comisionesAgrupadas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
+                $comisionesAgrupadas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
+                $comisionesAgrupadas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
+            }
+
+            foreach($comisionesAgrupadas as $comision){
                 $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
 
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision->comisionista->nombre);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision->cantidad_comision_bruta);
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision->descuento_impuesto);
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision->cantidad_comision_neta);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $comision['cantidadNeta']);
                 $rowNumber += 1;
                 $index++;
             }
@@ -111,12 +179,86 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
             $sumaC[] = 'C' . $rowNumber;
             $sumaD[] = 'D' . $rowNumber;
             $sumaE[] = 'E' . $rowNumber;
+            $sumaF[] = 'F' . $rowNumber;
 
             $rowNumber += 2;
         }
+
+        // foreach($comisionesTipo as $comisionTipo){
+        //     //Titulos
+        //     $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+        //         ->getFont()->setBold(true);
+
+        //     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
+        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comisionTipo->nombre);
+        //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'COM. BRUTA');
+        //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", '4%');
+        //     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'A PAGAR');
+        //     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'OBSERVACIONES');
+
+        //     $rowNumber += 1;
+        //     $index = 1;
+
+        //     $initialRowNumber = $rowNumber;
+        //     $comisionistasId     = [];
+        //     $comisionesAgrupadas = [];
+        //     foreach($comisionTipo->comisiones as $comision){
+
+        //         $comsionistaId = $comision->comisionista->id;
+
+        //         if(!in_array($comision->comisionista->id,$comisionistasId)){
+        //             $comsionistaId         = $comision->comisionista->id;
+        //             $comisionistasId[]     = $comsionistaId;
+        //             $comisionesAgrupadas[$comsionistaId] = [
+        //                 'comisionistaNombre' => $comision->comisionista->nombre,
+        //                 'comisionBruta'      => $comision->cantidad_comision_bruta,
+        //                 'descuentoImpuesto'  => $comision->descuento_impuesto,
+        //                 'cantidadNeta'       => $comision->cantidad_comision_neta
+        //             ];
+        //             continue;
+        //         }
+
+        //         $comisionesAgrupadas[$comsionistaId]['comisionBruta']     += $comision->cantidad_comision_bruta;
+        //         $comisionesAgrupadas[$comsionistaId]['descuentoImpuesto'] += $comision->descuento_impuesto;
+        //         $comisionesAgrupadas[$comsionistaId]['cantidadNeta']      += $comision->cantidad_comision_neta;
+        //     }
+
+
+            
+        //     foreach($comisionesAgrupadas as $comision){
+        //         $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
+        //             ->getNumberFormat()
+        //             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+
+        //         $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
+        //         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+        //         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['comisionBruta']);
+        //         $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['descuentoImpuesto']);
+        //         $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['cantidadNeta']);
+        //         $rowNumber += 1;
+        //         $index++;
+        //     }
+
+        //     //Calculo total
+        //     $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
+        //             ->getNumberFormat()
+        //             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTAL');
+        //     $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
+        //     $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        //     $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+        //     $sumaC[] = 'C' . $rowNumber;
+        //     $sumaD[] = 'D' . $rowNumber;
+        //     $sumaE[] = 'E' . $rowNumber;
+
+        //     $rowNumber += 2;
+        // }
 
         $rowNumber += 2;
         //Calculo totales
@@ -128,6 +270,7 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=' . implode('+',$sumaE));
+        $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=' . implode('+',$sumaF));
 
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/comisiones/comisiones.xlsx");
@@ -135,29 +278,31 @@ class ReporteController extends Controller
     }
 
     private function getComisionesTipo($fechaInicio,$fechaFinal){
-        $comisiones = Comision::whereHas('reservacion',function ($query) {
-            $query
-                ->where("estatus", 1);
-        })->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
-
-        
-        // $comisiones = ComisionistaTipo::whereHas('reservacion',function ($query){
+        // $comisiones = Comision::whereHas('reservacion',function ($query) {
         //     $query
         //         ->where("estatus", 1);
-        // })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
-        //     $query
-        //         ->whereBetween("created_at", [$fechaInicio,$fechaFinal]);
-        // })->get();
-        // dd($comisiones);
+        // })->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
+
         
-        foreach($comisiones as $comision){
-            echo("<br>");
-            print_r($comision->comisionista->comisionistaTipo->nombre);
-            echo("<br>");
-            print_r($comision->comisionistaTipo->nombre);
-            echo("<br>");
-        }
-        //return $comisiones->groupBy('comisionistaTipo.nombre');
+        $comisionistaTipo = ComisionistaTipo::whereHas('reservaciones',function ($query){
+            $query
+                ->where("reservaciones.estatus", 1);
+        })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
+            $query
+                ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
+        })->get();
+        
+        // dd($comisionistaTipo);
+        
+        // foreach($comisiones as $comision){
+        //     echo("<br>");
+        //    // print_r($comision->comisionista->tipo->nombre);
+        //     echo("<br>");
+        //     echo("<br>");
+        // }
+
+        //print_r($comisiones->groupBy('comisionista_tipos.nombre'));
+        return $comisionistaTipo;
     }
 
     /**
@@ -182,7 +327,15 @@ class ReporteController extends Controller
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");		
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
+        
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
 
         $rowNumber = 5;
 
@@ -397,6 +550,14 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue("A2", "CORTE DE CAJA");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");
 
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+
         $rowNumber = 5;
         
         $rowNumber += 1;
@@ -439,8 +600,8 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares'); 
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Cupón');
-            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cambio');
-            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
+            // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cambio');
+            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Reservado por');
 
             $rowNumber += 1;
 
@@ -461,10 +622,10 @@ class ReporteController extends Controller
                 $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosCuponResult['pago']);
 
-                $pagosCambioResult = $this->getPagosTotalesByType($reservacion,$actividad,'cambio',0);
-                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCambioResult['pago']);
+                // $pagosCambioResult = $this->getPagosTotalesByType($reservacion,$actividad,'cambio',0);
+                // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCambioResult['pago']);
 
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$reservacion->comisionista->nombre);
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
 
                 $rowNumber += 1;
             }
@@ -484,13 +645,13 @@ class ReporteController extends Controller
             $sumrangeC = 'C' . $initialRowNumber . ':C' . $rowNumber-1;
             $sumrangeD = 'D' . $initialRowNumber . ':D' . $rowNumber-1;
             $sumrangeE = 'E' . $initialRowNumber . ':E' . $rowNumber-1;
-            $sumrangeF = 'F' . $initialRowNumber . ':F' . $rowNumber-1;
+            // $sumrangeF = 'F' . $initialRowNumber . ':F' . $rowNumber-1;
             $spreadsheet->getActiveSheet()->setCellValue('A' . $rowNumber, 'Subtotal');
             $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . $sumrangeB . ')');
             $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . $sumrangeC . ')');
             $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . $sumrangeD . ')');
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . $sumrangeE . ')');
-            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')'); 
+            // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')'); 
 
             $rowNumber += 1; 
 
@@ -847,7 +1008,7 @@ class ReporteController extends Controller
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id',[1,2,3,4,5])->count();
-        }])->get();
+        }])->orderBy('actividades.reporte_orden','asc')->get();
         
         return $actividades;
     }

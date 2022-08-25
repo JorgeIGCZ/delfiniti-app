@@ -12,6 +12,7 @@ class Comision extends Model
     protected $fillable = [
         'comisionista_id',
         'reservacion_id',
+        'pago_total',
         'cantidad_comision_bruta',
         'iva',
         'descuento_impuesto',
