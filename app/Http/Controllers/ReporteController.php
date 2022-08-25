@@ -83,7 +83,7 @@ class ReporteController extends Controller
         $tipoComisionesGenerales = [];
         $comisionesGenerales = [];
         foreach($comisionesTipo as $comisionTipo){
-            $comisiones = $comisionTipo->comisiones::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->get();
+            $comisiones = $comisionTipo->comisiones;
             foreach($comisiones as $comision){
                 $comsisionNombre = $comisionTipo->nombre;
                 $comsision = $comision->comisionista->comision;
@@ -291,7 +291,10 @@ class ReporteController extends Controller
         })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
             $query
                 ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
-        })->get();
+        })->with(['comisiones' => function ($query) use ($fechaInicio,$fechaFinal) {
+            $query
+                ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
+        }])->get();
         
         // dd($comisionistaTipo);
         
