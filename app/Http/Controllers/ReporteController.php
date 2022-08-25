@@ -83,7 +83,8 @@ class ReporteController extends Controller
         $tipoComisionesGenerales = [];
         $comisionesGenerales = [];
         foreach($comisionesTipo as $comisionTipo){
-            foreach($comisionTipo->comisiones as $comision){
+            $comisiones = $comisionTipo->comisiones::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->get();
+            foreach($comisiones as $comision){
                 $comsisionNombre = $comisionTipo->nombre;
                 $comsision = $comision->comisionista->comision;
                 $comisionKey = $comsisionNombre.' - '.$comsision.'%';
