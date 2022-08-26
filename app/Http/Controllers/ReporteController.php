@@ -26,19 +26,8 @@ class ReporteController extends Controller
      */
     public function index()
     {
-        $reservaciones =  Reservacion::all();
-        //dd($reservaciones[0]->pagos);
-        //dd($reservaciones[0]->pagos[0]->tipoPago->nombre);
-        /*
-        foreach($reservaciones as $reservacion){
-            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                print_r($reservacionDetalle->actividad->nombre);
-            }
-        }
-        */
         return view('reportes.index');
     }
-
     
     /**
      * Store a newly created resource in storage.
@@ -47,19 +36,16 @@ class ReporteController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function reporteComisiones(Request $request){
-        $usuario = new UsuarioController();
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
-        $fechaFinal = $request->fechaFinal." 23:59:00";
+        $fechaFinal  = $request->fechaFinal." 23:59:00";
         // $fechaInicio = '2022-08-19 00:00:00';
         // $fechaFinal = '2022-08-19 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
-        $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
+        $formatoFechaFinal  = date_format(date_create($fechaFinal),"d-m-Y"); 
 
-        $comisionesTipo = $this->getComisionesTipo($fechaInicio,$fechaFinal);
-        // dd($comisionesTipo);
-        // $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal);
-        
+        $comisionesTipo       = $this->getComisionesTipo($fechaInicio,$fechaFinal);
+        // $comisionesCerradores = $this->getComisionesCerradores($fechaInicio,$fechaFinal);
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE COMISIONES");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
@@ -70,97 +56,53 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
         $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(20);
 
         $rowNumber = 5;
-
-        #	PROMOTORES CALLE - 10%	COM. S/IVA	4%	A PAGAR	OBSERVACIONES
 
         $sumaC = [];
         $sumaD = [];
         $sumaE = [];
         $sumaF = [];
 
-        $tipoComisionesGenerales = [];
-        $comisionesGenerales = [];
-        foreach($comisionesTipo as $comisionTipo){
-            $comisiones = $comisionTipo->comisiones;
-            foreach($comisiones as $comision){
-                $comsisionNombre = $comisionTipo->nombre;
-                $comsision = $comision->comisionista->comision;
-                $comisionKey = $comsisionNombre.' - '.$comsision.'%';
-                
-                if(!in_array($comisionKey,$tipoComisionesGenerales)){
-                    $tipoComisionesGenerales[] = [$comisionKey];
+        $comisionesAgrupadasTipoPorcentaje = $this->getComisionesAgrupadasTipoPorcentaje($comisionesTipo);
 
-                    $comisionesGenerales[$comisionKey][] = [
-                        'comisionistaId'     => $comision->comisionista->id,
-                        'comisionistaNombre' => $comision->comisionista->nombre,
-                        'pagoTotal'          => $comision->pago_total,
-                        'comisionBruta'      => $comision->cantidad_comision_bruta,
-                        'descuentoImpuesto'  => $comision->descuento_impuesto,
-                        'cantidadNeta'       => $comision->cantidad_comision_neta
-                    ];
-                    continue;
-                }
-
-                $comisionesGenerales[$comisionKey][] = [
-                    'comisionistaId'     => $comision->comisionista->id,
-                    'comisionistaNombre' => $comision->comisionista->nombre,
-                    'pagoTotal'          => $comision->pago_total,
-                    'comisionBruta'      => $comision->cantidad_comision_bruta,
-                    'descuentoImpuesto'  => $comision->descuento_impuesto,
-                    'cantidadNeta'       => $comision->cantidad_comision_neta
-                ];
-            }
-        }
-
-        foreach($comisionesGenerales as $key => $comisionGeneral){
+        foreach($comisionesAgrupadasTipoPorcentaje as $key => $comisionAgrupadaTipoPorcentajeGeneral){
             //Titulos
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFont()->setBold(true);
+            
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setSize(12);
+            
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFill()
+                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                ->getStartColor()->setARGB('F2F2F2');
+
+            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
+                ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $key);
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'TOTAL PAGADO');
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'TOTAL');
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COM. BRUTA');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '4%');
             $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'A PAGAR');
-            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'OBSERVACIONES');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'FIRMA');
 
             $rowNumber += 1;
             $index = 1;
-
             $initialRowNumber = $rowNumber;
-            $comisionistasId     = [];
-            $comisionesAgrupadas = [];
 
-            foreach($comisionGeneral as $comisionTipo){
-                
-                $comisionistaId = $comisionTipo["comisionistaId"];
+            $comisionesAgrupadasComisionistas = $this->getComisionesAgrupadasComisionistas($comisionAgrupadaTipoPorcentajeGeneral);
 
-                if(!in_array($comisionistaId,$comisionistasId)){
-                    $comisionistasId[]     = $comisionistaId;
-                    $comisionesAgrupadas[$comisionistaId] = [
-                        'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
-                        'pagoTotal'          => $comisionTipo['pagoTotal'],
-                        'comisionBruta'      => $comisionTipo['comisionBruta'],
-                        'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
-                        'cantidadNeta'       => $comisionTipo['cantidadNeta']
-                    ];
-                    continue;
-                }
-
-                $comisionesAgrupadas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
-                $comisionesAgrupadas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
-                $comisionesAgrupadas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
-                $comisionesAgrupadas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
-            }
-
-            foreach($comisionesAgrupadas as $comision){
-                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
+            foreach($comisionesAgrupadasComisionistas as $comision){
+                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
+                $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
 
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
@@ -173,100 +115,50 @@ class ReporteController extends Controller
             }
 
             //Calculo total
-            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
+            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+            $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:F{$rowNumber}")
+                    ->getFont()->setBold(true);
+            
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTAL');
             $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
+
             $sumaC[] = 'C' . $rowNumber;
             $sumaD[] = 'D' . $rowNumber;
             $sumaE[] = 'E' . $rowNumber;
             $sumaF[] = 'F' . $rowNumber;
 
+            $rowNumber += 1;
+
+            $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}")
+                    ->getNumberFormat()
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
+
+            $spreadsheet->getActiveSheet()->getStyle("E{$rowNumber}:F{$rowNumber}")
+                    ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, "PORCENTAJE: ");
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=(' . 'F' . $rowNumber-1 . '/C' . $rowNumber-1 . ')');
+
             $rowNumber += 2;
         }
 
-        // foreach($comisionesTipo as $comisionTipo){
-        //     //Titulos
-        //     $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-        //         ->getFont()->setBold(true);
-
-        //     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
-        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comisionTipo->nombre);
-        //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'COM. BRUTA');
-        //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", '4%');
-        //     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'A PAGAR');
-        //     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'OBSERVACIONES');
-
-        //     $rowNumber += 1;
-        //     $index = 1;
-
-        //     $initialRowNumber = $rowNumber;
-        //     $comisionistasId     = [];
-        //     $comisionesAgrupadas = [];
-        //     foreach($comisionTipo->comisiones as $comision){
-
-        //         $comsionistaId = $comision->comisionista->id;
-
-        //         if(!in_array($comision->comisionista->id,$comisionistasId)){
-        //             $comsionistaId         = $comision->comisionista->id;
-        //             $comisionistasId[]     = $comsionistaId;
-        //             $comisionesAgrupadas[$comsionistaId] = [
-        //                 'comisionistaNombre' => $comision->comisionista->nombre,
-        //                 'comisionBruta'      => $comision->cantidad_comision_bruta,
-        //                 'descuentoImpuesto'  => $comision->descuento_impuesto,
-        //                 'cantidadNeta'       => $comision->cantidad_comision_neta
-        //             ];
-        //             continue;
-        //         }
-
-        //         $comisionesAgrupadas[$comsionistaId]['comisionBruta']     += $comision->cantidad_comision_bruta;
-        //         $comisionesAgrupadas[$comsionistaId]['descuentoImpuesto'] += $comision->descuento_impuesto;
-        //         $comisionesAgrupadas[$comsionistaId]['cantidadNeta']      += $comision->cantidad_comision_neta;
-        //     }
-
-
-            
-        //     foreach($comisionesAgrupadas as $comision){
-        //         $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
-        //             ->getNumberFormat()
-        //             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-
-        //         $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
-        //         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-        //         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['comisionBruta']);
-        //         $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['descuentoImpuesto']);
-        //         $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['cantidadNeta']);
-        //         $rowNumber += 1;
-        //         $index++;
-        //     }
-
-        //     //Calculo total
-        //     $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
-        //             ->getNumberFormat()
-        //             ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTAL');
-        //     $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
-        //     $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-        //     $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-        //     $sumaC[] = 'C' . $rowNumber;
-        //     $sumaD[] = 'D' . $rowNumber;
-        //     $sumaE[] = 'E' . $rowNumber;
-
-        //     $rowNumber += 2;
-        // }
-
         $rowNumber += 2;
         //Calculo totales
-        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:E{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    ->getFont()->setBold(true);
 
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
@@ -279,14 +171,79 @@ class ReporteController extends Controller
         return ['data'=>true];
     }
 
-    private function getComisionesTipo($fechaInicio,$fechaFinal){
-        // $comisiones = Comision::whereHas('reservacion',function ($query) {
-        //     $query
-        //         ->where("estatus", 1);
-        // })->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
+    private function getComisionesAgrupadasTipoPorcentaje($comisionesTipo){
+        $comisionesTipoPorcentaje = [];
+        $comisionesAgrupadasTipoPorcentaje = [];
+        foreach($comisionesTipo as $comisionTipo){
+            $comisiones = $comisionTipo->comisiones;
 
+            foreach($comisiones as $comision){
+                $comsisionNombre = $comisionTipo->nombre;
+                $comsision = $comision->comisionista->comision;
+                $comisionKey = $comsisionNombre.' - '.$comsision.'%';
+                
+                if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
+                    $comisionesTipoPorcentaje[] = [$comisionKey];
+
+                    $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
+                        'comisionistaId'     => $comision->comisionista->id,
+                        'comisionistaNombre' => $comision->comisionista->nombre,
+                        'pagoTotal'          => $comision->pago_total,
+                        'comisionBruta'      => $comision->cantidad_comision_bruta,
+                        'descuentoImpuesto'  => $comision->descuento_impuesto,
+                        'cantidadNeta'       => $comision->cantidad_comision_neta
+                    ];
+                    continue;
+                }
+
+                $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
+                    'comisionistaId'     => $comision->comisionista->id,
+                    'comisionistaNombre' => $comision->comisionista->nombre,
+                    'pagoTotal'          => $comision->pago_total,
+                    'comisionBruta'      => $comision->cantidad_comision_bruta,
+                    'descuentoImpuesto'  => $comision->descuento_impuesto,
+                    'cantidadNeta'       => $comision->cantidad_comision_neta
+                ];
+            }
+        }
+        return $comisionesAgrupadasTipoPorcentaje;
+    }
+
+    private function getComisionesAgrupadasComisionistas($comisionAgrupadaTipoPorcentajeGeneral){
+
+        $comisionistasId     = [];
+        $comisionesAgrupadasComisionistas = [];
+
+        foreach($comisionAgrupadaTipoPorcentajeGeneral as $comisionTipo){
+                
+            $comisionistaId = $comisionTipo["comisionistaId"];
+
+            if(!in_array($comisionistaId,$comisionistasId)){
+                $comisionistasId[]     = $comisionistaId;
+                $comisionesAgrupadasComisionistas[$comisionistaId] = [
+                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
+                    'pagoTotal'          => $comisionTipo['pagoTotal'],
+                    'comisionBruta'      => $comisionTipo['comisionBruta'],
+                    'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
+                    'cantidadNeta'       => $comisionTipo['cantidadNeta']
+                ];
+                continue;
+            }
+
+            $comisionesAgrupadasComisionistas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
+        }
         
+        return $comisionesAgrupadasComisionistas;
+    }
+
+    private function getComisionesTipo($fechaInicio,$fechaFinal){
         $comisionistaTipo = ComisionistaTipo::whereHas('reservaciones',function ($query){
+            $query
+                ->where("reservaciones.estatus", 1);
+        })->orWhereHas('reservacionesCerrador',function ($query){
             $query
                 ->where("reservaciones.estatus", 1);
         })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
@@ -297,16 +254,6 @@ class ReporteController extends Controller
                 ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
         }])->get();
         
-        // dd($comisionistaTipo);
-        
-        // foreach($comisiones as $comision){
-        //     echo("<br>");
-        //    // print_r($comision->comisionista->tipo->nombre);
-        //     echo("<br>");
-        //     echo("<br>");
-        // }
-
-        //print_r($comisiones->groupBy('comisionista_tipos.nombre'));
         return $comisionistaTipo;
     }
 
@@ -352,15 +299,16 @@ class ReporteController extends Controller
 
                 $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
 
-                // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
-                //     ->getBorders()
-                //     ->getOutline()
-                //     ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
+                    ->getFont()->setBold(true);
+                
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
+                    ->getFont()->setSize(12);
 
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('538DD5');
+                    ->getStartColor()->setARGB('D9D9D9');
                     
                 //Actividad
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadHorario->actividad->nombre." ".$actividadesHorario[0]->horario_inicial);
@@ -369,9 +317,15 @@ class ReporteController extends Controller
                 $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
 
                 $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getFont()->setBold(true);
+                
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getFont()->setSize(12);
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                     ->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('8DB4E2');
+                    ->getStartColor()->setARGB('F2F2F2');
 
                 //Titulos
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'FECHA');
@@ -415,9 +369,15 @@ class ReporteController extends Controller
         $rowNumber += 3;
 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F0F000');
+                ->getFont()->setBold(true);
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+            ->getFont()->setSize(12);
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('F2F2F2');
 
         //Titulos
         $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
@@ -445,11 +405,12 @@ class ReporteController extends Controller
                     
                 $rowNumber += 1;
         }
-                
+        
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FABF8F');
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
         //Calculo totales
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
@@ -578,26 +539,41 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('538DD5');
+                ->getStartColor()->setARGB('D9D9D9');
+
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getAlignment()
                 ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
                 ->setWrapText(true);
+            
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
+                ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
+                ->getFont()->setSize(12);
+            
             //PROGRAMA/ACTIVIDAD
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
             
             $rowNumber += 1;
 
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('8DB4E2');
+                ->getStartColor()->setARGB('F2F2F2');
+
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getAlignment()
                 ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
                 ->setWrapText(true);
+
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setSize(12);
 
             //Titulos
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'Folio');
@@ -639,12 +615,12 @@ class ReporteController extends Controller
                 ->getNumberFormat()
                 ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
                 
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getFont()->setBold(true);
             
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FABF8F');
-                
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
+
             //Calculo totales
             $sumrangeB = 'B' . $initialRowNumber . ':B' . $rowNumber-1;
             $sumrangeC = 'C' . $initialRowNumber . ':C' . $rowNumber-1;
@@ -656,26 +632,8 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . $sumrangeC . ')');
             $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . $sumrangeD . ')');
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . $sumrangeE . ')');
-            // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')'); 
 
-            $rowNumber += 1; 
-
-            // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-            //     ->getFill()
-            //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            //     ->getStartColor()->setARGB('00B050');
-
-            // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-            //         ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-
-            // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
-            //         ->getNumberFormat()
-            //         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-            // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
-            // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
-
-            $rowNumber += 3;
+            $rowNumber += 4;
         }
         
         $rowNumber += 1;
@@ -701,17 +659,23 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $tipoCambio);
         
         $rowNumber += 1;
-
+        
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-            ->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F0F000');
+                ->getFont()->setBold(true);
+
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
             ->getAlignment()
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
             ->setWrapText(true);
         
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+            ->getFont()->setSize(12);
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('F2F2F2');
         //Titulos
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'Pesos');
         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares');
@@ -725,11 +689,7 @@ class ReporteController extends Controller
 
             $reservacionesPago = $actividadPagos->pagos->pluck('reservacion.id');
             $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->get();
-
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F0F000');
+            
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadPagos->nombre);
             $totalEfectivo = 0;
             $totalEfectivoUSD = 0;
@@ -767,9 +727,10 @@ class ReporteController extends Controller
                 ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FABF8F');
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
         $sumrangeB = 'B' . $initialRowNumber . ':B' . $rowNumber-1;
         $sumrangeC = 'C' . $initialRowNumber . ':C' . $rowNumber-1;
@@ -782,30 +743,19 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . $sumrangeE . ')');
         $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')');
         
-        $rowNumber += 1;
-        
-        // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-        //         ->getFill()
-        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        //         ->getStartColor()->setARGB('00B050');
-
-        // $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:C{$rowNumber}")
-        //         ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
-
-        // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}")
-        //         ->getNumberFormat()
-        //         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-
-        // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, 'USD A MXN: '); 
-        // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=(C' . ($rowNumber-1) . '*G5)'); 
-
-        $rowNumber += 2;
+        $rowNumber += 3;
         
         //# PROGRAMAS PAGADOS
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                ->getFont()->setSize(12);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F0F000');
+                ->getStartColor()->setARGB('F2F2F2');
 
         //Titulos
         $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
@@ -833,89 +783,18 @@ class ReporteController extends Controller
                     
                 $rowNumber += 1;
         }
-                
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('FABF8F');
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
         //Calculo totales
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-
-        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-        //     ->getFill()
-        //     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        //     ->getStartColor()->setARGB('FABF8F');
-        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-        //     ->getAlignment()
-        //     ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
-        //     ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
-        //     ->setWrapText(true);
-        
-        // //Titulos
-        // $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
-        // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
-        // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'CORTESIAS');
-        // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'TOTAL');
-        
-        // $rowNumber += 1;
-        // $initialRowNumber = $rowNumber;
-
-
-        // foreach($actividadesPagos as $actividad){
-        //     if(!count($actividad->pagos) ){
-        //         continue;
-        //     }
-        //     $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-        //     $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->where('estatus_pago',2)->get();
-
-        //     $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}")
-        //         ->getFill()
-        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        //         ->getStartColor()->setARGB('F0F000');
-
-        //     $reservacionesTotales = $this->getReservacionesTotales($reservaciones);
-            
-        //     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
-        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['cortesias']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", count($reservaciones));
-
-            
-        //     $totalEfectivo = 0;
-        //     $totalEfectivoUSD = 0;
-        //     $totalTarjeta = 0;
-        //     $totalCupon = 0;
-        //     foreach($reservaciones as $reservacion){
-        //         $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',0);
-        //         $totalEfectivo    += $pagosEfectivoResult['pago'];
-
-        //         $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
-        //         $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
-
-        //         $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
-        //         $totalTarjeta     += $pagosTarjetaResult['pago'];
-
-        //         $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
-        //         $totalCupon       += $pagosCuponResult['pago'];
-        //     }
-            
-        //     $rowNumber += 1;
-        // }
-                
-        // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-        //         ->getFill()
-        //         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-        //         ->getStartColor()->setARGB('FABF8F');
-
-        // //Calculo totales
-        // $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
-        // $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
-        // $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-        
 
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/corte_de_caja/corte-de-caja.xlsx");

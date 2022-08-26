@@ -18,6 +18,7 @@
                     { data: 'id' },
                     { data: 'comisionista' },
                     { data: 'reservacion' },
+                    { data: 'total' },
                     { data: 'comisionBruta' },
                     { data: 'iva' },
                     { data: 'descuentoImpuesto' },
@@ -77,6 +78,7 @@
                                         <th>Id</th>
                                         <th>Comisionista</th>
                                         <th>Reservación</th>
+                                        <th>Total</th>
                                         <th>Comision bruta</th>
                                         <th>Iva</th>
                                         <th>Descuento impuesto</th>

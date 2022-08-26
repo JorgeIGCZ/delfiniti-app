@@ -142,6 +142,7 @@ class ComisionController extends Controller
                     'comisionista'      => $comision->comisionista->nombre,
                     'reservacion'       => $comision->reservacion->folio,
                     'reservacionId'     => $comision->reservacion->id,
+                    'total'             => $comision->pago_total,
                     'comisionBruta'     => $comision->cantidad_comision_bruta,
                     'iva'               => $comision->iva,
                     'descuentoImpuesto' => $comision->descuento_impuesto,

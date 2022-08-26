@@ -28,6 +28,18 @@ class ComisionistaTipo extends Model
             'id' //local key Reservacion
         );
     }
+
+    public function reservacionesCerrador(){
+        return $this->hasManyThrough(
+            Reservacion::class,
+            Comisionista::class,
+            'tipo_id', // FK Comisionista como comunica a ComisionistaTipo
+            'cerrador_id', // FK Comisionista como comunica a Reservacion
+            'id', //local key ComisionistaTipo
+            'id' //local key Reservacion
+        );
+    }
+
     public function comisiones()
     {
         return $this->hasManyThrough(
