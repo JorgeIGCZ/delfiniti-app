@@ -146,7 +146,7 @@ class ReporteController extends Controller
                     ->getFont()->setBold(true);
 
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, "PORCENTAJE: ");
-            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=(' . 'F' . $rowNumber-1 . '/C' . $rowNumber-1 . ')');
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=IF(ISERROR(' . 'F' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'F' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
 
             $rowNumber += 2;
         }
