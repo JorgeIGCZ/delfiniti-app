@@ -2,8 +2,11 @@
 @section('scripts')
     <script>
         const env = 'create';
-        const dolarPrecioCompra = () => {
-            return {{$dolarPrecioCompra->precio_compra}};
+        const dolarPrecioCompra = () =>{
+            return  {{$dolarPrecio->precio_compra}};
+        }
+        const dolarPrecioVenta = () =>{
+            return  {{$dolarPrecio->precio_venta}};
         }
         const isAdmin = () => {
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};

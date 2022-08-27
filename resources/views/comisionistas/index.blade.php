@@ -216,7 +216,7 @@
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="comision" class="col-form-label">Comisión %</label>
-                                <input type="number" name="comision" class="form-control" min="0" max="90" value="0">
+                                <input type="number" step="0.01" name="comision" class="form-control" min="0" max="90" value="0">
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="iva" class="col-form-label">Iva %</label>
@@ -225,7 +225,7 @@
 
                             <div class="form-group col-2 mt-3">
                                 <label for="descuento-impuesto" class="col-form-label">Descuentro por imp. %</label>
-                                <input type="number" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
+                                <input type="number" step="0.01" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
                             </div>
 
                             <div class="form-group col-2 mt-3">

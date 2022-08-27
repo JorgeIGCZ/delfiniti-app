@@ -10,7 +10,10 @@
             return {{$reservacion->estatus_pago == 2 ? 1 : 0}};
         }
         const dolarPrecioCompra = () =>{
-            return  {{$dolarPrecioCompra->precio_compra}};
+            return  {{$dolarPrecio->precio_compra}};
+        }
+        const dolarPrecioVenta = () =>{
+            return  {{$dolarPrecio->precio_venta}};
         }
         const isAdmin = () => {
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};

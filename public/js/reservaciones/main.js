@@ -337,7 +337,10 @@ function setTotalRecibido() {
 
 function setCambio() {
     const cambioCampo = document.getElementById('cambio');
-    const resta = getResta();
+    let resta = getResta();
+    if(resta < 0){
+        resta = getResta('venta');
+    }
     const cambio = getCambio(resta);
     cambioCampo.setAttribute('value', cambio);
     cambioCampo.value = formatter.format(cambio);
@@ -357,15 +360,21 @@ function setResta() {
     setTotalRecibido();
 }
 
-function getResta() {
+function getResta(tipoUsd = 'compra') {
     const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const pagos = getPagos();
+    const pagos = getPagos(tipoUsd);
     const resta = parseFloat(total - pagos);
     return resta;
 }
 
 function getMXNFromUSD(usd) {
     const dolarPrecio = dolarPrecioCompra();
+
+    return usd * dolarPrecio;
+}
+
+function getMXNFromVentaUSD(usd) {
+    const dolarPrecio = dolarPrecioVenta();
 
     return usd * dolarPrecio;
 }

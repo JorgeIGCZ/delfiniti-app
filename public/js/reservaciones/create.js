@@ -187,10 +187,14 @@ function setOperacionResultados() {
     enableReservar((getResta() < total) ? true : false);
 }
 
-function getPagos() {
+function getPagos(tipoUsd = 'compra') {
     const total = parseFloat(document.getElementById('total').getAttribute('value'));
     const efectivo = parseFloat(document.getElementById('efectivo').getAttribute('value'));
-    const efectivoUsd = getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')));
+    const efectivoUsd = (
+        tipoUsd == 'compra'
+            ? getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')))
+            : getMXNFromVentaUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')))
+    );
     const tarjeta = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
 
     const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));

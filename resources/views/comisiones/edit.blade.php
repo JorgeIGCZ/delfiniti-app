@@ -28,12 +28,12 @@
 
                             <div class="form-group col-2 mt-3">
                                 <label for="descuento" class="col-form-label">Descuento impuesto</label>
-                                <input type="number" name="descuento_impuesto" class="form-control" value="{{$comision->descuento_impuesto}}">
+                                <input type="number" step="0.01" name="descuento_impuesto" class="form-control" value="{{$comision->descuento_impuesto}}">
                             </div>
 
                             <div class="form-group col-2 mt-3">
                                 <label for="descuento" class="col-form-label">Comision neta</label>
-                                <input type="number" name="cantidad_comision_neta" class="form-control"  value="{{$comision->cantidad_comision_neta}}">
+                                <input type="number" step="0.01" name="cantidad_comision_neta" class="form-control"  value="{{$comision->cantidad_comision_neta}}">
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="actualizar-comision">Actualizar Comision</button>
