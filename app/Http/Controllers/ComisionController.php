@@ -10,6 +10,7 @@ use finfo;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 use App\Models\Cerrador;
+use App\Models\ComisionistaCanalDetalle;
 
 class ComisionController extends Controller
 {
@@ -32,7 +33,27 @@ class ComisionController extends Controller
 
         $this->setComisionComisionista($reservacion,$pagos);
         $this->setComisionCerrador($reservacion,$pagos);
+        //$this->setComisionComisionistaCanal($reservacion,$pagos);
     }
+
+    /*
+    private function setComisionComisionistaCanal($reservacion,$pagos){
+        if($reservacion['comisionista_id'] == 0){
+            return true;
+        }
+
+        $comisionista = Comisionista::find($reservacion['comisionista_id']);
+        
+        $comisiones = ComisionistaCanalDetalle::where('comisionista_id',$reservacion['comisionista_id'])
+            ->where('comisionista_tipo_id',$comisionista['tipo_id'])->get();
+
+        if(count($comisiones)){
+            con respectoal  omisionista
+        }
+
+        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id']);
+    }
+    */
 
     private function setComisionComisionista($reservacion,$pagos){
         if($reservacion['comisionista_id'] == 0){
@@ -64,6 +85,13 @@ class ComisionController extends Controller
         $cantidadComisionBruta     = round((($totalVentaSinIva * $comisionista['comision']) / 100),2);
         $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
+
+        $isComisionDuplicada = Comision::where('comisionista_id',$reservacion['comisionista_id'])
+                ->where('reservacion_id',$reservacion['id'])->get()->count();
+        
+        if($isComisionDuplicada){
+            return false;
+        }
 
         $comsion = Comision::create([   
             'comisionista_id'         =>  $reservacion['comisionista_id'],
