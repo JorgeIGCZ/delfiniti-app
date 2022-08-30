@@ -35,3 +35,7 @@ composer.lock
 .idea/phpunit.xml
 .idea/sqldialects.xml
 .idea/vcs.xml
+public/Reportes/comisiones/comisiones.xlsx
+public/Reportes/corte_de_caja/corte-de-caja.xlsx
+public/Reportes/corte_de_caja/~$corte-de-caja.xlsx
+public/Reportes/reservaciones/reservaciones.xlsx

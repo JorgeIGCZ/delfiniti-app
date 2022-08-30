@@ -45103,7 +45103,6 @@ ul.list-ckeck-soft {
   border: 1px solid #7fedff!important;
 }
 input[type='checkbox']{
-  display: block!important;
   height: 25px!important;
   width: 25px!important;
   border-radius: 5px!important;
@@ -45160,7 +45159,7 @@ table .highlight{
   background: #daffdb;
 }
 table.dataTable td, table.dataTable th{
-  padding: 0 2px;
+  padding: 0 5px;
 }
 
 tr.Pendiente{

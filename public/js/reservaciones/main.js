@@ -719,6 +719,8 @@ function changeCuponDetalle() {
     document.getElementById('reservacion-form').elements['cupon'].focus();
 
     (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
+
+    setOperacionResultados();
 }
 
 function changeClaveActividad() {

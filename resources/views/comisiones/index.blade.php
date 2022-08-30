@@ -18,11 +18,36 @@
                     { data: 'id' },
                     { data: 'comisionista' },
                     { data: 'reservacion' },
-                    { data: 'total' },
-                    { data: 'comisionBruta' },
-                    { data: 'iva' },
-                    { data: 'descuentoImpuesto' },
-                    { data: 'comisionNeta' },
+                    { defaultContent: 'total', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.total);
+                        }
+                    },
+                    { defaultContent: 'iva', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.iva);
+                        }
+                    },
+                    { defaultContent: 'comisionBruta', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.comisionBruta);
+                        }
+                    },
+                    { defaultContent: 'descuentoImpuesto', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.descuentoImpuesto);
+                        }
+                    },
+                    { defaultContent: 'comisionNeta', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.comisionNeta);
+                        }
+                    },
                     { data: 'fecha' },
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
@@ -68,6 +93,26 @@
 
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
+
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label for="fecha">Fecha</label>
+                    <select class="form-control fecha" name="fecha" id="fecha">
+                        <option value="1" selected="selected">Día Actual</option>
+                        <option value="2">Semana Actual</option>
+                        <option value="2">Mes Actual</option>
+                        <option value="3">Rango</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-3" id="rango-fecha" style="display: none;">
+                    <div class="input-group input-daterange mt-4">
+                        <label for="fecha">Rango</label>
+                        <input id="start_date" name="start_date" type="text" class="form-control" readonly="readonly" placeholder="mm/dd/yyyy"> 
+                        <span class="input-group-addon" style="padding: 8px;">Al</span> 
+                        <input id="end_date" name="end_date" type="text" class="form-control" readonly="readonly" placeholder="mm/dd/yyyy">
+                    </div>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body">
                     <div class="row overflow-auto">
@@ -79,8 +124,8 @@
                                         <th>Comisionista</th>
                                         <th>Reservación</th>
                                         <th>Total</th>
-                                        <th>Comision bruta</th>
                                         <th>Iva</th>
+                                        <th>Comision bruta S/IVA</th>
                                         <th>Descuento impuesto</th>
                                         <th>Comision neta</th>
                                         <th>Fecha registro comisión</th>
