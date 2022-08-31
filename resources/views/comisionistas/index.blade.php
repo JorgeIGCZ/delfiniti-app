@@ -66,14 +66,22 @@
                 comisionistas.reset();
             }); 
         }
+        function isComisionistaCanal(){
+            const tipo = document.getElementById('tipo');
+
+            return tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal');
+        }
         function createComisionista(comisionistas){
-            let tipo   = comisionistas.elements['tipo'];
-            tipo       = tipo.options[tipo.selectedIndex].value;
+            let tipo                  = comisionistas.elements['tipo'];
+            tipo                      = tipo.options[tipo.selectedIndex];
+            const comisionesSobreCanales = getComisionesSobreCanales();
             axios.post('/comisionistas', {
                 '_token'  : '{{ csrf_token() }}',
                 "codigo"  : comisionistas.elements['codigo'].value,
+                "isComisionistaCanal" : isComisionistaCanal(),
+                "comisionesSobreCanales" : comisionesSobreCanales,
                 "nombre"  : comisionistas.elements['nombre'].value,
-                "tipo"  : tipo,
+                "tipo"  : tipo.value,
                 "comision": comisionistas.elements['comision'].value,
                 "iva"     : comisionistas.elements['iva'].value,
                 "descuentoImpuesto" : comisionistas.elements['descuento-impuesto'].value,
@@ -108,6 +116,35 @@
                     showConfirmButton: true
                 })
             });
+        }
+        function getComisionesSobreCanales(){
+            let comisionesSobreCanales = [];
+            $('.tipo_comisiones').each(function(index, value) {
+                
+                // comisionesSobreCanales  = [...comisionesSobreCanales,{[$(value).attr('tipoid')] : [
+                //     {
+                //         'comision'          : $(value).children('tipo_comision').attr('value'),
+                //         'iva'               : $(value).children('tipo_iva').attr('value'),
+                //         'descuentoImpuesto' : $(value).children('tipo_descuento_impuesto').attr('value'),
+                //     }
+                // ]}];
+
+                // comisionesSobreCanales[$(value).attr('tipoid')] = {
+                //         'comision'          : $(value).find('.tipo_comision').attr('value'),
+                //         'iva'               : $(value).find('.tipo_iva').attr('value'),
+                //         'descuentoImpuesto' : $(value).find('.tipo_descuento_impuesto').attr('value'),
+                //     };
+
+                comisionesSobreCanales = {...comisionesSobreCanales,[$(value).attr('tipoid')] :
+                        {
+                            'comision'          : $(value).find('.tipo_comision').attr('value'),
+                            'iva'               : $(value).find('.tipo_iva').attr('value'),
+                            'descuentoImpuesto' : $(value).find('.tipo_descuento_impuesto').attr('value'),
+                        }
+                    };
+            });
+
+            return comisionesSobreCanales;
         }
         $(function(){
             comisionistasTable = new DataTable('#comisionistas', {
@@ -181,6 +218,16 @@
                     createComisionista(comisionistas);
                 }
             });
+
+            $('#tipo').on('change', function (e) {
+                if(!isComisionistaCanal()){
+                    $('.general-settings').show();
+                    $('.comisiones_sobre_canales').hide();
+                    return false;
+                }
+                $('.general-settings').hide();
+                $('.comisiones_sobre_canales').show();
+            });
             
         });
     </script>
@@ -208,43 +255,73 @@
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
-                                <select name="tipo" class="form-control">
+                                <select name="tipo" id="tipo" class="form-control">
                                     @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}">{{$tipo->nombre}}</option>
+                                        <option value="{{$tipo->id}}" comisionistaCanal={{$tipo->comisionista_canal}}>{{$tipo->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-2 mt-3">
+
+                            <div class="form-group col-12 mt-3 comisiones_sobre_canales" style="display: none;">
+                                <strong>
+                                    Comisiones sobre canales
+                                </strong>
+                                <table class="mt-3">
+                                    <tr>
+                                        <th>Canal de venta</th>
+                                        <th>Comisión %</th>
+                                        <th>Iva %</th>
+                                        <th>Descuentro por imp. %</th>
+                                    </tr>
+                                    @foreach($tiposSinComision as $tipoSinComision)
+                                        <tr tipoid="{{$tipoSinComision->id}}" class="tipo_comisiones">
+                                            <td>{{$tipoSinComision->nombre}}</td>
+                                            <td>
+                                                <input type="text" name="tipo_comision" class="tipo_comision form-control percentage" value="0">  
+                                            </td>
+
+                                            <td>
+                                                <input type="text" name="tipo_iva" class="tipo_iva form-control percentage" value="0">  
+                                            </td>
+
+                                            <td>
+                                                <input type="text" name="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
+                            <div class="form-group col-2 mt-3 general-settings">
                                 <label for="comision" class="col-form-label">Comisión %</label>
                                 <input type="number" step="0.01" name="comision" class="form-control" min="0" max="90" value="0">
                             </div>
-                            <div class="form-group col-2 mt-3">
+                            <div class="form-group col-2 mt-3 general-settings">
                                 <label for="iva" class="col-form-label">Iva %</label>
                                 <input type="number" name="iva" class="form-control" min="0" max="90" value="0">
                             </div>
 
-                            <div class="form-group col-2 mt-3">
+                            <div class="form-group col-2 mt-3 general-settings">
                                 <label for="descuento-impuesto" class="col-form-label">Descuentro por imp. %</label>
                                 <input type="number" step="0.01" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
                             </div>
 
-                            <div class="form-group col-2 mt-3">
+                            <div class="form-group col-2 mt-3 general-settings">
                                 <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
                                 <input type="checkbox" name="descuentos" class="form-control" >
                             </div>
 
-                            <div class="col-12 mt-3">
+                            <div class="col-12 mt-3 general-settings">
                                 <strong>Datos Representante</strong>
                             </div>
-                            <div class="form-group col-5 mt-3">
+                            <div class="form-group col-5 mt-3 general-settings">
                                 <label for="representante" class="col-form-label">Representante</label>
                                 <input type="text" id="representante" class="form-control">
                             </div>
-                            <div class="form-group col-4 mt-3">
+                            <div class="form-group col-4 mt-3 general-settings">
                                 <label for="direccion" class="col-form-label">Dirección</label>
                                 <input type="text" id="direccion" class="form-control">
                             </div>
-                            <div class="form-group col-3 mt-3">
+                            <div class="form-group col-3 mt-3 general-settings">
                                 <label for="telefono" class="col-form-label">Teléfono</label>
                                 <input type="text" id="telefono" class="form-control">
                             </div>

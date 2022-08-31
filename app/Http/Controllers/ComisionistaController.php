@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comisionista;
 use App\Models\ComisionistaTipo;
+use App\Models\ComisionistaCanalDetalle;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
@@ -17,7 +18,8 @@ class ComisionistaController extends Controller
     public function index()
     {
         $tipos = ComisionistaTipo::all();
-        return view('comisionistas.index',['tipos' => $tipos]);
+        $tiposSinComisionSobreTipos = ComisionistaTipo::where('comisionista_canal',0)->get();
+        return view('comisionistas.index',['tipos' => $tipos,'tiposSinComision' => $tiposSinComisionSobreTipos]);
     }
     /**
      * Store a newly created resource in storage.
@@ -46,12 +48,29 @@ class ComisionistaController extends Controller
                 'direccion'          => $request->direccion,
                 'telefono'           => $request->telefono
             ]);
+
+            if($request->isComisionistaCanal == '1'){
+                $this->createComisionistaCanalDetalle($comisionista['id'],$request);
+            }
+            
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($comisionista['id']) ? 'Success' : 'Error']);
+    }
+
+    private function createComisionistaCanalDetalle($comisionistaId,$request){
+        foreach($request->comisionesSobreCanales as $key => $comisionSobreCanales){
+            ComisionistaCanalDetalle::create([
+                'comisionista_id'       => $comisionistaId,
+                'comisionista_tipo_id'  => $key,
+                'comision'              => $comisionSobreCanales['comision'],
+                'iva'                   => $comisionSobreCanales['iva'],
+                'descuento_impuesto'    => $comisionSobreCanales['descuentoImpuesto']
+            ]);
+        }
     }
 
     /**

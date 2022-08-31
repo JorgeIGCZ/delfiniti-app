@@ -21,7 +21,11 @@
                                 <label for="nombre" class="col-form-label">Nombre de tipo de comisionista</label>    
                                 <input type="text" name="nombre" class="form-control" value="{{$comisionistaTipo->nombre}}">  
                             </div>
-                            <div class="form-group col-3 mt-3">
+                            <div class="form-group col-4 mt-3">
+                                <label for="nombre" class="col-form-label">Comisiones sobre tipo</label>
+                                <input type="checkbox" name="comisionista_canal" {{($comisionistaTipo->comisionista_canal) ? 'checked' : ''}} class="form-control" style="display: block;"> 
+                            </div>
+                            <div class="form-group col-2 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="actualizar-tipo-comisionista">Actualizar tipo de comisionista</button>
                             </div>
                         </form>

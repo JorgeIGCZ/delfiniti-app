@@ -27,4 +27,9 @@ class Comisionista extends Model
     {
         return $this->belongsTo(ComisionistaTipo::class,'tipo_id');
     }
+    
+    public function comisionistaCanalDetalle()
+    {
+        return $this->hasMany(ComisionistaCanalDetalle::class,'comisionista_id');
+    }
 }

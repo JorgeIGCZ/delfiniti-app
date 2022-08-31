@@ -33,34 +33,17 @@ class ComisionController extends Controller
 
         $this->setComisionComisionista($reservacion,$pagos);
         $this->setComisionCerrador($reservacion,$pagos);
-        //$this->setComisionComisionistaCanal($reservacion,$pagos);
+        $this->setComisionComisionistaCanal($reservacion,$pagos);
     }
-
-    /*
-    private function setComisionComisionistaCanal($reservacion,$pagos){
-        if($reservacion['comisionista_id'] == 0){
-            return true;
-        }
-
-        $comisionista = Comisionista::find($reservacion['comisionista_id']);
-        
-        $comisiones = ComisionistaCanalDetalle::where('comisionista_id',$reservacion['comisionista_id'])
-            ->where('comisionista_tipo_id',$comisionista['tipo_id'])->get();
-
-        if(count($comisiones)){
-            con respectoal  omisionista
-        }
-
-        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id']);
-    }
-    */
 
     private function setComisionComisionista($reservacion,$pagos){
         if($reservacion['comisionista_id'] == 0){
             return true;
         }
 
-        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id']);
+        $comisionista = Comisionista::find($reservacion['comisionista_id']);
+
+        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id'],$comisionista);
     }
 
     private function setComisionCerrador($reservacion,$pagos){
@@ -68,13 +51,43 @@ class ComisionController extends Controller
             return true;
         }
 
-        return $this->setAllComisiones($pagos,$reservacion,$reservacion['cerrador_id']);
+        $comisionista = Comisionista::find($reservacion['cerrador_id']);
+
+        return $this->setAllComisiones($pagos,$reservacion,$reservacion['cerrador_id'],$comisionista);
     }
 
-    function setAllComisiones($pagos,$reservacion,$comisionistaId){
+    private function setComisionComisionistaCanal($reservacion,$pagos){
+        if($reservacion['comisionista_id'] == 0){
+            return true;
+        }
 
-        $comisionista = Comisionista::find($comisionistaId);
-            
+        $comisionistasCanales = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query->where('comisionista_canal',1);
+        })->get();
+
+        if(count($comisionistasCanales) < 1){
+            return true;
+        }
+
+        $comisionistaTipoId = Comisionista::find($reservacion['comisionista_id'])['tipo_id'];
+        
+        foreach($comisionistasCanales as $comisionistaCanales){
+            $commisionistaId = $comisionistaCanales['id'];
+
+            $comisiones = ComisionistaCanalDetalle::where('comisionista_id',$commisionistaId)
+            ->where('comisionista_tipo_id',$comisionistaTipoId)->get();
+
+            foreach($comisiones as $comision){
+                // Comisiones seran calculadas segun el tipo de cambio de venta 
+                $this->setAllComisiones($pagos,$reservacion,$commisionistaId,$comision);
+            }
+        }
+
+        return true;
+    }
+
+    private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista){
+
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
             $totalPagoReservacion += $pago['cantidad'];
@@ -86,7 +99,7 @@ class ComisionController extends Controller
         $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
-        $isComisionDuplicada = Comision::where('comisionista_id',$reservacion['comisionista_id'])
+        $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
                 ->where('reservacion_id',$reservacion['id'])->get()->count();
         
         if($isComisionDuplicada){
@@ -94,7 +107,7 @@ class ComisionController extends Controller
         }
 
         $comsion = Comision::create([   
-            'comisionista_id'         =>  $reservacion['comisionista_id'],
+            'comisionista_id'         =>  $comisionistaId,
             'reservacion_id'          =>  $reservacion['id'],
             'pago_total'              =>  $totalPagoReservacion,
             'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,

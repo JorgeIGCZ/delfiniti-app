@@ -29,6 +29,7 @@ class ComisionistaTipoController extends Controller
             $tipoComisionista = ComisionistaTipo::create([
                 'id'     => $request->id,
                 'nombre' => $request->nombre,
+                'comisionista_canal' => ($request->comisionista_canal == 'on' ? 1 :0)
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -53,6 +54,7 @@ class ComisionistaTipoController extends Controller
                 $comisionistaTiposArray[] = [
                     'id'           => $comisionistaTipo->id,
                     'nombre'       => $comisionistaTipo->nombre,
+                    'comisionista_canal' => $comisionistaTipo->comisionista_canal
                 ];
             }
             return json_encode(['data' => $comisionistaTiposArray]);
@@ -81,8 +83,9 @@ class ComisionistaTipoController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $tipoComisionista                = ComisionistaTipo::find($id);
-            $tipoComisionista->nombre        = $request->nombre;
+            $tipoComisionista                       = ComisionistaTipo::find($id);
+            $tipoComisionista->nombre               = $request->nombre;
+            $tipoComisionista->comisionista_canal = ($request->comisionista_canal == 'on' ? 1 :0);
             $tipoComisionista->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

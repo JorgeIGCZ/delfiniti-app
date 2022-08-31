@@ -44,8 +44,9 @@ class ReporteController extends Controller
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal  = date_format(date_create($fechaFinal),"d-m-Y"); 
 
-        $comisionesTipo       = $this->getComisionesTipo($fechaInicio,$fechaFinal);
+        $comisionesTipo       = $this->getComisionesTipo(0,$fechaInicio,$fechaFinal);
         // $comisionesCerradores = $this->getComisionesCerradores($fechaInicio,$fechaFinal);
+
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE COMISIONES");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
@@ -86,7 +87,7 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $key);
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'TOTAL');
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COM. BRUTA');
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COM. BRUTA S/IVA');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '4%');
             $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'A PAGAR');
             $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'FIRMA');
@@ -166,6 +167,50 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=' . implode('+',$sumaE));
         $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=' . implode('+',$sumaF));
 
+
+        //SECOND SHEET
+        // $VOSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'V&O');
+        // $spreadsheet->addSheet($VOSheet, 1);
+
+        // $spreadsheet->getSheet(1)->setCellValue("A2", "REPORTE V&O");
+        // $spreadsheet->getActiveSheet()->setCellValue("A3", "INGRESOS POR CANALES DE VENTAS Del {$formatoFechaInicio} al {$formatoFechaFinal}");
+
+        
+        // $comisionesTipo       = $this->getComisionesTipo(1,$fechaInicio,$fechaFinal);
+
+        // foreach($comisionesTipo as $key => $comisionTipo){
+
+        //     echo("<br>comisionTipo ".$comisionTipo->nombre);
+        //     $comisionBrutaSinIva = 0;
+        //     print_r($comisionTipo->comisionistaCanalDetalle->);
+        //     // foreach($comisionTipo->comisiones as $comision){
+        //     //     $comisionBrutaSinIva +=  $comision->cantidad_comision_bruta;
+        //     // }
+        //     // echo("<br>comisionBrutaSinIva ".$comisionBrutaSinIva);
+            
+        //     // $comisionAgrupadasComisionistas = $this->getComisionesAgrupadasComisionistas($comisionTipo);
+            
+        //     // // comisionistaCanalDetalle
+        //     // foreach($comisionAgrupadasComisionistas as $comision){
+
+        //     //     echo("<br>canal ".$comision['comisionBruta']);
+        //     //     echo("<br>comisionBruta ".$comision['comisionBruta']);
+        //     //     // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
+        //     //     //     ->getNumberFormat()
+        //     //     //     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        //     //     // $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
+
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['comisionBruta']);
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['descuentoImpuesto']);
+        //     //     // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $comision['cantidadNeta']);
+        //     //     // $rowNumber += 1;
+        //     //     // $index++;
+        //     // }
+        // }
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/comisiones/comisiones.xlsx");
         return ['data'=>true];
@@ -239,20 +284,20 @@ class ReporteController extends Controller
         return $comisionesAgrupadasComisionistas;
     }
 
-    private function getComisionesTipo($fechaInicio,$fechaFinal){
-        $comisionistaTipo = ComisionistaTipo::whereHas('reservaciones',function ($query){
-            $query
-                ->where("reservaciones.estatus", 1);
-        })->orWhereHas('reservacionesCerrador',function ($query){
-            $query
-                ->where("reservaciones.estatus", 1);
-        })->whereHas('comisiones', function ($query) use ($fechaInicio,$fechaFinal) {
-            $query
-                ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
-        })->with(['comisiones' => function ($query) use ($fechaInicio,$fechaFinal) {
-            $query
-                ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal]);
-        }])->get();
+    private function getComisionesTipo($isComisionistaCanal,$fechaInicio,$fechaFinal){
+        $comisionistaCanal = ($isComisionistaCanal ? [1] : [0,1]);
+
+        $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
+            $query->where('estatus',1);
+        })->get();
+
+        $comisionesId = $comisiones->pluck('id');
+
+        $comisionistaTipo = ComisionistaTipo::whereHas('comisiones', function ($query) use ($comisionesId) {
+            $query->whereIn('comisiones.id',$comisionesId);
+        })->with(['comisiones' => function ($query) use ($comisionesId) {
+            $query->whereIn('comisiones.id',$comisionesId);
+        }])->whereIn('comisionista_canal',$comisionistaCanal)->get();
         
         return $comisionistaTipo;
     }

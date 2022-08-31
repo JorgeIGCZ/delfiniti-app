@@ -53,7 +53,8 @@
         function createComisionista(comisionistaTipos){
             axios.post('/comisionistatipos', {
                 '_token'  : '{{ csrf_token() }}',
-                "nombre"  : comisionistaTipos.elements['nombre'].value
+                "nombre"  : comisionistaTipos.elements['nombre'].value,
+                "comisionista_canal"  : comisionistaTipos.elements['comisionista_canal'].value
             })
             .then(function (response) {
                 if(response.data.result == "Success"){
@@ -95,6 +96,13 @@
                 columns: [
                     { data: 'id' },
                     { data: 'nombre' },
+                    { defaultContent: 'comisionista_canal', className: 'dt-center', 'render': function ( data, type, row ) 
+                        {
+                            
+                            let view    =   (row.comisionista_canal) ? 'Sí' : 'No';
+                            return  view;
+                        }
+                    },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let removeRow = '';
@@ -136,6 +144,10 @@
                                 <label for="nombre" class="col-form-label">Nombre de tipo de comisionista</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
+                            <div class="form-group col-4 mt-3">
+                                <label for="nombre" class="col-form-label">Comisiones sobre canal</label>
+                                <input type="checkbox" name="comisionista_canal" class="form-control" style="display: block;"> 
+                            </div>
 
                             <div class="form-group col-3 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear tipo de comisionista</button>
@@ -158,6 +170,7 @@
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
+                                        <th>Comisiones sobre tipo</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
