@@ -59,7 +59,11 @@ class ReservacionController extends Controller
             ->whereRaw('NOW() <= fecha_final')
             ->orWhere('duracion','indefinido')
             ->get();
-        $comisionistas  = Comisionista::where('estatus',1)->get();
+            
+        $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query->where('comisionista_canal',0);
+        })->get();
+
         $dolarPrecio    = TipoCambio::where('seccion_uso', 'general')->first();
 
         return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo]);
@@ -358,7 +362,9 @@ class ReservacionController extends Controller
                                 ->whereRaw('NOW() <= fecha_final')
                                 ->orWhere('duracion','indefinido')
                                 ->get();
-            $comisionistas   = Comisionista::all();
+            $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+                $query->where('comisionista_canal',0);
+            })->get();
             $dolarPrecio   = TipoCambio::where('seccion_uso', 'general')->first();
 
             return view('reservaciones.show',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores]);
@@ -383,7 +389,11 @@ class ReservacionController extends Controller
             ->whereRaw('NOW() <= fecha_final')
             ->orWhere('duracion','indefinido')
             ->get();
-        $comisionistas     = Comisionista::where('estatus',1)->get();
+
+        $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query->where('comisionista_canal',0);
+        })->get();
+
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
         $tickets           = ReservacionTicket::where('reservacion_id',$reservacion->id)->get();
 
