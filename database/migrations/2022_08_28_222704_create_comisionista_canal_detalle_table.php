@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comisionista_tipos', function (Blueprint $table) {
+        Schema::create('comisionista_canal_detalle', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->boolean('comisionista_canal')->default(0);
+            $table->integer('comisionista_id');
+            $table->integer('comisionista_tipo_id');
+            $table->float('comision');
+            $table->float('iva')->nullable();
+            $table->float('descuento_impuesto')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comisionista_tipos');
+        Schema::dropIfExists('comisionista_canal_detalle');
     }
 };
