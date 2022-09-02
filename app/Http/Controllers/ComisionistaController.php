@@ -8,6 +8,8 @@ use App\Models\ComisionistaCanalDetalle;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
+use function PHPUnit\Framework\isNull;
+
 class ComisionistaController extends Controller
 {
     /**
@@ -147,7 +149,7 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(count($request->comisionista_canal_detalles) > 1){
+        if(!isNull($request->comisionista_canal_detalles)){
             foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
                 foreach($comisionistaCanalDetalle as $key => $detalle){
                     ComisionistaCanalDetalle::where('comisionista_id',$id)
