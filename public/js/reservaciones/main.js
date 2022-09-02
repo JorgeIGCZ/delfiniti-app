@@ -506,9 +506,9 @@ window.onload = function() {
     getDisponibilidad()
     document.getElementById('reservacion-form').elements['nombre'].focus();
 
-    $('.to-uppercase').keyup(function() {
-        this.value = this.value.toUpperCase();
-    });
+    //$('.to-uppercase').keyup(function() {
+    //    this.value = this.value.toUpperCase();
+    //});s
 
     document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
         document.getElementById('password').value="";
