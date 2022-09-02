@@ -162,6 +162,7 @@ class ComisionController extends Controller
                 $comisionesArray[] = [
                     'id'                => $comision->id,
                     'comisionista'      => $comision->comisionista->nombre,
+                    'tipo'              => $comision->comisionista->tipo->nombre,
                     'reservacion'       => $comision->reservacion->folio,
                     'reservacionId'     => $comision->reservacion->id,
                     'total'             => $comision->pago_total,

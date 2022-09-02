@@ -146,6 +146,18 @@
 
             return comisionesSobreCanales;
         }
+        function changeComisionesSettings(){
+            const tipo = document.getElementById('tipo');
+            
+            if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal') == '0'){
+                $('.general-settings').show();
+                $('.comisiones-sobre-canales').hide();
+                return false;
+            }
+            $('.general-settings').hide();
+            $('.comisiones-sobre-canales').show();
+            return true;
+        }
         $(function(){
             comisionistasTable = new DataTable('#comisionistas', {
                 ajax: function (d,cb,settings) {
@@ -220,13 +232,11 @@
             });
 
             $('#tipo').on('change', function (e) {
-                if(!isComisionistaCanal()){
-                    $('.general-settings').show();
-                    $('.comisiones-sobre-canales').hide();
-                    return false;
-                }
-                $('.general-settings').hide();
-                $('.comisiones-sobre-canales').show();
+                document.querySelectorAll("#tipo option").forEach(function(el) {
+                    el.removeAttribute("selected");
+                })
+
+                changeComisionesSettings();
             });
             
         });

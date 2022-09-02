@@ -17,6 +17,7 @@
                 columns: [
                     { data: 'id' },
                     { data: 'comisionista' },
+                    { data: 'tipo' },
                     { data: 'reservacion' },
                     { defaultContent: 'total', 'render': function ( data, type, row ) 
                         {
@@ -122,6 +123,7 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Comisionista</th>
+                                        <th>Tipo</th>
                                         <th>Reservación</th>
                                         <th>Total</th>
                                         <th>Iva</th>
