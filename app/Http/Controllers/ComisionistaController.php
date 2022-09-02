@@ -113,8 +113,9 @@ class ComisionistaController extends Controller
      */
     public function edit(Comisionista $comisionista)
     {
+        $comisionistaGeneralTipos = ComisionistaTipo::where('comisionista_canal',0)->get();
         $tipos        = ComisionistaTipo::all();
-        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $tipos]);
+        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $tipos,'comisionistaGeneralTipos' => $comisionistaGeneralTipos]);
     }
 
     /**
@@ -146,6 +147,13 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
+            foreach($comisionistaCanalDetalle as $key => $detalle){
+                ComisionistaCanalDetalle::where('comisionista_id',$id)
+                                        ->where('comisionista_tipo_id',$key)
+                                        ->update(['comision'=>$detalle['comision'],'iva'=>$detalle['iva'],'descuento_impuesto'=>$detalle['descuento_impuesto']]);
+            }
+        }
         try {
             $comisionista                     = Comisionista::find($id);
             $comisionista->nombre             = $request->nombre;

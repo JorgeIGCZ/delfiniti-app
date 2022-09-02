@@ -222,11 +222,11 @@
             $('#tipo').on('change', function (e) {
                 if(!isComisionistaCanal()){
                     $('.general-settings').show();
-                    $('.comisiones_sobre_canales').hide();
+                    $('.comisiones-sobre-canales').hide();
                     return false;
                 }
                 $('.general-settings').hide();
-                $('.comisiones_sobre_canales').show();
+                $('.comisiones-sobre-canales').show();
             });
             
         });
@@ -262,7 +262,7 @@
                                 </select>
                             </div>
 
-                            <div class="form-group col-12 mt-3 comisiones_sobre_canales" style="display: none;">
+                            <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
                                 <strong>
                                     Comisiones sobre canales
                                 </strong>
