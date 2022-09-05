@@ -774,7 +774,7 @@ function setCodigoDescuento(descuento){
 
 function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
     const total    = parseFloat(document.getElementById('total').getAttribute('value'));
-    const subTotal = total;// - ((cantidadCodigo)+parseFloat(cupon));
+    const subTotal = total - ((cantidadCodigo));//+parseFloat(cupon));
 
     return (subTotal/100) * parseFloat(descuentoPersonalizado);
 }
