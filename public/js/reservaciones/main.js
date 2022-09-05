@@ -449,7 +449,7 @@ function validateFecha() {
         return false;
         */
     }
-    
+    /*
     if (fechaValor < now && !isAdmin()) {
         Swal.fire({
             icon: 'warning',
@@ -459,6 +459,7 @@ function validateFecha() {
         fecha.focus()
         return false;
     }
+    */
     return true;
 }
 
