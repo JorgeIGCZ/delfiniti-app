@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Actividad;
 use App\Models\ActividadHorario;
 use App\Models\Comision;
+use App\Models\Comisionista;
 use App\Models\ComisionistaTipo;
 use App\Models\Reservacion;
 use Illuminate\Http\Request;
@@ -39,8 +40,8 @@ class ReporteController extends Controller
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal  = $request->fechaFinal." 23:59:00";
-        // $fechaInicio = '2022-08-19 00:00:00';
-        // $fechaFinal = '2022-08-19 23:59:00';
+        // $fechaInicio = '2022-08-31 00:00:00';
+        // $fechaFinal = '2022-08-31 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal  = date_format(date_create($fechaFinal),"d-m-Y"); 
 
@@ -169,48 +170,162 @@ class ReporteController extends Controller
 
 
         //SECOND SHEET
-        // $VOSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'V&O');
-        // $spreadsheet->addSheet($VOSheet, 1);
+        $VOSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'V&O');
+        $spreadsheet->addSheet($VOSheet, 1);
 
-        // $spreadsheet->getSheet(1)->setCellValue("A2", "REPORTE V&O");
-        // $spreadsheet->getActiveSheet()->setCellValue("A3", "INGRESOS POR CANALES DE VENTAS Del {$formatoFechaInicio} al {$formatoFechaFinal}");
+        $spreadsheet->getSheet(1)->mergeCells("A1:H1");
+        $spreadsheet->getSheet(1)->mergeCells("A2:H2");
 
+        $spreadsheet->getSheet(1)->getRowDimension(1)->setRowHeight(35);
+        $spreadsheet->getSheet(1)->getRowDimension(2)->setRowHeight(25);
+
+        $spreadsheet->getSheet(1)->getStyle("A1")
+            ->getFont()->setSize(20);
+        $spreadsheet->getSheet(1)->getStyle("A2")
+            ->getFont()->setSize(12);
+        $spreadsheet->getSheet(1)->getStyle('A1:B2')
+            ->getFont()
+            ->getColor()
+            ->setRGB ('17365D');
+        $spreadsheet->getActiveSheet()->getStyle("A1:H2")
+            ->getAlignment()
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
+            ->setWrapText(true);
+
+        $spreadsheet->getSheet(1)->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('B')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('D')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('G')->setAutoSize(true);
+        $spreadsheet->getSheet(1)->getColumnDimension('H')->setAutoSize(true);
+
+
+        $spreadsheet->getSheet(1)->setCellValue("A1", "REPORTE V&O");
+        $spreadsheet->getSheet(1)->setCellValue("A2", "INGRESOS POR CANALES DE VENTAS DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
+
+        $rowNumber = 5;
         
-        // $comisionesTipo       = $this->getComisionesTipo(1,$fechaInicio,$fechaFinal);
+        //Titulos
 
-        // foreach($comisionesTipo as $key => $comisionTipo){
+        $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+                    ->getFont()->setBold(true);
+                
+        $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+                    ->getFont()->setSize(12);
 
-        //     echo("<br>comisionTipo ".$comisionTipo->nombre);
-        //     $comisionBrutaSinIva = 0;
-        //     print_r($comisionTipo->comisionistaCanalDetalle->);
-        //     // foreach($comisionTipo->comisiones as $comision){
-        //     //     $comisionBrutaSinIva +=  $comision->cantidad_comision_bruta;
-        //     // }
-        //     // echo("<br>comisionBrutaSinIva ".$comisionBrutaSinIva);
+        $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('F2F2F2');
+
+        $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", "CANAL DE VENTA");
+        $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", "INGRESO S/IVA");
+        
+        $headerRowNumber = $rowNumber;
+        $rowNumber += 1;
+
+        $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
+            $query->where('estatus',1);
+        })->get();
+
+        $comisionesId = $comisiones->pluck('id');
+        
+        $canalesVenta = ComisionistaTipo::with(['comisiones' => function ($query) use ($comisionesId) {
+                $query->whereIn('comisiones.id',$comisionesId);
+            }])->where('comisionista_canal',0)->get();
+
+        $comisionistasSobreTipos = ComisionistaTipo::where('comisionista_canal',1)->get();
+        
+        $initialRowNumber = $rowNumber;
+        foreach($canalesVenta as $key => $canalVenta){
+            //Canal de venta
+            $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", $canalVenta->nombre);
             
-        //     // $comisionAgrupadasComisionistas = $this->getComisionesAgrupadasComisionistas($comisionTipo);
+            $reservacionesId = [];
+            $pagoTotalSinIva = 0;
+            $comisiones      = $canalVenta->comisiones;
+            foreach($comisiones as $comision){
+                $pagoTotalSinIva  += $comision->pago_total;
+                $reservacionesId[] = $comision->reservacion_id;
+            }
+
+            //echo("<br>Pago Totoal SIN IVA: ".$pagoTotalSinIva);
+
+            $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", $pagoTotalSinIva);
             
-        //     // // comisionistaCanalDetalle
-        //     // foreach($comisionAgrupadasComisionistas as $comision){
+            $column = 3;
+            foreach($comisionistasSobreTipos[0]->comisionistas as $comisionistaSobreTipos){
+                $comisionistasSobreTiposId = $comisionistaSobreTipos->comisionistaCanalDetalle->groupBy('comisionista_tipo_id');
+                $nombreComisionista        = $comisionistaSobreTipos->nombre;
 
-        //     //     echo("<br>canal ".$comision['comisionBruta']);
-        //     //     echo("<br>comisionBruta ".$comision['comisionBruta']);
-        //     //     // $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
-        //     //     //     ->getNumberFormat()
-        //     //     //     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-        //     //     // $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
+                // echo("<br>Comisiones sobre canales: ");
+                // echo(@$comisionistasSobreTiposId[$canalVenta->id][0]->comision);
+                // echo("<br>");
 
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['comisionBruta']);
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['descuentoImpuesto']);
-        //     //     // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $comision['cantidadNeta']);
-        //     //     // $rowNumber += 1;
-        //     //     // $index++;
-        //     // }
-        // }
+                // titulos dinamicos
+                $header = "% {$nombreComisionista}";
+                $spreadsheet->getSheet(1)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
+
+                $spreadsheet->getSheet(1)->setCellValueByColumnAndRow($column, $rowNumber, @$comisionistasSobreTiposId[$canalVenta->id][0]->comision);
+                $column += 1;
+
+                $canalVentaId       = $canalVenta->id;
+                $comisionistasCanal = Comisionista::where('Id',$comisionistaSobreTipos->id)->whereHas('comisionistaCanalDetalle', function (Builder $query) use ($canalVentaId) {
+                                                                        $query->where('comisionista_tipo_id',$canalVentaId);
+                                                                    })->get();
+
+                // $comisionistasCanal                = Comisionista::where('');
+
+                $comisionistasCanalId              = $comisionistasCanal->pluck('id');
+                
+                $comisionesComisionistasSobreTipos = $comisionistaSobreTipos->comisiones->whereIn('reservacion_id',$reservacionesId)->whereIn('comisionista_id',$comisionistasCanalId);
+                if($canalVenta->nombre == 'LOCACION'){
+                    // dd($comisionistasCanal);
+                } 
+                $comisionComisionistasSobreTiposBrutaSinIva = 0;
+                foreach($comisionesComisionistasSobreTipos as $comisionComisionistasSobreTipos){
+                    $comisionComisionistasSobreTiposBrutaSinIva += $comisionComisionistasSobreTipos->cantidad_comision_bruta;
+                }
+                
+                // titulos dinamicos
+                $header = "TOTAL {$nombreComisionista}";
+                $spreadsheet->getSheet(1)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
+                
+                $spreadsheet->getSheet(1)->setCellValueByColumnAndRow($column, $rowNumber, @$comisionComisionistasSobreTiposBrutaSinIva);
+                $column += 1;
+            }
+            $rowNumber += 1;
+        }
+        
+
+        //Calculo totales
+        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:B{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        $spreadsheet->getActiveSheet()->getStyle("D{$initialRowNumber}:D{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        $spreadsheet->getActiveSheet()->getStyle("F{$initialRowNumber}:F{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A' . $rowNumber, 'TOTALES');
+        $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
+
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/comisiones/comisiones.xlsx");
         return ['data'=>true];
@@ -285,7 +400,7 @@ class ReporteController extends Controller
     }
 
     private function getComisionesTipo($isComisionistaCanal,$fechaInicio,$fechaFinal){
-        $comisionistaCanal = ($isComisionistaCanal ? [1] : [0,1]);
+        $comisionistaCanal = ($isComisionistaCanal ? [0] : [0,1]);
 
         $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
             $query->where('estatus',1);

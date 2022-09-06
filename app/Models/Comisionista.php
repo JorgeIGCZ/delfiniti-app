@@ -32,4 +32,9 @@ class Comisionista extends Model
     {
         return $this->hasMany(ComisionistaCanalDetalle::class,'comisionista_id');
     }
+
+    public function comisiones()
+    {
+        return $this->hasMany(Comision::class,'comisionista_id');
+    }
 }
