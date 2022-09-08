@@ -110,6 +110,7 @@ class ComisionController extends Controller
             'comisionista_id'         =>  $comisionistaId,
             'reservacion_id'          =>  $reservacion['id'],
             'pago_total'              =>  $totalPagoReservacion,
+            'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
             'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
             'iva'                     =>  (float)$ivaCantidad,
             'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
