@@ -13,6 +13,7 @@ class Comision extends Model
         'comisionista_id',
         'reservacion_id',
         'pago_total',
+        'pago_total_sin_iva',
         'cantidad_comision_bruta',
         'iva',
         'descuento_impuesto',

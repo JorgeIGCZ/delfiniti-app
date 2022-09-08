@@ -149,6 +149,7 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        dd($request);
         if(!isNull($request->comisionista_canal_detalles)){
             foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
                 foreach($comisionistaCanalDetalle as $key => $detalle){
