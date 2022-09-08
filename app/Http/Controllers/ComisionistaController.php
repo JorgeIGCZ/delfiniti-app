@@ -154,7 +154,7 @@ class ComisionistaController extends Controller
                 foreach($comisionistaCanalDetalle as $key => $detalle){
                     ComisionistaCanalDetalle::where('comisionista_id',$id)
                                             ->where('comisionista_tipo_id',$key)
-                                            ->update(['comision'=>$detalle['comision'],'iva'=>$detalle['iva'],'descuento_impuesto'=>4]);
+                                            ->update(['comision'=>$detalle['comision'],'iva'=>$detalle['iva'],'descuento_impuesto'=>2]);
                 }
             }
         }
