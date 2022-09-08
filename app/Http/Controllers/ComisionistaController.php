@@ -150,11 +150,18 @@ class ComisionistaController extends Controller
     public function update(Request $request, $id)
     {
         if(!isNull($request->comisionista_canal_detalles)){
+            
+            ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
+
             foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
                 foreach($comisionistaCanalDetalle as $key => $detalle){
-                    ComisionistaCanalDetalle::where('comisionista_id',$id)
-                                            ->where('comisionista_tipo_id',$key)
-                                            ->update(['comision'=>$detalle['comision'],'iva'=>$detalle['iva'],'descuento_impuesto'=>2]);
+                    ComisionistaCanalDetalle::create([
+                        'comisionista_id'       => $id,
+                        'comisionista_tipo_id'  => $key,
+                        'comision'              => $detalle['comision'],
+                        'iva'                   => $detalle['iva'],
+                        'descuento_impuesto'    => $detalle['descuento_impuesto']
+                    ]);
                 }
             }
         }
