@@ -8,8 +8,6 @@ use App\Models\ComisionistaCanalDetalle;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
-use function PHPUnit\Framework\isNull;
-
 class ComisionistaController extends Controller
 {
     /**
@@ -149,7 +147,7 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!isNull($request->comisionista_canal_detalles)){
+        if(!is_null($request->comisionista_canal_detalles)){
             
             ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
 
@@ -158,9 +156,9 @@ class ComisionistaController extends Controller
                     ComisionistaCanalDetalle::create([
                         'comisionista_id'       => $id,
                         'comisionista_tipo_id'  => $key,
-                        'comision'              => $detalle['comision'],
-                        'iva'                   => $detalle['iva'],
-                        'descuento_impuesto'    => $detalle['descuento_impuesto']
+                        'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                        'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
+                        'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
                     ]);
                 }
             }
@@ -168,9 +166,9 @@ class ComisionistaController extends Controller
         try {
             $comisionista                     = Comisionista::find($id);
             $comisionista->nombre             = $request->nombre;
-            $comisionista->comision           = $request->comision;
-            $comisionista->iva                = $request->iva;
-            $comisionista->descuento_impuesto = $request->descuento_impuesto;
+            $comisionista->comision           = @$request->comision;
+            $comisionista->iva                = @$request->iva;
+            $comisionista->descuento_impuesto = @$request->descuento_impuesto;
             $comisionista->descuentos         = $request->has('descuentos');
             $comisionista->tipo_id            = $request->tipo;
             $comisionista->representante      = $request->representante;
