@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('comisionista_id');
             $table->integer('reservacion_id');
             $table->float('pago_total');
+            $table->float('pago_total_sin_iva');
             $table->float('cantidad_comision_bruta');
             $table->float('iva')->nullable();
             $table->float('descuento_impuesto')->nullable();

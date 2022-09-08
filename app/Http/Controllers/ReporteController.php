@@ -16,8 +16,6 @@ use App\Models\TipoCambio;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-
-
 class ReporteController extends Controller
 {
     /**
@@ -175,10 +173,8 @@ class ReporteController extends Controller
 
         $spreadsheet->getSheet(1)->mergeCells("A1:H1");
         $spreadsheet->getSheet(1)->mergeCells("A2:H2");
-
         $spreadsheet->getSheet(1)->getRowDimension(1)->setRowHeight(35);
         $spreadsheet->getSheet(1)->getRowDimension(2)->setRowHeight(25);
-
         $spreadsheet->getSheet(1)->getStyle("A1")
             ->getFont()->setSize(20);
         $spreadsheet->getSheet(1)->getStyle("A2")
@@ -201,7 +197,6 @@ class ReporteController extends Controller
         $spreadsheet->getSheet(1)->getColumnDimension('F')->setAutoSize(true);
         $spreadsheet->getSheet(1)->getColumnDimension('G')->setAutoSize(true);
         $spreadsheet->getSheet(1)->getColumnDimension('H')->setAutoSize(true);
-
 
         $spreadsheet->getSheet(1)->setCellValue("A1", "REPORTE V&O");
         $spreadsheet->getSheet(1)->setCellValue("A2", "INGRESOS POR CANALES DE VENTAS DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
@@ -248,7 +243,7 @@ class ReporteController extends Controller
             $pagoTotalSinIva = 0;
             $comisiones      = $canalVenta->comisiones;
             foreach($comisiones as $comision){
-                $pagoTotalSinIva  += $comision->pago_total;
+                $pagoTotalSinIva  += $comision->pago_total_sin_iva;
                 $reservacionesId[] = $comision->reservacion_id;
             }
 
@@ -277,8 +272,6 @@ class ReporteController extends Controller
                 $comisionistasCanal = Comisionista::where('Id',$comisionistaSobreTipos->id)->whereHas('comisionistaCanalDetalle', function (Builder $query) use ($canalVentaId) {
                                                                         $query->where('comisionista_tipo_id',$canalVentaId);
                                                                     })->get();
-
-                // $comisionistasCanal                = Comisionista::where('');
 
                 $comisionistasCanalId              = $comisionistasCanal->pluck('id');
                 
