@@ -106,7 +106,7 @@ class ReporteController extends Controller
 
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotalSinIva']);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['comisionBruta']);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['descuentoImpuesto']);
                 $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $comision['cantidadNeta']);
@@ -341,7 +341,7 @@ class ReporteController extends Controller
                     $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                         'comisionistaId'     => $comision->comisionista->id,
                         'comisionistaNombre' => $comision->comisionista->nombre,
-                        'pagoTotal'          => $comision->pago_total,
+                        'pagoTotalSinIva'    => $comision->pago_total_sin_iva,
                         'comisionBruta'      => $comision->cantidad_comision_bruta,
                         'descuentoImpuesto'  => $comision->descuento_impuesto,
                         'cantidadNeta'       => $comision->cantidad_comision_neta
@@ -352,7 +352,7 @@ class ReporteController extends Controller
                 $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                     'comisionistaId'     => $comision->comisionista->id,
                     'comisionistaNombre' => $comision->comisionista->nombre,
-                    'pagoTotal'          => $comision->pago_total,
+                    'pagoTotalSinIva'    => $comision->pago_total_sin_iva,
                     'comisionBruta'      => $comision->cantidad_comision_bruta,
                     'descuentoImpuesto'  => $comision->descuento_impuesto,
                     'cantidadNeta'       => $comision->cantidad_comision_neta
@@ -375,7 +375,7 @@ class ReporteController extends Controller
                 $comisionistasId[]     = $comisionistaId;
                 $comisionesAgrupadasComisionistas[$comisionistaId] = [
                     'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
-                    'pagoTotal'          => $comisionTipo['pagoTotal'],
+                    'pagoTotalSinIva'    => $comisionTipo['pagoTotalSinIva'],
                     'comisionBruta'      => $comisionTipo['comisionBruta'],
                     'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
                     'cantidadNeta'       => $comisionTipo['cantidadNeta']
@@ -383,7 +383,7 @@ class ReporteController extends Controller
                 continue;
             }
 
-            $comisionesAgrupadasComisionistas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['pagoTotalSinIva']   += $comisionTipo['pagoTotalSinIva'];
             $comisionesAgrupadasComisionistas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
             $comisionesAgrupadasComisionistas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
             $comisionesAgrupadasComisionistas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
