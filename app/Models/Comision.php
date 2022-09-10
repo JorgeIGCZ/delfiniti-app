@@ -33,15 +33,15 @@ class Comision extends Model
         return $this->belongsTo(Comisionista::class,'comisionista_id');
     }
 
-    public function comisionistaTipo()
+    public function canalVenta()
     {
         return $this->hasOneThrough(
-            ComisionistaTipo::class,
+            CanalVenta::class,
             Comisionista::class,
             'id', // Foreign key on the cars table...
             'id', // Foreign key on the owners table...
             'id', // Local key on the mechanics table...
-            'tipo_id' // Local key on the cars table...
+            'canal_venta_id' // Local key on the cars table...
         );
 
     }

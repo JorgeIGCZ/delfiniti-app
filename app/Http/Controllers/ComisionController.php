@@ -69,13 +69,13 @@ class ComisionController extends Controller
             return true;
         }
 
-        $comisionistaTipoId = Comisionista::find($reservacion['comisionista_id'])['tipo_id'];
+        $canalVentaId = Comisionista::find($reservacion['comisionista_id'])['canal_venta_id'];
         
         foreach($comisionistasCanales as $comisionistaCanales){
             $commisionistaId = $comisionistaCanales['id'];
 
             $comisiones = ComisionistaCanalDetalle::where('comisionista_id',$commisionistaId)
-            ->where('comisionista_tipo_id',$comisionistaTipoId)->get();
+            ->where('canal_venta_id',$canalVentaId)->get();
 
             foreach($comisiones as $comision){
                 // Comisiones seran calculadas segun el tipo de cambio de venta 
@@ -100,7 +100,7 @@ class ComisionController extends Controller
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
         $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
-                ->where('reservacion_id',$reservacion['id'])->get()->count();
+                                        ->where('reservacion_id',$reservacion['id'])->get()->count();
         
         if($isComisionDuplicada){
             return false;

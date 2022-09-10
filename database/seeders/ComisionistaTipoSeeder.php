@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use App\Models\ComisionistaTipo;
+use App\Models\CanalVenta;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ComisionistaTipoSeeder extends Seeder
+class CanalVentaSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,7 +15,7 @@ class ComisionistaTipoSeeder extends Seeder
      */
     public function run()
     {
-        ComisionistaTipo::create([
+        CanalVenta::create([
             'id'       => 10,
             'nombre'   => 'CERRADORES'
         ]);

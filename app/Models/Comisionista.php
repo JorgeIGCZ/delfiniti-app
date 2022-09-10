@@ -19,13 +19,13 @@ class Comisionista extends Model
         'representante',
         'direccion',
         'telefono',
-        'tipo_id'
+        'canal_venta_id'
     ];
     protected $primaryKey = 'id';
 
     public function tipo()
     {
-        return $this->belongsTo(ComisionistaTipo::class,'tipo_id');
+        return $this->belongsTo(CanalVenta::class,'canal_venta_id');
     }
     
     public function comisionistaCanalDetalle()

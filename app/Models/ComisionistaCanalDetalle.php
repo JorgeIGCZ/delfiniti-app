@@ -11,7 +11,7 @@ class ComisionistaCanalDetalle extends Model
 
     protected $fillable = [
         'comisionista_id',
-        'comisionista_tipo_id',
+        'canal_venta_id',
         'comision',
         'iva',
         'descuento_impuesto'

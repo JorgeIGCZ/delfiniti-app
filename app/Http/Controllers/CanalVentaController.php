@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ComisionistaTipo;
+use App\Models\CanalVenta;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 
-class ComisionistaTipoController extends Controller
+class CanalVentaController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class ComisionistaTipoController extends Controller
      */
     public function index()
     {
-        return view('comisionistatipos.index');
+        return view('canalesVenta.index');
     }
     /**
      * Store a newly created resource in storage.
@@ -25,18 +25,27 @@ class ComisionistaTipoController extends Controller
      */
     public function store(Request $request)
     {
+        $newRequest = [
+            'id'     => $request->id,
+            'nombre' => $request->nombre
+        ];
+
+        if($request->comisionista_tipo == 'comisionesCanal'){
+            $newRequest = array_merge($newRequest,['comisionista_canal' => '1']);
+        }else if($request->comisionista_tipo == 'comisionesActividad'){
+            $newRequest = array_merge($newRequest,['comisionista_actividad' => '1']);
+        }else if($request->comisionista_tipo == 'comisionesCerrador'){
+            $newRequest = array_merge($newRequest,['comisionista_cerrador' => '1']);
+        }
+
         try {
-            $tipoComisionista = ComisionistaTipo::create([
-                'id'     => $request->id,
-                'nombre' => $request->nombre,
-                'comisionista_canal' => ($request->comisionista_canal == 'on' ? 1 :0)
-            ]);
+            $canalVenta = CanalVenta::create($newRequest);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
-        return json_encode(['result' => is_numeric($tipoComisionista['id']) ? 'Success' : 'Error']);
+        return json_encode(['result' => is_numeric($canalVenta['id']) ? 'Success' : 'Error']);
     }
 
     /**
@@ -45,19 +54,11 @@ class ComisionistaTipoController extends Controller
      * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function show(ComisionistaTipo $comisionistatipo = null)
+    public function show(CanalVenta $canalVenta = null)
     {   
-        if(is_null($comisionistatipo)){
-            $comisionistaTipos      = ComisionistaTipo::all();
-            $comisionistaTiposArray = [];
-            foreach ($comisionistaTipos as $comisionistaTipo) {
-                $comisionistaTiposArray[] = [
-                    'id'           => $comisionistaTipo->id,
-                    'nombre'       => $comisionistaTipo->nombre,
-                    'comisionista_canal' => $comisionistaTipo->comisionista_canal
-                ];
-            }
-            return json_encode(['data' => $comisionistaTiposArray]);
+        if(is_null($canalVenta)){
+            $canalesVenta      = CanalVenta::all();
+            return json_encode(['data' => $canalesVenta]);
         }
     }
 
@@ -68,9 +69,9 @@ class ComisionistaTipoController extends Controller
      * @param  \App\Models\Comisionista  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function edit(ComisionistaTipo $comisionistatipo)
+    public function edit(CanalVenta $canalVenta)
     {
-        return view('comisionistatipos.edit',['comisionistaTipo' => $comisionistatipo]);
+        return view('canalesventa.edit',['canalVenta' => $canalVenta]);
     }
 
     /**
@@ -83,7 +84,7 @@ class ComisionistaTipoController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $tipoComisionista                       = ComisionistaTipo::find($id);
+            $tipoComisionista                       = CanalVenta::find($id);
             $tipoComisionista->nombre               = $request->nombre;
             $tipoComisionista->comisionista_canal = ($request->comisionista_canal == 'on' ? 1 :0);
             $tipoComisionista->save();
@@ -93,7 +94,7 @@ class ComisionistaTipoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
 
-        return redirect()->route("comisionistatipos.index")->with(["result" => "Tipo de comisionista actualizado"]);
+        return redirect()->route("canalesventa.index")->with(["result" => "Tipo de comisionista actualizado"]);
     }
 
 
@@ -110,12 +111,12 @@ class ComisionistaTipoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  ComisionistaTipo  $comisionista
+     * @param  CanalVenta  $comisionista
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ComisionistaTipo $comisionistatipo)
+    public function destroy(CanalVenta $canalVenta)
     {
-        $result = $comisionistatipo->delete();
+        $result = $canalVenta->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
 }

@@ -78,7 +78,7 @@
               <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
               @endcan
               @can('TiposComisionista.index')
-              <a href="{{ url('/comisionistatipos') }}" class="nav-link {{url()->current() == url('comisionistatipos') ? 'active' : ''}}">Tipos de Comisionista</a>
+              <a href="{{ url('/canalesventa') }}" class="nav-link {{url()->current() == url('canalesventa') ? 'active' : ''}}">Canales de venta</a>
               @endcan
 
               @can('CodigosDescuento.index')

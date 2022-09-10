@@ -12,7 +12,7 @@ use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
-use App\Http\Controllers\ComisionistaTipoController;
+use App\Http\Controllers\CanalVentaController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
@@ -108,12 +108,12 @@ Route::controller(TipoCambioController::class)->middleware(['auth'])->group(func
     Route::resource('tiposcambio',TipoCambioController::class);
 });
 
-Route::controller(ComisionistaTipoController::class)->middleware(['auth'])->group(function () {
-    Route::get('/comisionistatipos/show/{comisionistatipo?}', 'show');
-    Route::patch('comisionistatipos/estatus/{actividad}', 'updateEstatus');
-    Route::resource('comisionistatipos',ComisionistaTipoController::class, [
+Route::controller(CanalVentaController::class)->middleware(['auth'])->group(function () {
+    Route::get('/canalesventa/show/{canalVenta?}', 'show');
+    Route::patch('canalesventa/estatus/{actividad}', 'updateEstatus');
+    Route::resource('canalesventa',CanalVentaController::class, [
         'parameters' => [
-            'comisionistatipos' => 'comisionistatipo'
+            'canalesventa' => 'canalVenta'
         ]
     ]);
 });

@@ -123,7 +123,7 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Comisionista</th>
-                                        <th>Tipo</th>
+                                        <th>Canal</th>
                                         <th>Reservación</th>
                                         <th>Total</th>
                                         <th>Iva</th>

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('representante')->nullable();
             $table->string('direccion')->nullable();
             $table->string('telefono')->nullable();
-            $table->integer('tipo_id');
+            $table->integer('canal_venta_id');
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });

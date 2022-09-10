@@ -6,7 +6,7 @@ use App\Models\Actividad;
 use App\Models\ActividadHorario;
 use App\Models\Comision;
 use App\Models\Comisionista;
-use App\Models\ComisionistaTipo;
+use App\Models\CanalVenta;
 use App\Models\Reservacion;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -43,7 +43,7 @@ class ReporteController extends Controller
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal  = date_format(date_create($fechaFinal),"d-m-Y"); 
 
-        $comisionesTipo       = $this->getComisionesTipo(0,$fechaInicio,$fechaFinal);
+        $comisionesTipo       = $this->getCanalVenta(0,$fechaInicio,$fechaFinal);
         // $comisionesCerradores = $this->getComisionesCerradores($fechaInicio,$fechaFinal);
 
 
@@ -228,11 +228,15 @@ class ReporteController extends Controller
 
         $comisionesId = $comisiones->pluck('id');
         
-        $canalesVenta = ComisionistaTipo::with(['comisiones' => function ($query) use ($comisionesId) {
+        $canalesVenta = CanalVenta::with(['comisiones' => function ($query) use ($comisionesId) {
                 $query->whereIn('comisiones.id',$comisionesId);
-            }])->where('comisionista_canal',0)->get();
+            }])
+            ->where('comisionista_canal',0)
+            ->where('comisionista_actividad',0)
+            ->where('comisionista_cerrador',0)
+            ->get();
 
-        $comisionistasSobreTipos = ComisionistaTipo::where('comisionista_canal',1)->get();
+        $comisionistasSobreTipos = CanalVenta::where('comisionista_canal',1)->get();
         
         $initialRowNumber = $rowNumber;
         foreach($canalesVenta as $key => $canalVenta){
@@ -253,7 +257,7 @@ class ReporteController extends Controller
             
             $column = 3;
             foreach($comisionistasSobreTipos[0]->comisionistas as $comisionistaSobreTipos){
-                $comisionistasSobreTiposId = $comisionistaSobreTipos->comisionistaCanalDetalle->groupBy('comisionista_tipo_id');
+                $comisionistasSobreTiposId = $comisionistaSobreTipos->comisionistaCanalDetalle->groupBy('canal_venta_id');
                 $nombreComisionista        = $comisionistaSobreTipos->nombre;
 
 
@@ -270,7 +274,7 @@ class ReporteController extends Controller
 
                 $canalVentaId       = $canalVenta->id;
                 $comisionistasCanal = Comisionista::where('Id',$comisionistaSobreTipos->id)->whereHas('comisionistaCanalDetalle', function (Builder $query) use ($canalVentaId) {
-                                                                        $query->where('comisionista_tipo_id',$canalVentaId);
+                                                                        $query->where('canal_venta_id',$canalVentaId);
                                                                     })->get();
 
                 $comisionistasCanalId              = $comisionistasCanal->pluck('id');
@@ -392,7 +396,7 @@ class ReporteController extends Controller
         return $comisionesAgrupadasComisionistas;
     }
 
-    private function getComisionesTipo($isComisionistaCanal,$fechaInicio,$fechaFinal){
+    private function getCanalVenta($isComisionistaCanal,$fechaInicio,$fechaFinal){
         $comisionistaCanal = ($isComisionistaCanal ? [0] : [0,1]);
 
         $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
@@ -401,13 +405,13 @@ class ReporteController extends Controller
 
         $comisionesId = $comisiones->pluck('id');
 
-        $comisionistaTipo = ComisionistaTipo::whereHas('comisiones', function ($query) use ($comisionesId) {
+        $canalVenta = CanalVenta::whereHas('comisiones', function ($query) use ($comisionesId) {
             $query->whereIn('comisiones.id',$comisionesId);
         })->with(['comisiones' => function ($query) use ($comisionesId) {
             $query->whereIn('comisiones.id',$comisionesId);
         }])->whereIn('comisionista_canal',$comisionistaCanal)->get();
         
-        return $comisionistaTipo;
+        return $canalVenta;
     }
 
     /**

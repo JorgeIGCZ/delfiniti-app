@@ -13,10 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comisionista_tipos', function (Blueprint $table) {
+        Schema::create('canales_ventas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
             $table->boolean('comisionista_canal')->default(0);
+            $table->boolean('comisionista_actividad')->default(0);
+            $table->boolean('comisionista_cerrador')->default(0);
             $table->timestamps();
         });
     }
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comisionista_tipos');
+        Schema::dropIfExists('canales_ventas');
     }
 };

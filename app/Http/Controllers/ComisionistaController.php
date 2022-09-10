@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comisionista;
-use App\Models\ComisionistaTipo;
+use App\Models\CanalVenta;
+use App\Models\Actividad;
 use App\Models\ComisionistaCanalDetalle;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
@@ -17,9 +18,10 @@ class ComisionistaController extends Controller
      */
     public function index()
     {
-        $tipos = ComisionistaTipo::all();
-        $tiposSinComisionSobreTipos = ComisionistaTipo::where('comisionista_canal',0)->get();
-        return view('comisionistas.index',['tipos' => $tipos,'tiposSinComision' => $tiposSinComisionSobreTipos]);
+        $tipos = CanalVenta::all();
+        $tiposSinComisionSobreTipos = CanalVenta::where('comisionista_canal',0)->get();
+        $actividades = Actividad::get();
+        return view('comisionistas.index',['tipos' => $tipos,'tiposSinComision' => $tiposSinComisionSobreTipos,'actividades' => $actividades]);
     }
     /**
      * Store a newly created resource in storage.
@@ -39,7 +41,7 @@ class ComisionistaController extends Controller
             $comisionista = Comisionista::create([
                 'codigo'             => $request->codigo,
                 'nombre'             => $request->nombre,
-                'tipo_id'            => $request->tipo,
+                'canal_venta_id'     => $request->tipo,
                 'comision'           => $request->comision,
                 'iva'                => $request->iva,
                 'descuento_impuesto' => $request->descuentoImpuesto,
@@ -65,7 +67,7 @@ class ComisionistaController extends Controller
         foreach($request->comisionesSobreCanales as $key => $comisionSobreCanales){
             ComisionistaCanalDetalle::create([
                 'comisionista_id'       => $comisionistaId,
-                'comisionista_tipo_id'  => $key,
+                'canal_venta_id'        => $key,
                 'comision'              => $comisionSobreCanales['comision'],
                 'iva'                   => $comisionSobreCanales['iva'],
                 'descuento_impuesto'    => $comisionSobreCanales['descuentoImpuesto']
@@ -89,7 +91,7 @@ class ComisionistaController extends Controller
                     'id'                => $comisionista->id,
                     'codigo'            => $comisionista->codigo,
                     'nombre'            => $comisionista->nombre,
-                    'tipo_id'           => $comisionista->tipo->nombre,
+                    'canal_venta_id'    => $comisionista->tipo->nombre,
                     'iva'               => $comisionista->iva,
                     'descuentoImpuesto' => $comisionista->descuento_impuesto,
                     'descuentos'        => $comisionista->descuentos,
@@ -113,9 +115,9 @@ class ComisionistaController extends Controller
      */
     public function edit(Comisionista $comisionista)
     {
-        $comisionistaGeneralTipos = ComisionistaTipo::where('comisionista_canal',0)->get();
-        $tipos        = ComisionistaTipo::all();
-        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $tipos,'comisionistaGeneralTipos' => $comisionistaGeneralTipos]);
+        $comisionistaGeneralTipos = CanalVenta::where('comisionista_canal',0)->get();
+        $canalesVenta             = CanalVenta::all();
+        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $canalesVenta,'comisionistaGeneralTipos' => $comisionistaGeneralTipos]);
     }
 
     /**
@@ -155,7 +157,7 @@ class ComisionistaController extends Controller
                 foreach($comisionistaCanalDetalle as $key => $detalle){
                     ComisionistaCanalDetalle::create([
                         'comisionista_id'       => $id,
-                        'comisionista_tipo_id'  => $key,
+                        'canal_venta_id'        => $key,
                         'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
                         'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
                         'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
@@ -170,7 +172,7 @@ class ComisionistaController extends Controller
             $comisionista->iva                = @$request->iva;
             $comisionista->descuento_impuesto = @$request->descuento_impuesto;
             $comisionista->descuentos         = $request->has('descuentos');
-            $comisionista->tipo_id            = $request->tipo;
+            $comisionista->canal_venta_id     = $request->tipo;
             $comisionista->representante      = $request->representante;
             $comisionista->direccion          = $request->direccion;
             $comisionista->telefono           = $request->telefono;

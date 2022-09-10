@@ -149,13 +149,20 @@
         function changeComisionesSettings(){
             const tipo = document.getElementById('tipo');
             
-            if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal') == '0'){
-                $('.general-settings').show();
+            if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal') == '1'){
+                $('.general-settings').hide();
+                $('.comisiones-sobre-actividades').hide();
+                $('.comisiones-sobre-canales').show();
+                return false;
+            }else if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaActividad') == '1'){
+                $('.general-settings').hide();
+                $('.comisiones-sobre-actividades').show();
                 $('.comisiones-sobre-canales').hide();
                 return false;
             }
-            $('.general-settings').hide();
-            $('.comisiones-sobre-canales').show();
+            $('.general-settings').show();
+            $('.comisiones-sobre-actividades').hide();
+            $('.comisiones-sobre-canales').hide();
             return true;
         }
         $(function(){
@@ -171,7 +178,7 @@
                 columns: [
                     { data: 'codigo' },
                     { data: 'nombre' },
-                    { data: 'tipo_id' },
+                    { data: 'canal_venta_id' },
                     { defaultContent: 'comision', 'render': function ( data, type, row ) 
                         {
                             return  `${row.comision}%`;
@@ -267,7 +274,7 @@
                                 <label for="tipo" class="col-form-label">Tipo</label>
                                 <select name="tipo" id="tipo" class="form-control">
                                     @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}" comisionistaCanal={{$tipo->comisionista_canal}}>{{$tipo->nombre}}</option>
+                                        <option value="{{$tipo->id}}" comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -296,6 +303,25 @@
 
                                             <td>
                                                 <input type="text" name="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
+                            <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
+                                <strong>
+                                    Comisiones sobre canales
+                                </strong>
+                                <table class="mt-3">
+                                    <tr>
+                                        <th>Actividad</th>
+                                        <th>Comisión directa $</th>
+                                    </tr>
+                                    @foreach($actividades as $actividad)
+                                        <tr actividadid="{{$actividad->id}}" class="actividades">
+                                            <td>{{$actividad->nombre}}</td>
+                                            <td>
+                                                <input type="text" name="tipo_comision" class="tipo_comision form-control amount" value="0">  
                                             </td>
                                         </tr>
                                     @endforeach

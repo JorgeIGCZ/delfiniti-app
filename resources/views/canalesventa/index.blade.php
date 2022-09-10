@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        let comisionistaTiposTable;
+        let canalesventaTable;
         function verificacionDestroy(id){
             Swal.fire({
                 title: '¿Desea eliminar tipo de comisionista?',
@@ -20,8 +20,8 @@
             }) 
         }
         function destroyComisionista(id){
-            const comisionistaTipos = document.getElementById('comisionista-tipos-form');
-            axios.delete(`/comisionistatipos/${id}`)
+            const canalesventa = document.getElementById('comisionista-tipos-form');
+            axios.delete(`/canalesventa/${id}`)
             .then(function (response) {
                 if(response.data.result == "Success"){
                     Swal.fire({
@@ -30,7 +30,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    comisionistaTiposTable.ajax.reload();
+                    canalesventaTable.ajax.reload();
                 }else{
                     Swal.fire({
                         icon: 'error',
@@ -48,13 +48,13 @@
                     showConfirmButton: true
                 })
             });
-            comisionistaTiposTable.ajax.reload();
+            canalesventaTable.ajax.reload();
         }
-        function createComisionista(comisionistaTipos){
-            axios.post('/comisionistatipos', {
+        function createComisionista(canalesventa){
+            axios.post('/canalesventa', {
                 '_token'  : '{{ csrf_token() }}',
-                "nombre"  : comisionistaTipos.elements['nombre'].value,
-                "comisionista_canal"  : comisionistaTipos.elements['comisionista_canal'].value
+                "nombre"  : canalesventa.elements['nombre'].value,
+                "comisionista_tipo"  : canalesventa.elements['comisionista_tipo'].value
             })
             .then(function (response) {
                 if(response.data.result == "Success"){
@@ -84,9 +84,9 @@
             });
         }
         $(function(){
-            comisionistaTiposTable = new DataTable('#comisionista-tipos', {
+            canalesventaTable = new DataTable('#comisionista-tipos', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/comisionistatipos/show')
+                    axios.get('/canalesventa/show')
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -96,11 +96,18 @@
                 columns: [
                     { data: 'id' },
                     { data: 'nombre' },
-                    { defaultContent: 'comisionista_canal', className: 'dt-center', 'render': function ( data, type, row ) 
+                    { defaultContent: 'tipo', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
-                            
-                            let view    =   (row.comisionista_canal) ? 'Sí' : 'No';
-                            return  view;
+                            let tipo = "COMISIONES GENERALES";
+                            if(row.comisionista_canal == 1){
+                                tipo = "COMISIONES SOBRE CANAL";
+                            }else if(row.comisionista_actividad == 1){
+                                tipo = "COMISIONES SOBRE ACTIVIDAD";
+                            }else if(row.comisionista_cerrador == 1){
+                                tipo = "CERRADOR";
+                            }
+	
+                            return  tipo;
                         }
                     },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
@@ -110,7 +117,7 @@
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
                             //}
                             let view    =   `<small> 
-                                                <a href="comisionistatipos/${row.id}/edit">Editar</a>
+                                                <a href="canalesventa/${row.id}/edit">Editar</a>
                                             </small>`;
                             return  view;
                         }
@@ -120,8 +127,8 @@
             
             document.getElementById('comisionista-tipos-form').addEventListener('submit', (event) =>{
                 event.preventDefault();
-                const comisionistaTipos = document.getElementById('comisionista-tipos-form');
-                createComisionista(comisionistaTipos);
+                const canalesventa = document.getElementById('comisionista-tipos-form');
+                createComisionista(canalesventa);
             });
             
         });
@@ -130,7 +137,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Tipos de comisionista</h2>
+            <h2 class="az-dashboard-title">Canales de venta</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
@@ -141,16 +148,21 @@
                         <form class="row g-3 align-items-center f-auto" id="comisionista-tipos-form">
                             @csrf
                             <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre de tipo de comisionista</label>    
+                                <label for="nombre" class="col-form-label">Nombre de canal</label>    
                                 <input type="text" name="nombre" class="form-control">  
                             </div>
                             <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Comisiones sobre canal</label>
-                                <input type="checkbox" name="comisionista_canal" class="form-control" style="display: block;"> 
+                                <label for="nombre" class="col-form-label">Tipo</label>
+                                <select name="comisionista_tipo" id="comisionista_tipo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                    <option value="" selected="true">COMISIONES GENERALES</option>
+                                    <option value="comisionesCanal" >COMISIONES SOBRE CANAL</option>
+                                    <option value="comisionesActividad" >COMISIONES SOBRE ACTIVIDAD</option>
+                                    <option value="comisionesCerrador" >CERRADOR</option>
+                                </select>
                             </div>
 
                             <div class="form-group col-3 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear tipo de comisionista</button>
+                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear canal</button>
                             </div>
                         </form>
                     </div>
@@ -170,7 +182,7 @@
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
-                                        <th>Comisiones sobre tipo</th>
+                                        <th>Tipo</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
