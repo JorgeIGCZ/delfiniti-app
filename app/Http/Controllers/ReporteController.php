@@ -131,7 +131,12 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
             $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
 
-            $sumaC[] = 'C' . $rowNumber;
+            //Is comisionista especial
+            //dd($comisionAgrupadaTipoPorcentajeGeneral);
+            if(!$comisionAgrupadaTipoPorcentajeGeneral[0]['comisionistaEspecial']){
+                $sumaC[] = 'C' . $rowNumber;
+            }
+
             $sumaD[] = 'D' . $rowNumber;
             $sumaE[] = 'E' . $rowNumber;
             $sumaF[] = 'F' . $rowNumber;
@@ -331,20 +336,27 @@ class ReporteController extends Controller
     private function getComisionesAgrupadasTipoPorcentaje($comisionesTipo){
         $comisionesTipoPorcentaje = [];
         $comisionesAgrupadasTipoPorcentaje = [];
+        $isComisionistaEspecial = false;
         foreach($comisionesTipo as $comisionTipo){
             $comisiones = $comisionTipo->comisiones;
+
+            //IS COMISIONISTA ESPECIAL
+            if($comisionTipo->comisionista_canal || $comisionTipo->comisionista_actividad || $comisionTipo->comisionista_cerrador){
+                $isComisionistaEspecial = true;
+            }
 
             foreach($comisiones as $comision){
                 $comsisionNombre = $comisionTipo->nombre;
                 $comsision = $comision->comisionista->comision;
                 $comisionKey = $comsisionNombre.' - '.$comsision.'%';
-                
+
                 if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
                     $comisionesTipoPorcentaje[] = [$comisionKey];
 
                     $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                         'comisionistaId'     => $comision->comisionista->id,
                         'comisionistaNombre' => $comision->comisionista->nombre,
+                        'comisionistaEspecial' => $isComisionistaEspecial,
                         'pagoTotal'          => $comision->pago_total,
                         'comisionBruta'      => $comision->cantidad_comision_bruta,
                         'descuentoImpuesto'  => $comision->descuento_impuesto,
@@ -356,6 +368,7 @@ class ReporteController extends Controller
                 $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                     'comisionistaId'     => $comision->comisionista->id,
                     'comisionistaNombre' => $comision->comisionista->nombre,
+                    'comisionistaEspecial' => $isComisionistaEspecial,
                     'pagoTotal'          => $comision->pago_total,
                     'comisionBruta'      => $comision->cantidad_comision_bruta,
                     'descuentoImpuesto'  => $comision->descuento_impuesto,
@@ -378,6 +391,7 @@ class ReporteController extends Controller
             if(!in_array($comisionistaId,$comisionistasId)){
                 $comisionistasId[]     = $comisionistaId;
                 $comisionesAgrupadasComisionistas[$comisionistaId] = [
+                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
                     'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
                     'pagoTotal'          => $comisionTipo['pagoTotal'],
                     'comisionBruta'      => $comisionTipo['comisionBruta'],
