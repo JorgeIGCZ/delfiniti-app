@@ -15,7 +15,7 @@ class CanalVentaController extends Controller
      */
     public function index()
     {
-        return view('canalesVenta.index');
+        return view('canalesventa.index');
     }
     /**
      * Store a newly created resource in storage.
