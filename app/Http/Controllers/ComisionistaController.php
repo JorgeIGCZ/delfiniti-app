@@ -8,6 +8,8 @@ use App\Models\Actividad;
 use App\Models\ComisionistaCanalDetalle;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
+use App\Models\ComisionistaActividadDetalle;
+use App\Models\ComisionistaCanalActividad;
 
 class ComisionistaController extends Controller
 {
@@ -50,9 +52,11 @@ class ComisionistaController extends Controller
                 'direccion'          => $request->direccion,
                 'telefono'           => $request->telefono
             ]);
-
-            if($request->isComisionistaCanal == '1'){
+            
+            if($request->tipoComisionista == 'comisionistaCanal'){
                 $this->createComisionistaCanalDetalle($comisionista['id'],$request);
+            }else if($request->tipoComisionista == 'comisionistaActividad'){
+                $this->createComisionistaActividadDetalle($comisionista['id'],$request);
             }
             
         } catch (\Exception $e){
@@ -71,6 +75,16 @@ class ComisionistaController extends Controller
                 'comision'              => $comisionSobreCanales['comision'],
                 'iva'                   => $comisionSobreCanales['iva'],
                 'descuento_impuesto'    => $comisionSobreCanales['descuentoImpuesto']
+            ]);
+        }
+    }
+
+    private function createComisionistaActividadDetalle($comisionistaId,$request){
+        foreach($request->comisionesSobreActividades as $key => $comisionSobreActividades){
+            ComisionistaActividadDetalle::create([
+                'comisionista_id'       => $comisionistaId,
+                'actividad_id'          => $key,
+                'comision'              => $comisionSobreActividades['comision']
             ]);
         }
     }
@@ -115,9 +129,11 @@ class ComisionistaController extends Controller
      */
     public function edit(Comisionista $comisionista)
     {
-        $comisionistaGeneralTipos = CanalVenta::where('comisionista_canal',0)->get();
-        $canalesVenta             = CanalVenta::all();
-        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $canalesVenta,'comisionistaGeneralTipos' => $comisionistaGeneralTipos]);
+        $comisionistaGeneralTipos     = CanalVenta::where('comisionista_canal',0)->get();
+        $canalesVenta                 = CanalVenta::all();
+        $actividades                  = Actividad::all();
+        $comisionistaActividadesDetalle = ComisionistaActividadDetalle::where('comisionista_id',$comisionista->id)->get();
+        return view('comisionistas.edit',['comisionista' => $comisionista,'tipos' => $canalesVenta,'comisionistaGeneralTipos' => $comisionistaGeneralTipos,'actividades' => $actividades,'comisionistaActividadesDetalle' => $comisionistaActividadesDetalle]);
     }
 
     /**
@@ -149,22 +165,6 @@ class ComisionistaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if(!is_null($request->comisionista_canal_detalles)){
-            
-            ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
-
-            foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
-                foreach($comisionistaCanalDetalle as $key => $detalle){
-                    ComisionistaCanalDetalle::create([
-                        'comisionista_id'       => $id,
-                        'canal_venta_id'        => $key,
-                        'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
-                        'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
-                        'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
-                    ]);
-                }
-            }
-        }
         try {
             $comisionista                     = Comisionista::find($id);
             $comisionista->nombre             = $request->nombre;
@@ -177,6 +177,36 @@ class ComisionistaController extends Controller
             $comisionista->direccion          = $request->direccion;
             $comisionista->telefono           = $request->telefono;
             $comisionista->save();
+
+            $comisionistaCanalVenta = Comisionista::find($id)->tipo;
+
+            ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
+            ComisionistaActividadDetalle::where('comisionista_id',$id)->delete();
+
+            if($comisionistaCanalVenta->comisionista_canal == 1){
+
+                foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
+                    foreach($comisionistaCanalDetalle as $key => $detalle){
+                        ComisionistaCanalDetalle::create([
+                            'comisionista_id'       => $id,
+                            'canal_venta_id'        => $key,
+                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                            'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
+                            'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
+                        ]);
+                    }
+                }
+            }else if($comisionistaCanalVenta->comisionista_actividad == 1){
+                foreach($request->comisionista_actividad_detalles as $comisionistaActividadDetalle){
+                    foreach($comisionistaActividadDetalle as $key => $detalle){
+                        ComisionistaActividadDetalle::create([
+                            'comisionista_id'       => $id,
+                            'actividad_id'          => $key,
+                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision']
+                        ]);
+                    }
+                }
+            }
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);

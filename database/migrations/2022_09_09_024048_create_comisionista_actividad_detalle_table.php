@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('comisionista_canal_actividad', function (Blueprint $table) {
+        Schema::create('comisionista_actividad_detalle', function (Blueprint $table) {
             $table->id();
+            $table->integer('comisionista_id');
+            $table->integer('actividad_id');
+            $table->float('comision')->comment('Solo efectivo');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('comisionista_canal_actividad');
+        Schema::dropIfExists('comisionista_actividad_detalle');
     }
 };

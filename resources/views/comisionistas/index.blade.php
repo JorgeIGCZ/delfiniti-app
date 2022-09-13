@@ -66,29 +66,40 @@
                 comisionistas.reset();
             }); 
         }
-        function isComisionistaCanal(){
-            const tipo = document.getElementById('tipo');
+        function tipoComisionista(){
+            let tipoComisionista = "comisionistaGeneral";
+            let tipo = document.getElementById('tipo');
+            tipo = tipo.options[tipo.selectedIndex];
 
-            return tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal');
+            if(tipo.getAttribute("comisionistaCanal") == "1"){
+                tipoComisionista = "comisionistaCanal";
+            }else if(tipo.getAttribute("comisionistaActividad") == "1"){
+                tipoComisionista = "comisionistaActividad";
+            }
+
+            return tipoComisionista;
         }
+
         function createComisionista(comisionistas){
             let tipo                  = comisionistas.elements['tipo'];
             tipo                      = tipo.options[tipo.selectedIndex];
-            const comisionesSobreCanales = getComisionesSobreCanales();
+            const comisionesSobreCanales     = getComisionesSobreCanales();
+            const comisionesSobreActividades = getComisionesSobreActividades();
             axios.post('/comisionistas', {
-                '_token'  : '{{ csrf_token() }}',
+                "_token"  : "{{ csrf_token() }}",
                 "codigo"  : comisionistas.elements['codigo'].value,
-                "isComisionistaCanal" : isComisionistaCanal(),
-                "comisionesSobreCanales" : comisionesSobreCanales,
-                "nombre"  : comisionistas.elements['nombre'].value,
-                "tipo"  : tipo.value,
-                "comision": comisionistas.elements['comision'].value,
-                "iva"     : comisionistas.elements['iva'].value,
+                "tipoComisionista"           : tipoComisionista(),
+                "comisionesSobreCanales"     : comisionesSobreCanales,
+                "comisionesSobreActividades" : comisionesSobreActividades,
+                "nombre"            : comisionistas.elements['nombre'].value,
+                "tipo"              : tipo.value,
+                "comision"          : comisionistas.elements['comision'].value,
+                "iva"               : comisionistas.elements['iva'].value,
                 "descuentoImpuesto" : comisionistas.elements['descuento-impuesto'].value,
-                "descuentos": comisionistas.elements['descuentos'].checked,
-                "representante"  : comisionistas.elements['representante'].value,
-                "direccion": comisionistas.elements['direccion'].value,
-                "telefono"     : comisionistas.elements['telefono'].value
+                "descuentos"        : comisionistas.elements['descuentos'].checked,
+                "representante"     : comisionistas.elements['representante'].value,
+                "direccion"         : comisionistas.elements['direccion'].value,
+                "telefono"          : comisionistas.elements['telefono'].value
             })
             .then(function (response) {
                 if(response.data.result == "Success"){
@@ -117,24 +128,21 @@
                 })
             });
         }
+        function getComisionesSobreActividades(){
+            let comisionesSobreActividades = [];
+            $('.actividades').each(function(index, value) {
+                comisionesSobreActividades = {...comisionesSobreActividades,[$(value).attr('actividadid')] :
+                        {
+                            'comision'          : $(value).find('.actividad_comision').attr('value')
+                        }
+                    };
+            });
+
+            return comisionesSobreActividades;
+        }
         function getComisionesSobreCanales(){
             let comisionesSobreCanales = [];
             $('.tipo_comisiones').each(function(index, value) {
-                
-                // comisionesSobreCanales  = [...comisionesSobreCanales,{[$(value).attr('tipoid')] : [
-                //     {
-                //         'comision'          : $(value).children('tipo_comision').attr('value'),
-                //         'iva'               : $(value).children('tipo_iva').attr('value'),
-                //         'descuentoImpuesto' : $(value).children('tipo_descuento_impuesto').attr('value'),
-                //     }
-                // ]}];
-
-                // comisionesSobreCanales[$(value).attr('tipoid')] = {
-                //         'comision'          : $(value).find('.tipo_comision').attr('value'),
-                //         'iva'               : $(value).find('.tipo_iva').attr('value'),
-                //         'descuentoImpuesto' : $(value).find('.tipo_descuento_impuesto').attr('value'),
-                //     };
-
                 comisionesSobreCanales = {...comisionesSobreCanales,[$(value).attr('tipoid')] :
                         {
                             'comision'          : $(value).find('.tipo_comision').attr('value'),
@@ -315,13 +323,13 @@
                                 <table class="mt-3">
                                     <tr>
                                         <th>Actividad</th>
-                                        <th>Comisión directa $</th>
+                                        <th>Comisión directa P/Actividad $</th>
                                     </tr>
                                     @foreach($actividades as $actividad)
                                         <tr actividadid="{{$actividad->id}}" class="actividades">
                                             <td>{{$actividad->nombre}}</td>
                                             <td>
-                                                <input type="text" name="tipo_comision" class="tipo_comision form-control amount" value="0">  
+                                                <input type="text" name="actividad_comision" class="actividad_comision form-control amount" value="0">  
                                             </td>
                                         </tr>
                                     @endforeach

@@ -17,6 +17,7 @@ class Reservacion extends Model
         'origen',
         'agente_id',
         'comisionista_id',
+        'comisionista_actividad_id',
         'cerrador_id',
         'comentarios',
         'estatus_pago',

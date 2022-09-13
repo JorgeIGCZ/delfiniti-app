@@ -79,6 +79,7 @@ function createReservacion(estatus) {
         'tarjeta': reservacion.elements['tarjeta'].getAttribute('value'),
         'cambio': reservacion.elements['cambio'].getAttribute('value'),
     };
+
     axios.post('/reservaciones', {
         '_token': token(),
         'nombre': reservacion.elements['nombre'].value,
@@ -87,6 +88,7 @@ function createReservacion(estatus) {
         'origen': reservacion.elements['origen'].value,
         'agente': reservacion.elements['agente'].value,
         'comisionista': reservacion.elements['comisionista'].value,
+        'comisionistaActividad': reservacion.elements['comisionista-actividad'].value,
         'cerrador': reservacion.elements['cerrador'].value,
         'total': reservacion.elements['total'].getAttribute('value'),
         'fecha': reservacion.elements['fecha'].value,

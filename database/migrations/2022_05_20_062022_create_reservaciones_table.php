@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('origen')->nullable();
             $table->integer('agente_id');
             $table->integer('comisionista_id');
+            $table->integer('comisionista_actividad_id');
             $table->integer('cerrador_id');
             $table->longText('comentarios')->nullable();
             $table->date('fecha');

@@ -10,7 +10,9 @@ use finfo;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
 use App\Models\Cerrador;
+use App\Models\ComisionistaActividadDetalle;
 use App\Models\ComisionistaCanalDetalle;
+use App\Models\ReservacionDetalle;
 
 class ComisionController extends Controller
 {
@@ -34,6 +36,7 @@ class ComisionController extends Controller
         $this->setComisionComisionista($reservacion,$pagos);
         $this->setComisionCerrador($reservacion,$pagos);
         $this->setComisionComisionistaCanal($reservacion,$pagos);
+        $this->setComisionComisionistaActividad($reservacion,$pagos);
     }
 
     private function setComisionComisionista($reservacion,$pagos){
@@ -44,6 +47,65 @@ class ComisionController extends Controller
         $comisionista = Comisionista::find($reservacion['comisionista_id']);
 
         return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id'],$comisionista);
+    }
+
+    private function setComisionComisionistaActividad($reservacion,$pagos){
+        if($reservacion['comisionista_actividad_id'] == 0){
+            return true;
+        }
+
+        $comisionista = Comisionista::find($reservacion['comisionista_actividad_id']);
+
+        return $this->setComisionesActividad($pagos,$reservacion,$reservacion['comisionista_actividad_id'],$comisionista);
+    }
+
+    private function setComisionesActividad($pagos,$reservacion,$comisionistaId,$comisionista){
+        $cantidadComisionNeta = 0;
+        $totalPagoReservacion = 0;
+        foreach($pagos as $pago){
+            $totalPagoReservacion += $pago['cantidad'];
+        }
+        
+        $reservacionDetalles = ReservacionDetalle::where('reservacion_id',$reservacion->id)->get();
+
+        foreach($reservacionDetalles as $reservacionDetalle){
+            
+            $actividadId = $reservacionDetalle->actividad_id;
+
+            //the cost is minimun to make this query for each activity
+            $comisiones = ComisionistaActividadDetalle::where('actividad_id',$actividadId)
+                                                    ->where('comisionista_id',$comisionistaId)->get();
+            if(count($comisiones) > 0){
+                $cantidadComisionNeta += $comisiones[0]->comision;
+            }
+        }
+
+        $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);
+        $ivaCantidad               = round(0,2);
+        $cantidadComisionBruta     = round(0,2);
+        $descuentoImpuestoCantidad = round(0,2);
+        $cantidadComisionNeta      = round($cantidadComisionNeta,2);
+
+        $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
+                                        ->where('reservacion_id',$reservacion['id'])->get()->count();
+        
+        if($isComisionDuplicada){
+            return false;
+        }
+
+        $comsion = Comision::create([   
+            'comisionista_id'         =>  $comisionistaId,
+            'reservacion_id'          =>  $reservacion['id'],
+            'pago_total'              =>  $totalPagoReservacion,
+            'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
+            'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+            'iva'                     =>  (float)$ivaCantidad,
+            'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+            'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'estatus'                 =>  1
+        ]);
+
+        return is_numeric($comsion['id']);
     }
 
     private function setComisionCerrador($reservacion,$pagos){

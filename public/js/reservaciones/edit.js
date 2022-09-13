@@ -100,6 +100,7 @@ function createReservacion(estatus) {
         'origen': reservacion.elements['origen'].value,
         'agente': reservacion.elements['agente'].value,
         'comisionista': reservacion.elements['comisionista'].value,
+        'comisionistaActividad': reservacion.elements['comisionista-actividad'].value,
         'cerrador': reservacion.elements['cerrador'].value,
         'total': reservacion.elements['total'].getAttribute('value'),
         'pagosAnteriores': reservacion.elements['anticipo'].getAttribute('value'),

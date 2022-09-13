@@ -4,13 +4,20 @@
         function changeComisionesSettings(){
             const tipo = document.getElementById('tipo');
             
-            if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal') == '0'){
-                $('.general-settings').show();
+            if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaCanal') == '1'){
+                $('.general-settings').hide();
+                $('.comisiones-sobre-actividades').hide();
+                $('.comisiones-sobre-canales').show();
+                return false;
+            }else if(tipo.options[tipo.selectedIndex].getAttribute('comisionistaActividad') == '1'){
+                $('.general-settings').hide();
+                $('.comisiones-sobre-actividades').show();
                 $('.comisiones-sobre-canales').hide();
                 return false;
             }
-            $('.general-settings').hide();
-            $('.comisiones-sobre-canales').show();
+            $('.general-settings').show();
+            $('.comisiones-sobre-actividades').hide();
+            $('.comisiones-sobre-canales').hide();
             return true;
         }
         $(function(){
@@ -53,41 +60,68 @@
                                 <label for="tipo" class="col-form-label">Tipo</label>
                                 <select name="tipo" id="tipo" class="form-control">
                                     @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}" {{$tipo->id === $comisionista->canal_venta_id ? 'selected="selected' : ""}} comisionistaCanal={{$tipo->comisionista_canal}}>{{$tipo->nombre}}</option>
+                                        <option value="{{$tipo->id}}" {{$tipo->id === $comisionista->canal_venta_id ? 'selected="selected' : ""}} comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            @if($comisionista->tipo->comisionista_canal)
-                                <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
-                                    <strong>
-                                        Comisiones sobre canales
-                                    </strong>
-                                    <table class="mt-3">
-                                        <tr>
-                                            <th>Canal de venta</th>
-                                            <th>Comisión %</th>
-                                            <th>Iva %</th>
-                                            <th>Descuentro por imp. %</th>
+                            <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
+                                <strong>
+                                    Comisiones sobre canales
+                                </strong>
+                                <table class="mt-3">
+                                    <tr>
+                                        <th>Canal de venta</th>
+                                        <th>Comisión %</th>
+                                        <th>Iva %</th>
+                                        <th>Descuentro por imp. %</th>
+                                    </tr>
+                                    @foreach($comisionistaGeneralTipos as $key => $comisionistaGeneralTipo)
+                                        <tr tipoid="{{$comisionistaGeneralTipo->id}}" class="tipo_comisiones">
+                                            <td>{{$comisionistaGeneralTipo->nombre}}</td>
+                                            <td>
+                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][comision]" class="tipo_comision form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->comision}}">  
+                                            </td>
+                                            <td>
+                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][iva]" class="tipo_iva form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->iva}}">  
+                                            </td>
+                                            <td>
+                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][descuento_impuesto]" class="tipo_descuento_impuesto form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->descuento_impuesto}}">  
+                                            </td>
                                         </tr>
-                                        @foreach($comisionistaGeneralTipos as $key => $comisionistaGeneralTipo)
-                                            <tr tipoid="{{$comisionistaGeneralTipo->id}}" class="tipo_comisiones">
-                                                <td>{{$comisionistaGeneralTipo->nombre}}</td>
-                                                <td>
-                                                    <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][comision]" class="tipo_comision form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->comision}}">  
-                                                </td>
+                                    @endforeach
+                                </table>
+                            </div>
 
-                                                <td>
-                                                    <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][iva]" class="tipo_iva form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->iva}}">  
-                                                </td>
-
-                                                <td>
-                                                    <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][descuento_impuesto]" class="tipo_descuento_impuesto form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->descuento_impuesto}}">  
-                                                </td>
-                                            </tr>
+                            <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
+                                <strong>
+                                    Comisiones sobre actividad
+                                </strong>
+                                <table class="mt-3">
+                                    <tr>
+                                        <th>Actividad</th>
+                                        <th>Comisión directa P/Actividad $</th>
+                                    </tr>
+                                    @foreach($actividades as $key => $actividad)
+                                        @php
+                                            $cantidad = 0;
+                                        @endphp
+                                        @foreach($comisionistaActividadesDetalle as $comisionistaActividadDetalle)
+                                            @if($comisionistaActividadDetalle->actividad_id == $actividad->id)
+                                                @php
+                                                    $cantidad = $comisionistaActividadDetalle->comision;
+                                                @endphp
+                                            @endif
                                         @endforeach
-                                    </table>
-                                </div>
-                            @endif
+
+                                        <tr actividadid="{{$actividad->id}}" class="actividades">
+                                            <td>{{$actividad->nombre}}</td>
+                                            <td>
+                                                <input type="text" name="comisionista_actividad_detalles[{{$key}}][{{$actividad->id}}][comision]" class="actividad_comision form-control" value="{{$cantidad}}">  
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
 
 
                             <div class="form-group col-2 mt-3 general-settings">

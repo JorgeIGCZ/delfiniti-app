@@ -50,23 +50,35 @@ class ReservacionController extends Controller
     {
         $estados          = Estado::all();
         $alojamientos     = Alojamiento::where('estatus',1)->orderBy('nombre','asc')->get();
-        $cerradores       = Comisionista::whereHas('tipo', function ($query) {
-                $query->where("nombre","CERRADORES");
-            })->where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)
             ->whereRaw('NOW() >= fecha_inicial')
             ->whereRaw('NOW() <= fecha_final')
             ->orWhere('duracion','indefinido')
             ->get();
+
+        $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_cerrador',1);
+        })->get();
             
         $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-            $query->where('comisionista_canal',0);
+            $query
+            ->where('comisionista_canal',0)
+            ->where('comisionista_actividad',0)
+            ->where('comisionista_cerrador',0);
         })->get();
+
+        $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_actividad',1);
+        })->get();
+
+
 
         $dolarPrecio    = TipoCambio::where('seccion_uso', 'general')->first();
 
-        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo]);
+        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo,'comisionistasActividad' => $comisionistasActividad]);
     }
 
     public function updateEstatusReservacion(Request $request){
@@ -153,6 +165,7 @@ class ReservacionController extends Controller
                 'origen'          => $request->origen,
                 'agente_id'       => $request->agente,
                 'comisionista_id' => $request->comisionista,
+                'comisionista_actividad_id' => $request->comisionistaActividad,
                 'cerrador_id'     => $request->cerrador,
                 'comentarios'     => $request->comentarios,
                 'estatus_pago'    => $estatusPago,
@@ -355,19 +368,30 @@ class ReservacionController extends Controller
         }else{
             $estados        = Estado::all();
             $alojamientos   = Alojamiento::orderBy('nombre','asc')->get();
-            $cerradores     = Comisionista::whereHas('tipo', function ($query) {
-                $query->where("nombre","CERRADORES");
-            })->where('estatus',1)->get();
             $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
                                 ->whereRaw('NOW() <= fecha_final')
                                 ->orWhere('duracion','indefinido')
                                 ->get();
-            $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-                $query->where('comisionista_canal',0);
-            })->get();
-            $dolarPrecio   = TipoCambio::where('seccion_uso', 'general')->first();
 
-            return view('reservaciones.show',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores]);
+            $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+                $query
+                ->where('comisionista_cerrador',1);
+            })->get();
+                
+            $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+                $query
+                ->where('comisionista_canal',0)
+                ->where('comisionista_actividad',0)
+                ->where('comisionista_cerrador',0);
+            })->get();
+    
+            $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+                $query
+                ->where('comisionista_actividad',1);
+            })->get();
+
+            $dolarPrecio   = TipoCambio::where('seccion_uso', 'general')->first();
+            return view('reservaciones.show',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores, 'comisionistasActividad' => $comisionistasActividad]);
         }
     }
     /**
@@ -380,9 +404,6 @@ class ReservacionController extends Controller
     {
         $estados          = Estado::all();
         $alojamientos     = Alojamiento::orderBy('nombre','asc')->get();
-        $cerradores       = Comisionista::whereHas('tipo', function ($query) {
-                $query->where("nombre","CERRADORES");
-            })->where('estatus',1)->get();
         $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
         $actividades      = Actividad::where('estatus',1)
             ->whereRaw('NOW() >= fecha_inicial')
@@ -390,8 +411,21 @@ class ReservacionController extends Controller
             ->orWhere('duracion','indefinido')
             ->get();
 
+        $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_cerrador',1);
+        })->get();
+            
         $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-            $query->where('comisionista_canal',0);
+            $query
+            ->where('comisionista_canal',0)
+            ->where('comisionista_actividad',0)
+            ->where('comisionista_cerrador',0);
+        })->get();
+
+        $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_actividad',1);
         })->get();
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
@@ -403,6 +437,7 @@ class ReservacionController extends Controller
             'actividades' => $actividades,
             'alojamientos' => $alojamientos,
             'comisionistas' => $comisionistas,
+            'comisionistasActividad' => $comisionistasActividad,
             'dolarPrecio' => $dolarPrecio,
             'cerradores' => $cerradores,
             'descuentosCodigo' => $descuentosCodigo,
@@ -486,6 +521,7 @@ class ReservacionController extends Controller
             $reservacion->origen          = $request->origen;
             $reservacion->agente_id       = $request->agente;
             $reservacion->comisionista_id = $request->comisionista;
+            $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = $request->comentarios;
             $reservacion->fecha           = $request->fecha;
