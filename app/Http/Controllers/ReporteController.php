@@ -777,7 +777,7 @@ class ReporteController extends Controller
                 // $pagosCambioResult = $this->getPagosTotalesByType($reservacion,$actividad,'cambio',0);
                 // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCambioResult['pago']);
 
-                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->nombre_cliente);
 
                 $rowNumber += 1;
             }
