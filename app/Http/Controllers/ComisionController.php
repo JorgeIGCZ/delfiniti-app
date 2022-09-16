@@ -60,7 +60,8 @@ class ComisionController extends Controller
     }
 
     private function setComisionesActividad($pagos,$reservacion,$comisionistaId,$comisionista){
-        $cantidadComisionNeta = 0;
+        $cantidadComisionBruta = 0;
+        $descuentoImpuesto = 0;
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
             $totalPagoReservacion += $pago['cantidad'];
@@ -76,15 +77,17 @@ class ComisionController extends Controller
             $comisiones = ComisionistaActividadDetalle::where('actividad_id',$actividadId)
                                                     ->where('comisionista_id',$comisionistaId)->get();
             if(count($comisiones) > 0){
-                $cantidadComisionNeta += $comisiones[0]->comision;
+                $cantidadComisionBruta += $comisiones[0]->comision;
+                $descuentoImpuesto += $comisiones[0]->descuento_impuesto;
             }
-        }
-
+        } 
+        $descuentoImpuesto = ($descuentoImpuesto/count($reservacionDetalles));
+        
         $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);
         $ivaCantidad               = round(0,2);
-        $cantidadComisionBruta     = round(0,2);
-        $descuentoImpuestoCantidad = round(0,2);
-        $cantidadComisionNeta      = round($cantidadComisionNeta,2);
+        $cantidadComisionBruta     = round($cantidadComisionBruta,2);
+        $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $descuentoImpuesto) / 100),2);
+        $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
         $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
                                         ->where('reservacion_id',$reservacion['id'])->get()->count();

@@ -133,7 +133,8 @@
             $('.actividades').each(function(index, value) {
                 comisionesSobreActividades = {...comisionesSobreActividades,[$(value).attr('actividadid')] :
                         {
-                            'comision'          : $(value).find('.actividad_comision').attr('value')
+                            'comision'          : $(value).find('.actividad_comision').attr('value'),
+                            'descuentoImpuesto' : $(value).find('.actividad_descuento_impuesto').attr('value'),
                         }
                     };
             });
@@ -302,15 +303,15 @@
                                         <tr tipoid="{{$tipoSinComision->id}}" class="tipo_comisiones">
                                             <td>{{$tipoSinComision->nombre}}</td>
                                             <td>
-                                                <input type="text" name="tipo_comision" class="tipo_comision form-control percentage" value="0">  
+                                                <input type="text" step="0.01" nname="tipo_comision" class="tipo_comision form-control percentage" value="0">  
                                             </td>
 
                                             <td>
-                                                <input type="text" name="tipo_iva" class="tipo_iva form-control percentage" value="0">  
+                                                <input type="text" step="0.01" nname="tipo_iva" class="tipo_iva form-control percentage" value="0">  
                                             </td>
 
                                             <td>
-                                                <input type="text" name="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
+                                                <input type="text" step="0.01" nname="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
                                             </td>
                                         </tr>
                                     @endforeach
@@ -318,18 +319,22 @@
                             </div>
                             <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
                                 <strong>
-                                    Comisiones sobre canales
+                                    Comisiones sobre actividades
                                 </strong>
                                 <table class="mt-3">
                                     <tr>
                                         <th>Actividad</th>
                                         <th>Comisión directa P/Actividad $</th>
+                                        <th>Descuentro por imp. %</th>
                                     </tr>
                                     @foreach($actividades as $actividad)
                                         <tr actividadid="{{$actividad->id}}" class="actividades">
                                             <td>{{$actividad->nombre}}</td>
                                             <td>
-                                                <input type="text" name="actividad_comision" class="actividad_comision form-control amount" value="0">  
+                                                <input type="text" step="0.01" name="actividad_comision" class="actividad_comision form-control amount" value="0">  
+                                            </td>
+                                            <td>
+                                                <input type="text" step="0.01" name="actividad_descuento_impuesto" class="actividad_descuento_impuesto form-control percentage" value="0">  
                                             </td>
                                         </tr>
                                     @endforeach

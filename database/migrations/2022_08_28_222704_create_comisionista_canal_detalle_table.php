@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->integer('comisionista_id');
             $table->integer('canal_venta_id');
-            $table->float('comision')->comment('Solo porcentaje');
-            $table->float('iva')->nullable();
-            $table->float('descuento_impuesto')->nullable();
+            $table->float('comision')->default(0)->comment('Solo porcentaje');
+            $table->float('iva')->default(0);
+            $table->float('descuento_impuesto')->default(0);
             $table->timestamps();
         });
     }

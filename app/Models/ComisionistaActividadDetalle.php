@@ -11,7 +11,8 @@ class ComisionistaActividadDetalle extends Model
     protected $fillable = [
         'comisionista_id',
         'actividad_id',
-        'comision'
+        'comision',
+        'descuento_impuesto'
     ];
     
     protected $primaryKey = 'id';

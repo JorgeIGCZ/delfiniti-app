@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->integer('comisionista_id');
             $table->integer('actividad_id');
-            $table->float('comision')->comment('Solo efectivo');
+            $table->float('comision')->default(0)->comment('Solo efectivo');
+            $table->float('descuento_impuesto')->default(0)->comment('Porcentaje');
             $table->timestamps();
         });
     }

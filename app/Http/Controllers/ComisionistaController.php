@@ -84,7 +84,8 @@ class ComisionistaController extends Controller
             ComisionistaActividadDetalle::create([
                 'comisionista_id'       => $comisionistaId,
                 'actividad_id'          => $key,
-                'comision'              => $comisionSobreActividades['comision']
+                'comision'              => $comisionSobreActividades['comision'],
+                'descuento_impuesto'    => $comisionSobreActividades['descuentoImpuesto']
             ]);
         }
     }
@@ -202,7 +203,8 @@ class ComisionistaController extends Controller
                         ComisionistaActividadDetalle::create([
                             'comisionista_id'       => $id,
                             'actividad_id'          => $key,
-                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision']
+                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                            'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
                         ]);
                     }
                 }

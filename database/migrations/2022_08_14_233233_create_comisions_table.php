@@ -17,12 +17,12 @@ return new class extends Migration
             $table->id();
             $table->integer('comisionista_id');
             $table->integer('reservacion_id');
-            $table->float('pago_total');
-            $table->float('pago_total_sin_iva');
-            $table->float('cantidad_comision_bruta');
-            $table->float('iva')->nullable();
-            $table->float('descuento_impuesto')->nullable();
-            $table->float('cantidad_comision_neta');
+            $table->float('pago_total')->default(0);
+            $table->float('pago_total_sin_iva')->default(0);
+            $table->float('cantidad_comision_bruta')->default(0);
+            $table->float('iva')->default(0);
+            $table->float('descuento_impuesto')->default(0);
+            $table->float('cantidad_comision_neta')->default(0);
             $table->boolean('estatus')->default(0);
             $table->timestamps();
         });

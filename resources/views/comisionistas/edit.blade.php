@@ -100,15 +100,18 @@
                                     <tr>
                                         <th>Actividad</th>
                                         <th>Comisión directa P/Actividad $</th>
+                                        <th>Descuentro por imp. %</th>
                                     </tr>
                                     @foreach($actividades as $key => $actividad)
                                         @php
                                             $cantidad = 0;
+                                            $descuentoImpuesto = 0;
                                         @endphp
                                         @foreach($comisionistaActividadesDetalle as $comisionistaActividadDetalle)
                                             @if($comisionistaActividadDetalle->actividad_id == $actividad->id)
                                                 @php
                                                     $cantidad = $comisionistaActividadDetalle->comision;
+                                                    $descuentoImpuesto = $comisionistaActividadDetalle->descuento_impuesto;
                                                 @endphp
                                             @endif
                                         @endforeach
@@ -118,10 +121,15 @@
                                             <td>
                                                 <input type="text" name="comisionista_actividad_detalles[{{$key}}][{{$actividad->id}}][comision]" class="actividad_comision form-control" value="{{$cantidad}}">  
                                             </td>
+                                            <td>
+                                                <input type="number" step="0.01" name="comisionista_actividad_detalles[{{$key}}][{{$actividad->id}}][descuento_impuesto]" class="actividad_descuento_impuesto form-control" value="{{$descuentoImpuesto}}">  
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </table>
                             </div>
+
+                            
 
 
                             <div class="form-group col-2 mt-3 general-settings">
@@ -140,7 +148,6 @@
                                 <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
                                 <input type="checkbox" name="descuentos" class="form-control" value="{{$comisionista->descuentos}}" @if($comisionista->descuentos) checked="checked" @endif>
                             </div>
-
 
                             <div class="col-12 mt-3 general-settings">
                                 <strong>Datos Representante</strong>
