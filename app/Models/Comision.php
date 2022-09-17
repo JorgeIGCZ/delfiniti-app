@@ -18,7 +18,8 @@ class Comision extends Model
         'iva',
         'descuento_impuesto',
         'cantidad_comision_neta',
-        'estatus'
+        'estatus',
+        'created_at'
     ];
     protected $primaryKey = 'id';
     protected $table = 'comisiones';

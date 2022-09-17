@@ -314,85 +314,62 @@ class ReservacionController extends Controller
      * @param  \App\Models\Reservacion  $reservacion
      * @return \Illuminate\Http\Response
      */
-    public function show(Reservacion  $reservacion = null)
+    public function show(Request $request)
     {
-        if(is_null($reservacion)){
-            /*
-            $reservacionesDetalle = ReservacionDetalle::orderByDesc('id')->get();
-            $reservacionDetalleArray = [];
-            foreach($reservacionesDetalle as $reservacionDetalle){
-                $reservacionDetalleArray[] = [
-                    'id'           => @$reservacionDetalle->id,
-                    'reservacionId'=> @$reservacionDetalle->reservacion_id,
-                    'folio'        => @$reservacionDetalle->folio,
-                    'actividad'    => @$reservacionDetalle->actividad->nombre,
-                    'horario'      => @$reservacionDetalle->horario->horario_inicial,
-                    'fecha'        => @$reservacionDetalle->reservacion->fecha_creacion,
-                    'cliente'      => @$reservacionDetalle->reservacion->nombre_cliente,
-                    'personas'     => @$reservacionDetalle->numero_personas,
-                    'notas'        => @$reservacionDetalle->reservacion->comentarios
-                ];
-            }
-            return json_encode(['data' => $reservacionDetalleArray]);
-            */
-            $reservaciones           = Reservacion::with(['descuentoCodigo' => function ($query) {
-                    $query->where("nombre",'like',"%CORTESIA%");
-                }])->orderByDesc('id')->where('estatus',1)->get();
+        $fechaInicio = date('Y-m-d')." 00:00:00";
+        $fechaFinal  = date('Y-m-d');
 
-            $reservacionDetalleArray = [];
-            foreach($reservaciones as $reservacion){ 
-                $numeroPersonas = 0;
-                $horario        = "";
-                $actividades    = "";
-                foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                    $numeroPersonas += $reservacionDetalle->numero_personas;
-                    $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
-                    $actividades     = ($actividades != "" ? $actividades.", " : "").@$reservacionDetalle->actividad->nombre;
-                }
-                $reservacionDetalleArray[] = [
-                    'id'           => @$reservacion->id,
-                    'folio'        => @$reservacion->folio,
-                    'actividad'    => $actividades,
-                    'horario'      => $horario,
-                    'fechaCreacion' => @$reservacion->fecha_creacion,
-                    'fecha'        => @$reservacion->fecha,
-                    'cliente'      => @$reservacion->nombre_cliente,
-                    'personas'     => $numeroPersonas,
-                    'notas'        => @$reservacion->comentarios,
-                    'estatus'      => @$reservacion->comentarios,
-                    'cortesia'     => @($reservacion->descuentoCodigo->id > 0) ? 'Cortesia' : '',
-                    'estatusPago'  => @$reservacion->estatus_pago
-                ];
-            }
-            return json_encode(['data' => $reservacionDetalleArray]);
-        }else{
-            $estados        = Estado::all();
-            $alojamientos   = Alojamiento::orderBy('nombre','asc')->get();
-            $actividades    = Actividad::whereRaw('NOW() >= fecha_inicial')
-                                ->whereRaw('NOW() <= fecha_final')
-                                ->orWhere('duracion','indefinido')
-                                ->get();
-
-            $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-                $query
-                ->where('comisionista_cerrador',1);
-            })->get();
-                
-            $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-                $query
-                ->where('comisionista_canal',0)
-                ->where('comisionista_actividad',0)
-                ->where('comisionista_cerrador',0);
-            })->get();
-    
-            $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-                $query
-                ->where('comisionista_actividad',1);
-            })->get();
-
-            $dolarPrecio   = TipoCambio::where('seccion_uso', 'general')->first();
-            return view('reservaciones.show',['reservacion' => $reservacion,'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores, 'comisionistasActividad' => $comisionistasActividad]);
+        if(!is_null($request->fecha)){
+            switch (@$request->fecha) {
+                case 'dia':
+                    $fechaInicio = date('Y-m-d')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    break;
+                case 'mes':
+                    $fechaInicio = date('Y-01-d')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    break;
+                case 'custom':
+                    $fechaInicio = $request->fechaInicio." 00:00:00";
+                    $fechaFinal  = $request->fechaFinal." 23:59:00";
+                    break;
+            }   
         }
+        
+        DB::enableQueryLog();
+        $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
+                $query->where("nombre",'like',"%CORTESIA%");
+            }])->orderByDesc('id')->where('estatus',1)->get();
+        //dd(DB::getQueryLog());
+    
+
+        $reservacionDetalleArray = [];
+        foreach($reservaciones as $reservacion){ 
+            $numeroPersonas = 0;
+            $horario        = "";
+            $actividades    = "";
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $numeroPersonas += $reservacionDetalle->numero_personas;
+                $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
+                $actividades     = ($actividades != "" ? $actividades.", " : "").@$reservacionDetalle->actividad->nombre;
+            }
+            $reservacionDetalleArray[] = [
+                'id'           => @$reservacion->id,
+                'folio'        => @$reservacion->folio,
+                'actividad'    => $actividades,
+                'horario'      => $horario,
+                'fechaCreacion' => @$reservacion->fecha_creacion,
+                'fecha'        => @$reservacion->fecha,
+                'cliente'      => @$reservacion->nombre_cliente,
+                'personas'     => $numeroPersonas,
+                'notas'        => @$reservacion->comentarios,
+                'estatus'      => @$reservacion->comentarios,
+                'cortesia'     => @($reservacion->descuentoCodigo->id > 0) ? 'Cortesia' : '',
+                'estatusPago'  => @$reservacion->estatus_pago
+            ];
+        }
+        
+        return json_encode(['data' => $reservacionDetalleArray]);
     }
     /**
      * Show the form for editing the specified resource.

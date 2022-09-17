@@ -71,7 +71,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::post('reservaciones/removeDescuento', 'removeDescuento');
     Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
     Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
-    Route::get('reservaciones/show/{reservacion?}', 'show');
+    Route::post('reservaciones/show/{reservacion?}', 'show');
     Route::resource('reservaciones',ReservacionController::class, [
         'parameters' => [
             'reservaciones' => 'reservacion'
