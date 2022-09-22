@@ -4,18 +4,23 @@
       <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
       <div class="az-menu-sub">
         <nav class="nav">
+          @can('Reportes.CorteCaja.index')
           <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
+          @endcan
+          @can('Reportes.Reservaciones.index')
           <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-reservaciones" data-bs-target="#reportes-modal">Reservaciones</a>
+          @endcan
+          @can('Reportes.Comisiones.index')
           <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
+          @endcan
         </nav>
       </div>
     </li>
     @endcan
 
-    <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
+    <li class="nav-item {{url()->current() == url('checkin') ? 'active' : ''}}">
       <a href="{{ url('checkin') }}" class="nav-link"><i class="typcn typcn-tick-outline"></i> Check-in</a>
     </li>
-
 
     @can('Disponibilidad.index')
     <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
@@ -39,10 +44,11 @@
     </li>
     @endcan
 
-
+    @can('Comisiones.index')
     <li class="nav-item {{url()->current() == url('comisiones') ? 'active' : ''}}">
       <a href="{{ url('comisiones') }}" class="nav-link"><i class="typcn typcn-group-outline"></i> Comisiones</a>
     </li>
+    @endcan
 
     <li class="nav-item">
       <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>

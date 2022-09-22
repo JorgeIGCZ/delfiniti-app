@@ -143,6 +143,7 @@
                     },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
+                            let view       = ''; 
                             let estatusRow = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 if(row.estatus){
@@ -151,10 +152,12 @@
                                     estatusRow = `| <a href="#!" onclick="updateDescuentoCodigoEstatus(${row.id},1)" >Reactivar</a>`;
                                 }
                             //}
-                            let view    =   `<small> 
+                            @can('CodigosDescuento.update')
+                            view    =   `<small> 
                                                 <a href="descuentocodigos/${row.id}/edit">Editar</a>
                                                 ${estatusRow}
                                             </small>`;
+                            @endcan
                             return  view;
                         }
                     }

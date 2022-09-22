@@ -62,6 +62,7 @@
                     },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
+                            let view       = '';
                             let estatusRow = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 // if(row.estatus){
@@ -73,9 +74,11 @@
                             if(row.estatus == 1){
                                 estatusRow = `<a href="comisiones/${row.id}/edit">Editar</a>`;
                             }
-                            let view    =   `<small> 
-                                                ${estatusRow}
-                                            </small>`;
+                            @can('Actividades.update')
+                            view    =   `<small> 
+                                        ${estatusRow}
+                                    </small>`;
+                            @endcan
                             return  view;
                         }
                     }
