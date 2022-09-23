@@ -317,7 +317,7 @@ class ReservacionController extends Controller
     public function show(Request $request)
     {
         $fechaInicio = date('Y-m-d')." 00:00:00";
-        $fechaFinal  = date('Y-m-d');
+        $fechaFinal  = date('Y-m-d')." 23:59:00";
 
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
@@ -326,7 +326,7 @@ class ReservacionController extends Controller
                     $fechaFinal  = date('Y-m-d')." 23:59:00";
                     break;
                 case 'mes':
-                    $fechaInicio = date('Y-01-d')." 00:00:00";
+                    $fechaInicio = date('Y-m-01')." 00:00:00";
                     $fechaFinal  = date('Y-m-d')." 23:59:00";
                     break;
                 case 'custom':
