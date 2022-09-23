@@ -83,8 +83,8 @@
                 const seleccion = event.target.value;
                 const rangoFecha = document.getElementById('rango-fecha');
 
-                document.getElementById('end_date').value = null;
-                document.getElementById('start_date').value = null;
+                $('#start_date').datepicker('setDate', null);
+                $('#end_date').datepicker('setDate', null);
 
                 rangoFecha.style.display = "none";
                 if(seleccion !== "custom"){
