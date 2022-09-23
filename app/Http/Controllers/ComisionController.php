@@ -210,15 +210,33 @@ class ComisionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Comision  $comision
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Comision $comision)
+    public function show(Request $request)
     {
-        // dd($comision);
+        $fechaInicio = date('Y-m-d')." 00:00:00";
+        $fechaFinal  = date('Y-m-d')." 23:59:00";
+
+        if(!is_null($request->fecha)){
+            switch (@$request->fecha) {
+                case 'dia':
+                    $fechaInicio = date('Y-m-d')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    break;
+                case 'mes':
+                    $fechaInicio = date('Y-m-01')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    break;
+                case 'custom':
+                    $fechaInicio = $request->fechaInicio." 00:00:00";
+                    $fechaFinal  = $request->fechaFinal." 23:59:00";
+                    break;
+            }   
+        }
         // if(is_null($comision)){
 
-            $comisiones      = Comision::whereHas('reservacion',function ($query){
+            $comisiones      = Comision::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
                 $query
                     ->where("estatus", 1);
             })->orderBy('id','desc')->get();
