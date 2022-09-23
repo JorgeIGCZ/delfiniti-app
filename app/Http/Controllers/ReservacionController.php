@@ -311,7 +311,7 @@ class ReservacionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Reservacion  $reservacion
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request)
@@ -337,7 +337,7 @@ class ReservacionController extends Controller
         }
         
         DB::enableQueryLog();
-        $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
+        $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
                 $query->where("nombre",'like',"%CORTESIA%");
             }])->orderByDesc('id')->where('estatus',1)->get();
         //dd(DB::getQueryLog());
@@ -359,7 +359,7 @@ class ReservacionController extends Controller
                 'actividad'    => $actividades,
                 'horario'      => $horario,
                 'fechaCreacion' => @$reservacion->fecha_creacion,
-                'fecha'        => @$reservacion->fecha,
+                'fecha'        => @date_format($reservacion->fecha,'d-m-Y'),
                 'cliente'      => @$reservacion->nombre_cliente,
                 'personas'     => $numeroPersonas,
                 'notas'        => @$reservacion->comentarios,
