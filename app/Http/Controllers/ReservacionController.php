@@ -337,7 +337,7 @@ class ReservacionController extends Controller
         }
         
         DB::enableQueryLog();
-        $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
+        $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
                 $query->where("nombre",'like',"%CORTESIA%");
             }])->orderByDesc('id')->where('estatus',1)->get();
         //dd(DB::getQueryLog());
@@ -359,7 +359,7 @@ class ReservacionController extends Controller
                 'actividad'    => $actividades,
                 'horario'      => $horario,
                 'fechaCreacion' => @$reservacion->fecha_creacion,
-                'fecha'        => @date_format($reservacion->fecha,'d-m-Y'),
+                'fecha'        => @date_format($reservacion->created_at,'d-m-Y'),
                 'cliente'      => @$reservacion->nombre_cliente,
                 'personas'     => $numeroPersonas,
                 'notas'        => @$reservacion->comentarios,
