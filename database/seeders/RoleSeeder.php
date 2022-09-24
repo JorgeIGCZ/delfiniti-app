@@ -16,7 +16,8 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        Table::truncate();
+        Role::truncate();
+        Permission::truncate();
 
         $administrador = Role::create(['name' => 'Administrador']);
         $supervisor    = Role::create(['name' => 'Supervisor']);
