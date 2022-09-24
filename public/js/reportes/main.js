@@ -22,7 +22,7 @@ if(reporteComisiones !== null){
     });
 }
 if(crearReporte !== null){
-    crearReporte.ddEventListener('click', (event) => {
+    crearReporte.addEventListener('click', (event) => {
         event.preventDefault();
     
         const fechaInicio = document.getElementById('report-fecha-inicio').value;
