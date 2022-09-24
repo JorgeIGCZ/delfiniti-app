@@ -20,8 +20,8 @@ class RoleSeeder extends Seeder
         $administrador = Role::create(['name' => 'Administrador']);
         $supervisor    = Role::create(['name' => 'Supervisor']);
         $recepcion     = Role::create(['name' => 'Recepcion']);
-        $mercadotecnia = Role::create(['name' => 'mercadotecnia']);
-        $contabilidad  = Role::create(['name' => 'contabilidad']);
+        $mercadotecnia = Role::create(['name' => 'Mercadotecnia']);
+        $contabilidad  = Role::create(['name' => 'Contabilidad']);
 
         Permission::create(['name' => 'Reportes.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);

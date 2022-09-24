@@ -312,8 +312,8 @@
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="agente" class="col-form-label">Reservado por</label>
                                                 <select name="agente" class="form-control" tabindex="11">
-                                                    <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
-                                                        {{Auth::user()->name}} ({{Auth::user()->email}})
+                                                    <option value="{{$reservacion->agente->id}}" usuario="{{$reservacion->agente->username}}" selected="selected" disabled="disabled">
+                                                        {{$reservacion->agente->name}} ({{$reservacion->agente->email}})
                                                     </option>
                                                 </select>
                                             </div>

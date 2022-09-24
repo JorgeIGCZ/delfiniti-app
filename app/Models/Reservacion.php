@@ -60,6 +60,11 @@ class Reservacion extends Model
     {
         return $this->hasOne(Comisionista::class,'id','comisionista_id');
     }
+
+    public function agente()
+    {
+        return $this->hasOne(Usuario::class,'id','agente_id');
+    }
     
     public function actividad()
     {
