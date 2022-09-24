@@ -63,7 +63,7 @@ class Reservacion extends Model
 
     public function agente()
     {
-        return $this->hasOne(Usuario::class,'id','agente_id');
+        return $this->hasOne(User::class,'id','agente_id');
     }
     
     public function actividad()
