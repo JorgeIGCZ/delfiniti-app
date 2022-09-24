@@ -229,7 +229,7 @@
                         <strong>Comisiones</strong>
                         <div class="checkbox checkbox-primary">
                             <input name="Comisiones.index" type="checkbox" >
-                            <label for="Comisiones.ver">
+                            <label for="Comisiones.index">
                                 ver
                             </label>
                         </div>
@@ -294,20 +294,20 @@
                     <div class="col-md-2">
                         <strong>Comisionistas</strong>
                         <div class="checkbox checkbox-primary">
-                            <input name="Comisiones.index" type="checkbox" >
-                            <label for="Comisiones.index">
+                            <input name="Comisionista.index" type="checkbox" >
+                            <label for="Comisionista.index">
                                 Ver 
                             </label>
                         </div>
                         <div class="checkbox checkbox-primary">
-                            <input name="Comisiones.create" type="checkbox" >
-                            <label for="Comisiones.create">
+                            <input name="Comisionista.create" type="checkbox" >
+                            <label for="Comisionista.create">
                                 Crear 
                             </label>
                         </div>
                         <div class="checkbox checkbox-primary">
-                            <input name="Comisiones.update" type="checkbox" >
-                            <label for="Comisiones.update">
+                            <input name="Comisionista.update" type="checkbox" >
+                            <label for="Comisionista.update">
                                 Modificar 
                             </label>
                         </div>
