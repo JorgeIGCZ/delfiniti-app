@@ -104,6 +104,16 @@
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <label for="fecha">Estatus</label>
+                    <select class="form-control fecha" name="fecha" id="fecha">
+                        <option value="1" selected="selected">Check-In Dia Actual</option>
+                        <option value="2">Check-In Futuros</option>
+                        <option value="3">Check-In Pasados (No Registrados)</option>
+                    </select>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
