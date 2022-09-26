@@ -4,9 +4,22 @@
         let descuentocodigosTable;
         
         $(function(){
-            descuentocodigosTable = new DataTable('#comisiones', {
+            $('.input-daterange').datepicker({
+                format: 'yyyy/mm/dd',
+                language: 'es'
+            }).on("change", function() {
+                isFechaRangoValida();
+            });
+
+            const descuentocodigosTable = new DataTable('#comisiones', {
                 ajax: function (d,cb,settings) {
-                    axios.get('/comisiones/show')
+                    const reservaciones = document.getElementById('reservaciones-form');
+                    axios.post('/comisiones/show',{
+                        '_token'  : '{{ csrf_token() }}',
+                        "fecha"   : reservaciones.elements['fecha'].value,
+                        "fechaInicio"  : reservaciones.elements['start_date'].value,
+                        "fechaFinal"  : reservaciones.elements['end_date'].value
+                    })
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -62,6 +75,7 @@
                     },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
+                            let view       = '';
                             let estatusRow = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 // if(row.estatus){
@@ -73,15 +87,48 @@
                             if(row.estatus == 1){
                                 estatusRow = `<a href="comisiones/${row.id}/edit">Editar</a>`;
                             }
-                            let view    =   `<small> 
-                                                ${estatusRow}
-                                            </small>`;
+                            @can('Actividades.update')
+                            view    =   `<small> 
+                                        ${estatusRow}
+                                    </small>`;
+                            @endcan
                             return  view;
                         }
                     }
                 ]
             } );
-            
+            document.getElementById('fecha_reservacion').addEventListener('change', (event) =>{
+                const seleccion = event.target.value;
+                const rangoFecha = document.getElementById('rango-fecha');
+
+                $('#start_date').datepicker('setDate', null);
+                $('#end_date').datepicker('setDate', null);
+
+                rangoFecha.style.display = "none";
+                if(seleccion !== "custom"){
+                    descuentocodigosTable.ajax.reload();
+                    return;
+                }
+                rangoFecha.style.display = "block";
+            });
+
+            document.getElementById('start_date').addEventListener('change', (event) =>{
+                const fechaInicio = event.target.value;
+                const fechaFinal = document.getElementById('end_date').value;
+                if(fechaInicio !== "" && fechaFinal !== ""){
+                    descuentocodigosTable.ajax.reload();
+                    return;
+                }
+            });
+
+            function isFechaRangoValida(){
+                const fechaInicio = document.getElementById('end_date').value;
+                const fechaFinal = document.getElementById('start_date').value;
+                if(fechaInicio !== "" && fechaFinal !== ""){
+                    descuentocodigosTable.ajax.reload();
+                    return;
+                }
+            }
         });
     </script>
 @endsection
@@ -94,26 +141,24 @@
 
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
-
-            <div class="form-row">
+             <form class="row g-3 align-items-center f-auto" id="reservaciones-form" method="GET">
                 <div class="form-group col-md-2">
                     <label for="fecha">Fecha</label>
-                    <select class="form-control fecha" name="fecha" id="fecha">
-                        <option value="1" selected="selected">Día Actual</option>
-                        <option value="2">Semana Actual</option>
-                        <option value="2">Mes Actual</option>
-                        <option value="3">Rango</option>
+                    <select class="form-control fecha" name="fecha" id="fecha_reservacion">
+                        <option value="dia" selected="selected">Día Actual</option>
+                        <option value="mes">Mes Actual</option>
+                        <option value="custom">Rango</option>
                     </select>
                 </div>
                 <div class="form-group col-md-3" id="rango-fecha" style="display: none;">
-                    <div class="input-group input-daterange mt-4">
-                        <label for="fecha">Rango</label>
-                        <input id="start_date" name="start_date" type="text" class="form-control" readonly="readonly" placeholder="mm/dd/yyyy"> 
-                        <span class="input-group-addon" style="padding: 8px;">Al</span> 
-                        <input id="end_date" name="end_date" type="text" class="form-control" readonly="readonly" placeholder="mm/dd/yyyy">
+                    <label for="fecha">Mes</label>
+                    <div class="input-group input-daterange">
+                        <input id="start_date" name="start_date" type="text" class="form-control" readonly="readonly" placeholder="dd/mm/aaaa"> 
+                        <span class="input-group-addon" style="padding: 0 8px;align-self: center;background: none;border: none;">Al</span> 
+                        <input id="end_date" name="end_date" type="text" class="form-control" readonly="readonly" placeholder="dd/mm/aaaa">
                     </div>
                 </div>
-            </div>
+            </form>
             <div class="card">
                 <div class="card-body">
                     <div class="row overflow-auto">

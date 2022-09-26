@@ -9,7 +9,7 @@
                 isFechaRangoValida();
             });
             
-            const comisionistasTable = new DataTable('#reservaciones', {
+            const reservacionesTable = new DataTable('#reservaciones', {
                 order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
                     const reservaciones = document.getElementById('reservaciones-form');
@@ -83,9 +83,12 @@
                 const seleccion = event.target.value;
                 const rangoFecha = document.getElementById('rango-fecha');
 
+                $('#start_date').datepicker('setDate', null);
+                $('#end_date').datepicker('setDate', null);
+
                 rangoFecha.style.display = "none";
                 if(seleccion !== "custom"){
-                    comisionistasTable.ajax.reload();
+                    reservacionesTable.ajax.reload();
                     return;
                 }
                 rangoFecha.style.display = "block";
@@ -95,7 +98,7 @@
                 const fechaInicio = event.target.value;
                 const fechaFinal = document.getElementById('end_date').value;
                 if(fechaInicio !== "" && fechaFinal !== ""){
-                    comisionistasTable.ajax.reload();
+                    reservacionesTable.ajax.reload();
                     return;
                 }
             });
@@ -104,7 +107,7 @@
                 const fechaInicio = document.getElementById('end_date').value;
                 const fechaFinal = document.getElementById('start_date').value;
                 if(fechaInicio !== "" && fechaFinal !== ""){
-                    comisionistasTable.ajax.reload();
+                    reservacionesTable.ajax.reload();
                     return;
                 }
             }

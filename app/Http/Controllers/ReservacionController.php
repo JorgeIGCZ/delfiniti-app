@@ -311,13 +311,13 @@ class ReservacionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Reservacion  $reservacion
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function show(Request $request)
     {
         $fechaInicio = date('Y-m-d')." 00:00:00";
-        $fechaFinal  = date('Y-m-d');
+        $fechaFinal  = date('Y-m-d')." 23:59:00";
 
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
@@ -326,7 +326,7 @@ class ReservacionController extends Controller
                     $fechaFinal  = date('Y-m-d')." 23:59:00";
                     break;
                 case 'mes':
-                    $fechaInicio = date('Y-01-d')." 00:00:00";
+                    $fechaInicio = date('Y-m-01')." 00:00:00";
                     $fechaFinal  = date('Y-m-d')." 23:59:00";
                     break;
                 case 'custom':
@@ -359,7 +359,7 @@ class ReservacionController extends Controller
                 'actividad'    => $actividades,
                 'horario'      => $horario,
                 'fechaCreacion' => @$reservacion->fecha_creacion,
-                'fecha'        => @$reservacion->fecha,
+                'fecha'        => @date_format($reservacion->created_at,'d-m-Y'),
                 'cliente'      => @$reservacion->nombre_cliente,
                 'personas'     => $numeroPersonas,
                 'notas'        => @$reservacion->comentarios,
