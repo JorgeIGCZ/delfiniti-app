@@ -13,6 +13,7 @@
     });
     
     function updateTpoCambio(tipoCambio){
+        $('.loader').show();
         axios.post(`/tiposcambio/${tipoCambio.elements['id'].value}`, {
             '_token'       : '{{ csrf_token() }}',
             '_method'      : 'put',
@@ -20,6 +21,7 @@
             "precio_venta"  : tipoCambio.elements['precio_venta'].value
         })
         .then(function (response) {
+            $('.loader').hide();
             if(response.data.result == "Success"){
                 Swal.fire({
                     icon: 'success',
@@ -37,6 +39,7 @@
             }
         })
         .catch(function (error) {
+            $('.loader').hide();
             Swal.fire({
                 icon: 'error',
                 title: 'Registro fallido',

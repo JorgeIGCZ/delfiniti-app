@@ -13,6 +13,7 @@
 
             const descuentocodigosTable = new DataTable('#comisiones', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     const reservaciones = document.getElementById('reservaciones-form');
                     axios.post('/comisiones/show',{
                         '_token'  : '{{ csrf_token() }}',
@@ -21,9 +22,11 @@
                         "fechaFinal"  : reservaciones.elements['end_date'].value
                     })
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 order: [[0, 'desc']],

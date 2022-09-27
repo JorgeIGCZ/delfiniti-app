@@ -20,12 +20,14 @@
             }) 
         }
         function updateCerradorEstatus(id,estatus){
+            $('.loader').show();
             axios.post(`cerradores/estatus/${id}`, {
                 '_token'  : '{{ csrf_token() }}',
                 'estatus' : estatus,
                 '_method' : 'PATCH'
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -44,6 +46,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Actualización fallida',
@@ -53,6 +56,7 @@
             }); 
         }
         function createComisionista(cerradores){
+            $('.loader').show();
             axios.post('/cerradores', {
                 '_token'  : '{{ csrf_token() }}',
                 "nombre"  : cerradores.elements['nombre'].value,
@@ -62,6 +66,7 @@
                 "telefono"     : cerradores.elements['telefono'].value
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -80,6 +85,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -91,11 +97,14 @@
         $(function(){
             cerradoresTable = new DataTable('#cerradores', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/cerradores/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

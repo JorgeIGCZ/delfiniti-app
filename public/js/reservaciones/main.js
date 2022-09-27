@@ -16,12 +16,14 @@ function validateActivarReservacion(){
 }
 function updateEstatusReservacion(accion){
     const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
+    $('.loader').show();
     axios.post('/reservaciones/updateestatusreservacion', {
         '_token': token(),
         'reservacionId': reservacionId(),
         'accion': accion,
     })
     .then(function (response) {
+        $('.loader').hide();
         if (response.data.result == 'Success') {
             Swal.fire({
                 icon: 'success',
@@ -39,6 +41,7 @@ function updateEstatusReservacion(accion){
         }
     })
     .catch(function (error) {
+        $('.loader').hide();
         Swal.fire({
             icon: 'error',
             title: `Autorización fallida E:${error.message}`,
@@ -47,6 +50,7 @@ function updateEstatusReservacion(accion){
     });
 }
 async function eliminarActividadReservacion(row,clave){
+    $('.loader').show();
     result = await axios.post('/reservaciones/removeActividad', {
         '_token': token(),
         'reservacionId': reservacionId(),
@@ -55,11 +59,13 @@ async function eliminarActividadReservacion(row,clave){
 
 
     if(result.data.result == "Success"){
+        $('.loader').hide();
         removeActividad(row);
         validateBotonGuardar();
         changeActividad();
         setTotal();
     }else{
+        $('.loader').hide();
         Swal.fire({
             icon: 'error',
             title: `Petición fallida`,
@@ -70,6 +76,7 @@ async function eliminarActividadReservacion(row,clave){
     return true;
 }
 async function eliminarDescuentoReservacion(row,pagoId){
+    $('.loader').show();
     result = await axios.post('/reservaciones/removeDescuento', {
         '_token': token(),
         'reservacionId': reservacionId(),
@@ -78,6 +85,7 @@ async function eliminarDescuentoReservacion(row,pagoId){
 
 
     if(result.data.result == "Success"){
+        $('.loader').hide();
         Swal.fire({
             icon: 'success',
             title: `Descuento eliminado!`,
@@ -86,6 +94,7 @@ async function eliminarDescuentoReservacion(row,pagoId){
         })
         location.reload();
     }else{
+        $('.loader').hide();
         Swal.fire({
             icon: 'error',
             title: `Petición fallida`,
@@ -234,17 +243,20 @@ function resetReservaciones() {
 }
 
 function validateDescuentoPersonalizado() {
+    $('.loader').show();
     axios.post('/reservaciones/getDescuentoPersonalizadoValidacion', {
         '_token': token(),
         'email': userEmail()
     })
         .then(function (response) {
+            $('.loader').hide();
             if (response.data.result == 'Success') {
                 $('#verificacion-modal').modal('hide');
                 setLimiteDescuentoPersonalizado(response.data.limite);
                 document.getElementById('add-descuento-personalizado').checked = true;
                 $('#descuento-personalizado').focus();
             } else {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: `Petición fallida`,
@@ -291,11 +303,13 @@ function getCodigoDescuento() {
     if (!formValidity('reservacion-form')) {
         return false;
     }
+    $('.loader').show();
     axios.post('/reservaciones/getCodigoDescuento', {
         '_token': token(),
         'codigoDescuento': reservacion.elements['codigo-descuento'].value
     })
         .then(function (response) {
+            $('.loader').hide();
             if (response.data.result == 'Success') {
                 if (response.data.descuento.descuento !== null) {
                     $('#verificacion-modal').modal('hide');
@@ -310,6 +324,7 @@ function getCodigoDescuento() {
                     setCodigoDescuento(null);
                 }
             } else {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: `Petición fallida`,

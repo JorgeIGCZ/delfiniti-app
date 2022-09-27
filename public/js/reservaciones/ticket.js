@@ -269,17 +269,19 @@ function imprimirTicket(id){
 }
 
 function saveTicket(reservacionId,ticket){
+    $('.loader').show();
     axios.post('/reservacionticket', {
         '_token': token(),
         'ticket': ticket,
         'reservacionId': reservacionId
     }).then(function (response) {
+        $('.loader').hide();
         if (response.data.result == 'Success') {
             
         } else {
            
         }
     }).catch(function (error) {
-        
+        $('.loader').hide();
     });
 }

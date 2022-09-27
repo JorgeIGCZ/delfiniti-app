@@ -39,6 +39,7 @@
         tipoUsuario     = tipoUsuario.options[tipoUsuario.selectedIndex].value;
         //const nombre          = reservacion.elements['reporte-corte-caja-ver'].value;
         //const codigoDescuento = reservacion.elements['codigo-descuento'].value;
+        $('.loader').show();
         axios.post('/roles', {
             '_token'                   : '{{ csrf_token() }}',
             'tipoUsuario'              : tipoUsuario,
@@ -94,6 +95,7 @@
             }
         })
         .then(function (response) {
+            $('.loader').hide();
             if(response.data.result == 'Success'){
                 Swal.fire({
                     icon: 'success',
@@ -110,6 +112,7 @@
             }
         })
         .catch(function (error) {
+            $('.loader').hide();
             Swal.fire({
                 icon: 'error',
                 title: `Actualización fallida E:${error.message}`,

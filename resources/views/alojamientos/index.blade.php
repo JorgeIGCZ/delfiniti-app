@@ -20,12 +20,14 @@
             }) 
         }
         function updateAlojaminetoEstatus(id,estatus){
+            $('.loader').show();
             axios.post(`alojamientos/estatus/${id}`, {
                 '_token'  : '{{ csrf_token() }}',
                 'estatus' : estatus,
                 '_method' : 'PATCH'
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -35,6 +37,7 @@
                     })
                     alojamientosTable.ajax.reload();
                 }else{
+                    $('.loader').hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Actualización fallida',
@@ -54,6 +57,7 @@
             });
         }
         function createAlojamiento(alojamientos){
+            $('.loader').show();
             axios.post('/alojamientos', {
                 '_token'   : '{{ csrf_token() }}',
                 "codigo"   : alojamientos.elements['codigo'].value,
@@ -62,6 +66,7 @@
                 "telefono" : alojamientos.elements['telefono'].value
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -80,6 +85,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -91,11 +97,14 @@
         $(function(){
             alojamientosTable = new DataTable('#alojamientos', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/alojamientos/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

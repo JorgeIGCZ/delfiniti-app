@@ -20,12 +20,14 @@
             }) 
         }
         function updateActividadEstatus(id,estatus){
+            $('.loader').show();
             axios.post(`actividades/estatus/${id}`, {
                 '_token'  : '{{ csrf_token() }}',
                 'estatus' : estatus,
                 '_method' : 'PATCH'
             })
             .then(function (response) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'success',
                     title: 'Registro actualizado',
@@ -35,6 +37,7 @@
                 actividadesTable.ajax.reload();
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Actualización fallida',
@@ -58,6 +61,7 @@
                 horario_inicial.push(actividades.elements['horario_inicial[]'].value);
                 horario_final.push(actividades.elements['horario_final[]'].value);
             }
+            $('.loader').show();
             axios.post('/actividades', {
                 '_token'         : '{{ csrf_token() }}',
                 "clave"          : actividades.elements['clave'].value,
@@ -71,6 +75,7 @@
                 "horarioFinal"   : horario_final
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -89,6 +94,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -175,11 +181,14 @@
             });
             actividadesTable = new DataTable('#actividades', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/actividades/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

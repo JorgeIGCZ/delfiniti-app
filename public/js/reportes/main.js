@@ -45,7 +45,7 @@ if(crearReporte !== null){
                 documentPath = `/Reportes/comisiones/comisiones.xlsx`;
                 break;
         }
-    
+        $('.loader').show();
         $.ajax({
             type: 'POST',
             url: url,
@@ -57,9 +57,11 @@ if(crearReporte !== null){
                 'fechaFinal' : fechaFinal
             },
             success: function (result) {
+                $('.loader').hide();
                 window.open(documentPath, '_blank').focus();
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                $('.loader').hide();
                 Swal.fire({
                   icon: 'error',
                   title: 'Error',

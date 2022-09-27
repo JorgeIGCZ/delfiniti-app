@@ -51,12 +51,14 @@
             canalesventaTable.ajax.reload();
         }
         function createComisionista(canalesventa){
+            $('.loader').show();
             axios.post('/canalesventa', {
                 '_token'  : '{{ csrf_token() }}',
                 "nombre"  : canalesventa.elements['nombre'].value,
                 "comisionista_tipo"  : canalesventa.elements['comisionista_tipo'].value
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -75,6 +77,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -86,11 +89,14 @@
         $(function(){
             canalesventaTable = new DataTable('#comisionista-tipos', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/canalesventa/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

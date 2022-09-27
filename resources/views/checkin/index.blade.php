@@ -5,15 +5,18 @@
             const checkinTable = new DataTable('#checkin', {
                 order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     const checkin = document.getElementById('checkin-form');
                     axios.post('/checkin/show',{
                         '_token'  : '{{ csrf_token() }}',
                         'fecha'   : checkin.elements['fecha'].value
                     })
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 }, 
                 columns: [
@@ -71,12 +74,14 @@
         }
 
         function checkIn(id){
+            $('.loader').show();
             axios.post(`checkin/registro/${id}`, {
                 '_token'  : '{{ csrf_token() }}',
                 'estatus' : 1,
                 '_method' : 'PATCH'
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -95,6 +100,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Actualización fallida',

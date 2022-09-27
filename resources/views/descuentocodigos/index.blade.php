@@ -49,12 +49,14 @@
             }) 
         }
         function updateDescuentoCodigoEstatus(id,estatus){
+            $('.loader').show();
             axios.post(`descuentocodigos/estatus/${id}`, {
                 '_token'  : '{{ csrf_token() }}',
                 'estatus' : estatus,
                 '_method' : 'PATCH'
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -73,6 +75,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Actualización fallida',
@@ -85,6 +88,7 @@
         function createDescuentoCodigo(descuentocodigos){
             let tipo   = descuentocodigos.elements['tipo'];
             tipo       = tipo.options[tipo.selectedIndex].value;
+            $('.loader').show();
             axios.post('/descuentocodigos', {
                 '_token'  : '{{ csrf_token() }}',
                 "nombre"  : descuentocodigos.elements['nombre'].value,
@@ -92,6 +96,7 @@
                 "descuento": descuentocodigos.elements['descuento'].value,
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -110,6 +115,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -121,11 +127,14 @@
         $(function(){
             descuentocodigosTable = new DataTable('#descuentocodigos', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/descuentocodigos/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

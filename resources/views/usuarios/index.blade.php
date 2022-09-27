@@ -52,6 +52,7 @@
         function createUsuario(usuario){
             let rol   = usuario.elements['rol'];
             rol       = rol.options[rol.selectedIndex].value;
+            $('.loader').show();
             axios.post('/usuarios', {
                 '_token'  : '{{ csrf_token() }}',
                 "username": usuario.elements['username'].value,
@@ -62,6 +63,7 @@
                 "role"    : rol,
             })
             .then(function (response) {
+                $('.loader').hide();
                 if(response.data.result == "Success"){
                     Swal.fire({
                         icon: 'success',
@@ -80,6 +82,7 @@
                 }
             })
             .catch(function (error) {
+                $('.loader').hide();
                 Swal.fire({
                     icon: 'error',
                     title: 'Registro fallido',
@@ -103,11 +106,14 @@
         $(function(){
             usuariosTable = new DataTable('#usuarios', {
                 ajax: function (d,cb,settings) {
+                    $('.loader').show();
                     axios.get('/usuarios/show')
                     .then(function (response) {
+                        $('.loader').hide();
                         cb(response.data)
                     })
                     .catch(function (error) {
+                        $('.loader').hide();
                     });
                 },
                 columns: [

@@ -31,11 +31,13 @@ document.getElementById('alojamientos-form').addEventListener('submit', (event) 
 });
 
 function createAlojamiento(alojamientos){
+    $('.loader').show();
     axios.post('/alojamientos', {
         '_token'   : token(),
         "nombre"   : alojamientos.elements['nombre'].value
     })
     .then(function (response) {
+        $('.loader').hide();
         if(response.data.result == "Success"){
             Swal.fire({
                 icon: 'success',
@@ -55,6 +57,7 @@ function createAlojamiento(alojamientos){
         }
     })
     .catch(function (error) {
+        $('.loader').hide();
         Swal.fire({
             icon: 'error',
             title: 'Registro fallido',
@@ -79,7 +82,7 @@ function createReservacion(estatus) {
         'tarjeta': reservacion.elements['tarjeta'].getAttribute('value'),
         'cambio': reservacion.elements['cambio'].getAttribute('value'),
     };
-
+    $('.loader').show();
     axios.post('/reservaciones', {
         '_token': token(),
         'nombre': reservacion.elements['nombre'].value,
@@ -114,6 +117,7 @@ function createReservacion(estatus) {
         'estatus': estatus,
         'reservacionArticulos': actvidadesArray
     }).then(function (response) {
+        $('.loader').hide();
         if (response.data.result == 'Success') {
             Swal.fire({
                 icon: 'success',
@@ -131,6 +135,7 @@ function createReservacion(estatus) {
                 }
             });
         } else {
+            $('.loader').hide();
             Swal.fire({
                 icon: 'error',
                 title: `Reservacion fallida`,

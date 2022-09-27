@@ -91,6 +91,7 @@ function createReservacion(estatus) {
         'tarjeta': reservacion.elements['tarjeta'].getAttribute('value'),
         'cambio': reservacion.elements['cambio'].getAttribute('value'),
     };
+    $('.loader').show();
     axios.post(`/reservaciones/${reservacionId()}`, {
         '_token': token(),
         '_method': 'PATCH',
@@ -128,6 +129,7 @@ function createReservacion(estatus) {
         'reservacionArticulos': actvidadesArray
     })
         .then(function (response) {
+            $('.loader').hide();
             if (response.data.result == 'Success') {
                 if (estatus === 'pagar') {
                     Swal.fire({
@@ -159,6 +161,7 @@ function createReservacion(estatus) {
             }
         })
         .catch(function (error) {
+            $('.loader').hide();
             Swal.fire({
                 icon: 'error',
                 title: `Reservacion fallida E:${error.message}`,
