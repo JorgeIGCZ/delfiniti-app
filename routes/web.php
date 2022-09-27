@@ -163,7 +163,7 @@ Route::controller(ComisionController::class)->middleware(['auth'])->group(functi
 });
 
 Route::controller(CheckinController::class)->middleware(['auth'])->group(function () {
-    Route::get('checkin/show/{reservacion?}', 'show');
+    Route::post('checkin/show/{reservacion?}', 'show');
     Route::patch('checkin/registro/{reservacion}', 'registroVisita');
     Route::resource('checkin',CheckinController::class, [
         'parameters' => [

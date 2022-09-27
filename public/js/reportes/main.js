@@ -10,7 +10,7 @@ if(reporteCorteCaja !== null){
     });
 }
 if(reporteReservaciones !== null){
-    reporteReservaciones.document.getElementById('reporte-reservaciones').addEventListener('click', (event) => {
+    reporteReservaciones.addEventListener('click', (event) => {
         event.preventDefault();
         document.getElementById('crear-reporte').setAttribute('action','reservaciones');
     });

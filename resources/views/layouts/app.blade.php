@@ -55,6 +55,7 @@
     </script>
   </head>
   <body>
+    <div class="loader" style="display: none;"><img src="/assets/img/loader.svg" height="80" alt="loader"></div>
     @include('layouts.header')
     <div class="az-content az-content-dashboard">
       <div class="container">

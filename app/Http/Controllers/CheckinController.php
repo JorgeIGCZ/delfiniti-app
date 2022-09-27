@@ -45,35 +45,54 @@ class CheckinController extends Controller
      * @param  \App\Models\Reservacion  $reservacion
      * @return \Illuminate\Http\Response
      */
-    public function show(Reservacion  $reservacion = null)
+    public function show(Request $request)
     {   
-        if(is_null($reservacion)){
-            $reservaciones           = Reservacion::where('fecha',date("Y-m-d"))->where('estatus',1)->orderByDesc('id')->get();
-            $reservacionDetalleArray = [];
-            foreach($reservaciones as $reservacion){
-                $numeroPersonas = 0;
-                $horario        = "";
-                $actividades    = "";
-                foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                    $numeroPersonas += $reservacionDetalle->numero_personas;
-                    $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
-                    $actividades     = ($actividades != "" ? $actividades.", " : "").@$reservacionDetalle->actividad->nombre;
-                }
-                $reservacionDetalleArray[] = [
-                    'id'           => @$reservacion->id,
-                    'folio'        => @$reservacion->folio,
-                    'actividad'    => $actividades,
-                    'horario'      => $horario,
-                    'fechaCreacion' => @$reservacion->fecha_creacion,
-                    'fecha'        => @$reservacion->fecha,
-                    'cliente'      => @$reservacion->nombre_cliente,
-                    'personas'     => $numeroPersonas,
-                    'notas'        => @$reservacion->comentarios,
-                    'checkin'      => @$reservacion->check_in
-                ];
+        $fechaInicio = date('Y-m-d')." 00:00:00";
+        $fechaFinal  = date('Y-m-d')." 23:59:00";
+
+        if(!is_null($request->fecha)){
+            switch (@$request->fecha) {
+                case 'diaActual':
+                    $fechaInicio = date('Y-m-d')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
+                    break;
+                case 'futuros':
+                    $fechaInicio = date('Y-m-d')." 00:00:00";
+                    $fechaFinal  = date('9999-m-d')." 23:59:00";
+                    break;
+                case 'pasados':
+                    $fechaInicio = date('1970-m-d')." 00:00:00";
+                    $fechaFinal  = date('Y-m-d')." 00:00:00";
+                    $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderByDesc('id')->get();
+                    break;
             }   
-            return json_encode(['data' => $reservacionDetalleArray]);
         }
+
+        $reservacionDetalleArray = [];
+        foreach($reservaciones as $reservacion){
+            $numeroPersonas = 0;
+            $horario        = "";
+            $actividades    = "";
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                $numeroPersonas += $reservacionDetalle->numero_personas;
+                $horario         = ($horario != "" ? $horario.", " : "").@$reservacionDetalle->horario->horario_inicial;
+                $actividades     = ($actividades != "" ? $actividades.", " : "").@$reservacionDetalle->actividad->nombre;
+            }
+            $reservacionDetalleArray[] = [
+                'id'            => @$reservacion->id,
+                'folio'         => @$reservacion->folio,
+                'actividad'     => $actividades,
+                'horario'       => $horario,
+                'fechaCreacion' => @$reservacion->fecha_creacion,
+                'fecha'         => @$reservacion->fecha,
+                'cliente'       => @$reservacion->nombre_cliente,
+                'personas'      => $numeroPersonas,
+                'notas'         => @$reservacion->comentarios,
+                'checkin'       => @$reservacion->check_in
+            ];
+        }   
+        return json_encode(['data' => $reservacionDetalleArray]);
     }
 
     /**

@@ -2,10 +2,14 @@
 @section('scripts')
     <script>
         $(function(){
-            checkinTable = new DataTable('#reservaciones', {
+            const checkinTable = new DataTable('#checkin', {
                 order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
-                    axios.get('/checkin/show')
+                    const checkin = document.getElementById('checkin-form');
+                    axios.post('/checkin/show',{
+                        '_token'  : '{{ csrf_token() }}',
+                        'fecha'   : checkin.elements['fecha'].value
+                    })
                     .then(function (response) {
                         cb(response.data)
                     })
@@ -42,6 +46,11 @@
                     }
                 ]
             } );
+
+            document.getElementById('fecha_checkin').addEventListener('change', (event) =>{
+                checkinTable.ajax.reload();
+                return;
+            });
         } );
 
         function verificacionCheckIn(id){
@@ -104,21 +113,21 @@
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
-            <div class="form-row">
+            <form class="row g-3 align-items-center f-auto" id="checkin-form" method="GET">
                 <div class="form-group col-md-2">
-                    <label for="fecha">Estatus</label>
-                    <select class="form-control fecha" name="fecha" id="fecha">
-                        <option value="1" selected="selected">Check-In Dia Actual</option>
-                        <option value="2">Check-In Futuros</option>
-                        <option value="3">Check-In Pasados (No Registrados)</option>
+                    <label for="fecha">Fecha</label>
+                    <select class="form-control fecha" name="fecha" id="fecha_checkin">
+                        <option value="diaActual" selected="selected">Check-In Dia Actual</option>
+                        <!--option value="futuros">Check-In Futuros</option-->
+                        <option value="pasados">Check-In Pasados (No Registrados)</option>
                     </select>
                 </div>
-            </div>
+            </form>
             <div class="card">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
                         <div class="col-12">
-                            <table id="reservaciones" class="display" style="width:100%">
+                            <table id="checkin" class="display" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
