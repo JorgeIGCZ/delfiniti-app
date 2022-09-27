@@ -255,7 +255,7 @@
                             </div>
                             <div class="form-group col-4">
                                 <label for="nombre" class="col-form-label">Nombre actividad</label>    
-                                <input type="text" name="nombre" class="form-control" required="required">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
                             </div>
                             <div class="form-group col-1">
                                 <label for="precio" class="col-form-label">Precio</label>    

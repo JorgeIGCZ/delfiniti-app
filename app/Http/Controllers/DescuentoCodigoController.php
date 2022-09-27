@@ -29,7 +29,7 @@ class DescuentoCodigoController extends Controller
         try {
             $codigodescuento = DescuentoCodigo::create([
                 'codigo'        => $request->codigo,
-                'nombre'        => $request->nombre,
+                'nombre'        => strtoupper($request->nombre),
                 'tipo'          => $request->tipo,
                 'descuento'     => $request->descuento
             ]);
@@ -88,7 +88,7 @@ class DescuentoCodigoController extends Controller
     {
         try {
             $codigodescuento           = DescuentoCodigo::find($id);
-            $codigodescuento->nombre   = $request->nombre;
+            $codigodescuento->nombre   = strtoupper($request->nombre);
             $codigodescuento->tipo     = $request->tipo;
             $codigodescuento->descuento= $request->descuento;
             $codigodescuento->save();

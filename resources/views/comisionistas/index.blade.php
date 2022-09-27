@@ -277,7 +277,7 @@
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre comisionista</label>    
-                                <input type="text" name="nombre" class="form-control">  
+                                <input type="text" name="nombre" class="form-control to-uppercase">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
@@ -364,11 +364,11 @@
                             </div>
                             <div class="form-group col-5 mt-3 general-settings">
                                 <label for="representante" class="col-form-label">Representante</label>
-                                <input type="text" id="representante" class="form-control">
+                                <input type="text" id="representante" class="form-control to-uppercase">
                             </div>
                             <div class="form-group col-4 mt-3 general-settings">
                                 <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" id="direccion" class="form-control">
+                                <input type="text" id="direccion" class="form-control to-uppercase">
                             </div>
                             <div class="form-group col-3 mt-3 general-settings">
                                 <label for="telefono" class="col-form-label">Teléfono</label>

@@ -19,11 +19,11 @@
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Lugar de alojamiento</label>    
-                                <input type="text" name="nombre" class="form-control" value="{{$alojamiento->nombre}}" required="required">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" value="{{$alojamiento->nombre}}" required="required">  
                             </div>
                             <div class="form-group col-6 mt-3">
                                 <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" name="direccion" class="form-control" value="{{$alojamiento->direccion}}">
+                                <input type="text" name="direccion" class="form-control to-uppercase" value="{{$alojamiento->direccion}}">
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="telefono" class="col-form-label">Teléfono</label>

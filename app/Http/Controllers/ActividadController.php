@@ -68,7 +68,7 @@ class ActividadController extends Controller
 
             $actividad = Actividad::create([
                 'clave'           => $request->clave,
-                'nombre'          => $request->nombre,
+                'nombre'          => strtoupper($request->nombre),
                 'precio'       => $request->precio,
                 'capacidad'       => $request->capacidad,
                 'duracion'        => $request->duracion,
@@ -128,7 +128,7 @@ class ActividadController extends Controller
     {
         try{
             $actividad                  = Actividad::find($id);
-            $actividad->nombre          = $request->nombre;
+            $actividad->nombre          = strtoupper($request->nombre);
             $actividad->precio          = $request->precio;
             $actividad->capacidad       = $request->capacidad;
             $actividad->save();

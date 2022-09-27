@@ -27,10 +27,10 @@ class CerradorController extends Controller
     {
         try {
             $cerrador = Cerrador::create([
-                'nombre'        => $request->nombre,
+                'nombre'        => strtoupper($request->nombre),
                 'comision'      => $request->comision,
                 'iva'           => $request->iva,
-                'direccion'     => $request->direccion,
+                'direccion'     => strtoupper($request->direccion),
                 'telefono'      => $request->telefono
             ]);
         } catch (\Exception $e){
@@ -91,10 +91,10 @@ class CerradorController extends Controller
     {
         try {
             $cerrador           = Cerrador::find($id);
-            $cerrador->nombre   = $request->nombre;
+            $cerrador->nombre   = strtoupper($request->nombre);
             $cerrador->comision = $request->comision;
             $cerrador->iva      = $request->iva;
-            $cerrador->direccion = $request->direccion;
+            $cerrador->direccion = strtoupper($request->direccion);
             $cerrador->telefono = $request->telefono;
             $cerrador->save();
         } catch (\Exception $e){

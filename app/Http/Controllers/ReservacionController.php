@@ -159,15 +159,15 @@ class ReservacionController extends Controller
             //     return json_encode(['result' => 'Error','message' => 'No hay disponibilidad suficiente en la actividad seleccionada para ese horario.']);
             // }
             $reservacion = Reservacion::create([
-                'nombre_cliente'  => $request->nombre,
-                'email'           => $request->email,
-                'alojamiento'     => $request->alojamiento,
-                'origen'          => $request->origen,
+                'nombre_cliente'  => strtoupper($request->nombre),
+                'email'           => strtoupper($request->email),
+                'alojamiento'     => strtoupper($request->alojamiento),
+                'origen'          => strtoupper($request->origen),
                 'agente_id'       => is_numeric($request->agente) ? $request->agente : 0,
                 'comisionista_id' => is_numeric($request->comisionista) ? $request->comisionista : 0,
                 'comisionista_actividad_id' => is_numeric($request->comisionistaActividad) ? $request->comisionistaActividad : 0,
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
-                'comentarios'     => $request->comentarios,
+                'comentarios'     => strtoupper($request->comentarios),
                 'estatus_pago'    => $estatusPago,
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
@@ -492,15 +492,15 @@ class ReservacionController extends Controller
             $pagar    = ($request->estatus == "pagar");
 
             $reservacion                  = Reservacion::find($id);
-            $reservacion->nombre_cliente  = $request->nombre;
-            $reservacion->email           = $request->email;
-            $reservacion->alojamiento     = $request->alojamiento;
-            $reservacion->origen          = $request->origen;
+            $reservacion->nombre_cliente  = strtoupper($request->nombre);
+            $reservacion->email           = strtoupper($request->email);
+            $reservacion->alojamiento     = strtoupper($request->alojamiento);
+            $reservacion->origen          = strtoupper($request->origen);
             $reservacion->agente_id       = $request->agente;
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;
-            $reservacion->comentarios     = $request->comentarios;
+            $reservacion->comentarios     = strtoupper($request->comentarios);
             $reservacion->fecha           = $request->fecha;
             if($pagar){
                 $reservacion->estatus_pago = 1;

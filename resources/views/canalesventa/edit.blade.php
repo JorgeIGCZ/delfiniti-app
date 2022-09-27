@@ -19,7 +19,7 @@
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre de canal</label>    
-                                <input type="text" name="nombre" class="form-control" value="{{$canalVenta->nombre}}">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" value="{{$canalVenta->nombre}}">  
                             </div>
                             <!--div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Comisiones sobre tipo</label>

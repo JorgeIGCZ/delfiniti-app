@@ -47,8 +47,8 @@ class AlojamientoController extends Controller
 
             $alojamiento = Alojamiento::create([
                 'codigo'    => $request->codigo,
-                'nombre'    => $request->nombre,
-                'direccion' => $request->direccion,
+                'nombre'    => strtoupper($request->nombre),
+                'direccion' => strtoupper($request->direccion),
                 'telefono'  => $request->telefono,
             ]);
         } catch (\Exception $e){
@@ -95,8 +95,8 @@ class AlojamientoController extends Controller
     {
         try {
             $alojamiento            = Alojamiento::find($id);
-            $alojamiento->nombre    = $request->nombre;
-            $alojamiento->direccion = $request->direccion;
+            $alojamiento->nombre    = strtoupper($request->nombre);
+            $alojamiento->direccion = strtoupper($request->direccion);
             $alojamiento->telefono  = $request->telefono;
             $alojamiento->save();
         } catch (\Exception $e){

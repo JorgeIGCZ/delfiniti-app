@@ -39,7 +39,7 @@
                             <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control" value="{{$descuentocodigo->nombre}}">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" value="{{$descuentocodigo->nombre}}">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
