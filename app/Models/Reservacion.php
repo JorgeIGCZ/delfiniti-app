@@ -48,7 +48,7 @@ class Reservacion extends Model
 
     public function alojamiento()
     {
-        return $this->hasOne(Alojamiento::class,'id','alojamiento');
+        return $this->hasOne(Alojamiento::class,'alojamiento');
     }
 
     public function comisiones()

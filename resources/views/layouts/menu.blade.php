@@ -28,19 +28,16 @@
     </li>
     @endcan
 
+
+    @can('Reservaciones.create')
+    <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
+      <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
+    </li>
+    @endcan
+
     @can('Reservaciones.index')
-    <li class="nav-item">
-      <a href="#" class="nav-link with-sub"><i class="typcn typcn-credit-card"></i> Reservaciones</a>
-      <div class="az-menu-sub">
-        <nav class="nav">
-          @can('Reservaciones.create')
-          <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">Nueva reservación</a>
-          @endcan
-          @can('Reservaciones.index')
-          <a href="{{ url('reservaciones') }}" class="nav-link {{url()->current() == url('reservaciones') ? 'active' : ''}}">Ver reservaciones</a>
-          @endcan
-        </nav>
-      </div><!-- az-menu-sub -->
+    <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
+      <a href="{{ url('reservaciones') }}" class="nav-link {{url()->current() == url('reservaciones') ? 'active' : ''}}"><i class="typcn typcn-contacts"></i> Ver reservaciones</a>
     </li>
     @endcan
 
