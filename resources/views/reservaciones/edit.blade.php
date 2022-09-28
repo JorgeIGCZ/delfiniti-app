@@ -140,6 +140,13 @@
                     <h6>{{date_format(date_create($reservacion->fecha),"d/m/Y")}}</h6>
                 </div><!-- media-body -->
             </div><!-- media -->
+
+            <div class="media">
+                <div class="media-body">
+                    <a href="{{ url('reservaciones/create/'.$reservacion->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
+                </div>
+            </div>
+            
             @if($reservacion->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
@@ -159,7 +166,7 @@
             @if($reservacion->estatus)
                 <div class="media">
                     <div class="media-body">
-                        <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar reservación</button>
+                        <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar</button>
                     </div>
                 </div>
             @else
@@ -174,7 +181,7 @@
                     @if(count($tickets)>0)
                         <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Reimprimir Tickets
+                                Reimprimir
                             </button>
                             <div class="dropdown-menu tx-13" id="lista-tickets" aria-labelledby="dropdownMenuButton" style="">
                                 @foreach($tickets as $ticket)
@@ -417,7 +424,7 @@
                                                                 <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="efecname="agente"tivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="16">
+                                                                <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="16">
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
