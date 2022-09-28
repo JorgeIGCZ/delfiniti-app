@@ -26,11 +26,11 @@ class ReservacionDetalle extends Model
 
     public function actividad()
     {
-        return $this->hasOne(Actividad::class,'actividad_id');
+        return $this->hasOne(Actividad::class,'id','actividad_id');
     }
 
     public function horario()
     {
-        return $this->hasOne(ActividadHorario::class,'actividad_horario_id');
+        return $this->hasOne(ActividadHorario::class,'id','actividad_horario_id');
     }
 }

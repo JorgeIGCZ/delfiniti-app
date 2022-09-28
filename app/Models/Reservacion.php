@@ -31,7 +31,7 @@ class Reservacion extends Model
 
     public function facturas()
     {
-        return $this->hasOne(Factura::class,'reservacion_id');
+        return $this->hasOne(Factura::class,'id','reservacion_id');
     }
     public function pagos()
     {
@@ -48,7 +48,7 @@ class Reservacion extends Model
 
     public function alojamiento()
     {
-        return $this->hasOne(Alojamiento::class,'alojamiento');
+        return $this->hasOne(Alojamiento::class,'id','alojamiento');
     }
 
     public function comisiones()
@@ -58,12 +58,12 @@ class Reservacion extends Model
 
     public function comisionista()
     {
-        return $this->hasOne(Comisionista::class,'comisionista_id');
+        return $this->hasOne(Comisionista::class,'id','comisionista_id');
     }
 
     public function agente()
     {
-        return $this->hasOne(User::class,'agente_id');
+        return $this->hasOne(User::class,'id','agente_id');
     }
     
     public function actividad()

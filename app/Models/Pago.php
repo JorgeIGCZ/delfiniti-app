@@ -23,7 +23,7 @@ class Pago extends Model
 
     public function tipoPago()
     {
-        return $this->hasOne(TipoPago::class,'tipo_pago_id');
+        return $this->hasOne(TipoPago::class,'id','tipo_pago_id');
     }
 
     public function reservacion()
@@ -33,6 +33,6 @@ class Pago extends Model
 
     public function descuentoCodigo()
     {
-        return $this->hasOne(DescuentoCodigo::class,'descuento_codigo_id');
+        return $this->hasOne(DescuentoCodigo::class,'id','descuento_codigo_id');
     }
 }
