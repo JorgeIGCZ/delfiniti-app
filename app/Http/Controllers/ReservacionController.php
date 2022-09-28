@@ -335,11 +335,29 @@ class ReservacionController extends Controller
                     break;
             }   
         }
+
+        $estatus = [];
+        if(!is_null($request->estatus)){
+            switch (@$request->estatus) {
+                case 'todos':
+                    $estatus = [0,1,2];
+                    break;
+                case 'pendiente':
+                    $estatus = [0];
+                    break;
+                case 'parcial':
+                    $estatus = [1];
+                    break;
+                case 'pagado':
+                    $estatus = [2];
+                    break;
+            }   
+        }
         
         DB::enableQueryLog();
         $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
                 $query->where("nombre",'like',"%CORTESIA%");
-            }])->orderByDesc('id')->where('estatus',1)->get();
+            }])->orderByDesc('id')->where('estatus',1)->whereIn('estatus_pago',$estatus)->get();
         //dd(DB::getQueryLog());
     
 

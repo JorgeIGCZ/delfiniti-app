@@ -15,7 +15,8 @@
                     $('.loader').show();
                     const reservaciones = document.getElementById('reservaciones-form');
                     axios.post('/reservaciones/show',{
-                        '_token'  : '{{ csrf_token() }}',
+                        "_token"  : '{{ csrf_token() }}',
+                        "estatus" : reservaciones.elements['estatus'].value,
                         "fecha"   : reservaciones.elements['fecha'].value,
                         "fechaInicio"  : reservaciones.elements['start_date'].value,
                         "fechaFinal"  : reservaciones.elements['end_date'].value
@@ -101,6 +102,21 @@
                 rangoFecha.style.display = "block";
             });
 
+            document.getElementById('estatus_reservacion').addEventListener('change', (event) =>{
+                const seleccion = event.target.value;
+                const rangoFecha = document.getElementById('rango-fecha');
+
+                $('#start_date').datepicker('setDate', null);
+                $('#end_date').datepicker('setDate', null);
+
+                rangoFecha.style.display = "none";
+                if(seleccion !== "custom"){
+                    reservacionesTable.ajax.reload();
+                    return;
+                }
+                rangoFecha.style.display = "block";
+            });
+
             document.getElementById('start_date').addEventListener('change', (event) =>{
                 const fechaInicio = event.target.value;
                 const fechaFinal = document.getElementById('end_date').value;
@@ -148,7 +164,18 @@
                         <input id="end_date" name="end_date" type="text" class="form-control" readonly="readonly" placeholder="dd/mm/aaaa">
                     </div>
                 </div>
+
+                <div class="form-group col-md-2">
+                    <label for="estatus">Estatus</label>
+                    <select class="form-control estatus" name="estatus" id="estatus_reservacion">
+                        <option value="todos" selected="selected">Todos</option>
+                        <option value="parcial">Parcial</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="pagado">Pagado</option>
+                    </select>
+                </div>
             </form>
+            
             <div class="card">
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
