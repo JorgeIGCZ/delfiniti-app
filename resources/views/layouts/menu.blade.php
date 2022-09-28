@@ -30,13 +30,13 @@
 
 
     @can('Reservaciones.create')
-    <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
+    <li class="nav-item {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">
       <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
     </li>
     @endcan
 
     @can('Reservaciones.index')
-    <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
+    <li class="nav-item {{url()->current() == url('reservaciones') ? 'active' : ''}}">
       <a href="{{ url('reservaciones') }}" class="nav-link {{url()->current() == url('reservaciones') ? 'active' : ''}}"><i class="typcn typcn-contacts"></i> Ver reservaciones</a>
     </li>
     @endcan
