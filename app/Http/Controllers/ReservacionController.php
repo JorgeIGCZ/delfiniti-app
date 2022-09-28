@@ -46,7 +46,7 @@ class ReservacionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create(Reservacion $reservacion)
     {
         $estados          = Estado::all();
         $alojamientos     = Alojamiento::where('estatus',1)->orderBy('nombre','asc')->get();
@@ -78,7 +78,7 @@ class ReservacionController extends Controller
 
         $dolarPrecio    = TipoCambio::where('seccion_uso', 'general')->first();
 
-        return view('reservaciones.create',['estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo,'comisionistasActividad' => $comisionistasActividad]);
+        return view('reservaciones.create',['reservacion' => $reservacion, 'estados' => $estados,'actividades' => $actividades,'alojamientos' => $alojamientos,'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio, 'cerradores' => $cerradores,'descuentosCodigo' => $descuentosCodigo,'comisionistasActividad' => $comisionistasActividad]);
     }
 
     public function updateEstatusReservacion(Request $request){

@@ -98,11 +98,11 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1">
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
-                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2">
+                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2" value="{{$reservacion->email}}">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel
@@ -115,14 +115,14 @@
                                 <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
-                                        <option value="{{$alojamiento->id}}">{{$alojamiento->nombre}}</option>
+                                        <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento == $alojamiento->id ? 'selected="selected' : ""}}>{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4"/>
+                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$reservacion->origen}}"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}}">
@@ -244,7 +244,7 @@
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;"></textarea>
+                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>
                                             </div>
                                         </div>
                                     </div>

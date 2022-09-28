@@ -66,14 +66,18 @@
                     { data: 'notas' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
                         {
+                            let cloneRow = '';
                             let payRow = '';
                             let editRow   = '';
                             editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a>`;
+                            cloneRow = `| <a href="reservaciones/create/${row.id}">Clonar</a>`;
                             if(row.estatusPago !== 2){
                                 payRow = `| <a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
                             }
+
                             let view    =   `<small>
                                                 ${editRow}
+                                                ${cloneRow}
                                                 ${payRow}
                                             </small>`;
                             return  view;
