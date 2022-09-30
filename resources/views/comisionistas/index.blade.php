@@ -400,7 +400,7 @@
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="comisionistas" class="display" style="width:100%">
+                            <table id="comisionistas" class="display dt-responsive" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Código</th>

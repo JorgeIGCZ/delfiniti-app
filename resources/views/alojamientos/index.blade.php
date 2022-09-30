@@ -196,7 +196,7 @@
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="alojamientos" class="display table" style="width:100%">
+                            <table id="alojamientos" class="display dt-responsive" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Código</th>

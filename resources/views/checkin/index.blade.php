@@ -133,7 +133,7 @@
                 <div class="card-body">
                     <div class="row g-3 align-items-center">
                         <div class="col-12">
-                            <table id="checkin" class="display" style="width:100%">
+                            <table id="checkin" class="display dt-responsive" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Id</th>

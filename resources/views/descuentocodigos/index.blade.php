@@ -229,7 +229,7 @@
                 <div class="card-body">
                     <div class="row overflow-auto">
                         <div class="col-12">
-                            <table id="descuentocodigos" class="display" style="width:100%">
+                            <table id="descuentocodigos" class="display dt-responsive" style="width:100%">
                                 <thead>
                                     <tr>
                                         <th>Id</th>
