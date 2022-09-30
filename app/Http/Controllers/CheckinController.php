@@ -8,6 +8,10 @@ use App\Classes\CustomErrorHandler;
 
 class CheckinController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Checkin.index')->only('index');
+
+    }
     /**
      * Display a listing of the resource.
      *

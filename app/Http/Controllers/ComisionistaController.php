@@ -13,6 +13,10 @@ use App\Models\ComisionistaCanalActividad;
 
 class ComisionistaController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Comisionista.index')->only('index');
+        $this->middleware('permission:Comisionista.update')->only('edit'); 
+    }
     /**
      * Display a listing of the resource.
      *

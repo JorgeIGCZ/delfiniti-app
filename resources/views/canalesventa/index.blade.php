@@ -146,37 +146,39 @@
             <h2 class="az-dashboard-title">Canales de venta</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
-    <div class="row row-sm mg-b-20">
-        <div class="col-lg-12 ht-lg-100p">
-            <div class="card">
-                <div class="card-body"> 
-                    <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="comisionista-tipos-form">
-                            @csrf
-                            <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre de canal</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
-                            </div>
-                            <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Tipo</label>
-                                <select name="comisionista_tipo" id="comisionista_tipo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
-                                    <option value="" selected="true">COMISIONES GENERALES</option>
-                                    <option value="comisionesCanal" >COMISIONES SOBRE CANAL</option>
-                                    <option value="comisionesActividad" >COMISIONES SOBRE ACTIVIDAD</option>
-                                    <option value="comisionesCerrador" >CERRADOR</option>
-                                </select>
-                            </div>
 
-                            <div class="form-group col-3 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear canal</button>
-                            </div>
-                        </form>
+    @can('CanalesVenta.create')
+        <div class="row row-sm mg-b-20">
+            <div class="col-lg-12 ht-lg-100p">
+                <div class="card">
+                    <div class="card-body"> 
+                        <div class="container">
+                            <form class="row g-3 align-items-center f-auto" id="comisionista-tipos-form">
+                                @csrf
+                                <div class="form-group col-4 mt-3">
+                                    <label for="nombre" class="col-form-label">Nombre de canal</label>    
+                                    <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
+                                </div>
+                                <div class="form-group col-4 mt-3">
+                                    <label for="nombre" class="col-form-label">Tipo</label>
+                                    <select name="comisionista_tipo" id="comisionista_tipo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                        <option value="" selected="true">COMISIONES GENERALES</option>
+                                        <option value="comisionesCanal" >COMISIONES SOBRE CANAL</option>
+                                        <option value="comisionesActividad" >COMISIONES SOBRE ACTIVIDAD</option>
+                                        <option value="comisionesCerrador" >CERRADOR</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-3 mt-3">
+                                    <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear canal</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    @endcan
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">

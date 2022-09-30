@@ -70,8 +70,12 @@
                             let cloneRow = '';
                             let payRow = '';
                             let editRow   = '';
-                            editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a>`;
-                            cloneRow = `| <a href="reservaciones/create/${row.id}">Clonar</a>`;
+                            @can('Reservaciones.update')
+                                editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a> | `;
+                            @endcan
+                            @can('Reservaciones.create')
+                                cloneRow = `<a href="reservaciones/create/${row.id}">Clonar</a>`;
+                            @endcan
                             if(row.estatusPago !== 2){
                                 payRow = `| <a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
                             }

@@ -8,6 +8,12 @@ use App\Classes\CustomErrorHandler;
 
 class CanalVentaController extends Controller
 {
+    
+    public function __construct() {
+        $this->middleware('permission:CanalesVenta.index')->only('index');
+        $this->middleware('permission:CanalesVenta.update')->only('edit'); 
+    }
+
     /**
      * Display a listing of the resource.
      *

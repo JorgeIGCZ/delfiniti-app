@@ -8,6 +8,10 @@ use App\Classes\CustomErrorHandler;
 
 class TipoCambioController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:TipoCambio.index')->only('index');
+        $this->middleware('permission:TipoCambio.update')->only('edit'); 
+    }
     /**
      * Display a listing of the resource.
      *

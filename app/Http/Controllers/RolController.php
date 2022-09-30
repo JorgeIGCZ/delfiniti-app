@@ -15,6 +15,11 @@ use Spatie\Permission\Models\RoleHasPermission;
 
 class RolController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Usuarios.Roles.index')->only('index');
+        $this->middleware('permission:Usuarios.Roles.update')->only('edit'); 
+    }
+
     public function index(){
         $roles = Role::all();
         return view('roles.index',['roles' => $roles]);

@@ -80,7 +80,7 @@
               @can('Comisiones.index')
               <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
               @endcan
-              @can('TiposComisionista.index')
+              @can('CanalesVenta.index')
               <a href="{{ url('/canalesventa') }}" class="nav-link {{url()->current() == url('canalesventa') ? 'active' : ''}}">Canales de venta</a>
               @endcan
 

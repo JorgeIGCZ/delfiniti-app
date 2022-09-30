@@ -413,9 +413,11 @@
                             </label>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <button class="btn btn-primary " usuario="" id="guardar-roles">Guardar</button>
-                    </div>
+                    @can('Usuarios.Roles.update')
+                        <div class="col-md-12">
+                            <button class="btn btn-primary " usuario="" id="guardar-roles">Guardar</button>
+                        </div>
+                    @endcan
                 </form>
             </div>
           </div>

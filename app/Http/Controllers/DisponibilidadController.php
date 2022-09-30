@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 
 class DisponibilidadController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Disponibilidad.index')->only('index'); 
+    }
     /**
      * Display a listing of the resource.
      *

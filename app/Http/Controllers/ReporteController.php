@@ -18,6 +18,13 @@ use Illuminate\Support\Facades\DB;
 
 class ReporteController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Reportes.index')->only('index');
+        $this->middleware('permission:Reportes.CorteCaja.index')->only('reporteComisiones'); 
+        $this->middleware('permission:Reportes.Reservaciones.index')->only('reporteReservaciones'); 
+        $this->middleware('permission:Reportes.Comisiones.index')->only('reporteCorteCaja'); 
+    }
+
     /**
      * Display a listing of the resource.
      *

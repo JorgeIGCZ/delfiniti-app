@@ -141,12 +141,12 @@
                 </div><!-- media-body -->
             </div><!-- media -->
 
-            <div class="media">
-                <div class="media-body">
-                    <a href="{{ url('reservaciones/create/'.$reservacion->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
+            @can('Alojamientos.create')
+                <div class="media">
+                    <div class="media-body">
+                        <a href="{{ url('reservaciones/create/'.$reservacion->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
+                    </div>
                 </div>
-            </div>
-            
             @if($reservacion->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
@@ -163,19 +163,21 @@
                 </div>
             @endif
             
-            @if($reservacion->estatus)
-                <div class="media">
-                    <div class="media-body">
-                        <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar</button>
+            @can('Alojamientos.update')
+                @if($reservacion->estatus)
+                    <div class="media">
+                        <div class="media-body">
+                            <button class="btn btn-danger" id="actualizar-estatus-reservacion" accion='cancelar'>Cancelar</button>
+                        </div>
                     </div>
-                </div>
-            @else
-                <div class="media">
-                    <div class="media-body">
-                        <button class="btn btn-success" id="actualizar-estatus-reservacion" accion='reactivar'>Activar reservación</button>
+                @else
+                    <div class="media">
+                        <div class="media-body">
+                            <button class="btn btn-success" id="actualizar-estatus-reservacion" accion='reactivar'>Activar reservación</button>
+                        </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            @endcan
             <div class="media">
                 <div class="media-body">
                     @if(count($tickets)>0)

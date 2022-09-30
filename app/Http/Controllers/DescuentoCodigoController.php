@@ -8,6 +8,10 @@ use App\Classes\CustomErrorHandler;
 
 class DescuentoCodigoController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:CodigosDescuento.index')->only('index');
+        $this->middleware('permission:CodigosDescuento.update')->only('edit'); 
+    }
     /**
      * Display a listing of the resource.
      *

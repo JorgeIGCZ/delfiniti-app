@@ -252,74 +252,75 @@
             <h2 class="az-dashboard-title">Actividades</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
-    <div class="row row-sm mg-b-20">
-        <div class="col-lg-12 ht-lg-100p">
-            <div class="card">
-                <div class="card-body">
-                    <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="actividades-form">
-                            <div class="form-group col-1">
-                                <label for="clave" class="col-form-label">Clave</label>    
-                                <input type="text" name="clave" class="form-control" required="required">  
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="nombre" class="col-form-label">Nombre actividad</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
-                            </div>
-                            <div class="form-group col-1">
-                                <label for="precio" class="col-form-label">Precio</label>    
-                                <input type="text" name="precio" class="form-control amount" required="required">  
-                            </div>
-                            <div class="form-group col-1">
-                                <label for="capacidad" class="col-form-label">Capacidad</label>    
-                                <input type="number" name="capacidad" min="1" max="500" class="form-control" required="required">  
-                            </div>
-                            <div class="form-group col-2">
-                                <label for="duracion" class="col-form-label">Duracion</label> 
-                                <select name="duracion" class="form-control" id="duracion">
-                                    <option value="indefinido" select="selected">Indefinido</option>
-                                    <option value="personalizado">Personalizado</option>
-                                </select>
-                            </div>
-                            <div id="rango-personalizado" class="form-group col-3 hidden">
-                                <label for="rango" class="col-form-label">Rango personalizado</label> 
-                                <input type="text" id="rango" name="rango" class="form-control">
-                            </div>
+    @can('Actividades.create')
+        <div class="row row-sm mg-b-20">
+            <div class="col-lg-12 ht-lg-100p">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="container">
+                            <form class="row g-3 align-items-center f-auto" id="actividades-form">
+                                <div class="form-group col-1">
+                                    <label for="clave" class="col-form-label">Clave</label>    
+                                    <input type="text" name="clave" class="form-control" required="required">  
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="nombre" class="col-form-label">Nombre actividad</label>    
+                                    <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
+                                </div>
+                                <div class="form-group col-1">
+                                    <label for="precio" class="col-form-label">Precio</label>    
+                                    <input type="text" name="precio" class="form-control amount" required="required">  
+                                </div>
+                                <div class="form-group col-1">
+                                    <label for="capacidad" class="col-form-label">Capacidad</label>    
+                                    <input type="number" name="capacidad" min="1" max="500" class="form-control" required="required">  
+                                </div>
+                                <div class="form-group col-2">
+                                    <label for="duracion" class="col-form-label">Duracion</label> 
+                                    <select name="duracion" class="form-control" id="duracion">
+                                        <option value="indefinido" select="selected">Indefinido</option>
+                                        <option value="personalizado">Personalizado</option>
+                                    </select>
+                                </div>
+                                <div id="rango-personalizado" class="form-group col-3 hidden">
+                                    <label for="rango" class="col-form-label">Rango personalizado</label> 
+                                    <input type="text" id="rango" name="rango" class="form-control">
+                                </div>
 
 
 
-                           <div class="col-12">
-                                <div class="row" id="horarios-container">
-                                    <div class="form-group col-3 horario-container">
-                                        <label for="new-time" class="col-form-label">Horario</label>
-                                        <div class="row g-3 align-items-center">
-                                            <div class="col-auto">
-                                                <input type="time" name="horario_inicial[]" class="form-control" required="required">
-                                            </div>
-                                            A
-                                            <div class="col-auto">
-                                                <input type="time" name="horario_final[]" class="form-control" required="required">
-                                            </div>
-                                            <div class="action-time">
-                                                <span class="add-time">
-                                                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                </span>
+                            <div class="col-12">
+                                    <div class="row" id="horarios-container">
+                                        <div class="form-group col-3 horario-container">
+                                            <label for="new-time" class="col-form-label">Horario</label>
+                                            <div class="row g-3 align-items-center">
+                                                <div class="col-auto">
+                                                    <input type="time" name="horario_inicial[]" class="form-control" required="required">
+                                                </div>
+                                                A
+                                                <div class="col-auto">
+                                                    <input type="time" name="horario_final[]" class="form-control" required="required">
+                                                </div>
+                                                <div class="action-time">
+                                                    <span class="add-time">
+                                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                           </div>
-
-                            <div class="form-group col-3">
-                                <button class="btn btn-info btn-block mt-33">Crear actividad</button>
                             </div>
-                        </form>
+
+                                <div class="form-group col-3">
+                                    <button class="btn btn-info btn-block mt-33">Crear actividad</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    @endcan
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">

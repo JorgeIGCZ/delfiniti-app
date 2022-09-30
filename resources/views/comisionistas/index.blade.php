@@ -273,127 +273,128 @@
             <h2 class="az-dashboard-title">Comisionistas</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
-    <div class="row row-sm mg-b-20">
-        <div class="col-lg-12 ht-lg-100p">
-            <div class="card">
-                <div class="card-body"> 
-                    <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
-                            @csrf
-                            <div class="form-group col-1 mt-3">
-                                <label for="codigo" class="col-form-label">Código</label>    
-                                <input type="text" name="codigo" class="form-control" required="required">  
-                            </div>
-                            <div class="form-group col-3 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre comisionista</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
-                            </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="tipo" class="col-form-label">Tipo</label>
-                                <select name="tipo" id="tipo" class="form-control">
-                                    @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}" comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+    @can('Comisionista.create')
+        <div class="row row-sm mg-b-20">
+            <div class="col-lg-12 ht-lg-100p">
+                <div class="card">
+                    <div class="card-body"> 
+                        <div class="container">
+                            <form class="row g-3 align-items-center f-auto" id="comisionistas-form">
+                                @csrf
+                                <div class="form-group col-1 mt-3">
+                                    <label for="codigo" class="col-form-label">Código</label>    
+                                    <input type="text" name="codigo" class="form-control" required="required">  
+                                </div>
+                                <div class="form-group col-3 mt-3">
+                                    <label for="nombre" class="col-form-label">Nombre comisionista</label>    
+                                    <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
+                                </div>
+                                <div class="form-group col-2 mt-3">
+                                    <label for="tipo" class="col-form-label">Tipo</label>
+                                    <select name="tipo" id="tipo" class="form-control">
+                                        @foreach($tipos as $tipo)
+                                            <option value="{{$tipo->id}}" comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                            <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
-                                <strong>
-                                    Comisiones sobre canales
-                                </strong>
-                                <table class="mt-3">
-                                    <tr>
-                                        <th>Canal de venta</th>
-                                        <th>Comisión %</th>
-                                        <th>Iva %</th>
-                                        <th>Descuentro por imp. %</th>
-                                    </tr>
-                                    @foreach($tiposSinComision as $tipoSinComision)
-                                        <tr tipoid="{{$tipoSinComision->id}}" class="tipo_comisiones">
-                                            <td>{{$tipoSinComision->nombre}}</td>
-                                            <td>
-                                                <input type="text" step="0.01" nname="tipo_comision" class="tipo_comision form-control percentage" value="0">  
-                                            </td>
-
-                                            <td>
-                                                <input type="text" step="0.01" nname="tipo_iva" class="tipo_iva form-control percentage" value="0">  
-                                            </td>
-
-                                            <td>
-                                                <input type="text" step="0.01" nname="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
-                                            </td>
+                                <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
+                                    <strong>
+                                        Comisiones sobre canales
+                                    </strong>
+                                    <table class="mt-3">
+                                        <tr>
+                                            <th>Canal de venta</th>
+                                            <th>Comisión %</th>
+                                            <th>Iva %</th>
+                                            <th>Descuentro por imp. %</th>
                                         </tr>
-                                    @endforeach
-                                </table>
-                            </div>
-                            <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
-                                <strong>
-                                    Comisiones sobre actividades
-                                </strong>
-                                <table class="mt-3">
-                                    <tr>
-                                        <th>Actividad</th>
-                                        <th>Comisión directa P/Actividad $</th>
-                                        <th>Descuentro por imp. %</th>
-                                    </tr>
-                                    @foreach($actividades as $actividad)
-                                        <tr actividadid="{{$actividad->id}}" class="actividades">
-                                            <td>{{$actividad->nombre}}</td>
-                                            <td>
-                                                <input type="text" step="0.01" name="actividad_comision" class="actividad_comision form-control amount" value="0">  
-                                            </td>
-                                            <td>
-                                                <input type="text" step="0.01" name="actividad_descuento_impuesto" class="actividad_descuento_impuesto form-control percentage" value="0">  
-                                            </td>
+                                        @foreach($tiposSinComision as $tipoSinComision)
+                                            <tr tipoid="{{$tipoSinComision->id}}" class="tipo_comisiones">
+                                                <td>{{$tipoSinComision->nombre}}</td>
+                                                <td>
+                                                    <input type="text" step="0.01" nname="tipo_comision" class="tipo_comision form-control percentage" value="0">  
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" step="0.01" nname="tipo_iva" class="tipo_iva form-control percentage" value="0">  
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" step="0.01" nname="tipo_descuento_impuesto" class="tipo_descuento_impuesto form-control percentage" value="0">  
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                                <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
+                                    <strong>
+                                        Comisiones sobre actividades
+                                    </strong>
+                                    <table class="mt-3">
+                                        <tr>
+                                            <th>Actividad</th>
+                                            <th>Comisión directa P/Actividad $</th>
+                                            <th>Descuentro por imp. %</th>
                                         </tr>
-                                    @endforeach
-                                </table>
-                            </div>
-                            <div class="form-group col-2 mt-3 general-settings">
-                                <label for="comision" class="col-form-label">Comisión %</label>
-                                <input type="number" step="0.01" name="comision" class="form-control" min="0" max="90" value="0">
-                            </div>
-                            <div class="form-group col-2 mt-3 general-settings">
-                                <label for="iva" class="col-form-label">Iva %</label>
-                                <input type="number" name="iva" class="form-control" min="0" max="90" value="0">
-                            </div>
+                                        @foreach($actividades as $actividad)
+                                            <tr actividadid="{{$actividad->id}}" class="actividades">
+                                                <td>{{$actividad->nombre}}</td>
+                                                <td>
+                                                    <input type="text" step="0.01" name="actividad_comision" class="actividad_comision form-control amount" value="0">  
+                                                </td>
+                                                <td>
+                                                    <input type="text" step="0.01" name="actividad_descuento_impuesto" class="actividad_descuento_impuesto form-control percentage" value="0">  
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
+                                <div class="form-group col-2 mt-3 general-settings">
+                                    <label for="comision" class="col-form-label">Comisión %</label>
+                                    <input type="number" step="0.01" name="comision" class="form-control" min="0" max="90" value="0">
+                                </div>
+                                <div class="form-group col-2 mt-3 general-settings">
+                                    <label for="iva" class="col-form-label">Iva %</label>
+                                    <input type="number" name="iva" class="form-control" min="0" max="90" value="0">
+                                </div>
 
-                            <div class="form-group col-2 mt-3 general-settings">
-                                <label for="descuento-impuesto" class="col-form-label">Descuentro por imp. %</label>
-                                <input type="number" step="0.01" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
-                            </div>
+                                <div class="form-group col-2 mt-3 general-settings">
+                                    <label for="descuento-impuesto" class="col-form-label">Descuentro por imp. %</label>
+                                    <input type="number" step="0.01" name="descuento-impuesto" class="form-control" min="0" max="90" value="0">
+                                </div>
 
-                            <div class="form-group col-2 mt-3 general-settings">
-                                <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
-                                <input type="checkbox" name="descuentos" class="form-control" >
-                            </div>
+                                <div class="form-group col-2 mt-3 general-settings">
+                                    <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
+                                    <input type="checkbox" name="descuentos" class="form-control" >
+                                </div>
 
-                            <div class="col-12 mt-3 general-settings">
-                                <strong>Datos Representante</strong>
-                            </div>
-                            <div class="form-group col-5 mt-3 general-settings">
-                                <label for="representante" class="col-form-label">Representante</label>
-                                <input type="text" id="representante" class="form-control to-uppercase">
-                            </div>
-                            <div class="form-group col-4 mt-3 general-settings">
-                                <label for="direccion" class="col-form-label">Dirección</label>
-                                <input type="text" id="direccion" class="form-control to-uppercase">
-                            </div>
-                            <div class="form-group col-3 mt-3 general-settings">
-                                <label for="telefono" class="col-form-label">Teléfono</label>
-                                <input type="text" id="telefono" class="form-control">
-                            </div>
+                                <div class="col-12 mt-3 general-settings">
+                                    <strong>Datos Representante</strong>
+                                </div>
+                                <div class="form-group col-5 mt-3 general-settings">
+                                    <label for="representante" class="col-form-label">Representante</label>
+                                    <input type="text" id="representante" class="form-control to-uppercase">
+                                </div>
+                                <div class="form-group col-4 mt-3 general-settings">
+                                    <label for="direccion" class="col-form-label">Dirección</label>
+                                    <input type="text" id="direccion" class="form-control to-uppercase">
+                                </div>
+                                <div class="form-group col-3 mt-3 general-settings">
+                                    <label for="telefono" class="col-form-label">Teléfono</label>
+                                    <input type="text" id="telefono" class="form-control">
+                                </div>
 
-                            <div class="form-group col-3 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear comisionista</button>
-                            </div>
-                        </form>
+                                <div class="form-group col-3 mt-3">
+                                    <button class="btn btn-info btn-block mt-33" id="crear-comisionista">Crear comisionista</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    @endcan
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">

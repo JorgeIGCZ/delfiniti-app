@@ -29,6 +29,12 @@ use PhpParser\Node\Stmt\Break_;
 
 class ReservacionController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Reservaciones.index')->only('index');
+        $this->middleware('permission:Reservaciones.create')->only('create'); 
+        $this->middleware('permission:Reservaciones.update')->only('edit'); 
+    }
+
     public $folioSufijo   = "-B";
     public $longitudFolio = 7;
 

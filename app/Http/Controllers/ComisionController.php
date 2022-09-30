@@ -16,6 +16,11 @@ use App\Models\ReservacionDetalle;
 
 class ComisionController extends Controller
 {
+    public function __construct() {
+        $this->middleware('permission:Comisiones.index')->only('index');
+        //$this->middleware('permission:Comisiones.create')->only('create'); 
+        $this->middleware('permission:Comisiones.update')->only('edit'); 
+    }
     /**
      * Display a listing of the resource.
      *

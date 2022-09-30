@@ -106,11 +106,13 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel
-                                    <button id="add-alojamiento" class="btn btn-info to-uppercase" data-bs-toggle="modal" data-bs-target="#alojamiento-modal" style="
-                                        height: 20px;
-                                        min-height: 20px;
-                                        font-size: 8px;
-                                    ">+</button>
+                                    @can('Reservaciones.create')
+                                        <button id="add-alojamiento" class="btn btn-info to-uppercase" data-bs-toggle="modal" data-bs-target="#alojamiento-modal" style="
+                                            height: 20px;
+                                            min-height: 20px;
+                                            font-size: 8px;
+                                        ">+</button>
+                                    @endcan
                                 </label>
                                 <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
                                     <option value='0' selected="true">Seleccionar hotel</option>

@@ -190,39 +190,40 @@
             <h2 class="az-dashboard-title">Códigos de descuento</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
-    <div class="row row-sm mg-b-20">
-        <div class="col-lg-12 ht-lg-100p">
-            <div class="card">
-                <div class="card-body"> 
-                    <div class="container">
-                        <form class="row g-3 align-items-center f-auto" id="descuentocodigos-form">
-                            @csrf
-                            <div class="form-group col-4 mt-3">
-                                <label for="nombre" class="col-form-label">Nombre</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
-                            </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="tipo" class="col-form-label">Tipo</label>
-                                <select name="tipo" id="tipo" class="form-control">
-                                    <option value="cantidad">Cantidad</option>
-                                    <option value="porcentaje">Porcentaje</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="descuento" class="col-form-label">Descuento</label>
-                                <input type="number" name="descuento"  id="descuento" class="form-control" value="0">
-                            </div>
+    @can('CodigosDescuento.create')
+        <div class="row row-sm mg-b-20">
+            <div class="col-lg-12 ht-lg-100p">
+                <div class="card">
+                    <div class="card-body"> 
+                        <div class="container">
+                            <form class="row g-3 align-items-center f-auto" id="descuentocodigos-form">
+                                @csrf
+                                <div class="form-group col-4 mt-3">
+                                    <label for="nombre" class="col-form-label">Nombre</label>    
+                                    <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
+                                </div>
+                                <div class="form-group col-2 mt-3">
+                                    <label for="tipo" class="col-form-label">Tipo</label>
+                                    <select name="tipo" id="tipo" class="form-control">
+                                        <option value="cantidad">Cantidad</option>
+                                        <option value="porcentaje">Porcentaje</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-2 mt-3">
+                                    <label for="descuento" class="col-form-label">Descuento</label>
+                                    <input type="number" name="descuento"  id="descuento" class="form-control" value="0">
+                                </div>
 
-                            <div class="form-group col-3 mt-3">
-                                <button class="btn btn-info btn-block mt-33" id="crear-descuentocodigo">Crear código</button>
-                            </div>
-                        </form>
+                                <div class="form-group col-3 mt-3">
+                                    <button class="btn btn-info btn-block mt-33" id="crear-descuentocodigo">Crear código</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    @endcan
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">
