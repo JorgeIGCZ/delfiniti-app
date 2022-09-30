@@ -155,7 +155,7 @@
                             @csrf
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre de canal</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
                             </div>
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Tipo</label>

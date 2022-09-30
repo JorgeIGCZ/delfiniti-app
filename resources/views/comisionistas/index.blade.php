@@ -282,11 +282,11 @@
                             @csrf
                             <div class="form-group col-1 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
-                                <input type="text" name="codigo" class="form-control">  
+                                <input type="text" name="codigo" class="form-control" required="required">  
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre comisionista</label>    
-                                <input type="text" name="nombre" class="form-control to-uppercase">  
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
