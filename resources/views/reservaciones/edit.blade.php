@@ -147,6 +147,7 @@
                         <a href="{{ url('reservaciones/create/'.$reservacion->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
                     </div>
                 </div>
+            @endcan
             @if($reservacion->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
