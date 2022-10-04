@@ -1,10 +1,11 @@
 const reporteCorteCaja = document.getElementById('reporte-corte-caja');
 const reporteReservaciones = document.getElementById('reporte-reservaciones');
 const reporteComisiones = document.getElementById('reporte-comisiones');
+
 const crearReporte = document.getElementById('crear-reporte');
 
 if(reporteCorteCaja !== null){
-    reporteCorteCaja.addEventListener('click', (event) => {
+    reporteCorteCaja.addEventListener('click', (event) => { 
         event.preventDefault();
         document.getElementById('crear-reporte').setAttribute('action','corte-caja');
     });
@@ -16,7 +17,7 @@ if(reporteReservaciones !== null){
     });
 }
 if(reporteComisiones !== null){
-    reporteCorteCaja.addEventListener('click', (event) => {
+    reporteComisiones.addEventListener('click', (event) => {
         event.preventDefault();
         document.getElementById('crear-reporte').setAttribute('action','comisiones');
     });
