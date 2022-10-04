@@ -107,18 +107,15 @@
             });
 
             document.getElementById('estatus_reservacion').addEventListener('change', (event) =>{
-                const seleccion = event.target.value;
                 const rangoFecha = document.getElementById('rango-fecha');
 
                 $('#start_date').datepicker('setDate', null);
                 $('#end_date').datepicker('setDate', null);
 
-                rangoFecha.style.display = "none";
-                if(seleccion !== "custom"){
-                    reservacionesTable.ajax.reload();
-                    return;
-                }
                 rangoFecha.style.display = "block";
+                
+                reservacionesTable.ajax.reload();
+                return;
             });
 
             document.getElementById('start_date').addEventListener('change', (event) =>{

@@ -160,7 +160,7 @@
             <h2 class="az-dashboard-title">Usuarios</h2>
         </div>
     </div><!-- az-dashboard-one-title --> 
-    @can('Usuarios.Roles.create')
+    @can('Usuarios.create')
         <div class="row row-sm mg-b-20">
             <div class="col-lg-12 ht-lg-100p">
                 <div class="card">
