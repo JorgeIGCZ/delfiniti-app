@@ -79,6 +79,52 @@
                               <label for="nombre" class="col-form-label">Fecha final</label>    
                               <input type="date" name="fecha-inicio" id="report-fecha-final" class="form-control" required="required" value="{{date('Y-m-d')}}">  
                           </div>
+
+                          @php
+                            use App\Models\User;
+                            $agentes = User::role('Recepcion')->get();
+                          @endphp
+                          
+                          <div id="filtros-corte-caja" class="form-group col-12 mt-0 mb-0" style="display: none">
+                            <div class="row">
+                                <div class="form-group col-6 mt-0 mb-0">
+                                    <label for="cajero" class="col-form-label">Seleccionar el cajero.</label>
+                                    <select id="corte-agente" class="form-control" >
+                                        <option value="0" selected="selected">
+                                          TODOS
+                                        </option>
+                                        @foreach($agentes as $agente)
+                                          <option value="{{$agente->id}}" >{{$agente->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-6 mt-0 mb-0">
+                                  <label for="corte-cupones" class="col-form-label">Incluir cupones?</label>
+                                  <input type="checkbox" name="corte-cupones" id="corte-cupones" class="form-control" style="display: block;" tabindex="15">
+                                </div>
+                            </div>
+                          </div>
+
+                          <div id="filtros-reservaciones" class="form-group col-12 mt-0 mb-0" style="display: none">
+                            <div class="row">
+                                <div class="form-group col-6 mt-0 mb-0">
+                                    <label for="cajero" class="col-form-label">Seleccionar el cajero.</label>
+                                    <select id="corte-agente" class="form-control selectpicker" >
+                                        <option value="0" selected="selected">
+                                          TODOS
+                                        </option>
+                                        @foreach($agentes as $agente)
+                                          <option value="{{$agente->id}}" >{{$agente->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div id="filtros-comisiones" style="display: none">
+
+                          </div>
                           <div class="form-group col-4 mt-3">
                               <button class="btn btn-info btn-block mt-33" action="" id="crear-reporte">Exportar</button>
                           </div>
