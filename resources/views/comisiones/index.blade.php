@@ -90,7 +90,7 @@
                             if(row.estatus == 1){
                                 estatusRow = `<a href="comisiones/${row.id}/edit">Editar</a>`;
                             }
-                            @can('Comisionista.update')
+                            @can('Comisiones.update')
                             view    =   `<small> 
                                         ${estatusRow}
                                     </small>`;
