@@ -11,10 +11,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
+
     public function __construct() {
-        $this->middleware('permission:Usuarios.Roles.index')->only('index');
-        $this->middleware('permission:Usuarios.Roles.update')->only('edit'); 
+        $this->middleware('permission:Usuarios.index')->only('index');
+        $this->middleware('permission:Usuarios.update')->only('edit'); 
     }
+
     /**
      * Display a listing of the resource.
      *
