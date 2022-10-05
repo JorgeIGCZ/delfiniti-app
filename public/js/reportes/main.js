@@ -4,21 +4,31 @@ const reporteComisiones = document.getElementById('reporte-comisiones');
 
 const crearReporte = document.getElementById('crear-reporte');
 
+const filtrosCorteCaja = document.getElementById('filtros-corte-caja');
+
+function clearFiltros(){
+    filtrosCorteCaja.style.display = "none";
+}
+
 if(reporteCorteCaja !== null){
     reporteCorteCaja.addEventListener('click', (event) => { 
         event.preventDefault();
+        clearFiltros();
+        filtrosCorteCaja.style.display = "block";
         document.getElementById('crear-reporte').setAttribute('action','corte-caja');
     });
 }
 if(reporteReservaciones !== null){
     reporteReservaciones.addEventListener('click', (event) => {
         event.preventDefault();
+        clearFiltros();
         document.getElementById('crear-reporte').setAttribute('action','reservaciones');
     });
 }
 if(reporteComisiones !== null){
     reporteComisiones.addEventListener('click', (event) => {
         event.preventDefault();
+        clearFiltros();
         document.getElementById('crear-reporte').setAttribute('action','comisiones');
     });
 }
@@ -28,7 +38,12 @@ if(crearReporte !== null){
     
         const fechaInicio = document.getElementById('report-fecha-inicio').value;
         const fechaFinal  = document.getElementById('report-fecha-final').value;
+
+        const cajero      = document.getElementById('corte-agente').value;
+        const cupones     = (document.getElementById('corte-cupones').checked ? 1 : 0);
+
         const action      = document.getElementById('crear-reporte').getAttribute('action');
+
         let documentPath  = ''; 
         let url           = '';
     
@@ -55,7 +70,9 @@ if(crearReporte !== null){
             {
                 '_token': token(),
                 'fechaInicio' : fechaInicio,
-                'fechaFinal' : fechaFinal
+                'fechaFinal'  : fechaFinal,
+                'cajero'      : cajero,
+                'cupones'     : cupones
             },
             success: function (result) {
                 $('.loader').hide();
