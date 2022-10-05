@@ -18,9 +18,11 @@
     </li>
     @endcan
 
+    @can('Checkin.index')
     <li class="nav-item {{url()->current() == url('checkin') ? 'active' : ''}}">
       <a href="{{ url('checkin') }}" class="nav-link"><i class="typcn typcn-tick-outline"></i> Check-in</a>
     </li>
+    @endcan
 
     @can('Disponibilidad.index')
     <li class="nav-item {{url()->current() == url('disponibilidad') ? 'active' : ''}}">
@@ -77,7 +79,7 @@
               @can('Cerradores.index')
               <!--a href="{{ url('/cerradores') }}" class="nav-link {{url()->current() == url('cerradores') ? 'active' : ''}}">Cerradores</a-->
               @endcan
-              @can('Comisiones.index')
+              @can('Comisionista.index')
               <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
               @endcan
               @can('CanalesVenta.index')
