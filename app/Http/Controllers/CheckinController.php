@@ -59,7 +59,7 @@ class CheckinController extends Controller
                 case 'diaActual':
                     $fechaInicio = date('Y-m-d')." 00:00:00";
                     $fechaFinal  = date('Y-m-d')." 23:59:00";
-                    $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
+                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
                     break;
                 case 'futuros':
                     $fechaInicio = date('Y-m-d')." 00:00:00";
@@ -68,7 +68,7 @@ class CheckinController extends Controller
                 case 'pasados':
                     $fechaInicio = date('1970-m-d')." 00:00:00";
                     $fechaFinal  = date('Y-m-d')." 00:00:00";
-                    $reservaciones = Reservacion::whereBetween("created_at", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderByDesc('id')->get();
+                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderByDesc('id')->get();
                     break;
             }   
         }
