@@ -1,14 +1,3 @@
-    function formValidity(formId) {
-        const form = document.getElementById(formId);
-        let response = true;
-        if (form.checkValidity()) {
-            event.preventDefault();
-        } else {
-            form.reportValidity();
-            response = false;
-        }
-        return response;
-    }
     $(".amount").each(function() {
         let amount        = $(this).val();
         let amountNumeric = Number(amount.replace(/[^-0-9\.]+/g,""));

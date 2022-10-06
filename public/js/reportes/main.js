@@ -1,5 +1,5 @@
 $(function () {
-    const selectorMultipleCanalesVenta = $('#reservaciones-canales-venta').filterMultiSelect({
+    const selectorMultipleCanalesVenta = $('#comisiones-canales-venta').filterMultiSelect({
         selectAllText:"SELECCIONAR TODAS"
     })
     const reporteCorteCaja = document.getElementById('reporte-corte-caja');
@@ -9,11 +9,11 @@ $(function () {
     const crearReporte = document.getElementById('reporte-form');
 
     const filtrosCorteCaja = document.getElementById('filtros-corte-caja');
-    const filtrosReservaciones = document.getElementById('filtros-reservaciones');
+    const filtrosComisiones = document.getElementById('filtros-comisiones');
 
     function clearFiltros(){
         filtrosCorteCaja.style.display = "none";
-        filtrosReservaciones.style.display = "none";
+        filtrosComisiones.style.display = "none";
         selectorMultipleCanalesVenta.selectAll();
         document.getElementById('report-fecha-inicio').value = "";
         document.getElementById('report-fecha-final').value = "";
@@ -33,7 +33,6 @@ $(function () {
         reporteReservaciones.addEventListener('click', (event) => {
             event.preventDefault();
             clearFiltros();
-            filtrosReservaciones.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','reservaciones');
         });
     }
@@ -41,6 +40,7 @@ $(function () {
         reporteComisiones.addEventListener('click', (event) => {
             event.preventDefault();
             clearFiltros();
+            filtrosComisiones.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','comisiones');
         });
     }

@@ -71,7 +71,7 @@
                   </button>
                   </div>
                   <div class="modal-body">
-                      <form class="row g-3 align-items-center f-auto">
+                      <form class="row g-3 align-items-center f-auto" id="reporte-form">
                           <div class="form-group col-6 mt-3">
                             <label for="nombre" class="col-form-label">Fecha inicio</label>    
                             <input type="date" name="fecha-inicio" id="report-fecha-inicio" class="form-control" required="required" value="{{date('Y-m-d')}}">  
@@ -109,11 +109,11 @@
                             </div>
                           </div>
 
-                          <div id="filtros-reservaciones" class="form-group col-12 mt-0 mb-0" >
+                          <div id="filtros-comisiones" class="form-group col-12 mt-0 mb-0" style="display: none">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
                                     <label for="cajero" class="col-form-label">Categorias.</label>
-                                    <select multiple id="reservaciones-canales-venta" name="reservaciones_canales_venta"  class="form-control filter-multi-select" >
+                                    <select multiple id="comisiones-canales-venta" name="comisiones_canales_venta"  class="form-control filter-multi-select" >
                                         @foreach($canales as $canal)
                                           <option value="{{$canal->id}}" >{{$canal->nombre}}</option>
                                         @endforeach
@@ -121,10 +121,7 @@
                                 </div>
                             </div>
                           </div>
-
-                          <div id="filtros-comisiones" style="display: none">
-
-                          </div>
+                          
                           <div class="form-group col-4 mt-3">
                               <button class="btn btn-info btn-block mt-33" action="" id="crear-reporte">Exportar</button>
                           </div>
