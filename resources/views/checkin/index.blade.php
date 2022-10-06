@@ -38,12 +38,15 @@
                         {
                             let checkinEstatus = '';
                             let checkinAccion = '';
-                            if(!row.checkin){
-                                checkinAccion = `<button class="btn btn-outline-success btn-block form-control" onclick="verificacionCheckIn(${row.id})" >Registrar</button>`;
-                            }
-                            let view    =   `<small> 
+                            let view    =  '';
+                            @can('Checkin.update')
+                                if(!row.checkin){
+                                    checkinAccion = `<button class="btn btn-outline-success btn-block form-control" onclick="verificacionCheckIn(${row.id})" >Registrar</button>`;
+                                }
+                                view    =   `<small> 
                                                 ${checkinAccion}
                                             </small>`;
+                            @endcan
                             return  view;
                         }
                     }

@@ -119,12 +119,14 @@
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let removeRow = '';
-                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
+                            let view       = '';
+                            @can('CanalesVenta.update')
                                 removeRow = `| <a href="#" onclick="verificacionDestroy(${row.id})" >Eliminar</a>`;
-                            //}
-                            let view    =   `<small> 
+                            
+                                view    =   `<small> 
                                                 <a href="canalesventa/${row.id}/edit">Editar</a>
                                             </small>`;
+                            @endcan
                             return  view;
                         }
                     }
