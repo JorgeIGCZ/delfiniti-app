@@ -40,12 +40,16 @@ class ReporteController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function reporteComisiones(Request $request){
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal  = $request->fechaFinal." 23:59:00";
+        $canalesVentaRequest = $request->data['canalesVenta'];
+        $canalesVentaRequest = json_decode($canalesVentaRequest);
+        $canalesVentaRequest = $canalesVentaRequest->reservaciones_canales_venta;
+        
+
         // $fechaInicio = '2022-08-31 00:00:00';
         // $fechaFinal = '2022-08-31 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
@@ -74,7 +78,7 @@ class ReporteController extends Controller
         $sumaE = [];
         $sumaF = [];
 
-        $comisionesAgrupadasTipoPorcentaje = $this->getComisionesAgrupadasTipoPorcentaje($comisionesTipo);
+        $comisionesAgrupadasTipoPorcentaje = $this->getComisionesAgrupadasTipoPorcentaje($comisionesTipo,$canalesVentaRequest);
 
         foreach($comisionesAgrupadasTipoPorcentaje as $key => $comisionAgrupadaTipoPorcentajeGeneral){
             //Titulos
@@ -96,7 +100,7 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $key);
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'TOTAL');
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COM. BRUTA S/IVA');
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '4%');
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'DESC. IMPUESTO');
             $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'A PAGAR');
             $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'FIRMA');
 
@@ -254,6 +258,11 @@ class ReporteController extends Controller
         
         $initialRowNumber = $rowNumber;
         foreach($canalesVenta as $key => $canalVenta){
+
+            if(!in_array($canalVenta->id, $canalesVentaRequest)){
+                continue;
+            }
+            
             //Canal de venta
             $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", $canalVenta->nombre);
             
@@ -341,350 +350,12 @@ class ReporteController extends Controller
         $writer->save("Reportes/comisiones/comisiones.xlsx");
         return ['data'=>true];
     }
-
-    private function getComisionesAgrupadasTipoPorcentaje($comisionesTipo){
-        $comisionesTipoPorcentaje = [];
-        $comisionesAgrupadasTipoPorcentaje = [];
-        $isComisionistaEspecial = false;
-        foreach($comisionesTipo as $comisionTipo){
-            $comisiones = $comisionTipo->comisiones;
-
-            //IS COMISIONISTA ESPECIAL
-            if($comisionTipo->comisionista_canal || $comisionTipo->comisionista_actividad || $comisionTipo->comisionista_cerrador){
-                $isComisionistaEspecial = true;
-            }
-
-            foreach($comisiones as $comision){
-                $comsisionNombre = $comisionTipo->nombre;
-                $comsision = $comision->comisionista->comision;
-                $comisionKey = $comsisionNombre.' - '.$comsision.'%';
-
-                if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
-                    $comisionesTipoPorcentaje[] = [$comisionKey];
-
-                    $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
-                        'comisionistaId'     => $comision->comisionista->id,
-                        'comisionistaNombre' => $comision->comisionista->nombre,
-                        'comisionistaEspecial' => $isComisionistaEspecial,
-                        'pagoTotal'          => $comision->pago_total,
-                        'comisionBruta'      => $comision->cantidad_comision_bruta,
-                        'descuentoImpuesto'  => $comision->descuento_impuesto,
-                        'cantidadNeta'       => $comision->cantidad_comision_neta
-                    ];
-                    continue;
-                }
-
-                $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
-                    'comisionistaId'     => $comision->comisionista->id,
-                    'comisionistaNombre' => $comision->comisionista->nombre,
-                    'comisionistaEspecial' => $isComisionistaEspecial,
-                    'pagoTotal'          => $comision->pago_total,
-                    'comisionBruta'      => $comision->cantidad_comision_bruta,
-                    'descuentoImpuesto'  => $comision->descuento_impuesto,
-                    'cantidadNeta'       => $comision->cantidad_comision_neta
-                ];
-            }
-        }
-        return $comisionesAgrupadasTipoPorcentaje;
-    }
-
-    private function getComisionesAgrupadasComisionistas($comisionAgrupadaTipoPorcentajeGeneral){
-
-        $comisionistasId     = [];
-        $comisionesAgrupadasComisionistas = [];
-
-        foreach($comisionAgrupadaTipoPorcentajeGeneral as $comisionTipo){
-                
-            $comisionistaId = $comisionTipo["comisionistaId"];
-
-            if(!in_array($comisionistaId,$comisionistasId)){
-                $comisionistasId[]     = $comisionistaId;
-                $comisionesAgrupadasComisionistas[$comisionistaId] = [
-                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
-                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
-                    'pagoTotal'          => $comisionTipo['pagoTotal'],
-                    'comisionBruta'      => $comisionTipo['comisionBruta'],
-                    'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
-                    'cantidadNeta'       => $comisionTipo['cantidadNeta']
-                ];
-                continue;
-            }
-
-            $comisionesAgrupadasComisionistas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
-            $comisionesAgrupadasComisionistas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
-            $comisionesAgrupadasComisionistas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
-            $comisionesAgrupadasComisionistas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
-        }
-        
-        return $comisionesAgrupadasComisionistas;
-    }
-
-    private function getCanalVenta($isComisionistaCanal,$fechaInicio,$fechaFinal){
-        $comisionistaCanal = ($isComisionistaCanal ? [0] : [0,1]);
-
-        $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
-            $query->where('estatus',1);
-        })->get();
-
-        $comisionesId = $comisiones->pluck('id');
-
-        $canalVenta = CanalVenta::whereHas('comisiones', function ($query) use ($comisionesId) {
-            $query->whereIn('comisiones.id',$comisionesId);
-        })->with(['comisiones' => function ($query) use ($comisionesId) {
-            $query->whereIn('comisiones.id',$comisionesId);
-        }])->whereIn('comisionista_canal',$comisionistaCanal)->get();
-        
-        return $canalVenta;
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function reporteReservaciones(Request $request){
-        //$spreadsheet = new Spreadsheet();
-        $usuario = new UsuarioController();
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = $request->fechaInicio." 00:00:00";
-        $fechaFinal = $request->fechaFinal." 23:59:00";
-
-        $agentes = User::role('Recepcion')->get()->pluck('id');
-
-        //if($creadaPor !== 0){
-        //    $agentes = [$creadaPor];
-        //}
-
-        // $fechaInicio = '2022-08-15 00:00:00';
-        // $fechaFinal = '2022-08-15 23:59:00';
-        $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
-        $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
-
-        $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
-        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes);
-        
-
-        $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
-        
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
-
-        $rowNumber = 5;
-
-        foreach ($actividadesHorarios as $actividadesHorario){
-            foreach ($actividadesHorario as $actividadHorario){
-                if(count($actividadHorario->reservacion) == 0){
-                    continue;
-                }
-
-                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
-
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
-                    ->getFont()->setBold(true);
-                
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
-                    ->getFont()->setSize(12);
-
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('D9D9D9');
-                    
-                //Actividad
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadHorario->actividad->nombre." ".$actividadesHorario[0]->horario_inicial);
-                $rowNumber += 1;
-
-                $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
-
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
-                    ->getFont()->setBold(true);
-                
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
-                    ->getFont()->setSize(12);
-
-                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
-                    ->getFill()
-                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    ->getStartColor()->setARGB('F2F2F2');
-
-                //Titulos
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'FECHA');
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'CLIENTE');
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'ORIGEN');
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'PAX');
-                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'AGENTE/AGENCIA');
-                // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'DESCUENTO');
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'T. PAGO');
-                $rowNumber += 1;
-
-                $initialRowNumber = $rowNumber;
-
-                foreach ($actividadHorario->reservacion as $reservacion) {
-                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->fecha);
-
-                    $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
-
-                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
-                    // ->getBorders()
-                    // ->getOutline()
-                    // ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
-
-                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-                    // ->getFill()
-                    // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                    // ->getStartColor()->setARGB('CCFFFF');
-
-                    $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacion->nombre_cliente);
-                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", @$reservacion->origen);
-                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
-                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
-                    $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
-                    $rowNumber += 1;
-                }
-                $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-                $rowNumber += 2;
-            }
-        }
-
-        $rowNumber += 3;
-
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-                ->getFont()->setBold(true);
-
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-            ->getFont()->setSize(12);
-        
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-            ->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F2F2F2');
-
-        //Titulos
-        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
-        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
-        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'PENDIENTES');
-        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'CORTESIAS');
-        $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'TOTAL');
-        
-        $rowNumber += 1;
-        $initialRowNumber = $rowNumber;
-
-        foreach($actividadesFechaReservaciones as $actividad){
-                if(!count($actividad->reservaciones) ){
-                    continue;
-                }
-                
-                $reservaciones = $actividad->reservaciones;
-                $reservacionesTotales = $this->getReservacionesTotalesGeneral($actividad,$reservaciones);
-                    
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
-                    
-                $rowNumber += 1;
-        }
-        
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-                ->getFont()->setBold(true);
-            
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
-                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
-
-        //Calculo totales
-        $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
-        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
-        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-        $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save("Reportes/reservaciones/reservaciones.xlsx");
-        return ['data'=>true];
-    }
-
-    private function getNumeroPersonas($actividadHorario,$reservacionDetalle){
-        $numeroPersonas = 0;
-        foreach($reservacionDetalle as $reservacionDetalle){
-            if($reservacionDetalle->actividad_id == $actividadHorario->actividad->id){
-                $numeroPersonas = $reservacionDetalle->numero_personas;
-            }
-        }
-        
-        return $numeroPersonas;
-    }
-
-    private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes){
-
-        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$agentes) {
-            $query
-                ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
-                ->whereIn("agente_id", $agentes)
-                ->where('estatus',1);
-        }])->get();
-
-        return $actividades;
-    }
-    
-    private function getReservacionesTotalesGeneral($actividad,$reservaciones){
-        $reservacionesArray = $reservaciones->pluck('id');
-        //CORTESIA ID = 6
-        $cortesiasPersonas = 0;
-        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->where('estatus_pago',2)->get();
-        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereIn('estatus_pago',[0,1])->get();
-        
-        $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
-            $query
-                ->whereRaw("nombre LIKE '%CORTESIA%' ");
-        })->get();
-
-        $cortesiasPersonas = 0;
-        foreach($cortesias as $reservacion){
-            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                if($reservacionDetalle->actividad_id == $actividad->id){
-                    $cortesiasPersonas += $reservacionDetalle->numero_personas;
-                }
-            }
-        }
-
-        $numeroPersonasPagado = 0;
-        foreach($pagados as $reservacion){
-            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                if($reservacionDetalle->actividad_id == $actividad->id){
-                    $numeroPersonasPagado += $reservacionDetalle->numero_personas;
-                }
-                
-            }
-        }
-
-        $numeroPersonasPendiente = 0;
-        foreach($pendientes as $reservacion){
-            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
-                if($reservacionDetalle->actividad_id == $actividad->id){
-                    $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
-                }
-            }
-        }
-        return ['cortesias' => $cortesiasPersonas,'pagados' => ($numeroPersonasPagado-$cortesiasPersonas),'pendientes' => $numeroPersonasPendiente];
-    }
-
-    private function getActividadesHorarios($fechaInicio,$fechaFinal){
-        $actividadesHorarios = ActividadHorario::with(['reservacion' => function ($query) use ($fechaInicio,$fechaFinal) {
-                $query
-                    ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
-                    ->where('estatus',1);
-        }])->orderBy('horario_inicial', 'asc')->orderBy('id', 'asc')->get()->groupBy('horario_inicial');
-
-        return $actividadesHorarios;
-    }
-
     public function reporteCorteCaja(Request $request)
     {
         //$spreadsheet = new Spreadsheet();
@@ -692,8 +363,9 @@ class ReporteController extends Controller
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
         $fechaInicio = $request->fechaInicio." 00:00:00";
         $fechaFinal  = $request->fechaFinal." 23:59:00";
-        $creadaPor   = $request->cajero;
-        $showCupones = ($request->cupones === "1");
+        $creadaPor   = $request->data['cajero'];
+        $showCupones = ($request->data['cupones'] === "1");
+        
         $agentes = User::role('Recepcion')->get()->pluck('id');
 
         if($creadaPor !== "0"){
@@ -1006,6 +678,353 @@ class ReporteController extends Controller
         $writer = new Xlsx($spreadsheet);
         $writer->save("Reportes/corte_de_caja/corte-de-caja.xlsx");
         return ['data'=>true];
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function reporteReservaciones(Request $request){
+        //$spreadsheet = new Spreadsheet();
+        $usuario = new UsuarioController();
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
+        $fechaInicio = $request->fechaInicio." 00:00:00";
+        $fechaFinal = $request->fechaFinal." 23:59:00";
+
+        $agentes = User::role('Recepcion')->get()->pluck('id');
+
+        //if($creadaPor !== 0){
+        //    $agentes = [$creadaPor];
+        //}
+
+        // $fechaInicio = '2022-08-15 00:00:00';
+        // $fechaFinal = '2022-08-15 23:59:00';
+        $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
+        $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
+
+        $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes);
+        
+
+        $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
+        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
+        
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setAutoSize(true);
+
+        $rowNumber = 5;
+
+        foreach ($actividadesHorarios as $actividadesHorario){
+            foreach ($actividadesHorario as $actividadHorario){
+                if(count($actividadHorario->reservacion) == 0){
+                    continue;
+                }
+
+                $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:B{$rowNumber}");
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
+                    ->getFont()->setBold(true);
+                
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
+                    ->getFont()->setSize(12);
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:B{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('D9D9D9');
+                    
+                //Actividad
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadHorario->actividad->nombre." ".$actividadesHorario[0]->horario_inicial);
+                $rowNumber += 1;
+
+                $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getFont()->setBold(true);
+                
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getFont()->setSize(12);
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('F2F2F2');
+
+                //Titulos
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'FECHA');
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'CLIENTE');
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'ORIGEN');
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'PAX');
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'AGENTE/AGENCIA');
+                // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'DESCUENTO');
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'T. PAGO');
+                $rowNumber += 1;
+
+                $initialRowNumber = $rowNumber;
+
+                foreach ($actividadHorario->reservacion as $reservacion) {
+                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->fecha);
+
+                    $spreadsheet->getActiveSheet()->mergeCells("B{$rowNumber}:C{$rowNumber}");
+
+                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                    // ->getBorders()
+                    // ->getOutline()
+                    // ->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+
+                    // $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    // ->getFill()
+                    // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    // ->getStartColor()->setARGB('CCFFFF');
+
+                    $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacion->nombre_cliente);
+                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", @$reservacion->origen);
+                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
+                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
+                    $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
+                    $rowNumber += 1;
+                }
+                $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+                $rowNumber += 2;
+            }
+        }
+
+        $rowNumber += 3;
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getFont()->setBold(true);
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+            ->getFont()->setSize(12);
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('F2F2F2');
+
+        //Titulos
+        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'PROGRAMA');
+        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'PAGADOS');
+        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'PENDIENTES');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'CORTESIAS');
+        $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'TOTAL');
+        
+        $rowNumber += 1;
+        $initialRowNumber = $rowNumber;
+
+        foreach($actividadesFechaReservaciones as $actividad){
+                if(!count($actividad->reservaciones) ){
+                    continue;
+                }
+                
+                $reservaciones = $actividad->reservaciones;
+                $reservacionesTotales = $this->getReservacionesTotalesGeneral($actividad,$reservaciones);
+                    
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividad->nombre);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacionesTotales['pagados']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $reservacionesTotales['pendientes']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $reservacionesTotales['cortesias']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", '=SUM(' . 'B' . $rowNumber . ':D' . $rowNumber . ')');
+                    
+                $rowNumber += 1;
+        }
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getFont()->setBold(true);
+            
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
+                ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
+
+        //Calculo totales
+        $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save("Reportes/reservaciones/reservaciones.xlsx");
+        return ['data'=>true];
+    }
+
+    private function getComisionesAgrupadasTipoPorcentaje($comisionesTipo,$canalesVenta){
+        $comisionesTipoPorcentaje = [];
+        $comisionesAgrupadasTipoPorcentaje = [];
+        $isComisionistaEspecial = false;
+        foreach($comisionesTipo as $comisionTipo){
+            if(!in_array($comisionTipo->id, $canalesVenta)){
+                continue;
+            }
+            
+            $comisiones = $comisionTipo->comisiones;
+
+            //IS COMISIONISTA ESPECIAL
+            if($comisionTipo->comisionista_canal || $comisionTipo->comisionista_actividad || $comisionTipo->comisionista_cerrador){
+                $isComisionistaEspecial = true;
+            }
+
+            foreach($comisiones as $comision){
+                $comsisionNombre = $comisionTipo->nombre;
+                $comsision = $comision->comisionista->comision;
+                $comisionKey = $comsisionNombre.' - '.$comsision.'%';
+
+                if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
+                    $comisionesTipoPorcentaje[] = [$comisionKey];
+
+                    $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
+                        'comisionistaId'     => $comision->comisionista->id,
+                        'comisionistaNombre' => $comision->comisionista->nombre,
+                        'comisionistaEspecial' => $isComisionistaEspecial,
+                        'pagoTotal'          => $comision->pago_total,
+                        'comisionBruta'      => $comision->cantidad_comision_bruta,
+                        'descuentoImpuesto'  => $comision->descuento_impuesto,
+                        'cantidadNeta'       => $comision->cantidad_comision_neta
+                    ];
+                    continue;
+                }
+
+                $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
+                    'comisionistaId'     => $comision->comisionista->id,
+                    'comisionistaNombre' => $comision->comisionista->nombre,
+                    'comisionistaEspecial' => $isComisionistaEspecial,
+                    'pagoTotal'          => $comision->pago_total,
+                    'comisionBruta'      => $comision->cantidad_comision_bruta,
+                    'descuentoImpuesto'  => $comision->descuento_impuesto,
+                    'cantidadNeta'       => $comision->cantidad_comision_neta
+                ];
+            }
+        }
+        return $comisionesAgrupadasTipoPorcentaje;
+    }
+
+    private function getComisionesAgrupadasComisionistas($comisionAgrupadaTipoPorcentajeGeneral){
+
+        $comisionistasId     = [];
+        $comisionesAgrupadasComisionistas = [];
+
+        foreach($comisionAgrupadaTipoPorcentajeGeneral as $comisionTipo){
+                
+            $comisionistaId = $comisionTipo["comisionistaId"];
+
+
+            if(!in_array($comisionistaId,$comisionistasId)){
+                $comisionistasId[]     = $comisionistaId;
+                $comisionesAgrupadasComisionistas[$comisionistaId] = [
+                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
+                    'comisionistaNombre' => $comisionTipo['comisionistaNombre'],
+                    'pagoTotal'          => $comisionTipo['pagoTotal'],
+                    'comisionBruta'      => $comisionTipo['comisionBruta'],
+                    'descuentoImpuesto'  => $comisionTipo['descuentoImpuesto'],
+                    'cantidadNeta'       => $comisionTipo['cantidadNeta']
+                ];
+                continue;
+            }
+
+            $comisionesAgrupadasComisionistas[$comisionistaId]['pagoTotal']         += $comisionTipo['pagoTotal'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['comisionBruta']     += $comisionTipo['comisionBruta'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['descuentoImpuesto'] += $comisionTipo['descuentoImpuesto'];
+            $comisionesAgrupadasComisionistas[$comisionistaId]['cantidadNeta']      += $comisionTipo['cantidadNeta'];
+        }
+        
+        return $comisionesAgrupadasComisionistas;
+    }
+
+    private function getCanalVenta($isComisionistaCanal,$fechaInicio,$fechaFinal){
+        $comisionistaCanal = ($isComisionistaCanal ? [0] : [0,1]);
+
+        $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
+            $query->where('estatus',1);
+        })->get();
+
+        $comisionesId = $comisiones->pluck('id');
+
+        $canalVenta = CanalVenta::whereHas('comisiones', function ($query) use ($comisionesId) {
+            $query->whereIn('comisiones.id',$comisionesId);
+        })->with(['comisiones' => function ($query) use ($comisionesId) {
+            $query->whereIn('comisiones.id',$comisionesId);
+        }])->whereIn('comisionista_canal',$comisionistaCanal)->get();
+        
+        return $canalVenta;
+    }
+
+    private function getNumeroPersonas($actividadHorario,$reservacionDetalle){
+        $numeroPersonas = 0;
+        foreach($reservacionDetalle as $reservacionDetalle){
+            if($reservacionDetalle->actividad_id == $actividadHorario->actividad->id){
+                $numeroPersonas = $reservacionDetalle->numero_personas;
+            }
+        }
+        
+        return $numeroPersonas;
+    }
+
+    private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes){
+
+        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$agentes) {
+            $query
+                ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
+                ->whereIn("agente_id", $agentes)
+                ->where('estatus',1);
+        }])->get();
+
+        return $actividades;
+    }
+    
+    private function getReservacionesTotalesGeneral($actividad,$reservaciones){
+        $reservacionesArray = $reservaciones->pluck('id');
+        //CORTESIA ID = 6
+        $cortesiasPersonas = 0;
+        $pagados = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->where('estatus_pago',2)->get();
+        $pendientes = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereIn('estatus_pago',[0,1])->get();
+        
+        $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
+            $query
+                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+        })->get();
+
+        $cortesiasPersonas = 0;
+        foreach($cortesias as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $cortesiasPersonas += $reservacionDetalle->numero_personas;
+                }
+            }
+        }
+
+        $numeroPersonasPagado = 0;
+        foreach($pagados as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $numeroPersonasPagado += $reservacionDetalle->numero_personas;
+                }
+                
+            }
+        }
+
+        $numeroPersonasPendiente = 0;
+        foreach($pendientes as $reservacion){
+            foreach($reservacion->reservacionDetalle as $reservacionDetalle){
+                if($reservacionDetalle->actividad_id == $actividad->id){
+                    $numeroPersonasPendiente += $reservacionDetalle->numero_personas;
+                }
+            }
+        }
+        return ['cortesias' => $cortesiasPersonas,'pagados' => ($numeroPersonasPagado-$cortesiasPersonas),'pendientes' => $numeroPersonasPendiente];
+    }
+
+    private function getActividadesHorarios($fechaInicio,$fechaFinal){
+        $actividadesHorarios = ActividadHorario::with(['reservacion' => function ($query) use ($fechaInicio,$fechaFinal) {
+                $query
+                    ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
+                    ->where('estatus',1);
+        }])->orderBy('horario_inicial', 'asc')->orderBy('id', 'asc')->get()->groupBy('horario_inicial');
+
+        return $actividadesHorarios;
     }
 
     private function getReservacionesTotales($reservaciones){

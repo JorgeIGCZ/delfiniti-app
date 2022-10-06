@@ -23,6 +23,8 @@
   <script src="{{asset('assets/js/dashboard.sampledata.js')}}"></script>
   <script src="{{asset('js/app.js')}}"></script>
   <script src="{{asset('js/reportes/main.js') }}"></script>
+  <script src="{{asset('assets/js/filter-multi-select-bundle.min.js')}}"></script>
+  <!-- Latest compiled and minified CSS -->
 
   <script type="text/javascript" src="https://cdn.datatables.net/rowreorder/1.2.8/js/dataTables.rowReorder.min.js"></script>
   <script type="text/javascript" src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>

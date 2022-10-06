@@ -241,7 +241,7 @@ video {
 Ensure the default browser behavior of the `hidden` attribute.
 */[hidden] {
   display: none;
-}[type='text'],[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],[multiple],textarea,select{
+}[type='text'],[type='email'],[type='url'],[type='password'],[type='number'],[type='date'],[type='datetime-local'],[type='month'],[type='search'],[type='tel'],[type='time'],[type='week'],textarea,select{
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;

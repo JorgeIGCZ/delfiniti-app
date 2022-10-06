@@ -48,6 +48,7 @@
     <!-- azia CSS -->
     <link rel="stylesheet" href="{{asset('assets/css/app.css')}}">
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/filter_multi_select.css')}}">
     <script>
       const token = () =>{
         return  '{{ csrf_token() }}';
@@ -82,7 +83,9 @@
 
                           @php
                             use App\Models\User;
+                            use App\Models\CanalVenta;
                             $agentes = User::role('Recepcion')->get();
+                            $canales = CanalVenta::get();
                           @endphp
                           
                           <div id="filtros-corte-caja" class="form-group col-12 mt-0 mb-0" style="display: none">
@@ -106,16 +109,13 @@
                             </div>
                           </div>
 
-                          <div id="filtros-reservaciones" class="form-group col-12 mt-0 mb-0" style="display: none">
+                          <div id="filtros-reservaciones" class="form-group col-12 mt-0 mb-0" >
                             <div class="row">
-                                <div class="form-group col-6 mt-0 mb-0">
-                                    <label for="cajero" class="col-form-label">Seleccionar el cajero.</label>
-                                    <select id="corte-agente" class="form-control selectpicker" >
-                                        <option value="0" selected="selected">
-                                          TODOS
-                                        </option>
-                                        @foreach($agentes as $agente)
-                                          <option value="{{$agente->id}}" >{{$agente->name}}</option>
+                                <div class="form-group col-12 mt-0 mb-0">
+                                    <label for="cajero" class="col-form-label">Categorias.</label>
+                                    <select multiple id="reservaciones-canales-venta" name="reservaciones_canales_venta"  class="form-control filter-multi-select" >
+                                        @foreach($canales as $canal)
+                                          <option value="{{$canal->id}}" >{{$canal->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>

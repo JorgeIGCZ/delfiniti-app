@@ -872,15 +872,3 @@ function getActividadHorario() {
         }
     }
 }
-
-function formValidity(formId) {
-    const form = document.getElementById(formId);
-    let response = true;
-    if (form.checkValidity()) {
-        event.preventDefault();
-    } else {
-        form.reportValidity();
-        response = false;
-    }
-    return response;
-}
