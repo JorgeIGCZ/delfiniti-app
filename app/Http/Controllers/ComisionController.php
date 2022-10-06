@@ -259,7 +259,7 @@ class ComisionController extends Controller
         }
         // if(is_null($comision)){
 
-            $comisiones      = Comision::whereBetween("fecha", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
+            $comisiones      = Comision::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
                 $query
                     ->where("estatus", 1);
             })->orderBy('id','desc')->get();
