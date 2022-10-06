@@ -6,7 +6,7 @@ $(function () {
     const reporteReservaciones = document.getElementById('reporte-reservaciones');
     const reporteComisiones = document.getElementById('reporte-comisiones');
 
-    const crearReporte = document.getElementById('reporte-form');
+    const crearReporte = document.getElementById('crear-reporte');
 
     const filtrosCorteCaja = document.getElementById('filtros-corte-caja');
     const filtrosComisiones = document.getElementById('filtros-comisiones');
