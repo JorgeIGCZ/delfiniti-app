@@ -80,6 +80,7 @@
                         {
                             let view       = '';
                             let estatusRow = '';
+                            let recalcular = '';
                             //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
                                 // if(row.estatus){
                                 //     estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
@@ -89,10 +90,14 @@
                             //}
                             if(row.estatus == 1){
                                 estatusRow = `<a href="comisiones/${row.id}/edit">Editar</a>`;
+                                recalcular = `| <a href="#!" class="recalcular-comisiones" reservacionFolio="${row.reservacion}" reservacionId="${row.reservacionId}">Recalcular</a>`;
+                                //comisiones/recalculateComisiones
                             }
+
                             @can('Comisiones.update')
-                            view    =   `<small> 
+                                view    =   `<small> 
                                         ${estatusRow}
+                                        ${recalcular}
                                     </small>`;
                             @endcan
                             return  view;
@@ -123,6 +128,60 @@
                     return;
                 }
             });
+
+            on("click", ".recalcular-comisiones", function(event) {
+                const reservacionFolio = this.getAttribute("reservacionFolio");
+                const reservacionId = this.getAttribute("reservacionId");
+                Swal.fire({
+                    title: '¿Recalcular comisiones?',
+                    text: `Todas las comisiones serán recalculadas para la reservacion ${reservacionFolio}, ¿desea proceder?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#17a2b8',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, recalcular!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        recalculateComisiones(reservacionId)
+                    }
+                })
+            });
+
+            function recalculateComisiones(reservacionId){
+                $('.loader').show();
+                axios.post('/comisiones/recalculateComisiones', {
+                    '_token': token(),
+                    'reservacionId': reservacionId
+                })
+                .then(function (response) {
+                    $('.loader').hide();
+                    if(response.data.result == "Success"){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Comisiones actualizadas',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        descuentocodigosTable.ajax.reload();
+                    }else{
+                        $('.loader').hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Actualización fallida',
+                            html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                            showConfirmButton: true
+                        })
+                    }
+                })
+                .catch(function (error) {
+                    $('.loader').hide();
+                    Swal.fire({
+                        icon: 'error',
+                        title: `Actualización fallida E:${error.message}`,
+                        showConfirmButton: true
+                    })
+                });
+            }
 
             function isFechaRangoValida(){
                 const fechaInicio = document.getElementById('end_date').value;

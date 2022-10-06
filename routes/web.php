@@ -153,6 +153,7 @@ Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group
 });
 
 Route::controller(ComisionController::class)->middleware(['auth'])->group(function () {
+    Route::post('comisiones/recalculateComisiones', 'recalculateComisiones');
     Route::post('comisiones/show/{comision?}', 'show');
     Route::patch('comisiones/estatus/{actividad}', 'updateComisiones');
     Route::resource('comisiones',ComisionController::class, [

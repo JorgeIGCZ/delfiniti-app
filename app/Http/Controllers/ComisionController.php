@@ -31,6 +31,24 @@ class ComisionController extends Controller
         return view('comisiones.index');
     }
 
+    public function recalculateComisiones(Request $request){
+        try {
+            Comision::where('reservacion_id',$request->reservacionId)->delete();
+            $this->setComisiones($request->reservacionId);
+
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+
+        return json_encode(
+            [
+                'result' => 'Success'
+            ]
+        );;
+    }
+
     public function setComisiones($reservacionId){
         $reservacion  = Reservacion::find($reservacionId);
         $pagos        = Pago::where('reservacion_id',$reservacion['id'])->whereHas('tipoPago', function ($query) {
