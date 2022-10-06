@@ -231,17 +231,18 @@
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row ) 
                         {
                             let estatusRow = '';
-                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
+                            let view       = '';  
+                            @can('Comisionista.update')
                                 if(row.estatus){
                                     estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
                                 }else{
                                     estatusRow = `| <a href="#!" onclick="updateComisionistaEstatus(${row.id},1)" >Reactivar</a>`;
                                 }
-                            //}
-                            let view    =   `<small> 
+                                view    =   `<small> 
                                                 <a href="comisionistas/${row.id}/edit">Editar</a>
                                                 ${estatusRow}
                                             </small>`;
+                            @endcan
                             return  view;
                         }
                     }
