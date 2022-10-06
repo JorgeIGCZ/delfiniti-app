@@ -47,7 +47,7 @@ class ReporteController extends Controller
         $fechaFinal  = $request->fechaFinal." 23:59:00";
         $canalesVentaRequest = $request->data['canalesVenta'];
         $canalesVentaRequest = json_decode($canalesVentaRequest);
-        $canalesVentaRequest = $canalesVentaRequest->reservaciones_canales_venta;
+        $canalesVentaRequest = $canalesVentaRequest->comisiones_canales_venta;
         
 
         // $fechaInicio = '2022-08-31 00:00:00';
