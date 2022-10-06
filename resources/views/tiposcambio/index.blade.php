@@ -17,8 +17,8 @@
         axios.post(`/tiposcambio/${tipoCambio.elements['id'].value}`, {
             '_token'       : '{{ csrf_token() }}',
             '_method'      : 'put',
-            "precio_compra" : tipoCambio.elements['precio_compra'].value,
-            "precio_venta"  : tipoCambio.elements['precio_venta'].value
+            "precio_compra" : tipoCambio.elements['precio_compra'].getAttribute('value'),
+            "precio_venta"  : tipoCambio.elements['precio_venta'].getAttribute('value')
         })
         .then(function (response) {
             $('.loader').hide();
@@ -75,10 +75,10 @@
                                     </div>
                                     <div class="form-group col-2">
                                         <label for="precio_compra" class="col-form-label">Precio Compra</label>
-                                        <input type="text" name="precio_compra" class="form-control" value="{{$tiposCambio['general'][0]->precio_compra}}" required="required">
+                                        <input type="text" name="precio_compra" class="form-control amount" value="{{$tiposCambio['general'][0]->precio_compra}}" required="required">
                                     </div><div class="form-group col-2">
                                         <label for="precio_compra" class="col-form-label">Precio Venta</label>
-                                        <input type="text" name="precio_venta" class="form-control" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
+                                        <input type="text" name="precio_venta" class="form-control amount" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
                                     </div>
                                     @can('TipoCambio.update')
                                     <div class="form-group col-2">
@@ -100,8 +100,8 @@
                                     </div>
                                     <div class="form-group col-2">
                                         <label for="precio_compra" class="col-form-label">Precio Compra</label>
-                                        <input type="text" name="precio_compra" class="form-control" value="{{$tiposCambio['reportes'][0]->precio_compra}}" required="required">
-                                        <input type="hidden" name="precio_venta" class="form-control" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
+                                        <input type="text" name="precio_compra" class="form-control amount" value="{{$tiposCambio['reportes'][0]->precio_compra}}" required="required">
+                                        <input type="hidden" name="precio_venta" class="form-control amount" value="{{$tiposCambio['general'][0]->precio_venta}}" required="required">
                                     </div>
                                     @can('TipoCambio.update')
                                     <div class="form-group col-2">
