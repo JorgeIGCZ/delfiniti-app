@@ -503,6 +503,7 @@
                                     
                                     @can('Reservaciones.update') 
                                         @if($reservacion->estatusPago !== 2)
+                                        {{$reservacion->estatusPago}}
                                             <div class="form-group col-2 mt-0 mb-0">
                                                 <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
                                             </div>
