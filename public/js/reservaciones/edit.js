@@ -92,6 +92,7 @@ function createReservacion(estatus) {
         'efectivo': reservacion.elements['efectivo'].getAttribute('value'),
         'efectivoUsd': reservacion.elements['efectio-usd'].getAttribute('value'),
         'tarjeta': reservacion.elements['tarjeta'].getAttribute('value'),
+        'deposito': reservacion.elements['deposito'].getAttribute('value'),
         'cambio': reservacion.elements['cambio'].getAttribute('value'),
     };
     $('.loader').show();
@@ -210,6 +211,7 @@ function fillPagosTabla() {
     //'1','efectivo'
     //'2','efectivoUsd'
     //'3','tarjeta'
+    //'8','deposito'
 
     nombreTipoPagoArray.forEach(function (nombre) {
         blockDescuentos(nombre);
@@ -281,6 +283,8 @@ function getPagos(tipoUsd = 'compra') {
     );
     const tarjeta = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
 
+    const deposito = parseFloat(document.getElementById('deposito').getAttribute('value'));
+
     const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
     const cantidadCodigo = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
         ? convertPorcentageCantidad(descuentoCodigo)
@@ -293,7 +297,7 @@ function getPagos(tipoUsd = 'compra') {
 
     const anticipo = parseFloat(document.getElementById('anticipo').getAttribute('value'));
 
-    const pagos = (cupon + efectivo + efectivoUsd + tarjeta + cantidadPersonalizado + cantidadCodigo + anticipo);
+    const pagos = (cupon + efectivo + efectivoUsd + tarjeta + deposito + cantidadPersonalizado + cantidadCodigo + anticipo);
 
     return parseFloat(pagos);
 }

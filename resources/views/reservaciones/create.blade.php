@@ -312,6 +312,13 @@
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
+                                                        <label for="deposito" class="col-form-label">Depósito / transferencia:</label>
+                                                    </div>
+                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                        <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="20">
+                                                    </div>
+
+                                                    <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón:</label>
                                                     </div>
 
@@ -348,7 +355,7 @@
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
                                                     </div-->
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block mt-3" id="pagar-reservar" disabled="disabled" tabindex="20">Pagar y reservar</button>
+                                                        <button class="btn btn-info btn-block mt-3" id="pagar-reservar" disabled="disabled" tabindex="21">Pagar y reservar</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -357,10 +364,10 @@
                                 </div>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="reservar" disabled="disabled" tabindex="21">Reservar</button>
+                                <button class="btn btn-info btn-block mt-33" id="reservar" disabled="disabled" tabindex="22">Reservar</button>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="22">Cancelar</button>
+                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="23">Cancelar</button>
                             </div>
                         </form>
                     </div>

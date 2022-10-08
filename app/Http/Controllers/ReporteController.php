@@ -449,11 +449,12 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'Pesos');
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares'); 
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Depósito / transferencia');
             if($showCupones){
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Cupón');
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cupón');
             }
             // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cambio');
-            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Reservado por');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
 
             $rowNumber += 1;
 
@@ -470,16 +471,19 @@ class ReporteController extends Controller
 
                 $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
+                
+                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividad,'deposito',$pagosTarjetaResult['pendiente']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
 
                 if($showCupones){
-                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosTarjetaResult['pendiente']);
-                    $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosCuponResult['pago']);
+                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosDepositoResult['pendiente']);
+                    $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCuponResult['pago']);
                 }
 
                 // $pagosCambioResult = $this->getPagosTotalesByType($reservacion,$actividad,'cambio',0);
                 // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCambioResult['pago']);
 
-                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->nombre_cliente);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$reservacion->nombre_cliente);
 
                 $rowNumber += 1;
             }
@@ -499,53 +503,55 @@ class ReporteController extends Controller
             $sumrangeC = 'C' . $initialRowNumber . ':C' . $rowNumber-1;
             $sumrangeD = 'D' . $initialRowNumber . ':D' . $rowNumber-1;
             $sumrangeE = 'E' . $initialRowNumber . ':E' . $rowNumber-1;
+            $sumrangeF = 'F' . $initialRowNumber . ':F' . $rowNumber-1;
             // $sumrangeF = 'F' . $initialRowNumber . ':F' . $rowNumber-1;
             $spreadsheet->getActiveSheet()->setCellValue('A' . $rowNumber, 'Subtotal');
             $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . $sumrangeB . ')');
             $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . $sumrangeC . ')');
             $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . $sumrangeD . ')');
             $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . $sumrangeE . ')');
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')');
 
             $rowNumber += 4;
         }
         
         $rowNumber += 1;
 
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}:H{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('00B050');
 
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}:H{$rowNumber}")
                 ->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
 
-        $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}:H{$rowNumber}")
                 ->getFont()->setSize(16);
 
-        $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("H{$rowNumber}")
                 ->getNumberFormat()
                 ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
         $tipoCambioRowNumber = $rowNumber;
 
-        $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", "Tipo de cambio: ");
-        $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $tipoCambio);
+        $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", "Tipo de cambio: ");
+        $spreadsheet->getActiveSheet()->setCellValue("H{$rowNumber}", $tipoCambio);
         
         $rowNumber += 1;
         
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFont()->setBold(true);
 
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
             ->getAlignment()
             ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
             ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
             ->setWrapText(true);
         
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
             ->getFont()->setSize(12);
         
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('F2F2F2');
@@ -553,10 +559,11 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'Pesos');
         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares');
         $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
+        $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Depósito / transferencia');
         if($showCupones){
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Cupón.');
+            $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cupón.');
         }
-        $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Totales');
+        $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Totales');
         $rowNumber += 1;
 
         $initialRowNumber = $rowNumber;
@@ -569,6 +576,7 @@ class ReporteController extends Controller
             $totalEfectivo = 0;
             $totalEfectivoUSD = 0;
             $totalTarjeta = 0;
+            $totalDeposito = 0;
             $totalCupon = 0;
 
             foreach($reservaciones as $reservacion){
@@ -582,33 +590,37 @@ class ReporteController extends Controller
                 $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
                 $totalTarjeta     += $pagosTarjetaResult['pago'];
 
+                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'deposito',$pagosTarjetaResult['pendiente']);
+                $totalDeposito     += $pagosDepositoResult['pago'];
+
                 if($showCupones){
-                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'cupon',$pagosTarjetaResult['pendiente']);//remove
+                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'cupon',$pagosDepositoResult['pendiente']);//remove
                     $totalCupon       += $pagosCuponResult['pago'];
                 }
             }
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $totalEfectivo);
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $totalEfectivoUSD);
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $totalTarjeta);
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $totalDeposito);
             if($showCupones){
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $totalCupon);
+                $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $totalCupon);
             }
             
             //Calculo totales
             // $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'B' . $rowNumber . ':E' . $rowNumber . ')');
-            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * G'. $tipoCambioRowNumber .' ) ,D' . $rowNumber . ' ,E' . $rowNumber . ')');
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * G'. $tipoCambioRowNumber .' ) ,D' . $rowNumber . ' ,E' . $rowNumber .  ' ,F' . $rowNumber . ')');
 
             $rowNumber += 1;
         }
 
-        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:G{$rowNumber}")
                 ->getNumberFormat()
                 ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFont()->setBold(true);
             
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
         $sumrangeB = 'B' . $initialRowNumber . ':B' . $rowNumber-1;
@@ -616,22 +628,24 @@ class ReporteController extends Controller
         $sumrangeD = 'D' . $initialRowNumber . ':D' . $rowNumber-1;
         $sumrangeE = 'E' . $initialRowNumber . ':E' . $rowNumber-1;
         $sumrangeF = 'F' . $initialRowNumber . ':F' . $rowNumber-1;
+        $sumrangeG = 'G' . $initialRowNumber . ':G' . $rowNumber-1;
         $spreadsheet->getActiveSheet()->setCellValue('B' . $rowNumber, '=SUM(' . $sumrangeB . ')');
         $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . $sumrangeC . ')');
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . $sumrangeD . ')');
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . $sumrangeE . ')');
         $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . $sumrangeF . ')');
+        $spreadsheet->getActiveSheet()->setCellValue('G' . $rowNumber, '=SUM(' . $sumrangeG . ')');
         
         $rowNumber += 3;
         
         //# PROGRAMAS PAGADOS
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFont()->setBold(true);
             
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFont()->setSize(12);
             
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
@@ -1113,7 +1127,7 @@ class ReporteController extends Controller
     }
 
     private function getActividadesFechaPagos($fechaInicio,$fechaFinal,$agentes,$showCupones){
-        $tiposPago = [1,2,3,5];
+        $tiposPago = [1,2,3,5,8];
         ($showCupones ?  array_push($tiposPago,4) : '');
 
         $actividades = Actividad::with(['pagos' => function ($query) use ($fechaInicio,$fechaFinal,$tiposPago) {

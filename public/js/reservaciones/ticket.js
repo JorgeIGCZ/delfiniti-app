@@ -195,8 +195,10 @@ function getTicketPagos(){
     const efectivo      = reservacion.elements['efectivo'];
     const efectivoUsd   = reservacion.elements['efectio-usd'];
     const tarjeta       = reservacion.elements['tarjeta'];
+    const deposito       = reservacion.elements['deposito'];
     const total         = formatter.format(parseFloat(
         parseFloat(tarjeta.getAttribute('value'))+
+        parseFloat(deposito.getAttribute('value'))+
         parseFloat(efectivoUsd.getAttribute('value'))+
         parseFloat(efectivo.getAttribute('value'))
     ).toFixed(2));
@@ -217,6 +219,11 @@ function getTicketPagos(){
             <td class="vacio"></td>
             <td class="etiqueta">TARJ. CREDITO</td>
             <td class="importe">${tarjeta.value}</td>
+        </tr>
+        <tr class="izq">
+            <td class="vacio"></td>
+            <td class="etiqueta">TARJ. CREDITO</td>
+            <td class="importe">${deposito.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>

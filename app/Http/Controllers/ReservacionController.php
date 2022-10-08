@@ -201,6 +201,7 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
 
                 if($this->isValidDescuentoCupon($request)){
@@ -253,6 +254,7 @@ class ReservacionController extends Controller
                 + (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
+                + (float)$request->pagos['deposito']
             );
 
         if($this->isValidDescuentoCodigo($request,$email)){
@@ -558,6 +560,7 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
 
                 if($this->isValidDescuentoCupon($request)){
