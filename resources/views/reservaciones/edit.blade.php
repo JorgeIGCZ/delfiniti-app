@@ -493,9 +493,19 @@
 
 
 
-                                                    <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
-                                                    </div>
+                                                    @can('Reservaciones.update') 
+                                                        @if($reservacion->estatus_pago !== 2)
+                                                            <div class="form-group col-12 mt-0 mb-0">
+                                                                <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
+                                                            </div>
+                                                        @else
+                                                            @role('Administrador')
+                                                                <div class="form-group col-12 mt-0 mb-0">
+                                                                    <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
+                                                                </div>
+                                                            @endrole
+                                                        @endif
+                                                    @endcan
                                                 </div>
                                             </div>
                                         </div>
