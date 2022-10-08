@@ -53,7 +53,7 @@ class ComisionController extends Controller
         $reservacion  = Reservacion::find($reservacionId);
         $pagos        = Pago::where('reservacion_id',$reservacion['id'])->whereHas('tipoPago', function ($query) {
             $query
-                ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta')");
         })->get();
         
         if(!$reservacion['comisionable']){

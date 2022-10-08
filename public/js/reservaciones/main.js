@@ -205,7 +205,6 @@ function resetReservaciones() {
     // document.getElementById('efectivo').setAttribute('value', 0);
     // document.getElementById('efectivo-usd').setAttribute('value', 0);
     // document.getElementById('tarjeta').setAttribute('value', 0);
-    // document.getElementById('deposito').setAttribute('value', 0);
     // //document.getElementById('cupon').setAttribute('value',0);
     // document.getElementById('cupon').setAttribute('value', 0);
     // document.getElementById('descuento-personalizado').setAttribute('value', 0);
@@ -214,7 +213,6 @@ function resetReservaciones() {
     // document.getElementById('efectivo').value = 0;
     // document.getElementById('efectivo-usd').value = 0;
     // document.getElementById('tarjeta').value = 0;
-    // document.getElementById('deposito').value = 0;
     // //document.getElementById('cupon').value        = 0;
     // document.getElementById('cupon').value = 0;
     // document.getElementById('descuento-personalizado').value = 0;
@@ -601,13 +599,6 @@ window.onload = function() {
         //if(getResta() < 0){
         //    document.getElementById('tarjeta').value = '$0.00';
         //    document.getElementById('tarjeta').setAttribute('value',0);
-        //}
-        setTimeout(setOperacionResultados(),500);
-    });
-    document.getElementById('deposito').addEventListener('keyup', (event) =>{
-        //if(getResta() < 0){
-        //    document.getElementById('deposito').value = '$0.00';
-        //    document.getElementById('deposito').setAttribute('value',0);
         //}
         setTimeout(setOperacionResultados(),500);
     });
