@@ -1,17 +1,20 @@
 let pagosTabla;
 let allActividades = [];
+const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-reservacion');
 
 setReservacionesTipoAccion();
 changeCuponDetalle();
-
-document.getElementById('actualizar-estatus-reservacion').addEventListener('click', (event) =>{
-    event.preventDefault();
-    if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
-        validateCancelarReservacion();
-        return true;
-    }
-    validateActivarReservacion();
-});
+ 
+if(actualizarEstatusReservacion !== null){
+    actualizarEstatusReservacion.addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
+            validateCancelarReservacion();
+            return true;
+        }
+        validateActivarReservacion();
+    });
+}
 
 document.getElementById('actualizar').addEventListener('click', (event) => {
     event.preventDefault();
