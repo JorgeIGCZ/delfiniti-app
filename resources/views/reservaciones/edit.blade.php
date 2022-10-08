@@ -500,10 +500,21 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    @can('Reservaciones.update') 
+                                        @if($reservacion->estatusPago !== 2)
+                                            <div class="form-group col-2 mt-0 mb-0">
+                                                <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
+                                            </div>
+                                        @else
+                                            @role('Administrador')
+                                                <div class="form-group col-2 mt-0 mb-0">
+                                                    <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
+                                                </div>
+                                            @endrole
+                                        @endif
+                                    @endcan
 
-                                    <div class="form-group col-2 mt-0 mb-0">
-                                        <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
-                                    </div>
                                 </div>
                             </div>
                         </form>

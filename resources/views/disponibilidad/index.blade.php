@@ -197,7 +197,13 @@
                                                             <td class="folio-link">
                                                                 <a href="
                                                                 @can('Reservaciones.update') 
-                                                                    {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }} 
+                                                                    @if($reservacion->estatusPago !== 2)
+                                                                        {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}
+                                                                    @else
+                                                                        @role('Administrador')
+                                                                            {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}
+                                                                        @endrole
+                                                                    @endif
                                                                 @endcan
                                                                 ">{{ $reservacion->folio }}</a>
                                                             </td>
