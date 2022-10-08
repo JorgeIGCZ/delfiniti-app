@@ -76,7 +76,7 @@
     <div class="az-dashboard-one-title disponibilidad-title">
         <div>
             <h2 class="az-dashboard-title">Disponibilidad</h2>
-        </div>
+        </div> 
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20 disponibilidad-section">
         <div class="col-lg-12 ht-lg-100p">
@@ -195,7 +195,11 @@
                                                         @endphp
                                                         <tr class={{$estatus}}>
                                                             <td class="folio-link">
-                                                                <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
+                                                                <a href="
+                                                                @can('Reservaciones.update') 
+                                                                    {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }} 
+                                                                @endcan
+                                                                ">{{ $reservacion->folio }}</a>
                                                             </td>
                                                             <td>{{ strlen($reservacion->nombre_cliente) > 15 ? substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
