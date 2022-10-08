@@ -46,7 +46,7 @@ class ComisionController extends Controller
             [
                 'result' => 'Success'
             ]
-        );;
+        );
     }
 
     public function setComisiones($reservacionId){
@@ -55,6 +55,10 @@ class ComisionController extends Controller
             $query
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta')");
         })->get();
+        
+        if(!$reservacion['comisionable']){
+            return;
+        }
 
         $this->setComisionComisionista($reservacion,$pagos);
         $this->setComisionCerrador($reservacion,$pagos);
@@ -174,11 +178,45 @@ class ComisionController extends Controller
         return true;
     }
 
-    private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista){
+    private function getCantidadPagoActividadNoComisionable($totalPago,$reservacion){
+        $sumatoriaActividad = 0;
+        $actividadesNoComisionables = [];
+        $actividadesCantidad = [];
 
+        foreach($reservacion->actividad as $actividad){
+            $sumatoriaActividad += $actividad['precio'];
+            if(!$actividad['comisionable']){
+                $actividadesNoComisionables[] = $actividad['id'];
+            }
+        }
+
+        $calculoPorcentaje = (100/$sumatoriaActividad);
+
+        foreach($reservacion->actividad as $actividad){
+            foreach($actividadesNoComisionables as $actividadNoComisionable){
+                if($actividadNoComisionable == $actividad['id']){
+                    $porcentajeActividad = ($calculoPorcentaje*$actividad['precio']);
+                    $actividadesCantidad[$actividad['id']] = ($totalPago*$porcentajeActividad)/100;
+                }
+            }
+        }
+        return $actividadesCantidad;
+    }
+
+    private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista){
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
+            //verifica si el tipo de pago es en USD
+            if($pago['tipo_pago_id'] == 2){
+                $totalPagoReservacion += ($pago['cantidad'] * $pago['tipo_cambio_usd']);
+                continue;
+            }
             $totalPagoReservacion += $pago['cantidad'];
+        }
+
+        $cantidadesNoComisionables = $this->getCantidadPagoActividadNoComisionable($totalPagoReservacion,$reservacion);
+        foreach($cantidadesNoComisionables as $cantidadNoComisionable){
+            $totalPagoReservacion = ($totalPagoReservacion - $cantidadNoComisionable);
         }
 
         $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);

@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        $(function(){
-            const checkinTable = new DataTable('#checkin', {
+        
+        const checkinTable = new DataTable('#checkin', {
                 order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
@@ -57,61 +57,60 @@
                 checkinTable.ajax.reload();
                 return;
             });
-        } );
-
-        function verificacionCheckIn(id){
-            Swal.fire({
-                title: '¿Desea registrar visita?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: '¡Si, registrar!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    checkIn(id,);
-                }else{
-                    return false;
-                }
-            }) 
-        }
-
-        function checkIn(id){
-            $('.loader').show();
-            axios.post(`checkin/registro/${id}`, {
-                '_token'  : '{{ csrf_token() }}',
-                'estatus' : 1,
-                '_method' : 'PATCH'
-            })
-            .then(function (response) {
-                $('.loader').hide();
-                if(response.data.result == "Success"){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Visita registrada',
-                        showConfirmButton: false,
-                        timer: 1500
-                    })
-                    checkinTable.ajax.reload();
-                }else{
+            
+            function checkIn(id){
+                $('.loader').show();
+                axios.post(`checkin/registro/${id}`, {
+                    '_token'  : '{{ csrf_token() }}',
+                    'estatus' : 1,
+                    '_method' : 'PATCH'
+                })
+                .then(function (response) {
+                    $('.loader').hide();
+                    if(response.data.result == "Success"){
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Visita registrada',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        checkinTable.ajax.reload();
+                    }else{
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Actualización fallida',
+                            html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                            showConfirmButton: true
+                        })
+                    }
+                })
+                .catch(function (error) {
+                    $('.loader').hide();
                     Swal.fire({
                         icon: 'error',
                         title: 'Actualización fallida',
-                        html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                        html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
                         showConfirmButton: true
                     })
-                }
-            })
-            .catch(function (error) {
-                $('.loader').hide();
+                }); 
+            }
+
+            function verificacionCheckIn(id){
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Actualización fallida',
-                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
-                    showConfirmButton: true
-                })
-            }); 
-        }
+                    title: '¿Desea registrar visita?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '¡Si, registrar!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        checkIn(id,);
+                    }else{
+                        return false;
+                    }
+                }) 
+            }
     </script>
 @endsection
 @section('content')

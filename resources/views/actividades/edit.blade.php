@@ -76,6 +76,11 @@
                                 <input type="number" name="capacidad" min="1" max="500" class="form-control" value="{{$actividad['capacidad']}}">  
                             </div>
 
+                            <div class="form-group col-1"> 
+                                <label for="comisionable" class="col-form-label">Comisionable</label>
+                                <input type="checkbox" name="comisionable" class="form-control" @if($actividad->comisionable) checked="checked" @endif>
+                            </div>
+
                             <div class="col-12">
                                 <div class="row" id="horarios-container">
                                     @foreach($actividadHorarios as $actividadHorario)

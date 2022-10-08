@@ -23,7 +23,8 @@ class Reservacion extends Model
         'estatus_pago',
         'estatus',
         'fecha',
-        'fecha_creacion'
+        'fecha_creacion',
+        'comisionable'
     ];
     protected $primaryKey = 'id';  
     

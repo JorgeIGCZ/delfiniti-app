@@ -115,6 +115,7 @@ function createReservacion(estatus) {
         },
         'comentarios': reservacion.elements['comentarios'].value,
         'estatus': estatus,
+        "comisionable"   : reservacion.elements['comisionable'].checked,
         'reservacionArticulos': actvidadesArray
     }).then(function (response) {
         $('.loader').hide();

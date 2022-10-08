@@ -175,6 +175,7 @@ class ReservacionController extends Controller
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
                 'comentarios'     => strtoupper($request->comentarios),
                 'estatus_pago'    => $estatusPago,
+                'comisionable'    => $request->comisionable,
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
@@ -525,6 +526,7 @@ class ReservacionController extends Controller
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = strtoupper($request->comentarios);
+            $reservacion->comisionable    = $request->comisionable;
             $reservacion->fecha           = $request->fecha;
             if($pagar){
                 $reservacion->estatus_pago = 1;

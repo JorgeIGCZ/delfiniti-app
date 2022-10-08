@@ -69,6 +69,7 @@
                 "precio"         : actividades.elements['precio'].getAttribute('value'),
                 "capacidad"      : actividades.elements['capacidad'].value,
                 "duracion"       : actividades.elements['duracion'].value,
+                "comisionable"   : actividades.elements['comisionable'].checked,
                 "fechaInicial"   : actividades.elements['rango'].getAttribute('fechainicial'),
                 "fechaFinal"     : actividades.elements['rango'].getAttribute('fechafinal'),
                 "horarioInicial" : horario_inicial,
@@ -286,30 +287,32 @@
                                     <label for="rango" class="col-form-label">Rango personalizado</label> 
                                     <input type="text" id="rango" name="rango" class="form-control">
                                 </div>
+                                <div class="form-group col-1"> 
+                                    <label for="comisionable" class="col-form-label">Comisionable</label>    
+                                    <input type="checkbox" name="comisionable" class="form-control" checked="checked">
+                                </div>
 
-
-
-                            <div class="col-12">
-                                    <div class="row" id="horarios-container">
-                                        <div class="form-group col-3 horario-container">
-                                            <label for="new-time" class="col-form-label">Horario</label>
-                                            <div class="row g-3 align-items-center">
-                                                <div class="col-auto">
-                                                    <input type="time" name="horario_inicial[]" class="form-control" required="required">
-                                                </div>
-                                                A
-                                                <div class="col-auto">
-                                                    <input type="time" name="horario_final[]" class="form-control" required="required">
-                                                </div>
-                                                <div class="action-time">
-                                                    <span class="add-time">
-                                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                    </span>
+                                <div class="col-12">
+                                        <div class="row" id="horarios-container">
+                                            <div class="form-group col-3 horario-container">
+                                                <label for="new-time" class="col-form-label">Horario</label>
+                                                <div class="row g-3 align-items-center">
+                                                    <div class="col-auto">
+                                                        <input type="time" name="horario_inicial[]" class="form-control" required="required">
+                                                    </div>
+                                                    A
+                                                    <div class="col-auto">
+                                                        <input type="time" name="horario_final[]" class="form-control" required="required">
+                                                    </div>
+                                                    <div class="action-time">
+                                                        <span class="add-time">
+                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                            </div>
+                                </div>
 
                                 <div class="form-group col-3">
                                     <button class="btn btn-info btn-block mt-33">Crear actividad</button>

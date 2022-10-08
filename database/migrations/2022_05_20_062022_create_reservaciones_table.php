@@ -30,6 +30,7 @@ return new class extends Migration
             $table->boolean('estatus_pago')->comment('0 es orden reservada 1 es orden parcialmente pagada 2 es orden pagada');
             $table->boolean('estatus')->default(1)->comment('0 es orden cancelada 1 es orden activa');
             $table->boolean('check_in')->default(0);
+            $table->boolean('comisionable')->default(1);
             $table->timestamps();
         });
     }

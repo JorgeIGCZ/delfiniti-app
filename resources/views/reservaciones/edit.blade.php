@@ -377,6 +377,12 @@
                                                 <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
                                                 <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
                                             </div>
+
+                                            <div class="form-group col-1"> 
+                                                <label for="comisionable" class="col-form-label">Comisionable</label>
+                                                <input type="checkbox" name="comisionable" class="form-control" value="{{$reservacion->comisionable}}" @if($reservacion->comisionable) checked="checked" @endif>
+                                            </div>
+
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
                                                 <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>

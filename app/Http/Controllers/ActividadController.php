@@ -77,6 +77,7 @@ class ActividadController extends Controller
                 'precio'       => $request->precio,
                 'capacidad'       => $request->capacidad,
                 'duracion'        => $request->duracion,
+                'comisionable'    => $request->comisionable,
                 'fecha_inicial'   => $request->fechaInicial,
                 'fecha_final'     => $request->fechaFinal,
             ]);        
@@ -136,6 +137,7 @@ class ActividadController extends Controller
             $actividad->nombre          = strtoupper($request->nombre);
             $actividad->precio          = $request->precio;
             $actividad->capacidad       = $request->capacidad;
+            $actividad->comisionable    = $request->has('comisionable');
             $actividad->save();
 
             ActividadHorario::where('actividad_id',$id)->delete();

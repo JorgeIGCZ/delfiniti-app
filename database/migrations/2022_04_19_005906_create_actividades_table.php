@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('fecha_final')->nullable();
             $table->string('duracion');
             $table->integer('reporte_orden');
+            $table->boolean('comisionable')->default(1);
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
