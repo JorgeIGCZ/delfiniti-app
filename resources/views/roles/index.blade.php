@@ -58,6 +58,7 @@
                 'Reservaciones.index'         : roles.elements['Reservaciones.index'           ].checked,
                 'Reservaciones.create'        : roles.elements['Reservaciones.create'          ].checked,
                 'Reservaciones.update'        : roles.elements['Reservaciones.update'          ].checked,
+                'Reservaciones.cancel'        : roles.elements['Reservaciones.cancel'          ].checked,
 
                 'Comisiones.index'            : roles.elements['Comisiones.index'              ].checked,
                 'Comisiones.create'           : roles.elements['Comisiones.create'             ].checked,
@@ -224,6 +225,12 @@
                             <input name="Reservaciones.update" type="checkbox" >
                             <label for="Reservaciones.update">
                                 Modificar 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Reservaciones.cancel" type="checkbox" >
+                            <label for="Reservaciones.cancel">
+                                Cancelar 
                             </label>
                         </div>
                     </div>

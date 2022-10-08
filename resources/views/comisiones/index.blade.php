@@ -93,7 +93,7 @@
                                 recalcular = `| <a href="#!" class="recalcular-comisiones" reservacionFolio="${row.reservacion}" reservacionId="${row.reservacionId}">Recalcular</a>`;
                                 //comisiones/recalculateComisiones
                             }
-
+ 
                             @can('Comisiones.update')
                                 view    =   `<small> 
                                         ${estatusRow}

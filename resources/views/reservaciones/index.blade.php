@@ -69,21 +69,31 @@
                         {
                             let cloneRow = '';
                             let payRow = '';
-                            let editRow   = '';
+                            let editRow = '';
+                            let options = [];
                             @can('Reservaciones.update')
-                                editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a> | `;
+                                @role('Administrador')
+                                    editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a>`;
+                                @endrole
+
+                                if(row.estatusPago !== 2){
+                                    editRow = `<a href="reservaciones/${row.id}/edit?accion=edit">Editar</a>`;
+                                }
                             @endcan
+
                             @can('Reservaciones.create')
                                 cloneRow = `<a href="reservaciones/create/${row.id}">Clonar</a>`;
                             @endcan
+                            
                             if(row.estatusPago !== 2){
-                                payRow = `| <a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
+                                payRow = `<a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
                             }
 
+                            options = [cloneRow,payRow,editRow];
+                            options = options.filter(option => option != ""); 
+
                             let view    =   `<small>
-                                                ${editRow}
-                                                ${cloneRow}
-                                                ${payRow}
+                                                ${options.join(' | ')}
                                             </small>`;
                             return  view;
                         }

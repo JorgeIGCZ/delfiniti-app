@@ -141,13 +141,14 @@
                 </div><!-- media-body -->
             </div><!-- media -->
 
-            @can('Alojamientos.create')
+            @can('Reservaciones.create')
                 <div class="media">
                     <div class="media-body">
                         <a href="{{ url('reservaciones/create/'.$reservacion->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
                     </div>
                 </div>
             @endcan
+
             @if($reservacion->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
@@ -155,16 +156,18 @@
                     </div>
                 </div>
             @endif
-
-            @if(@$_GET["accion"] === "pago")
-                <div class="media">
-                    <div class="media-body">
-                        <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}"  class="btn btn-secondary btn-block" style="padding-top: 5px;">Editar</a>
-                    </div>
-                </div>
-            @endif
             
-            @can('Alojamientos.update')
+            @can('Reservaciones.edit')
+                @if(@$_GET["accion"] === "pago")
+                    <div class="media">
+                        <div class="media-body">
+                            <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}"  class="btn btn-secondary btn-block" style="padding-top: 5px;">Editar</a>
+                        </div>
+                    </div>
+                @endif
+            @endcan
+
+            @can('Reservaciones.cancel')
                 @if($reservacion->estatus)
                     <div class="media">
                         <div class="media-body">
