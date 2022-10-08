@@ -373,14 +373,14 @@
                                                 </select>
                                             </div>
 
-                                            <div class="form-group col-4 mt-0 mb-0">
+                                            <div class="form-group col-2 mt-0 mb-0">
                                                 <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
                                                 <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
                                             </div>
 
-                                            <div class="form-group col-1"> 
+                                            <div class="form-group col-2"> 
                                                 <label for="comisionable" class="col-form-label">Comisionable</label>
-                                                <input type="checkbox" name="comisionable" class="form-control" value="{{$reservacion->comisionable}}" @if($reservacion->comisionable) checked="checked" @endif>
+                                                <input type="checkbox" name="comisionable" class="form-control" @if($reservacion->comisionable) checked="checked" @endif tabindex="16">
                                             </div>
 
                                             <div class="form-group col-12 mt-0 mb-0">
@@ -436,21 +436,21 @@
                                                                 <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="16">
+                                                                <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="17">
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="efectivo-usd" class="col-form-label">Efectivo USD.</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="17">
+                                                                <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="18">
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="tarjeta" class="col-form-label">Tarjeta crédito.</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
-                                                                <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="18">
+                                                                <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="19">
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
@@ -494,7 +494,7 @@
 
 
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="19">Pagar</button>
+                                                        <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -502,7 +502,7 @@
                                     </div>
 
                                     <div class="form-group col-2 mt-0 mb-0">
-                                        <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="20">Actualizar</button>
+                                        <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
                                     </div>
                                 </div>
                             </div>
