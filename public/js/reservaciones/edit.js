@@ -1,6 +1,8 @@
 let pagosTabla;
 let allActividades = [];
 const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-reservacion');
+const actualizar = document.getElementById('actualizar');
+const pagar = document.getElementById('pagar');
 
 setReservacionesTipoAccion();
 changeCuponDetalle();
@@ -16,20 +18,23 @@ if(actualizarEstatusReservacion !== null){
     });
 }
 
-document.getElementById('actualizar').addEventListener('click', (event) => {
-    event.preventDefault();
-    if (formValidity('reservacion-form')) {
-        createReservacion('actualizar');
-    }
-});
+if(actualizar !== null){
+    actualizar.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (formValidity('reservacion-form')) {
+            createReservacion('actualizar');
+        }
+    });
+}  
 
-document.getElementById('pagar').addEventListener('click', (event) => {
-    event.preventDefault();
-    if (formValidity('reservacion-form')) {
-        createReservacion('pagar');
-    }
-});
-
+if(pagar !== null){
+    pagar.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (formValidity('reservacion-form')) {
+            createReservacion('pagar');
+        }
+    });
+}
 if ((isReservacionPagada())) {
     bloquearPagos();
 }
