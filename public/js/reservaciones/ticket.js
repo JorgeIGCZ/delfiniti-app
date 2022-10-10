@@ -97,16 +97,7 @@ const format    = (reservacion) => {
                         <br/>
                         <p class="f-11">LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO</p>
                         <p class="f-11">
-                        FECHA DE EXPEDICIÓN: ${new Date().toLocaleDateString('es-MX',{
-                                day: '2-digit',
-                                month: 'numeric',
-                                year: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: true
-                            }
-                        )}
+                        FECHA DE EXPEDICIÓN: ${moment().format('hh:mm a')}
                         </p>
                         <br/>
                         CAJERO: ${detalleReservacion().cajero}
@@ -146,8 +137,6 @@ const format    = (reservacion) => {
                     <p class="border">
                         <br/>
                         ESTE COMPROBANTE FORMA PARTE DE
-                        <br/>
-                        LA FACTURA GLOBAL A PUBLICO
                         <br/>
                         LA FACTURA GLOBAL A PUBLICO EN GENERAL.
                         <br/>
@@ -195,8 +184,10 @@ function getTicketPagos(){
     const efectivo      = reservacion.elements['efectivo'];
     const efectivoUsd   = reservacion.elements['efectio-usd'];
     const tarjeta       = reservacion.elements['tarjeta'];
+    const deposito       = reservacion.elements['deposito'];
     const total         = formatter.format(parseFloat(
         parseFloat(tarjeta.getAttribute('value'))+
+        parseFloat(deposito.getAttribute('value'))+
         parseFloat(efectivoUsd.getAttribute('value'))+
         parseFloat(efectivo.getAttribute('value'))
     ).toFixed(2));
@@ -217,6 +208,11 @@ function getTicketPagos(){
             <td class="vacio"></td>
             <td class="etiqueta">TARJ. CREDITO</td>
             <td class="importe">${tarjeta.value}</td>
+        </tr>
+        <tr class="izq">
+            <td class="vacio"></td>
+            <td class="etiqueta">Depósito / transferencia</td>
+            <td class="importe">${deposito.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>

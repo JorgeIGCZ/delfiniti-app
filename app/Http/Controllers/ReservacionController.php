@@ -161,9 +161,6 @@ class ReservacionController extends Controller
         $adeudo   = ((float)$request->total - (float)$pagado);
         DB::beginTransaction();
         try{
-            // if(!$actividad->isDisponible($request)){
-            //     return json_encode(['result' => 'Error','message' => 'No hay disponibilidad suficiente en la actividad seleccionada para ese horario.']);
-            // }
             $reservacion = Reservacion::create([
                 'nombre_cliente'  => strtoupper($request->nombre),
                 'email'           => strtoupper($request->email),
@@ -185,6 +182,7 @@ class ReservacionController extends Controller
                 'pagado'         =>  $pagado,
                 'adeudo'         =>  $adeudo
             ]);
+
             foreach($request->reservacionArticulos as $reservacionArticulo){
                 ReservacionDetalle::create([
                     'reservacion_id'       =>  $reservacion['id'],
@@ -197,10 +195,10 @@ class ReservacionController extends Controller
             }
 
             if($estatusPago){
-
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
 
                 if($this->isValidDescuentoCupon($request)){
@@ -253,6 +251,7 @@ class ReservacionController extends Controller
                 + (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
+                + (float)$request->pagos['deposito']
             );
 
         if($this->isValidDescuentoCodigo($request,$email)){
@@ -267,7 +266,7 @@ class ReservacionController extends Controller
     }
 
     public function getPagosAnteriores($id){
-        $factura = Factura::find($id);
+        $factura = Factura::where("reservacion_id",$id)->first();
         return $factura['pagado'];
     }
 
@@ -511,6 +510,7 @@ class ReservacionController extends Controller
 
         try{
             $pagosAnteriores = $this->getPagosAnteriores($id);
+
             $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
             $pagado   = ((float) $pagado + (float) $pagosAnteriores);
             $adeudo   = ((float)$request->total - (float)$pagado);
@@ -533,7 +533,7 @@ class ReservacionController extends Controller
             }
             $reservacion->save();
 
-            $factura                 = Factura::find($id);
+            $factura                 = Factura::where("reservacion_id",$id)->first();
             $factura->reservacion_id =  $reservacion['id'];
             $factura->total          =  $request->total;
             $factura->pagado         =  (float)$pagado;
@@ -558,6 +558,7 @@ class ReservacionController extends Controller
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
 
                 if($this->isValidDescuentoCupon($request)){

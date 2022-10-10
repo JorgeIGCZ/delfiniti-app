@@ -195,17 +195,7 @@
                                                         @endphp
                                                         <tr class={{$estatus}}>
                                                             <td class="folio-link">
-                                                                <a href="
-                                                                @can('Reservaciones.update') 
-                                                                    @if($reservacion->estatus_pago !== 2)
-                                                                        {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}
-                                                                    @else
-                                                                        @role('Administrador')
-                                                                            {{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}
-                                                                        @endrole
-                                                                    @endif
-                                                                @endcan
-                                                                ">{{ $reservacion->folio }}</a>
+                                                                <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
                                                             <td>{{ strlen($reservacion->nombre_cliente) > 15 ? substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>

@@ -36,5 +36,8 @@ class TipoPagoSeeder extends Seeder
         TipoPago::create([
             'nombre'   => 'cambio'
         ]);
+        TipoPago::create([
+            'nombre'   => 'deposito'
+        ]);
     }
 }

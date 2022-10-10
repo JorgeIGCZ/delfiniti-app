@@ -454,6 +454,13 @@
                                                             </div>
 
                                                             <div class="form-group col-7 mt-0 mb-0">
+                                                                <label for="deposito" class="col-form-label">Depósito / transferencia.</label>
+                                                            </div>
+                                                            <div class="form-group col-5 mt-0 mb-0">
+                                                                <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="20">
+                                                            </div>
+
+                                                            <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="cupon" class="col-form-label">Cupón:</label>
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
