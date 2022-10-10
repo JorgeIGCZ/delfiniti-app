@@ -64,20 +64,26 @@ function validateCancelarReservacion(){
 function setReservacionesTipoAccion() {
     const reservacion = document.getElementById('reservacion-form');
     let disabledFields = [];
-    let hideFields = [];
+    let hiddenFields = [];
     if (accion === 'pago') {
-        hideFields = ['add-actividad', 'actualizar','actividad-container'];
+        hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
         disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
     } else {
-        hideFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento','add-descuento-personalizado'];
+        hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento','add-descuento-personalizado'];
         disabledFields = ['codigo-descuento'];
     }
     disabledFields.forEach((disabledField) => {
-        reservacion.elements[disabledField].setAttribute('disabled', 'disabled');
-        reservacion.elements[disabledField].classList.add('not-editable');
+        let campoDeshabilitado = document.getElementById(disabledField);
+        if(campoDeshabilitado !== null){
+            reservacion.elements[disabledField].setAttribute('disabled', 'disabled');
+            reservacion.elements[disabledField].classList.add('not-editable');
+        }
     });
-    hideFields.forEach((hideField) => {
-        document.getElementById(hideField).style.setProperty('display', 'none', 'important');
+    hiddenFields.forEach((hideField) => {
+        let campoOcultar = document.getElementById(hiddenFields);
+        if(campoOcultar !== null){
+            campoOcultar.style.setProperty('display', 'none', 'important');
+        }
     });
 }
 
