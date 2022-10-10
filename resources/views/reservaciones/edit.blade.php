@@ -80,7 +80,7 @@
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
                 '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
                 '{{$pago->created_at}}',
-                ((accion === 'pago' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) 
+                ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}}) || {{Auth::user()->hasRole('Administrador')}}) 
                     ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
                     : '')
             ]];
