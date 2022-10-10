@@ -3,6 +3,10 @@ let allActividades = [];
 const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-reservacion');
 const actualizar = document.getElementById('actualizar');
 const pagar = document.getElementById('pagar');
+const contenedorPagos = document.getElementById("detalle-reservacion-contenedor");
+const elementoPagos = contenedorPagos.querySelectorAll("input, select, checkbox, textarea");
+const detallePagoContainer = document.getElementById('detallePagoContainer');
+const anticipoContainer = document.getElementById('anticipo-container');
 
 setReservacionesTipoAccion();
 changeCuponDetalle();
@@ -323,13 +327,17 @@ function enableFinalizar($status) {
 }
 
 function bloquearPagos() {
-    const contenedorPagos = document.getElementById("detalle-reservacion-contenedor");
-    const elementos = contenedorPagos.querySelectorAll("input, select, checkbox, textarea")
-    elementos.forEach(elemento => {
+    elementoPagos.forEach(elemento => {
         elemento.classList.add('not-editable');
         elemento.setAttribute('disabled', 'disabled');
     })
-    document.getElementById('pagar').remove();
-    document.getElementById('detallePagoContainer').style.display = 'none';
-    document.getElementById('anticipo-container').style.display = 'none';
+    if(pagar !== null){
+        pagar.remove();
+    }
+    if(detallePagoContainer !== null){
+        detallePagoContainer.style.display = 'none';
+    }
+    if(anticipoContainer !== null){
+        anticipoContainer.style.display = 'none';
+    }
 }
