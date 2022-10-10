@@ -97,7 +97,7 @@ const format    = (reservacion) => {
                         <br/>
                         <p class="f-11">LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO</p>
                         <p class="f-11">
-                        FECHA DE EXPEDICIÓN: ${moment().format('hh:mm a')}
+                        FECHA DE EXPEDICIÓN: ${moment().format('YYYY-MM-DD hh:mm a')}
                         </p>
                         <br/>
                         CAJERO: ${detalleReservacion().cajero}
