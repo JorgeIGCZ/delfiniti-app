@@ -1,5 +1,7 @@
 let actividades = '';
 const format    = (reservacion) => {
+
+    const descuentos = getDescuentos(reservacion);
     return `
         <!DOCTYPE html>
         <html>
@@ -155,6 +157,7 @@ const format    = (reservacion) => {
                             <br/>
                         </strong>
                     </p>
+                    ${descuentos}
                     <p class="centrado">
                         <strong>DELFINITI</strong>
                     </p>
@@ -206,12 +209,12 @@ function getTicketPagos(){
         </tr>
         <tr class="izq">
             <td class="vacio"></td>
-            <td class="etiqueta">TARJ. CREDITO</td>
+            <td class="etiqueta">TARJ. CRÉDITO</td>
             <td class="importe">${tarjeta.value}</td>
         </tr>
         <tr class="izq">
             <td class="vacio"></td>
-            <td class="etiqueta">Depósito / transferencia</td>
+            <td class="etiqueta">DEP. / TRANSF.</td>
             <td class="importe">${deposito.value}</td>
         </tr>
         <tr class="izq">
@@ -227,6 +230,56 @@ function getTicketPagos(){
         `;
 
     return pagos;
+}
+
+function getDescuentos(reservacion){
+
+    let descuentosHTML  = "";
+    const reservacionForm   = document.getElementById('reservacion-form');
+    const descuento     = reservacionForm.elements['descuento-personalizado'];
+    const codigo        = reservacionForm.elements['descuento-codigo'];
+    const codigoOpcion  = reservacionForm.elements['codigo-descuento'];
+    const cupon         = reservacionForm.elements['cupon'];
+
+    const descuentos = new Map([
+        ["descuento", descuento.getAttribute('value')],
+        ["codigo", codigo.getAttribute('value')],
+        ["cupon", cupon.getAttribute('value')]
+    ]);
+
+    for(let [key, descuento] of descuentos){
+        if(parseFloat(descuento) !== 0){
+            switch (key) {
+                //case 'cupon':
+                //    descuentosHTML = descuentosHTML.concat(`
+                //        <tr class="centrado">
+                //            <td class="vacio"></td>
+                //            <td class="etiqueta">CUPÓN</td>
+                //            <td class="importe">-$${descuento}</td>
+                //        </tr>`);
+                //    break;
+                case 'descuento':
+                    descuentosHTML = descuentosHTML.concat(`
+                        <p class="centrado">
+                            ${descuento}% OFF
+                        </p>
+                    `);
+                    break;
+                //case 'codigo':
+                //    descuentosHTML = descuentosHTML.concat(`
+                //        <tr class="centrado">
+                //            <td class="vacio"></td>
+                //            <td class="etiqueta">${codigoOpcion.options[codigoOpcion.selectedIndex].text}</td>
+                //            <td class="importe">-${descuento}%</td>
+                //        </tr>`);
+                //    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return descuentosHTML;
 }
 
 function getTicket(reservacion){
