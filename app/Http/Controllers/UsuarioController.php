@@ -137,7 +137,7 @@ class UsuarioController extends Controller
             $user->email            = $request->email;
             $user->limite_descuento = $request->limite_descuento;
 
-            $request->password !== '************' ? $user->password = $request->password : '';
+            $request->password !== '************' ? $user->password =Hash::make($request->password) : '';
 
             $user->save();
 
