@@ -63,7 +63,9 @@
                 '{{$detalle->numero_personas}}',
                 formatter.format('{{$detalle->PPU}}'),
                 formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
-                (accion !== 'pago' ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` : '')
+                (canEdit && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
+                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
+                    : '')
             ]];
             actvidadesArray = [...actvidadesArray,{
                 'claveActividad': '{{$detalle->actividad->clave}}',
