@@ -275,9 +275,11 @@
                                 <input type="date" name="fecha" id="fecha" class="form-control" value="{{date_format(date_create($reservacion->fecha),'Y-m-d')}}" required="required" autocomplete="off" tabindex="9">
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
-                            <div class="form-group col-1 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
-                            </div>
+                            @can('Reservaciones.update') 
+                                <div class="form-group col-1 mt-0 mb-0">
+                                    <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
+                                </div>
+                            @endcan
                             <div class="form-group col-12 mt-8 mb-2 bd-t">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-2">
@@ -381,7 +383,7 @@
 
                                             <div class="form-group col-2"> 
                                                 <label for="comisionable" class="col-form-label">Comisionable</label>
-                                                <input type="checkbox" name="comisionable" class="form-control" @if($reservacion->comisionable) checked="checked" @endif tabindex="16">
+                                                <input type="checkbox" name="comisionable" id="comisionable" class="form-control" style="display: block;" @if($reservacion->comisionable) checked="checked" @endif tabindex="16">
                                             </div>
 
                                             <div class="form-group col-12 mt-0 mb-0">

@@ -78,18 +78,18 @@ function setReservacionesTipoAccion() {
         hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
         disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
     } else {
-        hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento','add-descuento-personalizado'];
+        hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
         disabledFields = ['codigo-descuento'];
     }
     disabledFields.forEach((disabledField) => {
-        let campoDeshabilitado = document.getElementById(disabledField);
+        let campoDeshabilitado = reservacion.elements[disabledField];
         if(campoDeshabilitado !== null){
-            reservacion.elements[disabledField].setAttribute('disabled', 'disabled');
-            reservacion.elements[disabledField].classList.add('not-editable');
+            campoDeshabilitado.setAttribute('disabled', 'disabled');
+            campoDeshabilitado.classList.add('not-editable');
         }
     });
     hiddenFields.forEach((hideField) => {
-        let campoOcultar = document.getElementById(hiddenFields);
+        let campoOcultar = document.getElementById(hideField);
         if(campoOcultar !== null){
             campoOcultar.style.setProperty('display', 'none', 'important');
         }
