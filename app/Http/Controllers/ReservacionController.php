@@ -26,6 +26,7 @@ use App\Models\User;
 use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\Break_;
+use Carbon\Carbon;
 
 class ReservacionController extends Controller
 {
@@ -322,22 +323,20 @@ class ReservacionController extends Controller
      */
     public function show(Request $request)
     {
-        $fechaInicio = date('Y-m-d')." 00:00:00";
-        $fechaFinal  = date('Y-m-d')." 23:59:00";
 
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
                 case 'dia':
-                    $fechaInicio = date('Y-m-d')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->endOfDay();
                     break;
                 case 'mes':
-                    $fechaInicio = date('Y-m-01')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
+                    $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
                     break;
                 case 'custom':
-                    $fechaInicio = $request->fechaInicio." 00:00:00";
-                    $fechaFinal  = $request->fechaFinal." 23:59:00";
+                    $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+                    $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
                     break;
             }   
         }
@@ -382,8 +381,8 @@ class ReservacionController extends Controller
                 'folio'        => @$reservacion->folio,
                 'actividad'    => $actividades, 
                 'horario'      => $horario,
-                'fechaCreacion' => @date_format(date_create($reservacion->fecha_creacion),"d/m/Y"),
-                'fecha'        => @date_format(date_create($reservacion->fecha),"d-m-Y"),//date_format($reservacion->fecha,'d-m-Y'),
+                'fechaCreacion' => @Carbon::parse($reservacion->fecha_creacion)->format('d/m/Y'),//date_format(date_create($reservacion->fecha_creacion),"d/m/Y"),
+                'fecha'        => @Carbon::parse($reservacion->fecha)->format('d/m/Y'),//date_format(date_create($reservacion->fecha),"d-m-Y"),
                 'cliente'      => @$reservacion->nombre_cliente,
                 'personas'     => $numeroPersonas,
                 'notas'        => @$reservacion->comentarios,

@@ -13,6 +13,8 @@ use App\Models\Cerrador;
 use App\Models\ComisionistaActividadDetalle;
 use App\Models\ComisionistaCanalDetalle;
 use App\Models\ReservacionDetalle;
+use Carbon\Carbon;
+
 
 class ComisionController extends Controller
 {
@@ -276,22 +278,19 @@ class ComisionController extends Controller
      */
     public function show(Request $request)
     {
-        $fechaInicio = date('Y-m-d')." 00:00:00";
-        $fechaFinal  = date('Y-m-d')." 23:59:00";
-
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
                 case 'dia':
-                    $fechaInicio = date('Y-m-d')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->endOfDay();
                     break;
                 case 'mes':
-                    $fechaInicio = date('Y-m-01')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
+                    $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
                     break;
                 case 'custom':
-                    $fechaInicio = $request->fechaInicio." 00:00:00";
-                    $fechaFinal  = $request->fechaFinal." 23:59:00";
+                    $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+                    $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
                     break;
             }   
         }

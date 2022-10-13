@@ -16,6 +16,7 @@ use App\Models\TipoCambio;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Carbon\Carbon;
 
 class ReporteController extends Controller
 {
@@ -43,8 +44,8 @@ class ReporteController extends Controller
      */
     public function reporteComisiones(Request $request){
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = $request->fechaInicio." 00:00:00";
-        $fechaFinal  = $request->fechaFinal." 23:59:00";
+        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
         $canalesVentaRequest = $request->data['canalesVenta'];
         $canalesVentaRequest = json_decode($canalesVentaRequest);
         $canalesVentaRequest = $canalesVentaRequest->comisiones_canales_venta;
@@ -361,8 +362,8 @@ class ReporteController extends Controller
         //$spreadsheet = new Spreadsheet();
         $usuario = new UsuarioController();
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = $request->fechaInicio." 00:00:00";
-        $fechaFinal  = $request->fechaFinal." 23:59:00";
+        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
         $creadaPor   = $request->data['cajero'];
         $showCupones = ($request->data['cupones'] === "1");
         
@@ -703,8 +704,8 @@ class ReporteController extends Controller
         //$spreadsheet = new Spreadsheet();
         $usuario = new UsuarioController();
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = $request->fechaInicio." 00:00:00";
-        $fechaFinal = $request->fechaFinal." 23:59:00";
+        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
 
         $agentes = User::role('Recepcion')->get()->pluck('id');
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Reservacion;
 use App\Classes\CustomErrorHandler;
+use Carbon\Carbon;
 
 class CheckinController extends Controller
 {
@@ -51,23 +52,20 @@ class CheckinController extends Controller
      */
     public function show(Request $request)
     {   
-        $fechaInicio = date('Y-m-d')." 00:00:00";
-        $fechaFinal  = date('Y-m-d')." 23:59:00";
-
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
                 case 'diaActual':
-                    $fechaInicio = date('Y-m-d')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->endOfDay();
                     $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
                     break;
                 case 'futuros':
-                    $fechaInicio = date('Y-m-d')." 00:00:00";
-                    $fechaFinal  = date('9999-m-d')." 23:59:00";
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->addYears(50)->endOfDay();
                     break;
                 case 'pasados':
-                    $fechaInicio = date('1970-m-d')." 00:00:00";
-                    $fechaFinal  = date('Y-m-d')." 00:00:00";
+                    $fechaInicio = Carbon::now()->subYears(50)->startOfDay();
+                    $fechaFinal  = Carbon::now()->startOfDay();
                     $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderByDesc('id')->get();
                     break;
             }   
