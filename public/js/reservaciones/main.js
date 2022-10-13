@@ -445,6 +445,32 @@ function isActividadDuplicada(nuevaActividad){
     });
     return duplicado;
 }
+function cantidadIsValid() {
+    const cantidad = document.getElementById('cantidad');
+    
+    if(cantidad.value < 1){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Cantidad invalida!`
+        });
+        cantidad.value = 1;
+        cantidad.focus()
+        return false;
+    }
+    return true;
+}
+function cantidadActividadesIsValid() {
+    if(actvidadesArray.length < 1){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Es necesario agregar actividades!`
+        });
+        cantidad.value = 1;
+        cantidad.focus()
+        return false;
+    }
+    return true;
+}
 function validateFecha() {
     const fecha = document.getElementById('fecha');
     const horario = document.getElementById('horarios');
@@ -538,9 +564,11 @@ window.onload = function() {
 
     document.getElementById('add-actividad').addEventListener('click', (event) =>{
         event.preventDefault();
-        validateFecha();
-        addActividades();
-        validateBotonGuardar();
+        if(cantidadIsValid()){
+            validateFecha();
+            addActividades();
+            validateBotonGuardar();
+        }
     });
 
     $('#codigo-descuento').on('change', function (e) {

@@ -53,6 +53,7 @@
         let pagosTablaArray         = [];
         let nombreTipoPagoArray     = [];
         let cantidadPagada          = 0;
+        const canEdit               = @can('Reservaciones.update') true @else false @endcan
 
         @forEach($reservacion->reservacionDetalle as $detalle)
             reservacionesTableArray = [...reservacionesTableArray,[
@@ -80,8 +81,8 @@
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
                 '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
                 '{{$pago->created_at}}',
-                ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}}) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
-                    ? `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
+                (canEdit && ((accion === 'pago' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
+                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
                     : '')
             ]];
             pagosArray = [...pagosArray,{
@@ -157,7 +158,7 @@
                 </div>
             @endif
             
-            @can('Reservaciones.edit')
+            @can('Reservaciones.update')
                 @if(@$_GET["accion"] === "pago")
                     <div class="media">
                         <div class="media-body">

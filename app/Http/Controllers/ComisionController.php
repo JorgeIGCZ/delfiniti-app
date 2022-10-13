@@ -15,7 +15,6 @@ use App\Models\ComisionistaCanalDetalle;
 use App\Models\ReservacionDetalle;
 use Carbon\Carbon;
 
-
 class ComisionController extends Controller
 {
     public function __construct() {

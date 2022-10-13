@@ -7,7 +7,7 @@ document.getElementById('add-alojamiento').addEventListener('click', (event) =>{
 
 document.getElementById('pagar-reservar').addEventListener('click', (event) => {
     validateFecha();
-    if (formValidity('reservacion-form')) {
+    if (formValidity('reservacion-form') && cantidadActividadesIsValid()) {
         createReservacion('pagar-reservar');
     }
 });
@@ -158,6 +158,7 @@ function addActividades() {
     let claveActividad = document.getElementById('clave-actividad');
     claveActividad     = claveActividad.options[claveActividad.selectedIndex].text;
     const horario      = document.getElementById('horarios').value;
+
 
     if (isActividadDuplicada({'claveActividad': claveActividad, 'horario': horario})) {
         Swal.fire({
