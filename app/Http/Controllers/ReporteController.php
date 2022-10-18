@@ -464,20 +464,20 @@ class ReporteController extends Controller
             foreach($reservaciones as $reservacion){
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->folio);
 
-                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',false,0);
+                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',$fechaInicio,$fechaFinal,false,0);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
 
-                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$pagosEfectivoResult['pendiente']);
+                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$fechaInicio,$fechaFinal,$pagosEfectivoResult['pendiente']);
                 $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
 
-                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
+                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$fechaInicio,$fechaFinal,$pagosEfectivoUsdResult['pendiente']);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
                 
-                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividad,'deposito',$pagosTarjetaResult['pendiente']);
+                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividad,'deposito',$fechaInicio,$fechaFinal,$pagosTarjetaResult['pendiente']);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
 
                 if($showCupones){
-                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$pagosDepositoResult['pendiente']);
+                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$fechaInicio,$fechaFinal,$pagosDepositoResult['pendiente']);
                     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCuponResult['pago']);
                 }
 
@@ -582,20 +582,20 @@ class ReporteController extends Controller
 
             foreach($reservaciones as $reservacion){
                 
-                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivo',0);
+                $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivo',$fechaInicio,$fechaFinal,0);
                 $totalEfectivo    += $pagosEfectivoResult['pago'];
 
-                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivoUsd',$pagosEfectivoResult['pendiente']);
+                $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivoUsd',$fechaInicio,$fechaFinal,$pagosEfectivoResult['pendiente']);
                 $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
 
-                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'tarjeta',$pagosEfectivoUsdResult['pendiente']);
+                $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'tarjeta',$fechaInicio,$fechaFinal,$pagosEfectivoUsdResult['pendiente']);
                 $totalTarjeta     += $pagosTarjetaResult['pago'];
 
-                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'deposito',$pagosTarjetaResult['pendiente']);
+                $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'deposito',$fechaInicio,$fechaFinal,$pagosTarjetaResult['pendiente']);
                 $totalDeposito     += $pagosDepositoResult['pago'];
 
                 if($showCupones){
-                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'cupon',$pagosDepositoResult['pendiente']);//remove
+                    $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'cupon',$fechaInicio,$fechaFinal,$pagosDepositoResult['pendiente']);//remove
                     $totalCupon       += $pagosCuponResult['pago'];
                 }
             }
@@ -1060,9 +1060,10 @@ class ReporteController extends Controller
         return ['cortesias' => $cortesiasPersonas,'pagados' => $pagados];
     }
 
-    private function getPagosTotalesByType($reservacion,$actividad,$pagoTipoNombre,$pendiente = 0){
+    private function getPagosTotalesByType($reservacion,$actividad,$pagoTipoNombre,$fechaInicio,$fechaFinal,$pendiente = 0){
+        $pagosId = $reservacion->pagos->pluck('id');
+        $pagos   = Pago::whereIn("id",$pagosId)->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])->get();
 
-        $pagos         = $reservacion->pagos;
         $reservaciones = new ReservacionController();
         $pagoTipoId    = $reservaciones->getTipoPagoId($pagoTipoNombre);
         //total pagado en tipo de pago actual
