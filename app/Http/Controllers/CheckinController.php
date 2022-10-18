@@ -57,7 +57,7 @@ class CheckinController extends Controller
                 case 'diaActual':
                     $fechaInicio = Carbon::now()->startOfDay();
                     $fechaFinal  = Carbon::now()->endOfDay();
-                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
+                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('check_in')->get();
                     break;
                 case 'futuros':
                     $fechaInicio = Carbon::now()->startOfDay();
