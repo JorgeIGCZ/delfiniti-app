@@ -40,7 +40,7 @@
                             let checkinAccion = '';
                             let view    =  '';
                             @can('Checkin.update')
-                                if(!row.checkin){
+                                if(!row.checkin && row.estatusPago == 2){
                                     checkinAccion = `<button class="btn btn-outline-success btn-block form-control" onclick="verificacionCheckIn(${row.id})" >Registrar</button>`;
                                 }
                                 view    =   `<small> 

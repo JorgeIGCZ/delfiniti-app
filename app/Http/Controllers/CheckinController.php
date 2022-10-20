@@ -91,7 +91,8 @@ class CheckinController extends Controller
                 'cliente'       => @$reservacion->nombre_cliente,
                 'personas'      => $numeroPersonas,
                 'notas'         => @$reservacion->comentarios,
-                'checkin'       => @$reservacion->check_in
+                'checkin'       => @$reservacion->check_in,
+                'estatusPago'   => @$reservacion->estatus_pago
             ];
         }   
         return json_encode(['data' => $reservacionDetalleArray]);
