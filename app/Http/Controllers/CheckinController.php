@@ -57,7 +57,7 @@ class CheckinController extends Controller
                 case 'diaActual':
                     $fechaInicio = Carbon::now()->startOfDay();
                     $fechaFinal  = Carbon::now()->endOfDay();
-                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderByDesc('id')->get();
+                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('estatus',1)->orderBy('check_in','desc')->get();
                     break;
                 case 'futuros':
                     $fechaInicio = Carbon::now()->startOfDay();
@@ -66,7 +66,7 @@ class CheckinController extends Controller
                 case 'pasados':
                     $fechaInicio = Carbon::now()->subYears(50)->startOfDay();
                     $fechaFinal  = Carbon::now()->startOfDay();
-                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderByDesc('id')->get();
+                    $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->where('check_in',0)->where('estatus',1)->orderBy('id','desc')->get();
                     break;
             }   
         }

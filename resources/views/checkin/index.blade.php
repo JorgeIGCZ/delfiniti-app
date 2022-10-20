@@ -3,7 +3,7 @@
     <script>
         
         const checkinTable = new DataTable('#checkin', {
-                order: [[0, 'desc']],
+                order: [[10, 'desc']],
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
                     const checkin = document.getElementById('checkin-form');
