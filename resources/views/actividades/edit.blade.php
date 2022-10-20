@@ -46,7 +46,7 @@
     </div><!-- az-dashboard-one-title --> 
     <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
-            <div class="card">
+            <div class="card"> 
                 <div class="card-body">
                     <div class="container">
                         <form method="POST" class="row g-3 align-items-center f-auto" id="actividades-form" action="{{route("actividades.update",$actividad['id'])}}">

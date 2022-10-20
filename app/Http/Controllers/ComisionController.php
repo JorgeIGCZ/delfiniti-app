@@ -346,6 +346,7 @@ class ComisionController extends Controller
             $comision->iva                    = $request->iva;
             $comision->descuento_impuesto     = $request->descuento_impuesto;
             $comision->cantidad_comision_neta = $request->cantidad_comision_neta;
+            $comision->created_at             = $request->fecha_registro_comision;
             $comision->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
