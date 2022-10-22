@@ -83,6 +83,7 @@
         let editar   = '';
         let accionesArray = [];
         @forEach($reservacion->pagos as $pago)
+            accionesArray = [];
             accionesArray.push(isAdmin
                     ?  `<a href="#!" class='editar-celda' class='eliminar'>Editar</a>` 
                     : '');
