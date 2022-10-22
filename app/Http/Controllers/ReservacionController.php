@@ -444,6 +444,23 @@ class ReservacionController extends Controller
             'tickets' => $tickets
         ]);
     }
+
+    public function editPago(Request $request){
+        try{
+            $pago              = Pago::find($request->pagoId);
+            $pago->created_at  = $request->fecha;
+            $pago->save();
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+    }
     
     public function removeActividad(Request $request){
         try{

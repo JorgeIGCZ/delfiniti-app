@@ -18,6 +18,9 @@
         const isAdmin = () => {
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
+        const canEdit = () => {
+            return {{Auth::user()->can('Reservaciones.update') ? 1 : 0}};
+        }
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
         }
@@ -53,7 +56,6 @@
         let pagosTablaArray         = [];
         let nombreTipoPagoArray     = [];
         let cantidadPagada          = 0;
-        const canEdit               = @can('Reservaciones.update') true @else false @endcan
 
         @forEach($reservacion->reservacionDetalle as $detalle)
             reservacionesTableArray = [...reservacionesTableArray,[
@@ -63,7 +65,7 @@
                 '{{$detalle->numero_personas}}',
                 formatter.format('{{$detalle->PPU}}'),
                 formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
-                (canEdit && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
+                (canEdit && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || isAdmin) 
                     ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
                     : '')
             ]];
@@ -76,16 +78,24 @@
                 'horario'       : '{{$detalle->actividad_horario_id}}'
             }];
         @endforeach
-
+        
+        let eliminar = '';
+        let editar   = '';
+        let accionesArray = [];
         @forEach($reservacion->pagos as $pago)
+            accionesArray.push(isAdmin
+                    ?  `<a href="#!" class='editar-celda' class='eliminar'>Editar</a>` 
+                    : '');
+            accionesArray.push(canEdit && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
+                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
+                    : '');
+
             pagosTablaArray = [...pagosTablaArray,[
                 '{{$pago->id}}',
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
                 '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
-                '{{$pago->created_at}}',
-                (canEdit && ((accion === 'pago' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
-                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
-                    : '')
+                '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;">',
+                accionesArray.join(" | ")
             ]];
             pagosArray = [...pagosArray,{
                 'id'            : '{{$pago->id}}',

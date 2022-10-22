@@ -43,6 +43,33 @@ if ((isReservacionPagada())) {
     bloquearPagos();
 }
 
+//jQuery
+$('#pagos').on( 'click', '.editar-celda', function (event) {
+    event.preventDefault();
+    if(env == 'edit'){
+        $(this).closest('tr').find('.fecha-pago').removeClass('not-editable');
+    }
+} );
+
+$('#pagos').on( 'focusout', '.fecha-pago', function (event) {
+    event.preventDefault();
+    if(env == 'edit'){
+        Swal.fire({
+            title: '¿Editar?',
+            text: "La fecha de pago será actualizada, ¿desea proceder?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#17a2b8',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, actualizar!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                editarPagoReservacion($(this))
+            }
+        });
+    }
+} );
+
 
 pagosTabla = new DataTable('#pagos', {
     searching: false,
@@ -52,6 +79,41 @@ pagosTabla = new DataTable('#pagos', {
 
 fillReservacionDetallesTabla();
 fillPagosTabla();
+
+async function editarPagoReservacion(row){
+    const pagoId = row.parents('tr')[0].firstChild.innerText;
+    const fecha =  row.closest('tr').find('.fecha-pago').val()
+
+    $('.loader').show();
+    result = await axios.post('/reservaciones/editPago', {
+        '_token': token(),
+        'reservacionId': reservacionId(),
+        'fecha': fecha,
+        'pagoId': pagoId
+    });
+
+
+    if(result.data.result == "Success"){
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'success',
+            title: 'Pago actualizado',
+            showConfirmButton: false,
+            timer: 1000
+        }).then(function() {
+            location.reload();
+        });
+    }else{
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'error',
+            title: `Petición fallida`,
+            showConfirmButton: true
+        })
+    }
+
+    return true;
+}
 
 function validateCancelarReservacion(){
     Swal.fire({
