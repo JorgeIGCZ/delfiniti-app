@@ -65,7 +65,7 @@
                 '{{$detalle->numero_personas}}',
                 formatter.format('{{$detalle->PPU}}'),
                 formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
-                (canEdit && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || isAdmin) 
+                (canEdit() && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || isAdmin()) 
                     ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
                     : '')
             ]];
@@ -84,10 +84,10 @@
         let accionesArray = [];
         @forEach($reservacion->pagos as $pago)
             accionesArray = [];
-            accionesArray.push(isAdmin
+            accionesArray.push(isAdmin()
                     ?  `<a href="#!" class='editar-celda'>Editar</a>` 
                     : '');
-            accionesArray.push(canEdit && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || isAdmin) 
+            accionesArray.push(canEdit() && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || isAdmin()) 
                     ?  `<a href="#!" class='eliminar-celda'>Eliminar</a>` 
                     : '');
 
