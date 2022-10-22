@@ -85,10 +85,10 @@
         @forEach($reservacion->pagos as $pago)
             accionesArray = [];
             accionesArray.push(isAdmin
-                    ?  `<a href="#!" class='editar-celda' class='eliminar'>Editar</a>` 
+                    ?  `<a href="#!" class='editar-celda'>Editar</a>` 
                     : '');
-            accionesArray.push(canEdit && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || {{Auth::user()->hasRole('Administrador') ? 1 : 0}}) 
-                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
+            accionesArray.push(canEdit && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || isAdmin) 
+                    ?  `<a href="#!" class='eliminar-celda'>Eliminar</a>` 
                     : '');
 
             pagosTablaArray = [...pagosTablaArray,[
