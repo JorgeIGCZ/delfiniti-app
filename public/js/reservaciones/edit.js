@@ -48,7 +48,7 @@ $('#pagos').on( 'click', '.editar-celda', function (event) {
     event.preventDefault();
     if(env == 'edit'){
         $(this).closest('tr').find('.fecha-pago').removeClass('not-editable');
-        $(this).closest('tr').find('.fecha-pago').removeAttribute('disabled');
+        $(this).closest('tr').find('.fecha-pago').removeAttr('disabled');
     }
 } );
 
