@@ -96,7 +96,7 @@
                 '{{$pago->id}}',
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
                 '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
-                '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;">',
+                '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;" disabled="disabled">',
                 accionesArray.join(" | ")
             ]];
             pagosArray = [...pagosArray,{
