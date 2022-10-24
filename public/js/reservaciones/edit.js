@@ -53,7 +53,7 @@ $('#pagos').on( 'click', '.editar-celda', function (event) {
     }
 } );
 
-$('#pagos').on( 'changed', '.fecha-pago', function (event) {
+$('#pagos').on( 'change', '.fecha-pago', function (event) {
     event.preventDefault();
     $(this).closest('tr').find('.editar-celda').show();
     if(env == 'edit'){
