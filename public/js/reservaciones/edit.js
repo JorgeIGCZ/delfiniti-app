@@ -52,7 +52,7 @@ $('#pagos').on( 'click', '.editar-celda', function (event) {
     }
 } );
 
-$('#pagos').on( 'focusout', '.fecha-pago', function (event) {
+$('#pagos').on( 'focusout changed', '.fecha-pago', function (event) {
     event.preventDefault();
     if(env == 'edit'){
         Swal.fire({
