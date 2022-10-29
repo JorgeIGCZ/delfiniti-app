@@ -777,8 +777,8 @@ class ReporteController extends Controller
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'ORIGEN');
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'PAX');
                 $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'AGENTE/AGENCIA');
-                // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'DESCUENTO');
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'T. PAGO');
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'DESCUENTO');
+                $spreadsheet->getActiveSheet()->setCellValue("H{$rowNumber}", 'T. PAGO');
                 $rowNumber += 1;
 
                 $initialRowNumber = $rowNumber;
@@ -798,11 +798,25 @@ class ReporteController extends Controller
                     // ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     // ->getStartColor()->setARGB('CCFFFF');
 
+                    $porcentajeDescuento = '0%';
+                    $pagosArray          = $reservacion->pagos->pluck('id');
+                    $tipoPago            = 'descuentoPersonalizado';
+
+                    $descuento = Pago::whereIn('id',$pagosArray)->whereHas('TipoPago', function (Builder $query) use ($tipoPago) {
+                        $query
+                            ->where('nombre',$tipoPago);
+                    })->get();
+
+                    if(isset($descuento) && count($descuento)>0){
+                        $porcentajeDescuento = $descuento[0]->valor;
+                    }
+
                     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $reservacion->nombre_cliente);
                     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", @$reservacion->origen);
                     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getNumeroPersonas($actividadHorario,$reservacion->reservacionDetalle));
                     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", @$reservacion->comisionista->nombre);
-                    $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
+                    $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $porcentajeDescuento);
+                    $spreadsheet->getActiveSheet()->setCellValue("H{$rowNumber}", ($reservacion->tipoPago !== null ? @$reservacion->tipoPago->pluck('nombre')[0] : ''));
                     $rowNumber += 1;
                 }
                 $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
