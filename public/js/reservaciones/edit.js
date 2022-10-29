@@ -47,12 +47,15 @@ if ((isReservacionPagada())) {
 $('#pagos').on( 'click', '.editar-celda', function (event) {
     event.preventDefault();
     if(env == 'edit'){
+        $(this).hide();
         $(this).closest('tr').find('.fecha-pago').removeClass('not-editable');
+        $(this).closest('tr').find('.fecha-pago').removeAttr('disabled');
     }
 } );
 
-$('#pagos').on( 'focusout', '.fecha-pago', function (event) {
+$('#pagos').on( 'change', '.fecha-pago', function (event) {
     event.preventDefault();
+    $(this).closest('tr').find('.editar-celda').show();
     if(env == 'edit'){
         Swal.fire({
             title: '¿Editar?',
