@@ -91,6 +91,8 @@ class ComisionController extends Controller
         $cantidadComisionBruta = 0;
         $descuentoImpuesto = 0;
         $totalPagoReservacion = 0;
+        $numeroActividadesComisionables = 0;
+
         foreach($pagos as $pago){
             $totalPagoReservacion += $pago['cantidad'];
         }
@@ -105,11 +107,15 @@ class ComisionController extends Controller
             $comisiones = ComisionistaActividadDetalle::where('actividad_id',$actividadId)
                                                     ->where('comisionista_id',$comisionistaId)->get();
             if(count($comisiones) > 0){
-                $cantidadComisionBruta += $comisiones[0]->comision;
-                $descuentoImpuesto += $comisiones[0]->descuento_impuesto;
+                for ($i=0; $i < $reservacionDetalle->numero_personas; $i++) { 
+                    $cantidadComisionBruta += $comisiones[0]->comision;
+                    $descuentoImpuesto += $comisiones[0]->descuento_impuesto;
+                    $numeroActividadesComisionables += 1;
+                }
             }
-        } 
-        $descuentoImpuesto = ($descuentoImpuesto/count($reservacionDetalles));
+        }
+
+        $descuentoImpuesto = ($descuentoImpuesto/$numeroActividadesComisionables);
         
         $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);
         $ivaCantidad               = round(0,2);
@@ -124,7 +130,7 @@ class ComisionController extends Controller
             return false;
         }
 
-        $comsion = Comision::create([   
+        Comision::create([   
             'comisionista_id'         =>  $comisionistaId,
             'reservacion_id'          =>  $reservacion['id'],
             'pago_total'              =>  $totalPagoReservacion,
@@ -136,7 +142,7 @@ class ComisionController extends Controller
             'estatus'                 =>  1
         ]);
 
-        return is_numeric($comsion['id']);
+        return true;
     }
 
     private function setComisionCerrador($reservacion,$pagos){
