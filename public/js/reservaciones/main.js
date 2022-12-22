@@ -471,6 +471,17 @@ function cantidadActividadesIsValid() {
     }
     return true;
 }
+function cambioValidoIsValid(){
+    if(getCambio() > 0){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Es necesario verificar pagos!`,
+            text: 'Cambio debe de ser $0.00'
+        });
+        return false;
+    }
+    return true;
+}
 function validateFecha() {
     const fecha = document.getElementById('fecha');
     const horario = document.getElementById('horarios');
@@ -610,11 +621,13 @@ window.onload = function() {
         setTimeout(setOperacionResultados(),500);
     });
 
+
     document.getElementById('efectivo').addEventListener('keyup', (event) =>{
         //if(getResta() < 0){
         //    document.getElementById('efectivo').value = '$0.00';
         //    document.getElementById('efectivo').setAttribute('value',0);
         //}
+        
         setTimeout(setOperacionResultados(),500);
     });
 
@@ -639,6 +652,48 @@ window.onload = function() {
         //}
         setTimeout(setOperacionResultados(),500);
     });
+
+    document.getElementById('efectivo').addEventListener('focusout', (event) =>{
+        setTimeout(applyValorSinCambio(event.target),300);
+        setTimeout(setOperacionResultados(),600);
+    });
+
+    document.getElementById('efectivo-usd').addEventListener('focusout', (event) =>{
+        setTimeout(applyValorSinCambio(event.target,true),300);
+        setTimeout(setOperacionResultados(),600);
+    });
+    document.getElementById('tarjeta').addEventListener('focusout', (event) =>{
+        setTimeout(applyValorSinCambio(event.target),300);
+        setTimeout(setOperacionResultados(),600);
+    });
+    document.getElementById('deposito').addEventListener('focusout', (event) =>{
+        setTimeout(applyValorSinCambio(event.target),300);
+        setTimeout(setOperacionResultados(),600);
+    });
+
+    function applyValorSinCambio(elemento,isUsd = false){
+        if(getResta() < 0){
+            const valor = (isUsd ? getMXNFromVentaUSD(parseFloat(elemento.getAttribute('value'))) : parseFloat(getValor(elemento)));
+            const cambio   = parseFloat(getCambio());
+            const subTotal = parseFloat(valor+cambio);
+ 
+            setValor(event.target,subTotal);
+        }
+    }
+
+    function setValor(elemento,valor){
+        elemento.value = formatter.format(valor);
+        elemento.setAttribute('value',valor);
+    }
+
+    function getValor(elemento){
+        return elemento.getAttribute('value');
+    }
+
+    function getCambio(){
+        return document.getElementById('cambio').getAttribute('value');
+    }
+
 
 
 
