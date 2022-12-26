@@ -49,7 +49,7 @@ class ReporteController extends Controller
         $canalesVentaRequest = $request->data['canalesVenta'];
         $canalesVentaRequest = json_decode($canalesVentaRequest);
         $canalesVentaRequest = $canalesVentaRequest->comisiones_canales_venta;
-        
+        $cantidadIva = config('app.iva');
 
         // $fechaInicio = '2022-08-31 00:00:00';
         // $fechaFinal = '2022-08-31 23:59:00';
@@ -275,7 +275,7 @@ class ReporteController extends Controller
             $pagoTotalSinIva = 0;
             $comisiones      = $canalVenta->comisiones;
             foreach($comisiones as $comision){
-                $pagoTotalSinIva  += $comision->pago_total_sin_iva;
+                $pagoTotalSinIva  += round(($comision->pago_total / (1+($cantidadIva/100))),2);
                 $reservacionesId[] = $comision->reservacion_id;
             }
 
