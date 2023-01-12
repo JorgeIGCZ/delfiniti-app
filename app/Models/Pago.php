@@ -17,7 +17,8 @@ class Pago extends Model
         'tipo_cambio_usd',
         'valor',
         'tipo_valor',
-        'descuento_codigo_id'
+        'descuento_codigo_id',
+        'comision_creada'
     ];
     protected $primaryKey = 'id';
 

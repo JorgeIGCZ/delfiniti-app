@@ -13,6 +13,7 @@ use App\Models\Cerrador;
 use App\Models\ComisionistaActividadDetalle;
 use App\Models\ComisionistaCanalDetalle;
 use App\Models\ReservacionDetalle;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class ComisionController extends Controller
@@ -35,8 +36,14 @@ class ComisionController extends Controller
     public function recalculateComisiones(Request $request){
         try {
             Comision::where('reservacion_id',$request->reservacionId)->delete();
-            $this->setComisiones($request->reservacionId);
 
+            $pagos        = Pago::where('reservacion_id',$request->reservacionId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
+                $query
+                    ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+            })->get();
+
+            $this->setComisionPago($pagos,0);
+            $this->setComisiones($request->reservacionId);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
@@ -52,19 +59,35 @@ class ComisionController extends Controller
 
     public function setComisiones($reservacionId){
         $reservacion  = Reservacion::find($reservacionId);
-        $pagos        = Pago::where('reservacion_id',$reservacion['id'])->whereHas('tipoPago', function ($query) {
+        $pagos        = Pago::where('reservacion_id',$reservacion['id'])->where('comision_creada',0)->whereHas('tipoPago', function ($query) {
             $query
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
         })->get();
         
         if(!$reservacion['comisionable']){
             return;
+        } 
+        DB::beginTransaction();
+        try{
+            $this->setComisionComisionista($reservacion,$pagos);
+            $this->setComisionCerrador($reservacion,$pagos);
+            $this->setComisionComisionistaCanal($reservacion,$pagos);
+            $this->setComisionComisionistaActividad($reservacion,$pagos);
+            $this->setComisionPago($pagos,1);
+            DB::commit();
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$reservacion);
         }
+    }
 
-        $this->setComisionComisionista($reservacion,$pagos);
-        $this->setComisionCerrador($reservacion,$pagos);
-        $this->setComisionComisionistaCanal($reservacion,$pagos);
-        $this->setComisionComisionistaActividad($reservacion,$pagos);
+    private function setComisionPago($pagos,$comisionCreada){
+        foreach($pagos as $pago){
+            $pago              = Pago::find($pago['id']);
+            $pago->comision_creada  = $comisionCreada;
+            $pago->save();
+        }
     }
 
     private function setComisionComisionista($reservacion,$pagos){
@@ -232,12 +255,12 @@ class ComisionController extends Controller
         $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
-        $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
-                                        ->where('reservacion_id',$reservacion['id'])->get()->count();
+        // $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
+        //                                 ->where('reservacion_id',$reservacion['id'])->get()->count();
         
-        if($isComisionDuplicada){
-            return false;
-        }
+        // if($isComisionDuplicada){
+        //     return false;
+        // }
 
         $comsion = Comision::create([   
             'comisionista_id'         =>  $comisionistaId,

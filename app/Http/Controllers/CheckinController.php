@@ -127,12 +127,12 @@ class CheckinController extends Controller
         $estatusPago    = $reservaciones->getEstatusPagoReservacion($reservacion['id']);
         $fechaActividad = $reservacion['fecha'];
         $today          = date("Y-m-d");
-        if($estatusPago == 2 && $fechaActividad <= $today){
-            $reservacion           = Reservacion::find($reservacion['id']);
-            $reservacion->check_in = 1;
-            $reservacion->save();
+        // if($estatusPago == 2 && $fechaActividad <= $today){
+            // $reservacion           = Reservacion::find($reservacion['id']);
+            // $reservacion->check_in = 1;
+            // $reservacion->save();
             $comisiones->setComisiones($reservacion['id']);
-        }
+        // }
     }
 
     /**
