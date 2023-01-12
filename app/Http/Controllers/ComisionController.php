@@ -64,9 +64,10 @@ class ComisionController extends Controller
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
         })->get();
         
-        if(!$reservacion['comisionable']){
-            return;
-        } 
+        // if(!$reservacion['comisionable']){
+        //     return;
+        // }
+
         DB::beginTransaction();
         try{
             $this->setComisionComisionista($reservacion,$pagos);
@@ -215,6 +216,7 @@ class ComisionController extends Controller
 
         foreach($reservacion->actividad as $actividad){
             $sumatoriaActividad += $actividad['precio'];
+            //verificar si debe haber otra validacion para permitir actividades comisionables en las ordenes no comisionables 
             if(!$actividad['comisionable']){
                 $actividadesNoComisionables[] = $actividad['id'];
             }
@@ -326,7 +328,8 @@ class ComisionController extends Controller
 
             $comisiones      = Comision::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
                 $query
-                    ->where("estatus", 1);
+                    ->where("estatus", 1)
+                    ->where("comisionable", 1);
             })->orderBy('id','desc')->get();
 
             $comisionesArray = [];
