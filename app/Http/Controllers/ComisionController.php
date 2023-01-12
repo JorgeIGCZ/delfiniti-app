@@ -64,9 +64,9 @@ class ComisionController extends Controller
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
         })->get();
         
-        // if(!$reservacion['comisionable']){
-        //     return;
-        // }
+        if(count($pagos) === 0){
+            return;
+        }
 
         DB::beginTransaction();
         try{
