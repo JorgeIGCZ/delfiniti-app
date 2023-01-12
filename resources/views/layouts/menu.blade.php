@@ -19,9 +19,9 @@
     @endcan
 
     @can('Checkin.index')
-    <li class="nav-item {{url()->current() == url('checkin') ? 'active' : ''}}">
+    {{-- <li class="nav-item {{url()->current() == url('checkin') ? 'active' : ''}}">
       <a href="{{ url('checkin') }}" class="nav-link"><i class="typcn typcn-tick-outline"></i> Check-in</a>
-    </li>
+    </li> --}}
     @endcan
 
     @can('Disponibilidad.index')

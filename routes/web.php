@@ -165,15 +165,15 @@ Route::controller(ComisionController::class)->middleware(['auth'])->group(functi
     
 });
 
-Route::controller(CheckinController::class)->middleware(['auth'])->group(function () {
-    Route::post('checkin/show/{reservacion?}', 'show');
-    Route::patch('checkin/registro/{reservacion}', 'registroVisita');
-    Route::resource('checkin',CheckinController::class, [
-        'parameters' => [
-            'reservaciones' => 'reservacion'
-        ]
-    ]);
-});
+// Route::controller(CheckinController::class)->middleware(['auth'])->group(function () {
+//     Route::post('checkin/show/{reservacion?}', 'show');
+//     Route::patch('checkin/registro/{reservacion}', 'registroVisita');
+//     Route::resource('checkin',CheckinController::class, [
+//         'parameters' => [
+//             'reservaciones' => 'reservacion'
+//         ]
+//     ]);
+// });
 
 Route::controller(ReservacionTicketController::class)->middleware(['auth'])->group(function () {
     Route::get('reservacionticket/show/{reservacionticket?}', 'show');
