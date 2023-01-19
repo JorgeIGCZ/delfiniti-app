@@ -398,8 +398,6 @@ function getMXNFromVentaUSD(usd) {
 function displayActividad() {
     let actividadesClaveSelect = document.getElementById('clave-actividad');
     let actividadesSelect = document.getElementById('actividades');
-    // actividadesClaveSelect.innerHTML = '';
-    // actividadesSelect.innerHTML = '';
     let optionNombre;
     let optionClave;
     let option;
@@ -407,13 +405,13 @@ function displayActividad() {
         option = document.createElement('option');
         option.value = allActividades[i].actividad.id;
         option.text = allActividades[i].actividad.nombre;
-        option.setAttribute('comisiones_especiales',allActividades[i].actividad.comisionesEspeciales);
+        option.setAttribute('comisiones_especiales',allActividades[i].actividad.comisiones_especiales);
         actividadesSelect.add(option);
         optionClave = document.createElement('option');
         optionClave.value = allActividades[i].actividad.id;
         optionClave.text = allActividades[i].actividad.clave;
         optionClave.actividadId = allActividades[i].actividad.id;
-        optionClave.setAttribute('comisiones_especiales',allActividades[i].actividad.comisionesEspeciales);
+        optionClave.setAttribute('comisiones_especiales',allActividades[i].actividad.comisiones_especiales);
         actividadesClaveSelect.add(optionClave);
     }
 }
