@@ -96,10 +96,10 @@
 
                             <div class="form-group col-2"> 
                                 <label for="comisiones_especiales" class="col-form-label">Comisiones especiales</label>    
-                                <input type="checkbox" name="comisiones_especiales" id="comisiones-especiales" class="form-control" @if($actividad->comisionesEspeciales) checked="checked" @endif style="display: block;">
+                                <input type="checkbox" name="comisiones_especiales" id="comisiones_especiales" class="form-control" @if($actividad->comisiones_especiales) checked="checked" @endif style="display: block;">
                             </div>
 
-                            <div class="form-group col-12 mt-3" id="comisiones-especiales-container" @if($actividad->comisionesEspeciales) style="display: block;" @else style="display: none;" @endif>
+                            <div class="form-group col-12 mt-3" id="comisiones-especiales-container" @if($actividad->comisiones_especiales) style="display: block;" @else style="display: none;" @endif>
                                 <strong>
                                     Comisiones especiales actividad
                                 </strong>
