@@ -138,12 +138,10 @@ function removeActividad(row){
     });
 }
 function addActividad(){
-    let actividadDetalle = document.getElementById('actividades');
-    actividadDetalle = actividadDetalle.options[actividadDetalle.selectedIndex].text;
-    let horarioDetalle = document.getElementById('horarios');
-    horarioDetalle = horarioDetalle.options[horarioDetalle.selectedIndex].text;
-    let claveActividad = document.getElementById('clave-actividad');
-    claveActividad = claveActividad.options[claveActividad.selectedIndex].text;
+    const actividadDetalle = document.getElementById('actividades').options[document.getElementById('actividades').selectedIndex].text;
+    const comisionesEspeciales = document.getElementById('actividades').options[document.getElementById('actividades').selectedIndex].getAttribute('comisiones_especiales');
+    const horarioDetalle = document.getElementById('horarios').options[document.getElementById('horarios').selectedIndex].text;
+    const claveActividad = document.getElementById('clave-actividad').options[document.getElementById('clave-actividad').selectedIndex].text;
     const actividad = document.getElementById('actividades').value;
     const cantidad = document.getElementById('cantidad').value;
     const precio = document.getElementById('precio').value;
@@ -158,11 +156,12 @@ function addActividad(){
         precio,
         precio * cantidad,
         acciones
-    ])
-        .draw(false);
+    ]).draw(false);
+
     actvidadesArray = [...actvidadesArray, {
         'claveActividad': claveActividad,
         'actividadDetalle':actividadDetalle,
+        'comisionesEspeciales':comisionesEspeciales,
         'actividad': actividad,
         'cantidad': cantidad,
         'precio': precio,
@@ -399,6 +398,8 @@ function getMXNFromVentaUSD(usd) {
 function displayActividad() {
     let actividadesClaveSelect = document.getElementById('clave-actividad');
     let actividadesSelect = document.getElementById('actividades');
+    // actividadesClaveSelect.innerHTML = '';
+    // actividadesSelect.innerHTML = '';
     let optionNombre;
     let optionClave;
     let option;
@@ -406,11 +407,13 @@ function displayActividad() {
         option = document.createElement('option');
         option.value = allActividades[i].actividad.id;
         option.text = allActividades[i].actividad.nombre;
+        option.setAttribute('comisiones_especiales',allActividades[i].actividad.comisionesEspeciales);
         actividadesSelect.add(option);
         optionClave = document.createElement('option');
         optionClave.value = allActividades[i].actividad.id;
         optionClave.text = allActividades[i].actividad.clave;
         optionClave.actividadId = allActividades[i].actividad.id;
+        optionClave.setAttribute('comisiones_especiales',allActividades[i].actividad.comisionesEspeciales);
         actividadesClaveSelect.add(optionClave);
     }
 }
@@ -840,6 +843,7 @@ function changeClaveActividad() {
     getActividadHorario();
     getActividadDisponibilidad();
     getActividadPrecio();
+    removeIncompatibleActividades();
 }
 
 function changeActividad() {
@@ -851,6 +855,46 @@ function changeActividad() {
     getActividadHorario();
     getActividadDisponibilidad();
     getActividadPrecio();
+    removeIncompatibleActividades();
+}
+
+function removeIncompatibleActividades(){
+    const claveActividad = document.getElementById('clave-actividad');
+    const actividades = document.getElementById('actividades');
+    const actividadSeleccionada = claveActividad.options[claveActividad.selectedIndex].value;
+    const isVisita = claveActividad.options[claveActividad.selectedIndex].getAttribute('comisiones_especiales');    
+
+    for (var i = 0; i < claveActividad.length; i++) {
+        if (claveActividad.options[i].getAttribute('comisiones_especiales') == 1) {
+            if(isVisita == 1 && actividadSeleccionada == claveActividad.options[i].value){
+                $(claveActividad.options[i]).removeAttr('disabled').show();
+            }else{
+                $(claveActividad.options[i]).attr('disabled', 'disabled').hide();
+            }
+        } else {
+            if(isVisita == 1){
+                $(claveActividad.options[i]).attr('disabled', 'disabled').hide();
+            }else{
+                $(claveActividad.options[i]).removeAttr('disabled').show();
+            }
+        }
+    }
+
+    for (var i = 0; i < actividades.length; i++) {
+        if (actividades.options[i].getAttribute('comisiones_especiales') == 1) {
+            if(isVisita == 1 && actividadSeleccionada == actividades.options[i].value){
+                $(actividades.options[i]).removeAttr('disabled').show();
+            }else{
+                $(actividades.options[i]).attr('disabled', 'disabled').hide();
+            }
+        } else {
+            if(isVisita == 1){
+                $(actividades.options[i]).attr('disabled', 'disabled').hide();
+            }else{
+                $(actividades.options[i]).removeAttr('disabled').show();
+            }
+        }
+    }
 }
 
 function getDescuento(descuento){

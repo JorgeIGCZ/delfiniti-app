@@ -46,7 +46,21 @@
                 })
             });
         }
+        function getComisionesSobreActividades(){
+            let comisionesSobreActividades = [];
+            $('.canales').each(function(index, value) {
+                comisionesSobreActividades = {...comisionesSobreActividades,[$(value).attr('canalId')] :
+                        {
+                            'comision'          : $(value).find('.canal_comision').attr('value')
+                        }
+                    };
+            });
+
+            return comisionesSobreActividades;
+        }
         function createActividad(actividades){
+            const comisionesSobreActividades = getComisionesSobreActividades();
+
             let horario_inicial = [],
                 horario_final   = [];
 
@@ -64,12 +78,14 @@
             $('.loader').show();
             axios.post('/actividades', {
                 '_token'         : '{{ csrf_token() }}',
+                "comisionesSobreActividades" : comisionesSobreActividades,
                 "clave"          : actividades.elements['clave'].value,
                 "nombre"         : actividades.elements['nombre'].value,
                 "precio"         : actividades.elements['precio'].getAttribute('value'),
                 "capacidad"      : actividades.elements['capacidad'].value,
                 "duracion"       : actividades.elements['duracion'].value,
                 "comisionable"   : actividades.elements['comisionable'].checked,
+                "comisionesEspeciales" : actividades.elements['comisiones-especiales'].checked,
                 "fechaInicial"   : actividades.elements['rango'].getAttribute('fechainicial'),
                 "fechaFinal"     : actividades.elements['rango'].getAttribute('fechafinal'),
                 "horarioInicial" : horario_inicial,
@@ -137,6 +153,16 @@
         }
         function removeTime(element,event){
             element.closest('.horario-container').remove();
+        }
+        function changeComisionesSettings(){
+            const comisionesEspeciales = document.getElementById('comisiones-especiales');
+            
+            if(comisionesEspeciales.checked){
+                $('#comisiones-especiales-container').show();
+                return false;
+            }
+            $('#comisiones-especiales-container').hide();
+            return false;       
         }
         $(function(){
             $('input[name="rango"]').daterangepicker({
@@ -244,6 +270,10 @@
             on("click", ".remove-time", function(event) {
                 removeTime(this,event);
             });
+
+            $('#comisiones-especiales').on('change', function (e) {
+                changeComisionesSettings();
+            });
         });
     </script>
 @endsection
@@ -289,29 +319,53 @@
                                 </div>
                                 <div class="form-group col-1"> 
                                     <label for="comisionable" class="col-form-label">Comisionable</label>    
-                                    <input type="checkbox" name="comisionable" class="form-control" checked="checked">
+                                    <input type="checkbox" name="comisionable" class="form-control" checked="checked" style="display: block;">
+                                </div>
+                                <div class="form-group col-2"> 
+                                    <label for="comisiones-especiales" class="col-form-label">Comisiones especiales</label>    
+                                    <input type="checkbox" name="comisiones-especiales" id="comisiones-especiales" class="form-control" style="display: block;">
+                                </div>
+
+                                <div class="form-group col-12 mt-3" id="comisiones-especiales-container" style="display: none;">
+                                    <strong>
+                                        Comisiones especiales actividad
+                                    </strong>
+                                    <table class="mt-3">
+                                        <tr>
+                                            <th>Canal de venta</th>
+                                            <th>Comisión directa P/Actividad $</th>
+                                        </tr>
+                                        @foreach($canales as $canal)
+                                            <tr canalId="{{$canal->id}}" class="canales">
+                                                <td>{{$canal->nombre}}</td>
+                                                <td>
+                                                    <input type="text" step="0.01" name="canal_comision" class="canal_comision form-control amount" value="0">  
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
                                 </div>
 
                                 <div class="col-12">
-                                        <div class="row" id="horarios-container">
-                                            <div class="form-group col-3 horario-container">
-                                                <label for="new-time" class="col-form-label">Horario</label>
-                                                <div class="row g-3 align-items-center">
-                                                    <div class="col-auto">
-                                                        <input type="time" name="horario_inicial[]" class="form-control" required="required">
-                                                    </div>
-                                                    A
-                                                    <div class="col-auto">
-                                                        <input type="time" name="horario_final[]" class="form-control" required="required">
-                                                    </div>
-                                                    <div class="action-time">
-                                                        <span class="add-time">
-                                                            <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                                                        </span>
-                                                    </div>
+                                    <div class="row" id="horarios-container">
+                                        <div class="form-group col-3 horario-container">
+                                            <label for="new-time" class="col-form-label">Horario</label>
+                                            <div class="row g-3 align-items-center">
+                                                <div class="col-auto">
+                                                    <input type="time" name="horario_inicial[]" class="form-control" required="required">
+                                                </div>
+                                                A
+                                                <div class="col-auto">
+                                                    <input type="time" name="horario_final[]" class="form-control" required="required">
+                                                </div>
+                                                <div class="action-time">
+                                                    <span class="add-time">
+                                                        <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group col-3">

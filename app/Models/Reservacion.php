@@ -24,7 +24,8 @@ class Reservacion extends Model
         'estatus',
         'fecha',
         'fecha_creacion',
-        'comisionable'
+        'comisionable',
+        'comisiones_especiales'
     ];
     protected $primaryKey = 'id';  
     

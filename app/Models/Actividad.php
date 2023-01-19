@@ -17,6 +17,7 @@ class Actividad extends Model
         'duracion',
         'reporte_orden',
         'comisionable',
+        'comisiones_especiales',
         'fecha_inicial',
         'fecha_final'
     ];

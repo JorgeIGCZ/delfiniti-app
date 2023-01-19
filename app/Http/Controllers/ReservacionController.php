@@ -174,6 +174,7 @@ class ReservacionController extends Controller
                 'comentarios'     => strtoupper($request->comentarios),
                 'estatus_pago'    => $estatusPago,
                 'comisionable'    => $request->comisionable,
+                'comisiones_especiales' => $this->isComisionesEspeciales($request->reservacionArticulos),
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
@@ -243,6 +244,15 @@ class ReservacionController extends Controller
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
+    }
+
+    private function isComisionesEspeciales($reservacionArticulos){
+        foreach($reservacionArticulos as $reservacionArticulo){
+            if($reservacionArticulo['comisionesEspeciales']){
+                return true;
+            }
+        }
+        return false;
     }
 
     private function getCantidadPagada($request,$email){

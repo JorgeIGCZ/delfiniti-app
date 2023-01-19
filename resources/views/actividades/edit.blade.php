@@ -28,12 +28,25 @@
         function removeTime(element,event){
             element.closest('.horario-container').remove();
         }
+        function changeComisionesSettings(){
+            const comisionesEspeciales = document.getElementById('comisiones_especiales');
+            
+            if(comisionesEspeciales.checked){
+                $('#comisiones-especiales-container').show();
+                return false;
+            }
+            $('#comisiones-especiales-container').hide();
+            return false;       
+        }
         $(function(){
             on("click", ".add-time", function(event) {
                 addTime(this,event);
             });
             on("click", ".remove-time", function(event) {
                 removeTime(this,event);
+            });
+            $('#comisiones_especiales').on('change', function (e) {
+                changeComisionesSettings();
             });
         });
     </script>
@@ -78,9 +91,43 @@
 
                             <div class="form-group col-1"> 
                                 <label for="comisionable" class="col-form-label">Comisionable</label>
-                                <input type="checkbox" name="comisionable" class="form-control" @if($actividad->comisionable) checked="checked" @endif>
+                                <input type="checkbox" name="comisionable" class="form-control" @if($actividad->comisionable) checked="checked" @endif style="display: block;">
                             </div>
 
+                            <div class="form-group col-2"> 
+                                <label for="comisiones_especiales" class="col-form-label">Comisiones especiales</label>    
+                                <input type="checkbox" name="comisiones_especiales" id="comisiones-especiales" class="form-control" @if($actividad->comisionesEspeciales) checked="checked" @endif style="display: block;">
+                            </div>
+
+                            <div class="form-group col-12 mt-3" id="comisiones-especiales-container" @if($actividad->comisionesEspeciales) style="display: block;" @else style="display: none;" @endif>
+                                <strong>
+                                    Comisiones especiales actividad
+                                </strong>
+                                <table class="mt-3">
+                                    <tr>
+                                        <th>Canal de venta</th>
+                                        <th>Comisión directa P/Actividad $</th>
+                                    </tr>
+                                    @foreach($canales as $key => $canal)
+                                        @php
+                                            $cantidad = 0;
+                                        @endphp
+                                        @foreach($comisionesPersonalizadas as $actividadComisionDetalle)
+                                            @if($actividadComisionDetalle->canal_venta_id == $canal->id)
+                                                @php
+                                                    $cantidad = $actividadComisionDetalle->comision;
+                                                @endphp
+                                            @endif
+                                        @endforeach
+                                        <tr canalId="{{$canal->id}}" class="canales">
+                                            <td>{{$canal->nombre}}</td>
+                                            <td>
+                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][comision]" class="canal_comision form-control percentage" value="{{$cantidad}}">  
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </table>
+                            </div>
                             <div class="col-12">
                                 <div class="row" id="horarios-container">
                                     @foreach($actividadHorarios as $actividadHorario)

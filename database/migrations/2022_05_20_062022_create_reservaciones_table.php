@@ -31,6 +31,7 @@ return new class extends Migration
             $table->boolean('estatus')->default(1)->comment('0 es orden cancelada 1 es orden activa');
             $table->boolean('check_in')->default(0);
             $table->boolean('comisionable')->default(1);
+            $table->boolean('comisiones_especiales')->default(0)->comment('Generalmente usado en visitas');
             $table->timestamps();
         });
     }

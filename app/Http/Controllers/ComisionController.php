@@ -9,6 +9,7 @@ use App\Models\Reservacion;
 use finfo;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
+use App\Models\ActividadComisionDetalle;
 use App\Models\Cerrador;
 use App\Models\ComisionistaActividadDetalle;
 use App\Models\ComisionistaCanalDetalle;
@@ -192,6 +193,7 @@ class ComisionController extends Controller
             return true;
         }
 
+        //canal de venta sobre el cual se tomara la comision al comisionista de canales
         $canalVentaId = Comisionista::find($reservacion['comisionista_id'])['canal_venta_id'];
         
         foreach($comisionistasCanales as $comisionistaCanales){
@@ -235,6 +237,7 @@ class ComisionController extends Controller
         return $actividadesCantidad;
     }
 
+    // parametro $comisionista puede contener comisionista o comisiones de ComisionistaCanalDetalle en setComisionComisionistaCanal
     private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista){
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
@@ -249,6 +252,11 @@ class ComisionController extends Controller
         $cantidadesNoComisionables = $this->getCantidadPagoActividadNoComisionable($totalPagoReservacion,$reservacion);
         foreach($cantidadesNoComisionables as $cantidadNoComisionable){
             $totalPagoReservacion = ($totalPagoReservacion - $cantidadNoComisionable);
+        }
+
+        //Parche para aceptar comisiones especiales
+        if($reservacion['comisionesEspeciales']){
+            return is_numeric($this->createComisionEspecial($reservacion,$totalPagoReservacion,$comisionistaId));
         }
 
         $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);
@@ -277,6 +285,38 @@ class ComisionController extends Controller
         ]);
 
         return is_numeric($comsion['id']);
+    }
+
+    private function createComisionEspecial($reservacion,$totalPagoReservacion,$comisionistaId){
+        $comisionista = Comisionista::find($comisionistaId);
+        //no se permite tener mas de una actividad en reservaciones de comisiones especiales
+        foreach($reservacion->actividad as $actividad){
+            $actividadComisionDetalle = ActividadComisionDetalle::where('actividad_id',$actividad['id'])->where('canal_venta_id',$comisionista->tipo->id)->get();
+            
+            if(count($actividadComisionDetalle) > 0){
+                //solo existe una comision por cada actividad y comisionista (canal_venta_id)
+                $totalVentaSinIva          = round($totalPagoReservacion,2); // no llevan IVA
+                $ivaCantidad               = round(0,2);
+                $cantidadComisionBruta     = round((($totalVentaSinIva * $actividadComisionDetalle[0]->comision) / 100),2);
+                $descuentoImpuestoCantidad = round(0,2);// no llevan descuento impuesto
+                $cantidadComisionNeta      = round($cantidadComisionBruta,2);
+                
+                $comsion = Comision::create([   
+                    'comisionista_id'         =>  $comisionista->id,
+                    'reservacion_id'          =>  $reservacion['id'],
+                    'pago_total'              =>  $totalPagoReservacion,
+                    'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
+                    'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+                    'iva'                     =>  (float)$ivaCantidad,
+                    'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+                    'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+                    'estatus'                 =>  1
+                ]);
+
+                return $comsion['id'];
+            }
+        }
+        return false;
     }
 
     /**

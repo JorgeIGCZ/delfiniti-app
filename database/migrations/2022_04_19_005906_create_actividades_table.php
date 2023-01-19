@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('duracion');
             $table->integer('reporte_orden');
             $table->boolean('comisionable')->default(1);
+            $table->boolean('comisiones_especiales')->default(0)->comment('Generalmente usado en visitas');
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });

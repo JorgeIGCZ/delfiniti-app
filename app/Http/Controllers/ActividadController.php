@@ -6,6 +6,8 @@ use App\Models\Actividad;
 use App\Models\ActividadHorario;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
+use App\Models\ActividadComisionDetalle;
+use App\Models\CanalVenta;
 use App\Models\ReservacionDetalle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +26,8 @@ class ActividadController extends Controller
      */
     public function index()
     {
-        return view('actividades.index');
+        $canales = CanalVenta::get();
+        return view('actividades.index',['canales' => $canales]);
     }
 
     public function isDisponible($request){
@@ -74,10 +77,11 @@ class ActividadController extends Controller
             $actividad = Actividad::create([
                 'clave'           => $request->clave,
                 'nombre'          => strtoupper($request->nombre),
-                'precio'       => $request->precio,
+                'precio'          => $request->precio,
                 'capacidad'       => $request->capacidad,
                 'duracion'        => $request->duracion,
                 'comisionable'    => $request->comisionable,
+                'comisiones_especiales' => $request->comisionesEspeciales,
                 'fecha_inicial'   => $request->fechaInicial,
                 'fecha_final'     => $request->fechaFinal,
             ]);        
@@ -88,12 +92,26 @@ class ActividadController extends Controller
                     'horario_final'   => $request->horarioFinal[$i]
                 ]);
             }
+
+            if($request->comisionesEspeciales){
+                $this->createComisionistaActividadDetalle($actividad['id'],$request);
+            }
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($actividadHorario['id']) ? 'Success' : 'Error']);
+    }
+
+    private function createComisionistaActividadDetalle($actividadId,$request){
+        foreach($request->comisionesSobreActividades as $key => $comisionSobreActividades){
+            ActividadComisionDetalle::create([
+                'actividad_id'       => $actividadId,
+                'canal_venta_id'          => $key,
+                'comision'              => $comisionSobreActividades['comision']
+            ]);
+        }
     }
 
     /**
@@ -119,8 +137,10 @@ class ActividadController extends Controller
      */
     public function edit(Actividad  $actividad)
     {
+        $canales = CanalVenta::get();
+        $comisionesPersonalizadas = ActividadComisionDetalle::where('actividad_id',$actividad['id'])->get();
         $actividadHorarios = ActividadHorario::where('actividad_id',$actividad['id'])->orderBy('horario_inicial', 'asc')->get();
-        return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios]);
+        return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios,'comisionesPersonalizadas' => $comisionesPersonalizadas,'canales' => $canales]);
     }
 
     /**
@@ -148,6 +168,21 @@ class ActividadController extends Controller
                     'horario_inicial' => $request->horario_inicial[$i],
                     'horario_final'   => $request->horario_final[$i]
                 ]);
+            }
+
+            ActividadComisionDetalle::where('actividad_id',$id)->delete();
+
+            if($request->comisiones_especiales == 'on'){
+
+                foreach($request->canal_comision as $canal_comision){
+                    foreach($canal_comision as $key => $detalle){
+                        ActividadComisionDetalle::create([
+                            'actividad_id'          => $id,
+                            'canal_venta_id'        => $key,
+                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                        ]);
+                    }
+                }
             }
             
         } catch (\Exception $e){
