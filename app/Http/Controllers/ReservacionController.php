@@ -226,9 +226,9 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
-            // $checkin->setCheckin($reservacion);
-            $comisiones     = new ComisionController();
-            $comisiones->setComisiones($reservacion['id']);
+            $checkin->setCheckin($reservacion);
+            // $comisiones     = new ComisionController();
+            // $comisiones->setComisiones($reservacion['id']);
 
             return json_encode(
                 [
@@ -599,9 +599,9 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
-            // $checkin->setCheckin($reservacion);
-            $comisiones     = new ComisionController();
-            $comisiones->setComisiones($reservacion['id']);
+            $checkin->setCheckin($reservacion);
+            // $comisiones     = new ComisionController();
+            // $comisiones->setComisiones($reservacion['id']);
 
             return json_encode(
                 [

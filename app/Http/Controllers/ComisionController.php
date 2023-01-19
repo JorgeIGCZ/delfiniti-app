@@ -64,9 +64,9 @@ class ComisionController extends Controller
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
         })->get();
         
-        if(count($pagos) === 0){
-            return;
-        }
+        // if(count($pagos) === 0){
+        //     return;
+        // }
 
         DB::beginTransaction();
         try{
@@ -257,12 +257,12 @@ class ComisionController extends Controller
         $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
-        // $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
-        //                                 ->where('reservacion_id',$reservacion['id'])->get()->count();
+        $isComisionDuplicada = Comision::where('comisionista_id',$comisionistaId)
+                                        ->where('reservacion_id',$reservacion['id'])->get()->count();
         
-        // if($isComisionDuplicada){
-        //     return false;
-        // }
+        if($isComisionDuplicada){
+            return false;
+        }
 
         $comsion = Comision::create([   
             'comisionista_id'         =>  $comisionistaId,
