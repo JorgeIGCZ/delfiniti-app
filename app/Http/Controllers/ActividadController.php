@@ -158,6 +158,7 @@ class ActividadController extends Controller
             $actividad->precio          = $request->precio;
             $actividad->capacidad       = $request->capacidad;
             $actividad->comisionable    = $request->has('comisionable');
+            $actividad->comisiones_especiales  = ($request->comisiones_especiales == 'on');
             $actividad->save();
 
             ActividadHorario::where('actividad_id',$id)->delete();
