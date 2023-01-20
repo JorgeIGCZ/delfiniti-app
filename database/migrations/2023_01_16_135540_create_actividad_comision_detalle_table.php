@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('actividad_id');
             $table->integer('canal_venta_id');
             $table->float('comision')->default(0)->comment('Solo porcentaje');
+            $table->float('descuento_impuesto')->default(0)->comment('Solo porcentaje');
             $table->timestamps();
         });
     }

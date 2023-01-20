@@ -51,7 +51,8 @@
             $('.canales').each(function(index, value) {
                 comisionesSobreActividades = {...comisionesSobreActividades,[$(value).attr('canalId')] :
                         {
-                            'comision'          : $(value).find('.canal_comision').attr('value')
+                            'comision'          : $(value).find('.canal_comision').attr('value'),
+                            'descuento_impuesto' : $(value).find('.descuento_impuesto').attr('value')
                         }
                     };
             });
@@ -333,13 +334,17 @@
                                     <table class="mt-3">
                                         <tr>
                                             <th>Canal de venta</th>
-                                            <th>Comisión directa P/Actividad $</th>
+                                            <th>Comisión directa P/Actividad %</th>
+                                            <th>Descuentro por imp. %</th>
                                         </tr>
                                         @foreach($canales as $canal)
                                             <tr canalId="{{$canal->id}}" class="canales">
                                                 <td>{{$canal->nombre}}</td>
                                                 <td>
-                                                    <input type="text" step="0.01" name="canal_comision" class="canal_comision form-control amount" value="0">  
+                                                    <input type="text" step="0.01" name="canal_comision" class="canal_comision form-control percentage" value="0">
+                                                </td>
+                                                <td>
+                                                    <input type="text" step="0.01" name="descuento_impuesto" class="descuento_impuesto form-control percentage" value="0">  
                                                 </td>
                                             </tr>
                                         @endforeach

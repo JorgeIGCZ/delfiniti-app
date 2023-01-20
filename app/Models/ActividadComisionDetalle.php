@@ -12,7 +12,8 @@ class ActividadComisionDetalle extends Model
     protected $fillable = [
         'actividad_id',
         'canal_venta_id',
-        'comision'
+        'comision',
+        'descuento_impuesto'
     ];
     
     protected $primaryKey = 'id';

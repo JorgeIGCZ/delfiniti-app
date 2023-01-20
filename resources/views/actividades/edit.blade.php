@@ -106,7 +106,8 @@
                                 <table class="mt-3">
                                     <tr>
                                         <th>Canal de venta</th>
-                                        <th>Comisión directa P/Actividad $</th>
+                                        <th>Comisión directa P/Actividad %</th>
+                                        <th>Descuentro por imp. %</th>
                                     </tr>
                                     @foreach($canales as $key => $canal)
                                         @php
@@ -116,13 +117,17 @@
                                             @if($actividadComisionDetalle->canal_venta_id == $canal->id)
                                                 @php
                                                     $cantidad = $actividadComisionDetalle->comision;
+                                                    $descuentoImpuesto = $actividadComisionDetalle->descuento_impuesto;
                                                 @endphp
                                             @endif
                                         @endforeach
                                         <tr canalId="{{$canal->id}}" class="canales">
                                             <td>{{$canal->nombre}}</td>
                                             <td>
-                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][comision]" class="canal_comision form-control percentage" value="{{$cantidad}}">  
+                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][comision]" class="canal_comision form-control" value="{{$cantidad}}">
+                                            </td>
+                                            <td>
+                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][descuento_impuesto]" class="canal_comision form-control" value="{{$descuentoImpuesto}}">  
                                             </td>
                                         </tr>
                                     @endforeach

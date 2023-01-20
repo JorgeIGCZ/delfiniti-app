@@ -255,7 +255,7 @@ class ComisionController extends Controller
         }
 
         //Parche para aceptar comisiones especiales
-        if($reservacion['comisionesEspeciales']){
+        if($reservacion['comisiones_especiales']){
             return is_numeric($this->createComisionEspecial($reservacion,$totalPagoReservacion,$comisionistaId));
         }
 
@@ -298,8 +298,8 @@ class ComisionController extends Controller
                 $totalVentaSinIva          = round($totalPagoReservacion,2); // no llevan IVA
                 $ivaCantidad               = round(0,2);
                 $cantidadComisionBruta     = round((($totalVentaSinIva * $actividadComisionDetalle[0]->comision) / 100),2);
-                $descuentoImpuestoCantidad = round(0,2);// no llevan descuento impuesto
-                $cantidadComisionNeta      = round($cantidadComisionBruta,2);
+                $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $actividadComisionDetalle[0]->descuento_impuesto) / 100),2);
+                $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
                 
                 $comsion = Comision::create([   
                     'comisionista_id'         =>  $comisionista->id,

@@ -108,8 +108,9 @@ class ActividadController extends Controller
         foreach($request->comisionesSobreActividades as $key => $comisionSobreActividades){
             ActividadComisionDetalle::create([
                 'actividad_id'       => $actividadId,
-                'canal_venta_id'          => $key,
-                'comision'              => $comisionSobreActividades['comision']
+                'canal_venta_id'     => $key,
+                'comision'           => $comisionSobreActividades['comision'],
+                'descuento_impuesto' => $comisionSobreActividades['descuento_impuesto']
             ]);
         }
     }
@@ -181,6 +182,7 @@ class ActividadController extends Controller
                             'actividad_id'          => $id,
                             'canal_venta_id'        => $key,
                             'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                            'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto'],
                         ]);
                     }
                 }
