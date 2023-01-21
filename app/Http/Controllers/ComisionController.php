@@ -65,9 +65,9 @@ class ComisionController extends Controller
                 ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
         })->get();
         
-        // if(count($pagos) === 0){
-        //     return;
-        // }
+        if(count($pagos) === 0){
+            return;
+        }
 
         DB::beginTransaction();
         try{
@@ -295,8 +295,8 @@ class ComisionController extends Controller
             
             if(count($actividadComisionDetalle) > 0){
                 //solo existe una comision por cada actividad y comisionista (canal_venta_id)
-                $totalVentaSinIva          = round($totalPagoReservacion,2); // no llevan IVA
-                $ivaCantidad               = round(0,2);
+                $totalVentaSinIva          = round($totalPagoReservacion,2); 
+                $ivaCantidad               = round(0,2);// no llevan IVA
                 $cantidadComisionBruta     = round((($totalVentaSinIva * $actividadComisionDetalle[0]->comision) / 100),2);
                 $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $actividadComisionDetalle[0]->descuento_impuesto) / 100),2);
                 $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
