@@ -107,13 +107,14 @@ class CheckinController extends Controller
      */
     public function registroVisita(Request $request, $id){
         $CustomErrorHandler = new CustomErrorHandler();
+        $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
         try{
             $comisiones            = new ComisionController();
             $Alojamiento           = Reservacion::find($id);
             $Alojamiento->check_in = $request->estatus;
             $Alojamiento->save();
 
-            $comisiones->setComisiones($id);
+            $comisiones->setComisiones($id,$fechaComisiones);
         } catch (\Exception $e){
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
@@ -125,6 +126,7 @@ class CheckinController extends Controller
     public function setCheckin($reservacion){
         $reservaciones  = new ReservacionController();
         $comisiones     = new ComisionController();
+        $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
         $estatusPago    = $reservaciones->getEstatusPagoReservacion($reservacion['id']);
         $fechaActividad = $reservacion['fecha'];
         $today          = date("Y-m-d");
@@ -132,7 +134,7 @@ class CheckinController extends Controller
             $reservacion           = Reservacion::find($reservacion['id']);
             $reservacion->check_in = 1;
             $reservacion->save();
-            $comisiones->setComisiones($reservacion['id']);
+            $comisiones->setComisiones($reservacion['id'],$fechaComisiones);
         }
     }
 

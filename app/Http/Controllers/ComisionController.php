@@ -36,7 +36,12 @@ class ComisionController extends Controller
 
     public function recalculateComisiones(Request $request){
         try {
-            Comision::where('reservacion_id',$request->reservacionId)->delete();
+            $oldComision = Comision::where('reservacion_id',$request->reservacionId)->get(); 
+            $oldFechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+            if(count($oldComision) > 0){
+                $oldFechaComisiones = $oldComision[0]->created_at;
+            }
+            Comision::where('reservacion_id',$request->reservacionId)->delete(); 
 
             $pagos        = Pago::where('reservacion_id',$request->reservacionId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
@@ -44,7 +49,7 @@ class ComisionController extends Controller
             })->get();
 
             $this->setComisionPago($pagos,0);
-            $this->setComisiones($request->reservacionId);
+            $this->setComisiones($request->reservacionId,$oldFechaComisiones);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
@@ -58,7 +63,7 @@ class ComisionController extends Controller
         );
     }
 
-    public function setComisiones($reservacionId){
+    public function setComisiones($reservacionId,$fechaComisiones){
         $reservacion  = Reservacion::find($reservacionId);
         $pagos        = Pago::where('reservacion_id',$reservacion['id'])->where('comision_creada',0)->whereHas('tipoPago', function ($query) {
             $query
@@ -71,10 +76,10 @@ class ComisionController extends Controller
 
         DB::beginTransaction();
         try{
-            $this->setComisionComisionista($reservacion,$pagos);
-            $this->setComisionCerrador($reservacion,$pagos);
-            $this->setComisionComisionistaCanal($reservacion,$pagos);
-            $this->setComisionComisionistaActividad($reservacion,$pagos);
+            $this->setComisionComisionista($reservacion,$pagos,$fechaComisiones);
+            $this->setComisionCerrador($reservacion,$pagos,$fechaComisiones);
+            $this->setComisionComisionistaCanal($reservacion,$pagos,$fechaComisiones);
+            $this->setComisionComisionistaActividad($reservacion,$pagos,$fechaComisiones);
             $this->setComisionPago($pagos,1);
             DB::commit();
         } catch (\Exception $e){
@@ -92,27 +97,27 @@ class ComisionController extends Controller
         }
     }
 
-    private function setComisionComisionista($reservacion,$pagos){
+    private function setComisionComisionista($reservacion,$pagos,$fechaComisiones){
         if($reservacion['comisionista_id'] == 0){
             return true;
         }
 
         $comisionista = Comisionista::find($reservacion['comisionista_id']);
 
-        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id'],$comisionista);
+        return $this->setAllComisiones($pagos,$reservacion,$reservacion['comisionista_id'],$comisionista,$fechaComisiones);
     }
 
-    private function setComisionComisionistaActividad($reservacion,$pagos){
+    private function setComisionComisionistaActividad($reservacion,$pagos,$fechaComisiones){
         if($reservacion['comisionista_actividad_id'] == 0){
             return true;
         }
 
         $comisionista = Comisionista::find($reservacion['comisionista_actividad_id']);
 
-        return $this->setComisionesActividad($pagos,$reservacion,$reservacion['comisionista_actividad_id'],$comisionista);
+        return $this->setComisionesActividad($pagos,$reservacion,$reservacion['comisionista_actividad_id'],$comisionista,$fechaComisiones);
     }
 
-    private function setComisionesActividad($pagos,$reservacion,$comisionistaId,$comisionista){
+    private function setComisionesActividad($pagos,$reservacion,$comisionistaId,$comisionista,$fechaComisiones){
         $cantidadComisionBruta = 0;
         $descuentoImpuesto = 0;
         $totalPagoReservacion = 0;
@@ -164,23 +169,24 @@ class ComisionController extends Controller
             'iva'                     =>  (float)$ivaCantidad,
             'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
             'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'created_at'              =>  $fechaComisiones,
             'estatus'                 =>  1
         ]);
 
         return true;
     }
 
-    private function setComisionCerrador($reservacion,$pagos){
+    private function setComisionCerrador($reservacion,$pagos,$fechaComisiones){
         if($reservacion['cerrador_id'] == 0){
             return true;
         }
 
         $comisionista = Comisionista::find($reservacion['cerrador_id']);
 
-        return $this->setAllComisiones($pagos,$reservacion,$reservacion['cerrador_id'],$comisionista);
+        return $this->setAllComisiones($pagos,$reservacion,$reservacion['cerrador_id'],$comisionista,$fechaComisiones);
     }
 
-    private function setComisionComisionistaCanal($reservacion,$pagos){
+    private function setComisionComisionistaCanal($reservacion,$pagos,$fechaComisiones){
         if($reservacion['comisionista_id'] == 0){
             return true;
         }
@@ -204,7 +210,7 @@ class ComisionController extends Controller
 
             foreach($comisiones as $comision){
                 // Comisiones seran calculadas segun el tipo de cambio de venta 
-                $this->setAllComisiones($pagos,$reservacion,$commisionistaId,$comision);
+                $this->setAllComisiones($pagos,$reservacion,$commisionistaId,$comision,$fechaComisiones);
             }
         }
 
@@ -238,7 +244,7 @@ class ComisionController extends Controller
     }
 
     // parametro $comisionista puede contener comisionista o comisiones de ComisionistaCanalDetalle en setComisionComisionistaCanal
-    private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista){
+    private function setAllComisiones($pagos,$reservacion,$comisionistaId,$comisionista,$fechaComisiones){
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
             //verifica si el tipo de pago es en USD
@@ -281,6 +287,7 @@ class ComisionController extends Controller
             'iva'                     =>  (float)$ivaCantidad,
             'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
             'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'created_at'              =>  $fechaComisiones,
             'estatus'                 =>  1
         ]);
 

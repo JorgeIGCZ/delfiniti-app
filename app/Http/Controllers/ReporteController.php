@@ -113,7 +113,7 @@ class ReporteController extends Controller
             $comisionesAgrupadasComisionistas = $this->getComisionesAgrupadasComisionistas($comisionAgrupadaTipoPorcentajeGeneral);
 
             foreach($comisionesAgrupadasComisionistas as $comision){
-                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:F{$rowNumber}")
+                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
@@ -165,7 +165,7 @@ class ReporteController extends Controller
 
             $rowNumber += 1;
 
-            $spreadsheet->getActiveSheet()->getStyle("F{$rowNumber}")
+            $spreadsheet->getActiveSheet()->getStyle("G{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
 
@@ -975,7 +975,7 @@ class ReporteController extends Controller
                         'comisionBruta'      => $comision->cantidad_comision_bruta,
                         'descuentoImpuesto'  => $comision->descuento_impuesto,
                         'cantidadNeta'       => $comision->cantidad_comision_neta,
-                    'comisionesEspeciales' => $comision->reservacion->comisiones_especiales
+                        'comisionesEspeciales' => $comision->reservacion->comisiones_especiales
                     ];
                     continue;
                 }

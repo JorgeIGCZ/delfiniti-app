@@ -248,7 +248,7 @@ class ReservacionController extends Controller
 
     private function isComisionesEspeciales($reservacionArticulos){
         foreach($reservacionArticulos as $reservacionArticulo){
-            if($reservacionArticulo['comisionesEspeciales']){
+            if(isset($reservacionArticulo['comisionesEspeciales']) && $reservacionArticulo['comisionesEspeciales'] == 1){
                 return true;
             }
         }
@@ -554,6 +554,7 @@ class ReservacionController extends Controller
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;
             $reservacion->comentarios     = strtoupper($request->comentarios);
+            $reservacion->comisiones_especiales = $this->isComisionesEspeciales($request->reservacionArticulos);
             $reservacion->comisionable    = $request->comisionable;
             $reservacion->fecha           = $request->fecha;
             if($pagar){
@@ -600,7 +601,7 @@ class ReservacionController extends Controller
                 if($this->isValidDescuentoPersonalizado($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
-
+                $checkin->setCheckin($reservacion);
             }
 
             DB::commit();
@@ -609,7 +610,7 @@ class ReservacionController extends Controller
 
             $this->setEstatusPago($reservacion['id']);
 
-            $checkin->setCheckin($reservacion);
+            
             // $comisiones     = new ComisionController();
             // $comisiones->setComisiones($reservacion['id']);
 

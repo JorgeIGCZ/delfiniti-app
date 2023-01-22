@@ -112,6 +112,7 @@
                                     @foreach($canales as $key => $canal)
                                         @php
                                             $cantidad = 0;
+                                            $descuentoImpuesto = 0;
                                         @endphp
                                         @foreach($comisionesPersonalizadas as $actividadComisionDetalle)
                                             @if($actividadComisionDetalle->canal_venta_id == $canal->id)
