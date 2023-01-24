@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('actividad_id');
             $table->time('horario_inicial');
             $table->time('horario_final');
+            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }

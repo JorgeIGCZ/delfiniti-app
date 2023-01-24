@@ -11,7 +11,8 @@ class ActividadHorario extends Model
     protected $fillable = [
         'actividad_id',
         'horario_inicial',
-        'horario_final'
+        'horario_final',
+        'estatus'
     ];
     protected $primaryKey = 'id';
     protected $table = 'actividad_horarios';

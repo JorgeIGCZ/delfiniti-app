@@ -76,7 +76,7 @@ class DisponibilidadController extends Controller
 
     public function getActividadesHorarios($fechaActividades){
         DB::enableQueryLog();
-        $actividadesHorarios = ActividadHorario::whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+        $actividadesHorarios = ActividadHorario::where('estatus',1)->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
             $query
                 ->whereRaw(" '$fechaActividades' >= fecha_inicial")
                 ->whereRaw(" '$fechaActividades' <= fecha_final")

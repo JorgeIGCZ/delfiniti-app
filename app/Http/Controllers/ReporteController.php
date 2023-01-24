@@ -78,6 +78,7 @@ class ReporteController extends Controller
         $sumaD = [];
         $sumaE = [];
         $sumaF = [];
+        $sumaG = [];
 
         $comisionesAgrupadasTipoPorcentaje = $this->getComisionesAgrupadasTipoPorcentaje($comisionesTipo,$canalesVentaRequest);
 
@@ -300,7 +301,7 @@ class ReporteController extends Controller
         $headerRowNumber = $rowNumber;
         $rowNumber += 1;
 
-        //obtenemos comisiones sean o no comisionables las ordenes
+        //obtenemos comisiones sean o no comisionables las ordenes ->where("comisionable", 0-1);
         $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
             $query
             ->where('estatus',1)
@@ -367,7 +368,7 @@ class ReporteController extends Controller
                 
                 $comisionesComisionistasSobreTipos = $comisionistaSobreTipos->comisiones->whereIn('reservacion_id',$reservacionesId)->whereIn('comisionista_id',$comisionistasCanalId);
                 if($canalVenta->nombre == 'LOCACION'){
-                    // dd($comisionistasCanal);
+                    // dd($comisionistasCanal);$comision['descuentoImpuesto']
                 } 
                 $comisionComisionistasSobreTiposBrutaSinIva = 0;
                 foreach($comisionesComisionistasSobreTipos as $comisionComisionistasSobreTipos){
@@ -964,21 +965,21 @@ class ReporteController extends Controller
                 $comsision = $comision->comisionista->comision;
                 $comisionKey = $comsisionNombre.' - '.$comsision.'%';
 
-                if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
-                    $comisionesTipoPorcentaje[] = [$comisionKey];
+                // if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
+                //     $comisionesTipoPorcentaje[] = [$comisionKey];
 
-                    $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
-                        'comisionistaId'     => $comision->comisionista->id,
-                        'comisionistaNombre' => $comision->comisionista->nombre,
-                        'comisionistaEspecial' => $isComisionistaEspecial,
-                        'pagoTotal'          => $comision->pago_total,
-                        'comisionBruta'      => $comision->cantidad_comision_bruta,
-                        'descuentoImpuesto'  => $comision->descuento_impuesto,
-                        'cantidadNeta'       => $comision->cantidad_comision_neta,
-                        'comisionesEspeciales' => $comision->reservacion->comisiones_especiales
-                    ];
-                    continue;
-                }
+                //     $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
+                //         'comisionistaId'     => $comision->comisionista->id,
+                //         'comisionistaNombre' => $comision->comisionista->nombre,
+                //         'comisionistaEspecial' => $isComisionistaEspecial,
+                //         'pagoTotal'          => $comision->pago_total,
+                //         'comisionBruta'      => $comision->cantidad_comision_bruta,
+                //         'descuentoImpuesto'  => $comision->descuento_impuesto,
+                //         'cantidadNeta'       => $comision->cantidad_comision_neta,
+                //         'comisionesEspeciales' => $comision->reservacion->comisiones_especiales
+                //     ];
+                //     continue;
+                // }
 
                 $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                     'comisionistaId'     => $comision->comisionista->id,

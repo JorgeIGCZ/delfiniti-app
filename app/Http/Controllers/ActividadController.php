@@ -140,7 +140,7 @@ class ActividadController extends Controller
     {
         $canales = CanalVenta::get();
         $comisionesPersonalizadas = ActividadComisionDetalle::where('actividad_id',$actividad['id'])->get();
-        $actividadHorarios = ActividadHorario::where('actividad_id',$actividad['id'])->orderBy('horario_inicial', 'asc')->get();
+        $actividadHorarios = ActividadHorario::where('actividad_id',$actividad['id'])->where('estatus',1)->orderBy('horario_inicial', 'asc')->get();
         return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios,'comisionesPersonalizadas' => $comisionesPersonalizadas,'canales' => $canales]);
     }
 
@@ -161,15 +161,24 @@ class ActividadController extends Controller
             $actividad->comisionable    = $request->has('comisionable');
             $actividad->comisiones_especiales  = ($request->comisiones_especiales == 'on');
             $actividad->save();
-
-            ActividadHorario::where('actividad_id',$id)->delete();
+            
+            ActividadHorario::where('actividad_id', $id)
+                ->update(['estatus' => 0]);
 
             for ($i=0; $i < count($request->horario_inicial); $i++) { 
-                ActividadHorario::create([
-                    'actividad_id'    => $id,
-                    'horario_inicial' => $request->horario_inicial[$i],
-                    'horario_final'   => $request->horario_final[$i]
-                ]);
+                $actividadHorario = ActividadHorario::where('actividad_id',$id)
+                    ->where('horario_inicial',$request->horario_inicial[$i])
+                    ->where('horario_final',$request->horario_final[$i])->first();
+                if(isset($actividadHorario->id)){
+                    $actividadHorario->estatus = 1;
+                    $actividadHorario->save();
+                }else{
+                    ActividadHorario::create([
+                        'actividad_id'    => $id,
+                        'horario_inicial' => $request->horario_inicial[$i],
+                        'horario_final'   => $request->horario_final[$i]
+                    ]);
+                }
             }
 
             ActividadComisionDetalle::where('actividad_id',$id)->delete();
