@@ -75,7 +75,8 @@
                 'actividad'     : '{{$detalle->actividad_id}}',
                 'cantidad'      : '{{$detalle->numero_personas}}',
                 'precio'        : '{{$detalle->PPU}}',
-                'horario'       : '{{$detalle->actividad_horario_id}}'
+                'horario'       : '{{$detalle->actividad_horario_id}}',
+                'comisionesEspeciales' : '{{$detalle->actividad->comisiones_especiales}}'
             }];
         @endforeach
         
