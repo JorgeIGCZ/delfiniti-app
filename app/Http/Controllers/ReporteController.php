@@ -230,12 +230,9 @@ class ReporteController extends Controller
                 // $comisionista = $reservacion->comisionista
 
                 $comisionesEspecialesDetalle[$reservacionId] = [
-
-                    'nombre'   => $reservacion->comisionista->nombre,
-
-                    'visitas'  => count($reservacion->ReservacionDetalle),
-
-                    'comision' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
+                    'NOMBRE'   => $reservacion->comisionista->nombre,
+                    'VISITAS'  => count($reservacion->ReservacionDetalle),
+                    'COMISION' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
                 ];
 
                 foreach($cerradoresCanal as $cerradorCanal){
@@ -259,8 +256,8 @@ class ReporteController extends Controller
                 continue;
             }
 
-            $comisionesEspecialesDetalle[$reservacionId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-            $comisionesEspecialesDetalle[$reservacionId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+            $comisionesEspecialesDetalle[$reservacionId]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisionesEspecialesDetalle[$reservacionId]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
             
             foreach($cerradoresCanal as $cerradorCanal){
                 foreach($cerradorCanal->comisionistas as $comisionistas){
@@ -296,18 +293,18 @@ class ReporteController extends Controller
         //Titulos estaticos
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
-        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISIÓN');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISION');
         
         //Titulos dinamicos
-        $column = 5;
+        $column = 2;
         $index = 0;
         $titulosCreados = [];
         foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
             foreach($comisionEspecialDetalle as $titulo => $value){
-                if($index < 3){
-                    $index++;
-                    continue;
-                }
+                // if($index < 3){
+                //     $index++;
+                //     continue;
+                // }
 
                 if(!in_array($titulo,$titulosCreados)){
                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
