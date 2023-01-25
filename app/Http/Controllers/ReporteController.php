@@ -229,7 +229,7 @@ class ReporteController extends Controller
 
                 // $comisionista = $reservacion->comisionista
 
-                $comisionesEspecialesDetalle[$reservacionId] = [
+                $comisionesEspecialesDetalle[$reservacion->comisionista->id] = [
                     'NOMBRE'   => $reservacion->comisionista->nombre,
                     'VISITAS'  => count($reservacion->ReservacionDetalle),
                     'COMISION' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
@@ -256,14 +256,14 @@ class ReporteController extends Controller
                 continue;
             }
 
-            $comisionesEspecialesDetalle[$reservacionId]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-            $comisionesEspecialesDetalle[$reservacionId]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+            $comisionesEspecialesDetalle[$reservacion->comisionista->id]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisionesEspecialesDetalle[$reservacion->comisionista->id]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
             
             foreach($cerradoresCanal as $cerradorCanal){
                 foreach($cerradorCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                     if(isset($comisiones)){
-                        $comisionesEspecialesDetalle[$reservacionId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
+                        $comisionesEspecialesDetalle[$reservacion->comisionista->id][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
                     }
                 }
             }
@@ -404,7 +404,7 @@ class ReporteController extends Controller
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
         
-        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
                     ->getFont()->setBold(true);
 
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
