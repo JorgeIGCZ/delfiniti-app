@@ -965,21 +965,9 @@ class ReporteController extends Controller
                 $comsision = $comision->comisionista->comision;
                 $comisionKey = $comsisionNombre.' - '.$comsision.'%';
 
-                // if(!in_array($comisionKey,$comisionesTipoPorcentaje)){
-                //     $comisionesTipoPorcentaje[] = [$comisionKey];
-
-                //     $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
-                //         'comisionistaId'     => $comision->comisionista->id,
-                //         'comisionistaNombre' => $comision->comisionista->nombre,
-                //         'comisionistaEspecial' => $isComisionistaEspecial,
-                //         'pagoTotal'          => $comision->pago_total,
-                //         'comisionBruta'      => $comision->cantidad_comision_bruta,
-                //         'descuentoImpuesto'  => $comision->descuento_impuesto,
-                //         'cantidadNeta'       => $comision->cantidad_comision_neta,
-                //         'comisionesEspeciales' => $comision->reservacion->comisiones_especiales
-                //     ];
-                //     continue;
-                // }
+                if($comision->reservacion->comisionable == 0 && $comisionTipo->comisionista_canal !== 1){
+                    continue;
+                }
 
                 $comisionesAgrupadasTipoPorcentaje[$comisionKey][] = [
                     'comisionistaId'     => $comision->comisionista->id,
@@ -1034,8 +1022,8 @@ class ReporteController extends Controller
 
         $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
             $query
-                ->where("estatus", 1)
-                ->where("comisionable", 1);
+                ->where("estatus", 1);
+                // ->where("comisionable", 1);
                 // ->where("comisiones_especiales", 0);
         })->get();
 

@@ -43,7 +43,7 @@ class ComisionController extends Controller
             }
             Comision::where('reservacion_id',$request->reservacionId)->delete(); 
 
-            $pagos        = Pago::where('reservacion_id',$request->reservacionId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
+            $pagos = Pago::where('reservacion_id',$request->reservacionId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
                     ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
             })->get();
