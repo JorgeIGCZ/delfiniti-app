@@ -217,6 +217,7 @@ class ReporteController extends Controller
         foreach($reservaciones as $reservacion){
 
             $reservacionId = $reservacion->id;
+            $comisionistaId = $reservacion->comisionista->id;
 
             $comision = Comision::where('reservacion_id',$reservacionId)->get();
 
@@ -225,11 +226,11 @@ class ReporteController extends Controller
 
             $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
 
-            if(!in_array($reservacionId,$comisionesEspecialesDetalle)){
+            if(!in_array($comisionistaId,$comisionesEspecialesDetalle)){
 
                 // $comisionista = $reservacion->comisionista
 
-                $comisionesEspecialesDetalle[$reservacion->comisionista->id] = [
+                $comisionesEspecialesDetalle[$comisionistaId] = [
                     'NOMBRE'   => $reservacion->comisionista->nombre,
                     'VISITAS'  => count($reservacion->ReservacionDetalle),
                     'COMISION' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
@@ -239,7 +240,7 @@ class ReporteController extends Controller
                     foreach($cerradorCanal->comisionistas as $comisionistas){
                         $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                         if(isset($comisiones)){
-                            $comisionesEspecialesDetalle[$reservacionId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
                         }
                     }
                 }
@@ -248,7 +249,7 @@ class ReporteController extends Controller
                     foreach($directivoCanal->comisionistas as $comisionistas){
                         $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                         if(isset($comisiones)){
-                            $comisionesEspecialesDetalle[$reservacionId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
                         }
                     }
                 }
@@ -256,14 +257,14 @@ class ReporteController extends Controller
                 continue;
             }
 
-            $comisionesEspecialesDetalle[$reservacion->comisionista->id]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-            $comisionesEspecialesDetalle[$reservacion->comisionista->id]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+            $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
             
             foreach($cerradoresCanal as $cerradorCanal){
                 foreach($cerradorCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                     if(isset($comisiones)){
-                        $comisionesEspecialesDetalle[$reservacion->comisionista->id][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
+                        $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
                     }
                 }
             }
@@ -272,7 +273,7 @@ class ReporteController extends Controller
                 foreach($directivoCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                     if(isset($comisiones)){
-                        $comisionesEspecialesDetalle[$reservacionId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
+                        $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
                     }
                 }
             }
