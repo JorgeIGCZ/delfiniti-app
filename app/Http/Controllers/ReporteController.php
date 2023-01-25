@@ -9,12 +9,10 @@ use App\Models\Comisionista;
 use App\Models\CanalVenta;
 use App\Models\Reservacion;
 use Illuminate\Http\Request;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Pago;
 use App\Models\TipoCambio;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -85,10 +83,7 @@ class ReporteController extends Controller
         foreach($comisionesAgrupadasTipoPorcentaje as $key => $comisionAgrupadaTipoPorcentajeGeneral){
             //Titulos
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
-                ->getFont()->setBold(true);
-            
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
-                ->getFont()->setSize(12);
+                ->getFont()->setBold(true)->setSize(12);
             
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFill()
@@ -198,53 +193,225 @@ class ReporteController extends Controller
 
         //VISITAS
         $rowNumber += 4;
+        $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}")
+            ->getFont()->setBold(true)->setSize(12);
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'VISITAS');
 
         $rowNumber += 1;
-        //Titulos
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
-            ->getFont()->setBold(true);
-        
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
-            ->getFont()->setSize(12);
-        
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
+
+
+
+
+        $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
+            $query
+                ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
+                ->where('estatus',1); 
+        })
+        ->where('estatus',1)
+        ->where("comisionable", 1)
+        ->where("comisiones_especiales", 1)
+        ->get();
+
+
+        $comisionesEspecialesDetalle = [];
+        foreach($reservaciones as $reservacion){
+
+            $reservacionId = $reservacion->id;
+
+            $comision = Comision::where('reservacion_id',$reservacionId)->get();
+
+            $cerradoresCanal = CanalVenta::where('comisionista_cerrador',1)->get();
+            $directivosCanal = CanalVenta::where('comisionista_canal',1)->get();
+
+            $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
+
+            if(!in_array($reservacionId,$comisionesEspecialesDetalle)){
+
+                // $comisionista = $reservacion->comisionista
+
+                $comisionesEspecialesDetalle[$reservacionId] = [
+
+                    'nombre'   => $reservacion->comisionista->nombre,
+
+                    'visitas'  => count($reservacion->ReservacionDetalle),
+
+                    'comision' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
+                ];
+
+                foreach($cerradoresCanal as $cerradorCanal){
+                    foreach($cerradorCanal->comisionistas as $comisionistas){
+                        $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
+                        if(isset($comisiones)){
+                            $comisionesEspecialesDetalle[$reservacionId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                        }
+                    }
+                }
+
+                foreach($directivosCanal as $directivoCanal){
+                    foreach($directivoCanal->comisionistas as $comisionistas){
+                        $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
+                        if(isset($comisiones)){
+                            $comisionesEspecialesDetalle[$reservacionId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            $comisionesEspecialesDetalle[$reservacionId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisionesEspecialesDetalle[$reservacionId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+            
+            foreach($cerradoresCanal as $cerradorCanal){
+                foreach($cerradorCanal->comisionistas as $comisionistas){
+                    $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
+                    if(isset($comisiones)){
+                        $comisionesEspecialesDetalle[$reservacionId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
+                    }
+                }
+            }
+
+            foreach($directivosCanal as $directivoCanal){
+                foreach($directivoCanal->comisionistas as $comisionistas){
+                    $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
+                    if(isset($comisiones)){
+                        $comisionesEspecialesDetalle[$reservacionId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
+                    }
+                }
+            }
+        }
+
+         //Titulos comisiones Especiales Detalle
+         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
+            ->getFont()->setBold(true)->setSize(12);
+     
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
             ->getStartColor()->setARGB('F2F2F2');
 
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:C{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
             ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
+        //Titulos estaticos
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
         $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
-        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISION');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISIÓN');
+        
+        //Titulos dinamicos
+        $column = 5;
+        $index = 0;
+        $titulosCreados = [];
+        foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
+            foreach($comisionEspecialDetalle as $titulo => $value){
+                if($index < 3){
+                    $index++;
+                    continue;
+                }
 
-        // $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
-        //     $query
-        //         ->where("estatus", 1)
-        //         ->where("comisionable", 1)
-        //         ->where("comisiones_especiales", 1);
-        // })->selectRaw("SUM(cantidad_comision_neta) as total")->groupBy('comisionista_id')->get();
+                if(!in_array($titulo,$titulosCreados)){
+                    $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
+                    $column++;
+                }
+            }
+        }
+        $rowNumber += 1;
 
-        // $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 0);
-        // $rowNumber += 1;
-        // foreach($comisiones as $comision){
-        //     $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
-        //         ->getNumberFormat()
-        //         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+        //Valores dinamicos
+        foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
+            $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+            $column = 2;
+            $index = 0;
+            foreach($comisionEspecialDetalle as $value){
+                $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value);
+                $index++;
+                $column++;
+            }
+            $rowNumber++;          
+        }
 
-        //     $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
+        $rowNumber += 3;
 
-        //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comision['cantidadComisionesEspeciales']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-        //     $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
-        //     $rowNumber += 1;
-        //     $index++;
-        // }
+
+        //Titulos comisiones Especiales 
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+            ->getFont()->setBold(true)->setSize(12);
+        
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+            ->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('F2F2F2');
+
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+            ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
+        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
+        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
+        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISIÓN');
+
+        $rowNumber += 1;
+
+        $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
+            $query
+                ->where("estatus", 1)
+                ->where("comisionable", 1)
+                ->where("comisiones_especiales", 1);
+        })->get();
+
+        $comisionesEspeciales = [];
+        foreach($comisiones as $comision){
+            $comisionistaId = $comision->comisionista->id;
+            if(!in_array($comisionistaId,$comisionesEspeciales)){
+                $comisionesEspeciales[$comisionistaId] = [
+                    'nombre'   => $comision->comisionista->nombre,
+                    'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
+                    'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
+                ];
+                continue;
+            }
+
+            $comisionesEspeciales[$comisionistaId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisionesEspeciales[$comisionistaId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+        }
+        $index = 1;
+        $sumaC = [];
+        $sumaD = [];
+        foreach($comisionesEspeciales as $comisionEspecial){
+            $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+
+            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comisionEspecial['nombre']);
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comisionEspecial['visitas']);
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comisionEspecial['comision']);
+
+
+            $sumaC[] = 'C' . $rowNumber;
+            $sumaD[] = 'D' . $rowNumber;
+
+            $rowNumber += 1;      
+            $index++;      
+        }
+
+        //Calculo totales
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                    ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
+
+        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
+                    ->getNumberFormat()
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+        
+        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
+                    ->getFont()->setBold(true);
+
+        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
+        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
+        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
 
         //SECOND SHEET
         $VOSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'V&O');
