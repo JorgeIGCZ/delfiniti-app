@@ -307,6 +307,7 @@ class ReporteController extends Controller
                 // }
 
                 if(!in_array($titulo,$titulosCreados)){
+                    $titulosCreados[] = $titulo;
                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
                     $column++;
                 }
