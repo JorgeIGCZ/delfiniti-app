@@ -199,9 +199,6 @@ class ReporteController extends Controller
 
         $rowNumber += 1;
 
-
-
-
         $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
             $query
                 ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
@@ -214,6 +211,7 @@ class ReporteController extends Controller
 
 
         $comisionesEspecialesDetalle = [];
+        $comisionistasId = [];
         foreach($reservaciones as $reservacion){
 
             $reservacionId = $reservacion->id;
@@ -226,21 +224,21 @@ class ReporteController extends Controller
 
             $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
 
-            if(!in_array($comisionistaId,$comisionesEspecialesDetalle)){
-
+            if(!in_array($comisionistaId,$comisionistasId)){
+                $comisionistasId[] = $comisionistaId;
                 // $comisionista = $reservacion->comisionista
 
                 $comisionesEspecialesDetalle[$comisionistaId] = [
                     'NOMBRE'   => $reservacion->comisionista->nombre,
-                    'VISITAS'  => count($reservacion->ReservacionDetalle),
+                    'VISITAS'  => $reservacion->ReservacionDetalle[0]->numero_personas,
                     'COMISION' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
                 ];
 
                 foreach($cerradoresCanal as $cerradorCanal){
                     foreach($cerradorCanal->comisionistas as $comisionistas){
                         $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
-                        if(isset($comisiones)){
-                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                        if(count($comisiones) > 0){
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
                         }
                     }
                 }
@@ -249,7 +247,7 @@ class ReporteController extends Controller
                     foreach($directivoCanal->comisionistas as $comisionistas){
                         $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                         if(isset($comisiones)){
-                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->nombre] = $comisiones[0]->cantidad_comision_neta;
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
                         }
                     }
                 }
@@ -257,8 +255,11 @@ class ReporteController extends Controller
                 continue;
             }
 
-            $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-            $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+            $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($reservacion->ReservacionDetalle[0]->numero_personas) ? $reservacion->ReservacionDetalle[0]->numero_personas : 0;
+            $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->get();
+            if(isset($comisiones)){
+                $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones[0]->cantidad_comision_neta;
+            }
             
             foreach($cerradoresCanal as $cerradorCanal){
                 foreach($cerradorCanal->comisionistas as $comisionistas){
@@ -273,14 +274,14 @@ class ReporteController extends Controller
                 foreach($directivoCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
                     if(isset($comisiones)){
-                        $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
+                        $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
                     }
                 }
             }
         }
 
-         //Titulos comisiones Especiales Detalle
-         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
+        //Titulos comisiones Especiales Detalle
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
             ->getFont()->setBold(true)->setSize(12);
      
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
@@ -299,16 +300,23 @@ class ReporteController extends Controller
         //Titulos dinamicos
         $column = 2;
         $index = 0;
-        $titulosCreados = [];
+        $idsCreados = [];
         foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
-            foreach($comisionEspecialDetalle as $titulo => $value){
+            foreach($comisionEspecialDetalle as $tituloId => $value){
                 // if($index < 3){
                 //     $index++;
                 //     continue;
                 // }
 
-                if(!in_array($titulo,$titulosCreados)){
-                    $titulosCreados[] = $titulo;
+                if(!in_array($tituloId,$idsCreados)){
+                    $idsCreados[] = $tituloId;
+
+                    $titulo = $tituloId;
+                    if(\is_numeric($tituloId)){
+                        $comisionista = Comisionista::find($tituloId);
+                        $titulo = $comisionista->nombre;
+                    }
+
                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
                     $column++;
                 }
@@ -362,13 +370,18 @@ class ReporteController extends Controller
         })->get();
 
         $comisionesEspeciales = [];
+        $comisionistasId =[];
         foreach($comisiones as $comision){
             $comisionistaId = $comision->comisionista->id;
-            if(!in_array($comisionistaId,$comisionesEspeciales)){
+            if(!in_array($comisionistaId,$comisionistasId)){
+                $comisionistasId[] = $comisionistaId;
+                
                 $comisionesEspeciales[$comisionistaId] = [
                     'nombre'   => $comision->comisionista->nombre,
                     'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
                     'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
+                    'comisionista_canal' => $comision->comisionista->tipo->comisionista_canal,
+                    'comisionista_cerrador' => $comision->comisionista->tipo->comisionista_cerrador
                 ];
                 continue;
             }
@@ -389,8 +402,9 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comisionEspecial['visitas']);
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comisionEspecial['comision']);
 
-
-            $sumaC[] = 'C' . $rowNumber;
+            if($comisionEspecial['comisionista_canal'] == 0 && $comisionEspecial['comisionista_cerrador'] == 0){
+                $sumaC[] = 'C' . $rowNumber;
+            }
             $sumaD[] = 'D' . $rowNumber;
 
             $rowNumber += 1;      
@@ -401,11 +415,11 @@ class ReporteController extends Controller
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
                     ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
-        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
         
-        $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
                     ->getFont()->setBold(true);
 
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');

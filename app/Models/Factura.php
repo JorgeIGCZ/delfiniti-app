@@ -21,6 +21,11 @@ class Factura extends Model
     {
         return $this->hasMany(Pagos::class,'factura_id');
     }
+
+    public function reservacion()
+    {
+        return $this->belongsTo(Reservacion::class,'reservacion_id', 'id');
+    }
    //public function articulos()
    //{
    //    return $this->hasMany(Factura::class,'factura_id');

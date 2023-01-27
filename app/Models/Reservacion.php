@@ -33,7 +33,7 @@ class Reservacion extends Model
 
     public function facturas()
     {
-        return $this->hasOne(Factura::class,'id','reservacion_id');
+        return $this->hasOne(Factura::class,'reservacion_id','id');
     }
     public function pagos()
     {
