@@ -54,7 +54,8 @@ class ComisionistaController extends Controller
                 'descuentos'         => $request->descuentos,
                 'representante'      => strtoupper($request->representante),
                 'direccion'          => strtoupper($request->direccion),
-                'telefono'           => $request->telefono
+                'telefono'           => $request->telefono,
+                'comisiones_canal'   => $request->comisionesCanal
             ]);
             
             if($request->tipoComisionista == 'comisionistaCanal'){
@@ -181,6 +182,7 @@ class ComisionistaController extends Controller
             $comisionista->representante      = strtoupper($request->representante);
             $comisionista->direccion          = strtoupper($request->direccion);
             $comisionista->telefono           = $request->telefono;
+            $comisionista->comisiones_canal   = $request->has('comisiones_canal');
             $comisionista->save();
 
             $comisionistaCanalVenta = Comisionista::find($id)->tipo;

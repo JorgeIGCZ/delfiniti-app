@@ -62,24 +62,25 @@ class ReservacionController extends Controller
             ->whereRaw('NOW() >= fecha_inicial')
             ->whereRaw('NOW() <= fecha_final')
             ->orWhere('duracion','indefinido')
+            ->orderBy('nombre', 'asc')
             ->get();
 
         $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
             $query
             ->where('comisionista_cerrador',1);
-        })->get();
+        })->orderBy('nombre', 'asc')->get();
             
         $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
             $query
             ->where('comisionista_canal',0)
             ->where('comisionista_actividad',0)
             ->where('comisionista_cerrador',0);
-        })->get();
+        })->orderBy('nombre', 'asc')->get();
 
         $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
             $query
             ->where('comisionista_actividad',1);
-        })->get();
+        })->orderBy('nombre', 'asc')->get();
 
 
 
@@ -175,6 +176,7 @@ class ReservacionController extends Controller
                 'estatus_pago'    => $estatusPago,
                 'comisionable'    => $request->comisionable,
                 'comisiones_especiales' => $this->isComisionesEspeciales($request->reservacionArticulos),
+                'comisiones_canal' => is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0,
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
@@ -253,6 +255,11 @@ class ReservacionController extends Controller
             }
         }
         return false;
+    }
+
+    private function hasComisionesCanal($comisionistaId){
+        $comisionista = Comisionista::find($comisionistaId);
+        return (isset($comisionista->comisiones_canal)) ? $comisionista->comisiones_canal : 0;
     }
 
     private function getCantidadPagada($request,$email){
@@ -556,6 +563,7 @@ class ReservacionController extends Controller
             $reservacion->comentarios     = strtoupper($request->comentarios);
             $reservacion->comisiones_especiales = $this->isComisionesEspeciales($request->reservacionArticulos);
             $reservacion->comisionable    = $request->comisionable;
+            $reservacion->comisiones_canal = is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0;
             $reservacion->fecha           = $request->fecha;
             if($pagar){
                 $reservacion->estatus_pago = 1;

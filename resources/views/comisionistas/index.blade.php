@@ -103,7 +103,8 @@
                 "descuentos"        : comisionistas.elements['descuentos'].checked,
                 "representante"     : comisionistas.elements['representante'].value,
                 "direccion"         : comisionistas.elements['direccion'].value,
-                "telefono"          : comisionistas.elements['telefono'].value
+                "telefono"          : comisionistas.elements['telefono'].value,
+                "comisionesCanal"   : comisionistas.elements['comisiones_canal'].checked
             })
             .then(function (response) {
                 $('.loader').hide();
@@ -366,8 +367,13 @@
                                 </div>
 
                                 <div class="form-group col-2 mt-3 general-settings">
-                                    <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
-                                    <input type="checkbox" name="descuentos" class="form-control" >
+                                    <label for="descuentos" class="col-form-label" style="display: block;">Puede generar descuentos</label>
+                                    <input type="checkbox" name="descuentos" checked="checked" class="form-control" >
+                                </div>
+
+                                <div class="form-group col-2 mt-3 general-settings">
+                                    <label for="comisiones_canal" class="col-form-label" style="display: block;">Incluir en comisiones de canal</label>
+                                    <input type="checkbox" name="comisiones_canal" class="form-control" checked="checked">
                                 </div>
 
                                 <div class="col-12 mt-3 general-settings">

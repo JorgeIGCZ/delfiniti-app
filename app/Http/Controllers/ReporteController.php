@@ -481,11 +481,12 @@ class ReporteController extends Controller
         $headerRowNumber = $rowNumber;
         $rowNumber += 1;
 
-        //obtenemos comisiones sean o no comisionables las ordenes ->where("comisionable", 0-1);
+        //Se encuentra aqui comisiones_especiales ya que se calculan pero no debe aparecer en canales
         $comisiones = Comision::whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])->whereHas('reservacion',function ($query){
             $query
             ->where('estatus',1)
-            ->where("comisiones_especiales", 0);
+            ->where('comisiones_especiales', 0)
+            ->where('comisiones_canal', 1);
         })->get();
 
         $comisionesId = $comisiones->pluck('id');

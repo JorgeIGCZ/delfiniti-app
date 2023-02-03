@@ -32,6 +32,7 @@ return new class extends Migration
             $table->boolean('check_in')->default(0);
             $table->boolean('comisionable')->default(1);
             $table->boolean('comisiones_especiales')->default(0)->comment('Generalmente usado en visitas');
+            $table->boolean('comisiones_canal')->default(1)->comment('Generalmente usado en comisionistas de grupos que son directivos');
             $table->timestamps();
         });
     }

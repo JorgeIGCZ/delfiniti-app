@@ -145,8 +145,12 @@
                                 <input type="number" step="0.01" name="descuento_impuesto" class="form-control" min="0" max="90" value="{{$comisionista->descuento_impuesto}}">
                             </div>
                             <div class="form-group col-2 mt-3 general-settings">
-                                <label for="descuentos" class="col-form-label">Puede recibir descuentos</label>
+                                <label for="descuentos" class="col-form-label" style="display: block;">Puede recibir descuentos</label>
                                 <input type="checkbox" name="descuentos" class="form-control" value="{{$comisionista->descuentos}}" @if($comisionista->descuentos) checked="checked" @endif>
+                            </div>
+                            <div class="form-group col-2 mt-3 general-settings">
+                                <label for="comisiones_canal" class="col-form-label" style="display: block;">Incluir en comisiones de canal</label>
+                                <input type="checkbox" name="comisiones_canal" class="form-control" value="{{$comisionista->comisiones_canal}}" @if($comisionista->comisiones_canal) checked="checked" @endif>
                             </div>
 
                             <div class="col-12 mt-3 general-settings">
