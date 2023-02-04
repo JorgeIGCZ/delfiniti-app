@@ -139,7 +139,7 @@ class ReporteController extends Controller
 
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTAL');
             
-            //Is comisionista especial
+            //Evita comisionistas especiales sumen al total ya que es la misma reservacion ya contada
             if(!$comisionAgrupadaTipoPorcentajeGeneral[0]['comisionistaEspecial']){
                 $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
             }
@@ -149,7 +149,7 @@ class ReporteController extends Controller
             $spreadsheet->getActiveSheet()->setCellValue('G' . $rowNumber, '=SUM(' . 'G' . $initialRowNumber . ':G' . $rowNumber-1 . ')');
 
             //Is comisionista especial
-            //dd($comisionAgrupadaTipoPorcentajeGeneral);
+            //Evita comisionistas especiales sumen al total general ya que es la misma reservacion ya contada
             if(!$comisionAgrupadaTipoPorcentajeGeneral[0]['comisionistaEspecial']){
                 $sumaC[] = 'C' . $rowNumber;
             }
@@ -1146,7 +1146,12 @@ class ReporteController extends Controller
                 $comsision = $comision->comisionista->comision;
                 $comisionKey = $comsisionNombre.' - '.$comsision.'%';
 
+                //Evitar mostrar comisiones no comisionables a comisionistas que no sean directivos(comisionista_canal)
                 if($comision->reservacion->comisionable == 0 && $comisionTipo->comisionista_canal !== 1){
+                    continue;
+                }
+                //Evitar mostrar comisiones que sean de comisionistas sin comisiones de canal, a comisionistas directivos(comisionista_canal)
+                if($comision->reservacion->comisiones_canal == 0 && $comisionTipo->comisionista_canal == 1){
                     continue;
                 }
 
