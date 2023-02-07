@@ -18,6 +18,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
 use App\Http\Controllers\ReservacionTicketController;
+use App\Http\Controllers\VentaController;
 use App\Models\Actividad;
 
 /*
@@ -77,6 +78,22 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::resource('reservaciones',ReservacionController::class, [
         'parameters' => [
             'reservaciones' => 'reservacion'
+        ]
+    ]);
+});
+
+Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
+    // Route::get('/reservaciones/create/{reservacion?}', 'create')->name('reservacionesCreate');
+    // Route::post('reservaciones/updateestatusreservacion', 'updateEstatusReservacion');
+    // Route::post('reservaciones/removeActividad', 'removeActividad');
+    // Route::post('reservaciones/editPago','editPago');
+    // Route::post('reservaciones/removeDescuento', 'removeDescuento');
+    // Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
+    // Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    // Route::post('reservaciones/show/{reservacion?}', 'show');
+    Route::resource('ventas',VentaController::class, [
+        'parameters' => [
+            'ventas' => 'venta'
         ]
     ]);
 });
