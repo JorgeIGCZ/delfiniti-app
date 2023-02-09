@@ -74,12 +74,19 @@
                       <form class="row g-3 align-items-center f-auto" id="reporte-form">
                           <div class="form-group col-6 mt-3">
                             <label for="nombre" class="col-form-label">Fecha inicio</label>    
-                            <input type="date" name="fecha-inicio" id="report-fecha-inicio" class="form-control" required="required" value="{{date('Y-m-d')}}">  
+                            <input type="date" name="fecha_final" id="report_fecha_inicio" class="form-control" required="required">  
                           </div>
                           <div class="form-group col-6 mt-3">
                               <label for="nombre" class="col-form-label">Fecha final</label>    
-                              <input type="date" name="fecha-inicio" id="report-fecha-final" class="form-control" required="required" value="{{date('Y-m-d')}}">  
+                              <input type="date" name="fecha_final" id="report_fecha_final" class="form-control" required="required">  
                           </div>
+                          {{-- <div class="form-group col-12 mt-3">
+                            <div class="input-group report_daterange">
+                              <input id="report_fecha_inicio" name="fecha_inicio" type="text" class="form-control" readonly="readonly" placeholder="dd/mm/aaaa"> 
+                              <span class="input-group-addon" style="padding: 0 8px;align-self: center;background: none;border: none;">Al</span> 
+                              <input id="report_fecha_final" name="fecha_final" type="text" class="form-control" readonly="readonly" placeholder="dd/mm/aaaa">
+                            </div>
+                          </div> --}}
 
                           @php
                             use App\Models\User;

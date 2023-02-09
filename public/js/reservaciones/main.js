@@ -395,6 +395,12 @@ function getMXNFromVentaUSD(usd) {
     return usd * dolarPrecio;
 }
 
+function getUSDFromVentaMXN(usd) {
+    const dolarPrecio = dolarPrecioVenta();
+
+    return usd / dolarPrecio;
+}
+
 function displayActividad() {
     let actividadesClaveSelect = document.getElementById('clave-actividad');
     let actividadesSelect = document.getElementById('actividades');
@@ -676,7 +682,7 @@ window.onload = function() {
         if(getResta() < 0){
             const valor = (isUsd ? getMXNFromVentaUSD(parseFloat(elemento.getAttribute('value'))) : parseFloat(getValor(elemento)));
             const cambio   = parseFloat(getCambio());
-            const subTotal = parseFloat(valor+cambio);
+            const subTotal = (isUsd ? parseFloat(getUSDFromVentaMXN(valor+cambio)) : parseFloat(valor+cambio)); 
  
             setValor(event.target,subTotal);
         }

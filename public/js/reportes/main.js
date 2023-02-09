@@ -15,8 +15,8 @@ $(function () {
         filtrosCorteCaja.style.display = "none";
         filtrosComisiones.style.display = "none";
         selectorMultipleCanalesVenta.selectAll();
-        document.getElementById('report-fecha-inicio').value = "";
-        document.getElementById('report-fecha-final').value = "";
+        document.getElementById('report_fecha_inicio').value = moment().format('YYYY-MM-DD');
+        document.getElementById('report_fecha_final').value = moment().format('YYYY-MM-DD');
     }
     selectorMultipleCanalesVenta.selectAll()
 
@@ -48,8 +48,8 @@ $(function () {
         crearReporte.addEventListener('click', (event) => { 
             event.preventDefault();
         
-            const fechaInicio = document.getElementById('report-fecha-inicio').value;
-            const fechaFinal  = document.getElementById('report-fecha-final').value;
+            const fechaInicio = document.getElementById('report_fecha_inicio').value;
+            const fechaFinal  = document.getElementById('report_fecha_final').value;
 
             if (!formValidity('reporte-form')) {
                 return false;
