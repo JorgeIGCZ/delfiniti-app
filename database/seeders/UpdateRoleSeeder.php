@@ -16,7 +16,7 @@ class UpdateRoleSeeder extends Seeder
      */
     public function run()
     {
-        $administrador = Role::create(['name' => 'Administrador']);
+        $administrador = 'Administrador';
 
         Permission::create(['name' => 'SeccionReservaciones.index'])->assignRole($administrador);
 
