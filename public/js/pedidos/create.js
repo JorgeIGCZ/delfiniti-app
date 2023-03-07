@@ -1,11 +1,5 @@
 let productosArray = [];
 
-document.getElementById('pagar').addEventListener('click', (event) => {
-    validateFecha();
-    if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid()) {
-        createReservacion('pagar');
-    }
-});
 
 document.getElementById('cancelar').addEventListener('click', (event) => {
     event.preventDefault();
@@ -96,45 +90,26 @@ function addProductos() {
     // enableBtn('reservar', productosArray.length > 0);
 }
 
-function setTotal() {
-    let total = 0;
+function setSubTotal() {
+    let subTotal = 0;
     productosArray.forEach(venta => {
-        total += (venta.cantidad * venta.precio);
+        subTotal += (venta.cantidad * venta.precio);
     });
-    total = parseFloat(total).toFixed(2)
+    subTotal = parseFloat(subTotal).toFixed(2)
+    document.getElementById('subtotal').setAttribute('value', subTotal);
+    document.getElementById('subtotal').value = formatter.format(subTotal);
+    setTotal();
+}
+
+function setTotal(){
+    let total = 0;
+    const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+    const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
+    const descuento = parseFloat(document.getElementById('descuento').getAttribute('value'));
+    const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
+
+    total = parseFloat((subTotal + iva + ieps) - descuento).toFixed(2);
+
     document.getElementById('total').setAttribute('value', total);
     document.getElementById('total').value = formatter.format(total);
-
-    setOperacionResultados();
 }
-
-function setOperacionResultados() {
-    const total = document.getElementById('total').getAttribute('value');
-    setResta();
-    setCambio();
-
-    // enableReservar((getResta() < total) ? true : false);
-}
-
-function getPagos(tipoUsd = 'compra') {
-    const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const efectivo = parseFloat(document.getElementById('efectivo').getAttribute('value'));
-    const efectivoUsd = (
-        tipoUsd == 'compra'
-            ? getMXNFromUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')))
-            : getMXNFromVentaUSD(parseFloat(document.getElementById('efectivo-usd').getAttribute('value')))
-    );
-
-    const tarjeta = parseFloat(document.getElementById('tarjeta').getAttribute('value'));
-
-    const deposito = parseFloat(document.getElementById('deposito').getAttribute('value'));
-
-    const pagos = (efectivo + efectivoUsd + tarjeta + deposito);
-
-    return parseFloat(pagos);
-}
-
-// function enableReservar(status) {
-//     let pagarReservar = document.getElementById('pagar-reservar');
-//     (status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled', 'disabled');
-// }

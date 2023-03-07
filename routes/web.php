@@ -17,9 +17,11 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\VentaController;
-use App\Models\Actividad;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,9 +34,14 @@ use App\Models\Actividad;
 |
 */
 
+Route::get('switchModule/{modulo}', [UsuarioController::class, 'switchModule']);
+
 Route::get('/', function () {
-    return redirect()->route("disponibilidad")->with(["result" => ""]);
+    return redirect()->route("dashboard")->with(["result" => ""]);
 })->middleware(['auth'])->name('disp');
+
+Route::view('/dashboard', 'dashboard/index')->name('dashboard');;
+
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
     Route::get('comisionistas/show/{comisionista?}', 'show');
@@ -202,4 +209,33 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
     ]);
 });
 
+Route::controller(ProductoController::class)->middleware(['auth'])->group(function () {
+    Route::get('/productos/show/{producto?}', 'show');
+    Route::patch('productos/estatus/{producto}', 'updateEstatus');
+    Route::resource('productos',ProductoController::class, [
+        'parameters' => [
+            'productos' => 'producto'
+        ]
+    ]);
+});
+
+Route::controller(ProveedorController::class)->middleware(['auth'])->group(function () {
+    Route::get('proveedores/show/{proveedor?}', 'show');
+    Route::patch('proveedores/estatus/{proveedor}', 'updateEstatus');
+    Route::resource('proveedores',ProveedorController::class, [
+        'parameters' => [
+            'proveedores' => 'proveedor'
+        ]
+    ]);
+});
+
+Route::controller(PedidoController::class)->middleware(['auth'])->group(function () {
+    Route::get('pedidos/show/{pedido?}', 'show');
+    Route::patch('pedidos/estatus/{pedido}', 'updateEstatus');
+    Route::resource('pedidos',PedidoController::class, [
+        'parameters' => [
+            'pedidos' => 'pedido'
+        ]
+    ]);
+});
 require __DIR__.'/auth.php';

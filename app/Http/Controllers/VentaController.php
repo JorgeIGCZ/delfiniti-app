@@ -11,7 +11,7 @@ use App\Models\Estado;
 use App\Models\Factura;
 use App\Models\Alojamiento;
 use App\Models\Pago;
-use App\Models\Venta;
+// use App\Models\Venta;
 use App\Classes\CustomErrorHandler;
 use App\Models\DescuentoCodigo;
 use App\Models\VentaTicket;
@@ -46,20 +46,15 @@ class VentaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Venta $venta)
+    public function create($venta = [])//(Venta $venta)
     {
-        $estados          = Estado::all();
-        $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
-        // $productoes      = Producto::where('estatus',1)
-        //     ->whereRaw('NOW() >= fecha_inicial')
-        //     ->whereRaw('NOW() <= fecha_final')
-        //     ->orWhere('duracion','indefinido')
-        //     ->get();
+        $productos = Producto::where('estatus',1)->get()->toArray();
+        $estados = Estado::all();
 
 
-        $dolarPrecio    = TipoCambio::where('seccion_uso', 'general')->first();
+        $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
-        return view('ventas.create',['venta' => $venta, 'estados' => $estados,'productoes' => [],'comisionistas' => [],'dolarPrecio' => $dolarPrecio, 'cerradores' => [],'descuentosCodigo' => [],'comisionistasProducto' => []]);
+        return view('ventas.create',['venta' => $venta,'productos' => $productos,'estados' => $estados,'dolarPrecio' => $dolarPrecio]);
     }
 
     public function updateEstatus(Request $request){

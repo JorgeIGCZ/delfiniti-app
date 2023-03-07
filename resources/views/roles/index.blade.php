@@ -44,6 +44,8 @@
             '_token'                   : '{{ csrf_token() }}',
             'tipoUsuario'              : tipoUsuario,
             'permisos'                 : {
+                'SeccionReservaciones.index'  : roles.elements['SeccionReservaciones.index'    ].checked,
+
                 'Reportes.index'              : roles.elements['Reportes.index'                ].checked,
                 'Reportes.CorteCaja.index'    : roles.elements['Reportes.CorteCaja.index'      ].checked,
                 'Reportes.Reservaciones.index': roles.elements['Reportes.Reservaciones.index'  ].checked,
@@ -93,6 +95,28 @@
 
                 'TipoCambio.index'            : roles.elements['TipoCambio.index'              ].checked,
                 'TipoCambio.update'           : roles.elements['TipoCambio.update'             ].checked,
+
+                'SeccionTienda.index'         : roles.elements['SeccionTienda.index'           ].checked,
+
+                'TiendaVentas.index'          : roles.elements['TiendaVentas.index'            ].checked,
+                'TiendaVentas.create'         : roles.elements['TiendaVentas.create'           ].checked,
+                'TiendaVentas.update'         : roles.elements['TiendaVentas.update'           ].checked,
+                'TiendaVentas.cancel'         : roles.elements['TiendaVentas.cancel'           ].checked,
+
+                'TiendaPedidos.index'         : roles.elements['TiendaPedidos.index'           ].checked,
+                'TiendaPedidos.create'        : roles.elements['TiendaPedidos.create'          ].checked,
+                'TiendaPedidos.update'        : roles.elements['TiendaPedidos.update'          ].checked,
+                'TiendaPedidos.cancel'        : roles.elements['TiendaPedidos.cancel'          ].checked,
+
+                'TiendaProveedores.index'     : roles.elements['TiendaProveedores.index'       ].checked,
+                'TiendaProveedores.create'    : roles.elements['TiendaProveedores.create'      ].checked,
+                'TiendaProveedores.update'    : roles.elements['TiendaProveedores.update'      ].checked,
+
+                'TiendaProductos.index'       : roles.elements['TiendaProductos.index'         ].checked,
+                'TiendaProductos.create'      : roles.elements['TiendaProductos.create'        ].checked,
+                'TiendaProductos.update'      : roles.elements['TiendaProductos.update'        ].checked,
+
+                'SeccionFotoVideo.index'      : roles.elements['SeccionFotoVideo.index'        ].checked,
             }
         })
         .then(function (response) {
@@ -104,6 +128,7 @@
                     showConfirmButton: false,
                     timer: 1500
                 })
+                location.reload()
             }else{
                 Swal.fire({
                     icon: 'error',
@@ -146,278 +171,506 @@
                     </select>
                 </div>
                 <form class="row g-3 f-auto" id="roles-form">
+                    <div class="col-md-12 col-xl-12">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Sección reservaciones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="SeccionReservaciones.index" type="checkbox">
+                                    <label for="SeccionReservaciones.index">
+                                        Ver
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-xl-12 ml-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Reportes</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.index" type="checkbox" >
+                                    <label for="Reportes.index">
+                                        Ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.CorteCaja.index" type="checkbox" >
+                                    <label for="Reportes.CorteCaja.index">
+                                    Corte caja
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.Reservaciones.index" type="checkbox" >
+                                    <label for="Reportes.Reservaciones.index">
+                                    Reservaciones
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.Comisiones.index" type="checkbox" >
+                                    <label for="Reportes.Comisiones.index">
+                                        Comisiones
+                                    </label>
+                                </div>
+                            </div>
 
-                    <div class="col-md-2">
-                        <strong>Reportes</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reportes.index" type="checkbox" >
-                            <label for="Reportes.index">
-                                Ver
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reportes.CorteCaja.index" type="checkbox" >
-                            <label for="Reportes.CorteCaja.index">
-                              Corte caja
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reportes.Reservaciones.index" type="checkbox" >
-                            <label for="Reportes.Reservaciones.index">
-                              Reservaciones
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reportes.Comisiones.index" type="checkbox" >
-                            <label for="Reportes.Comisiones.index">
-                                Comisiones
-                            </label>
+                            <div class="col-md-2">
+                                <strong>Check-in</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Checkin.index" type="checkbox" >
+                                    <label for="Checkin.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="Checkin.create" type="checkbox" >
+                                <label for="Checkin.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Checkin.update" type="checkbox" >
+                                    <label for="Checkin.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Disponibilidad</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Disponibilidad.index" type="checkbox" >
+                                    <label for="Disponibilidad.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                            </div> 
+
+                            <div class="col-md-2">
+                                <strong>Reservaciones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reservaciones.index" type="checkbox" >
+                                    <label for="ver">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="Reservaciones.create" type="checkbox" >
+                                <label for="Reservaciones.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reservaciones.update" type="checkbox" >
+                                    <label for="Reservaciones.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reservaciones.cancel" type="checkbox" >
+                                    <label for="Reservaciones.cancel">
+                                        Cancelar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Comisiones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Comisiones.index" type="checkbox" >
+                                    <label for="Comisiones.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="Comisiones.create" type="checkbox" >
+                                <label for="Comisiones.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Comisiones.update" type="checkbox" >
+                                    <label for="Comisiones.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <strong>Actividades</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Actividades.index" type="checkbox" >
+                                    <label for="Actividades.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Actividades.create" type="checkbox" >
+                                    <label for="Actividades.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Actividades.update" type="checkbox" >
+                                    <label for="Actividades.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Alojamientos</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Alojamientos.index" type="checkbox" >
+                                    <label for="Alojamientos.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Alojamientos.create" type="checkbox" >
+                                    <label for="Alojamientos.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Alojamientos.update" type="checkbox" >
+                                    <label for="Alojamientos.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Comisionistas</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Comisionista.index" type="checkbox" >
+                                    <label for="Comisionista.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Comisionista.create" type="checkbox" >
+                                    <label for="Comisionista.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Comisionista.update" type="checkbox" >
+                                    <label for="Comisionista.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Canales De Venta</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CanalesVenta.index" type="checkbox" >
+                                    <label for="CanalesVenta.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CanalesVenta.create" type="checkbox" >
+                                    <label for="CanalesVenta.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CanalesVenta.update" type="checkbox" >
+                                    <label for="CanalesVenta.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Codigos descuento</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CodigosDescuento.index" type="checkbox" >
+                                    <label for="CodigosDescuento.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CodigosDescuento.create" type="checkbox" >
+                                    <label for="CodigosDescuento.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="CodigosDescuento.update" type="checkbox" >
+                                    <label for="CodigosDescuento.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Usuarios</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Usuarios.index" type="checkbox" >
+                                    <label for="Usuarios.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="Usuarios.create" type="checkbox" >
+                                <label for="Usuarios.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Usuarios.update" type="checkbox" >
+                                    <label for="Usuarios.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <strong>Roles</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Usuarios.Roles.index" type="checkbox" >
+                                    <label for="Usuarios.Roles.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Usuarios.Roles.update" type="checkbox" >
+                                    <label for="Usuarios.Roles.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Tipos de cambio</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TipoCambio.index" type="checkbox" >
+                                    <label for="TipoCambio.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TipoCambio.update" type="checkbox" >
+                                    <label for="TipoCambio.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-md-2">
-                        <strong>Check-in</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Checkin.index" type="checkbox" >
-                            <label for="Checkin.index">
-                                ver
-                            </label>
+
+
+                    <div class="col-md-12 col-xl-12 mt-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Sección tienda</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="SeccionTienda.index" type="checkbox">
+                                    <label for="SeccionTienda.index">
+                                        Ver
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Checkin.create" type="checkbox" >
-                          <label for="Checkin.create">
-                              Crear 
-                          </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Checkin.update" type="checkbox" >
-                            <label for="Checkin.update">
-                                Modificar 
-                            </label>
+                    </div>
+                    <div class="col-md-12 col-xl-12 ml-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Reportes</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaReportes.index" type="checkbox" >
+                                    <label for="TiendaReportes.index">
+                                        Ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaReportes.CorteCaja.index" type="checkbox" >
+                                    <label for="TiendaReportes.CorteCaja.index">
+                                    Corte caja
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaReportes.Reservaciones.index" type="checkbox" >
+                                    <label for="TiendaReportes.Reservaciones.index">
+                                    Ventas
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Ventas</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaVentas.index" type="checkbox" >
+                                    <label for="TiendaVentas.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="TiendaVentas.create" type="checkbox" >
+                                <label for="TiendaVentas.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaVentas.update" type="checkbox" >
+                                    <label for="TiendaVentas.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaVentas.cancel" type="checkbox" >
+                                    <label for="TiendaVentas.cancel">
+                                        Cancelar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Pedidos</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaPedidos.index" type="checkbox" >
+                                    <label for="TiendaPedidos.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="TiendaPedidos.create" type="checkbox" >
+                                <label for="TiendaPedidos.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaPedidos.update" type="checkbox" >
+                                    <label for="TiendaPedidos.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaPedidos.cancel" type="checkbox" >
+                                    <label for="TiendaPedidos.cancel">
+                                        Cancelar 
+                                    </label>
+                                </div>
+                            </div> 
+
+                            <div class="col-md-2">
+                                <strong>Proveedores</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProveedores.index" type="checkbox" >
+                                    <label for="ver">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProveedores.create" type="checkbox" >
+                                    <label for="TiendaProveedores.create">
+                                        Crear 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProveedores.update" type="checkbox" >
+                                    <label for="TiendaProveedores.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Productos</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProductos.index" type="checkbox" >
+                                    <label for="TiendaProductos.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="TiendaProductos.create" type="checkbox" >
+                                <label for="TiendaProductos.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProductos.update" type="checkbox" >
+                                    <label for="TiendaProductos.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="col-md-2">
-                        <strong>Disponibilidad</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Disponibilidad.index" type="checkbox" >
-                            <label for="Disponibilidad.index">
-                                Ver 
-                            </label>
-                        </div>
-                    </div> 
 
-                    <div class="col-md-2">
-                        <strong>Reservaciones</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reservaciones.index" type="checkbox" >
-                            <label for="ver">
-                                ver
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Reservaciones.create" type="checkbox" >
-                          <label for="Reservaciones.create">
-                              Crear 
-                          </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reservaciones.update" type="checkbox" >
-                            <label for="Reservaciones.update">
-                                Modificar 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Reservaciones.cancel" type="checkbox" >
-                            <label for="Reservaciones.cancel">
-                                Cancelar 
-                            </label>
-                        </div>
-                    </div>
 
-                    <div class="col-md-2">
-                        <strong>Comisiones</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Comisiones.index" type="checkbox" >
-                            <label for="Comisiones.index">
-                                ver
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Comisiones.create" type="checkbox" >
-                          <label for="Comisiones.create">
-                              Crear 
-                          </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Comisiones.update" type="checkbox" >
-                            <label for="Comisiones.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <strong>Actividades</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Actividades.index" type="checkbox" >
-                            <label for="Actividades.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Actividades.create" type="checkbox" >
-                            <label for="Actividades.create">
-                                Crear 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Actividades.update" type="checkbox" >
-                            <label for="Actividades.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
 
-                    <div class="col-md-2">
-                        <strong>Alojamientos</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Alojamientos.index" type="checkbox" >
-                            <label for="Alojamientos.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Alojamientos.create" type="checkbox" >
-                            <label for="Alojamientos.create">
-                                Crear 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Alojamientos.update" type="checkbox" >
-                            <label for="Alojamientos.update">
-                                Modificar 
-                            </label>
+                    <div class="col-md-12 col-xl-12 mt-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Sección foto y video</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="SeccionFotoVideo.index" type="checkbox">
+                                    <label for="SeccionFotoVideo.index">
+                                        Ver
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-md-12 col-xl-12 ml-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Reportes</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideoReportes.index" type="checkbox" >
+                                    <label for="FotoVideoReportes.index">
+                                        Ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideoReportes.CorteCaja.index" type="checkbox" >
+                                    <label for="FotoVideoReportes.CorteCaja.index">
+                                    Corte caja
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideoReportes.Reservaciones.index" type="checkbox" >
+                                    <label for="FotoVideoReportes.Reservaciones.index">
+                                    Ventas
+                                    </label>
+                                </div>
+                            </div>
 
-                    <div class="col-md-2">
-                        <strong>Comisionistas</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Comisionista.index" type="checkbox" >
-                            <label for="Comisionista.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Comisionista.create" type="checkbox" >
-                            <label for="Comisionista.create">
-                                Crear 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Comisionista.update" type="checkbox" >
-                            <label for="Comisionista.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2">
-                        <strong>Canales De Venta</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CanalesVenta.index" type="checkbox" >
-                            <label for="CanalesVenta.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CanalesVenta.create" type="checkbox" >
-                            <label for="CanalesVenta.create">
-                                Crear 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CanalesVenta.update" type="checkbox" >
-                            <label for="CanalesVenta.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2">
-                        <strong>Codigos descuento</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CodigosDescuento.index" type="checkbox" >
-                            <label for="CodigosDescuento.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CodigosDescuento.create" type="checkbox" >
-                            <label for="CodigosDescuento.create">
-                                Crear 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="CodigosDescuento.update" type="checkbox" >
-                            <label for="CodigosDescuento.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2">
-                        <strong>Usuarios</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Usuarios.index" type="checkbox" >
-                            <label for="Usuarios.index">
-                                ver
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                          <input name="Usuarios.create" type="checkbox" >
-                          <label for="Usuarios.create">
-                              Crear 
-                          </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Usuarios.update" type="checkbox" >
-                            <label for="Usuarios.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <strong>Roles</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Usuarios.Roles.index" type="checkbox" >
-                            <label for="Usuarios.Roles.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="Usuarios.Roles.update" type="checkbox" >
-                            <label for="Usuarios.Roles.update">
-                                Modificar 
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-2">
-                        <strong>Tipos de cambio</strong>
-                        <div class="checkbox checkbox-primary">
-                            <input name="TipoCambio.index" type="checkbox" >
-                            <label for="TipoCambio.index">
-                                Ver 
-                            </label>
-                        </div>
-                        <div class="checkbox checkbox-primary">
-                            <input name="TipoCambio.update" type="checkbox" >
-                            <label for="TipoCambio.update">
-                                Modificar 
-                            </label>
+                            <div class="col-md-2">
+                                <strong>Ventas</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideos.index" type="checkbox" >
+                                    <label for="FotoVideos.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="FotoVideod.create" type="checkbox" >
+                                <label for="FotoVideod.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaVentax.update" type="checkbox" >
+                                    <label for="TiendaVentasx.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaVentass.cancel" type="checkbox" >
+                                    <label for="TiendaVentass.cancel">
+                                        Cancelar 
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @can('Usuarios.Roles.update')

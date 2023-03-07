@@ -39,19 +39,26 @@
         </div--><!-- az-header-notification -->
         <div class="dropdown az-profile-menu">
           <a href="#" class="nav-link">
-            <i class="typcn typcn-user-outline"></i> {{Auth::user()->name}}
+            <i class="typcn typcn-user-outline"></i> {{Auth::user()->name}} 
           </a>
           <div class="dropdown-menu">
             <div class="az-dropdown-header d-sm-none">
               <a href="#" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
             </div>
-            
+            @can('SeccionReservaciones.index')
+              <a href="/switchModule/reservaciones" class="dropdown-item  {{(session('modulo') == 'reservaciones') ? 'selected' : ''}}"><i class="typcn typcn-user-outline"></i> Reservaciones</a>  
+            @endcan
+
+            @can('TiendaVentas.index')
+              <a href="/switchModule/tienda" class="dropdown-item {{(session('modulo') == 'tienda') ? 'selected' : ''}}"><i class="typcn typcn-edit"></i> Tienda</a>
+            @endcan
+
+            @can('SeccionFotoVideo.index')
+              <a href="#" class="dropdown-item"><i class="typcn typcn-time"></i> Foto y video</a>
+            @endcan
+            {{-- <a href="#" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a> --}}
             <form method="POST" action="{{ route('logout') }}">
 
-              <!--a href="#" class="dropdown-item"><i class="typcn typcn-user-outline"></i> My Profile</a>
-              <a href="#" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
-              <a href="#" class="dropdown-item"><i class="typcn typcn-time"></i> Activity Logs</a>
-              <a href="#" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a-->
               @csrf
               <x-responsive-nav-link :href="route('logout')"
                       onclick="event.preventDefault();

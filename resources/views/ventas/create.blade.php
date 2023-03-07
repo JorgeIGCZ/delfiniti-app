@@ -2,6 +2,8 @@
 @section('scripts')
     <script>
         const env = 'create';
+        const allProductos = @php echo(json_encode($productos)) @endphp;
+
         const dolarPrecioCompra = () =>{
             return  {{$dolarPrecio->precio_compra}};
         }
@@ -36,51 +38,6 @@
     <script src="{{ asset('js/ventas/ticket.js') }}"></script>
 @endsection
 @section('content')
-    <div class="modal fade" id="alojamiento-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-m" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h6 class="modal-title">Nuevo Alojamiento</h6>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-            </div>
-            <div class="modal-body">
-                <form class="row g-3 align-items-center f-auto" id="alojamientos-form">
-                    <div class="form-group col-7 mt-3">
-                        <label for="nombre" class="col-form-label">Nombre del alojamiento</label>    
-                        <input type="text" name="nombre" id="nombre-alojamiento" class="form-control to-uppercase" required="required">  
-                    </div>
-                    <div class="form-group col-5 mt-3">
-                        <button class="btn btn-info btn-block mt-33" id="crear-alojamiento">Crear alojamiento</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        </div><!-- modal-dialog -->
-    </div>
-    <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h6 class="modal-title">Verificación</h6>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group col-12 mt-0 mb-0">
-                    <label for="password" class="col-form-label">Contraseña</label>
-                    <input type="password" id="password" class="form-control">
-                </div>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button id="validar-verificacion" action="" class="btn btn-info btn-block form-control">Aplicar</button>
-            </div>
-        </div>
-        </div><!-- modal-dialog -->
-    </div>
-
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">Nueva Venta</h2>
@@ -99,15 +56,21 @@
                                         <strong>Datos de la venta</strong>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="clave" class="col-form-label">Clave</label>
-                                        <input type="text" name="clave" id="clave" class="form-control" tabindex="1">
+                                        <label for="codigo" class="col-form-label">Codigo</label>
+
+                                        <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
+                                        <datalist id="codigos-list">
+                                            @foreach($productos as $producto)
+                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['codigo']}}">
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                     <div class="form-group col-10 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
-                                        <input list="productos" name="origen" class="form-control to-uppercase" tabindex="2" value="{{@$venta->prducto}}"/>
-                                        <datalist id="productos">
-                                            @foreach($estados as $estado)
-                                                <option value="{{$estado->nombre}}">
+                                        <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
+                                        <datalist id="productos-list">
+                                            @foreach($productos as $producto)
+                                                <option data-id="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -119,6 +82,9 @@
                                         <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
                                         <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="4">
                                     </div>
+
+                                    <input type="hidden" name="precio" id="precio" value="0">
+                                    <input type="hidden" name="clave" id="clave" value="0">
                                 </div>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">

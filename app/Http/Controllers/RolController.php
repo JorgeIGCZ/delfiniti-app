@@ -20,8 +20,11 @@ class RolController extends Controller
         $this->middleware('permission:Usuarios.Roles.update')->only('edit'); 
     }
 
-    public function index(){
+    public function index(Request $request){
         $roles = Role::all();
+        
+        // $value = $request->session()->get('test');
+        // print_r($value);
         return view('roles.index',['roles' => $roles]);
     }
 

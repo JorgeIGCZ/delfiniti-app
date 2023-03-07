@@ -1,20 +1,3 @@
-function validateActivarVenta(){
-    Swal.fire({
-        title: '¿Activar?',
-        text: "La reservación será activada, ¿desea proceder?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, activar!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','activar-venta');
-            $('#verificacion-modal').modal('show');
-        }
-    });
-}
-
 function updateEstatusVenta(accion){
     const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
     $('.loader').show();
@@ -85,7 +68,7 @@ function removeProducto(row){
     const clave   = $(row).parents('tr')[0].firstChild.innerText;
     const horario = $(row).parents('tr')[0].childNodes[2].innerText;
     let updated   = 0;
-    actvidadesArray = actvidadesArray.filter(function (ventas) {
+    productosArray = productosArray.filter(function (ventas) {
         let result = (ventas.claveProducto !== clave && ventas.horario !== horario && updated == 0);
         updated > 0 ? result = true : '';
         !result ? updated++ : '';
@@ -93,37 +76,41 @@ function removeProducto(row){
     });
 }
 function addProducto(){
-    let productoDetalle = document.getElementById('productos');
-    productoDetalle = productoDetalle.options[productoDetalle.selectedIndex].text;
-    let horarioDetalle = document.getElementById('horarios');
-    horarioDetalle = horarioDetalle.options[horarioDetalle.selectedIndex].text;
-    let claveProducto = document.getElementById('clave-producto');
-    claveProducto = claveProducto.options[claveProducto.selectedIndex].text;
+    // debugger;
+    const productoDetalle = document.getElementById('productos').value;
+    const codigoProducto = document.getElementById('codigo').value;
+    const claveProducto = document.getElementById('clave').value;
     const producto = document.getElementById('productos').value;
     const cantidad = document.getElementById('cantidad').value;
     const precio = document.getElementById('precio').value;
-    const horario = document.getElementById('horarios').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
 
     ventasTable.row.add([
         claveProducto,
         productoDetalle,
-        horarioDetalle,
         cantidad,
         precio,
         precio * cantidad,
         acciones
     ])
         .draw(false);
-    actvidadesArray = [...actvidadesArray, {
+    productosArray = [...productosArray, {
+        'codigoProducto': codigoProducto,
         'claveProducto': claveProducto,
-        'productoDetalle':productoDetalle,
         'producto': producto,
         'cantidad': cantidad,
-        'precio': precio,
-        'horario': horario
+        'precio': precio
     }];
     setTotal();
+}
+
+function clearSeleccion(){
+    document.getElementById('productos').value = "";
+    document.getElementById('codigo').value = "";
+    document.getElementById('clave').value = "";
+    document.getElementById('productos').value = "";
+    document.getElementById('cantidad').value = "";
+    document.getElementById('precio').value = "";
 }
 
 function resetVentas() {
@@ -136,7 +123,6 @@ async function validateUsuario($password){
         'email': userEmail(),
         'password': $password
     });
-    $('#verificacion-modal').modal('hide');
     return (result.data.result == 'Autorized') ? true : false;
 }
 
@@ -192,8 +178,14 @@ function getMXNFromVentaUSD(usd) {
     return usd * dolarPrecio;
 }
 
+function getUSDFromVentaMXN(usd) {
+    const dolarPrecio = dolarPrecioVenta();
+
+    return usd / dolarPrecio;
+}
+
 function displayProducto() {
-    let productosClaveSelect = document.getElementById('clave-producto');
+    let productosClaveSelect = document.getElementById('codigo');
     let productosSelect = document.getElementById('productos');
     let optionNombre;
     let optionClave;
@@ -211,19 +203,18 @@ function displayProducto() {
     }
 }
 
-function getProductoDisponibilidad(){
-    const producto   = document.getElementById('productos').value;
-    const fecha       = document.getElementById('fecha').value;
-    const horario     = document.getElementById('horarios').value;
+// function getProductoDisponibilidad(){
+//     const producto   = document.getElementById('productos').value;
+//     const horario     = document.getElementById('horarios').value;
 
-    axios.get(`/api/disponibilidad/productoDisponibilidad/${producto}/${fecha}/${horario}`)
-    .then(function (response) {
-        displayDisponibilidad(response.data.disponibilidad);
-    })
-    .catch(function (error) {
-        displayDisponibilidad(0);
-    });
-}
+//     axios.get(`/api/disponibilidad/productoDisponibilidad/${producto}/${fecha}/${horario}`)
+//     .then(function (response) {
+//         displayDisponibilidad(response.data.disponibilidad);
+//     })
+//     .catch(function (error) {
+//         displayDisponibilidad(0);
+//     });
+// }
 function displayDisponibilidad(disponibilidad){
     const cantidadElement       = document.getElementById('cantidad');
     const disponibilidadElement = document.getElementById('disponibilidad');
@@ -232,10 +223,10 @@ function displayDisponibilidad(disponibilidad){
     cantidadElement.setAttribute('minimo',(disponibilidad == 0 ? 0 : 1));
     disponibilidadElement.value = disponibilidad;
 }
-function isProductoDuplicada(nuevaProducto){
+function isProductoDuplicado(nuevoProducto){
     let duplicado = 0;
-    actvidadesArray.forEach( function (producto) {
-        if(producto.claveProducto == nuevaProducto.claveProducto && producto.horario == nuevaProducto.horario){
+    productosArray.forEach( function (producto) {
+        if(producto.codigoProducto == nuevoProducto.codigoProducto){
             duplicado += 1;
         }
     });
@@ -256,7 +247,7 @@ function cantidadIsValid() {
     return true;
 }
 function cantidadProductosIsValid() {
-    if(actvidadesArray.length < 1){
+    if(productosArray.length < 1){
         Swal.fire({
             icon: 'warning',
             title: `¡Es necesario agregar productos!`
@@ -280,8 +271,6 @@ function cambioValidoIsValid(){
 }
 function validateFecha() {
     const fecha = document.getElementById('fecha');
-    const horario = document.getElementById('horarios');
-    const horarioOpcion = horario.options[horario.selectedIndex];
     const fechaValor = new Date(`${fecha.value} 23:59:000`);
     const now = new Date();
     
@@ -319,20 +308,19 @@ function isDisponible() {
     if((disponibilidad > 0)&&(cantidad <= disponibilidad)){
         return true;
     }
-    Swal.fire({
-        title: '¿Agregar?',
-        text: "La disponibilidad es menor a la cantidad solicitada, ¿desea proceder?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, agregar!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','add-producto-disponibilidad');
-            $('#verificacion-modal').modal('show');
-        }
-    })
+    // Swal.fire({
+    //     title: '¿Agregar?',
+    //     text: "La disponibilidad es menor a la cantidad solicitada, ¿desea proceder?",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonColor: '#17a2b8',
+    //     cancelButtonColor: '#d33',
+    //     confirmButtonText: 'Sí, agregar!'
+    // }).then((result) => {
+    //     if (result.isConfirmed) {
+    //         document.getElementById('validar-verificacion').setAttribute('action','add-producto-disponibilidad');
+    //     }
+    // })
     return false;
 }
 
@@ -343,28 +331,22 @@ let ventasTable = new DataTable('#ventas', {
 } );
 
 window.onload = function() {
-    getDisponibilidad()
+    // getDisponibilidad()
     document.getElementById('venta-form').elements['nombre'].focus();
 
     //$('.to-uppercase').keyup(function() {
     //    this.value = this.value.toUpperCase();
     //});s
 
-    document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
-        document.getElementById('password').value="";
-    });
 
-    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-        validarVerificacion();
-    });
 
-    document.getElementById('add-producto').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(cantidadIsValid()){
-            validateFecha();
-            addProductos();
-        }
-    });
+    // document.getElementById('add-producto').addEventListener('click', (event) =>{
+    //     event.preventDefault();
+    //     if(cantidadIsValid()){
+    //         validateFecha();
+    //         addProductos();
+    //     }
+    // });
 
     document.getElementById('efectivo').addEventListener('keyup', (event) =>{
         //if(getResta() < 0){
@@ -417,9 +399,10 @@ window.onload = function() {
 
     function applyValorSinCambio(elemento,isUsd = false){
         if(getResta() < 0){
+            // debugger;
             const valor = (isUsd ? getMXNFromVentaUSD(parseFloat(elemento.getAttribute('value'))) : parseFloat(getValor(elemento)));
             const cambio   = parseFloat(getCambio());
-            const subTotal = parseFloat(valor+cambio);
+            const subTotal = (isUsd ? parseFloat(getUSDFromVentaMXN(valor+cambio)) : parseFloat(valor+cambio)); 
  
             setValor(event.target,subTotal);
         }
@@ -439,7 +422,7 @@ window.onload = function() {
     }
 
     document.getElementById('fecha').addEventListener('focusout', (event) =>{
-        getProductoDisponibilidad();
+        // getProductoDisponibilidad();
         setTimeout(validateFecha(),500);
     });
 };
@@ -487,34 +470,33 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
     }
 } );
 
- $('#clave-producto').on('change', function (e) {
+ $('#codigo').on('change', function (e) {
+    // debugger;
     validateFecha();
     changeProducto();
 });
 $('#productos').on('change', function (e) {
     validateFecha();
-    changeClaveProducto();
+    changeCodigoProducto();
 });
-$('#horarios').on('change', function (e) {
-    getProductoDisponibilidad();
-    validateFecha();
-});
-$('#comisionista').on('change', function (e) {
-    changeCuponDetalle();
-    document.getElementById('venta-form').elements['cupon'].focus();
-});
+// $('#comisionista').on('change', function (e) {
+//     changeCuponDetalle();
+//     document.getElementById('venta-form').elements['cupon'].focus();
+// });
 
 
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
-
-        if($(this).attr("id") == "clave" || $(this).attr("id") == "productos"){
+        // debugger;
+        const element = $(this).attr("id");
+        if(element == "codigo" || element == "productos"){
+            if(element == "codigo"){
+                changeProducto();
+            }else{
+                changeCodigoProducto();
+            }
             validateFecha();
             addProductos();
-        }
-        
-        if($(this).attr("id") == "password"){
-            validarVerificacion();
         }
 
         var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
@@ -529,24 +511,28 @@ $('body').on('keydown', 'input, select, button', function(e) {
     }
 });
 
-function changeClaveProducto() {
-    const productos = document.getElementById('productos');
-    document.getElementById('clave-producto').value = productos.value;
-    document.getElementById('clave-producto').text = productos.value;
+function changeCodigoProducto() {
+    var value = document.getElementById('productos').value;
+    const productos = document.querySelector(`#productos-list [value="${value}"]`);
 
-    //$('#clave-producto').trigger('change.select2');
-    getProductoDisponibilidad();
-    getProductoPrecio();
+    document.getElementById('codigo').value = productos.getAttribute('data-id');
+    document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
+
+    //$('#codigo').trigger('change.select2');
+    // getProductoDisponibilidad();
+    getProductoMeta();
 }
 
 function changeProducto() {
-    const claveProducto = document.getElementById('clave-producto');
-    document.getElementById('productos').value = claveProducto.value;
-    document.getElementById('productos').text = claveProducto.value;
+    var value = document.getElementById('codigo').value;
+    const codigos = document.querySelector(`#codigos-list [value="${value}"]`);
+
+    document.getElementById('productos').value = codigos.getAttribute('data-value');
+    // document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
 
     //$('#productos').trigger('change.select2');
-    getProductoDisponibilidad();
-    getProductoPrecio();
+    // getProductoDisponibilidad();
+    getProductoMeta();
 }
 
 function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
@@ -566,52 +552,28 @@ function enableBtn(btnId,status){
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
 
-async function validarVerificacion(){
-    const action      = document.getElementById('validar-verificacion').getAttribute('action');
-    if(formValidity('venta-form')){
-        if(await validateUsuario(document.getElementById('password').value)){
-            if(action === 'add-descuento-personalizado'){
-                validateDescuentoPersonalizado();
-            }else if(action === 'add-codigo-descuento'){
-                getCodigoDescuento();
-            }else if(action === 'add-producto-disponibilidad'){
-                addProducto();
-            }else if(action === 'cancelar-venta'){
-                updateEstatusVenta('cancelar');
-            }else if(action === 'activar-venta'){
-                updateEstatusVenta('activar');
-            }
-        }else{
-            Swal.fire({
-                icon: 'error',
-                title: 'Contraseña incorrecta!',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        }
-    }
-}
-
 function getDisponibilidad(){
     axios.get('/api/disponibilidad')
     .then(function (response) {
         allProductos = response.data.disponibilidad;
-        displayProducto()
-        getProductoPrecio()
-        getProductoDisponibilidad()
-        applyVariables()
+        displayProducto();
+        getProductoMeta();
+        // getProductoDisponibilidad()
+        applyVariables();
     })
     .catch(function (error) {
         productos = [];
     });
 }
 
-function getProductoPrecio() {
-    const producto = document.getElementById('productos').value;
+function getProductoMeta() {
+    const codigo = document.getElementById('codigo').value;
     let precio = document.getElementById('precio');
+    let clave = document.getElementById('clave');
     for (var i = 0; i < allProductos.length; i++) {
-        if (producto == allProductos[i].producto.id) {
-            precio.value = allProductos[i].producto.precio;
+        if (codigo == allProductos[i].codigo) {
+            precio.value = allProductos[i].precio_venta;
+            clave.value = allProductos[i].clave;
         }
     }
 }

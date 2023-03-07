@@ -161,4 +161,9 @@ class UsuarioController extends Controller
         $result = $usuario->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);
     }
+
+    public function switchModule($modulo){
+        session(['modulo' => $modulo]);
+        return redirect()->route("dashboard")->with(["result" => ""]);
+    }
 }

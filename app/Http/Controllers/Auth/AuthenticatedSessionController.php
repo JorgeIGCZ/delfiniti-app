@@ -31,6 +31,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        $modulo = '';
+        if(Auth::user()->can('SeccionReservaciones.index')){
+            $modulo = 'reservaciones';
+        }else if(Auth::user()->can('SeccionTienda.index')){
+            $modulo = 'tienda';
+        }else if(Auth::user()->can('SeccionFotoVideo.index')){
+            $modulo = 'fotovideo';
+        }
+        $request->session()->put('modulo', $modulo);
+        
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

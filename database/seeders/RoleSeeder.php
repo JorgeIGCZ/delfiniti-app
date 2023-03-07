@@ -23,6 +23,8 @@ class RoleSeeder extends Seeder
         $mercadotecnia = Role::create(['name' => 'Mercadotecnia']);
         $contabilidad  = Role::create(['name' => 'Contabilidad']);
 
+        Permission::create(['name' => 'SeccionReservaciones.index'])->assignRole($administrador);
+
         Permission::create(['name' => 'Reportes.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.Reservaciones.index'])->assignRole($administrador);
@@ -72,5 +74,27 @@ class RoleSeeder extends Seeder
 
         Permission::create(['name' => 'TipoCambio.index'])->assignRole($administrador);
         Permission::create(['name' => 'TipoCambio.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'SeccionTienda.index'])->assignRole($administrador);
+
+        Permission::create(['name' => 'TiendaVentas.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaVentas.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaVentas.update'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaVentas.cancel'])->assignRole($administrador);
+
+        Permission::create(['name' => 'TiendaPedidos.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaPedidos.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaPedidos.update'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaPedidos.cancel'])->assignRole($administrador);
+
+        Permission::create(['name' => 'TiendaProveedores.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaProveedores.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaProveedores.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'TiendaProductos.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaProductos.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaProductos.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'SeccionFotoVideo.index'])->assignRole($administrador);
     }
 }
