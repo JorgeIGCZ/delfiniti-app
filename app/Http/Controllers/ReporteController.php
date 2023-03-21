@@ -224,47 +224,32 @@ class ReporteController extends Controller
 
             $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
 
+            // Inicializar comisionista
             if(!in_array($comisionistaId,$comisionistasId)){
                 $comisionistasId[] = $comisionistaId;
                 // $comisionista = $reservacion->comisionista
 
                 $comisionesEspecialesDetalle[$comisionistaId] = [
                     'NOMBRE'   => $reservacion->comisionista->nombre,
-                    'VISITAS'  => $reservacion->ReservacionDetalle[0]->numero_personas,
-                    'COMISION' => isset($comisionPromotor[0]->cantidad_comision_neta) ? $comisionPromotor[0]->cantidad_comision_neta : 0
+                    'VISITAS'  => 0,
+                    'COMISION' => 0
                 ];
-
-                foreach($cerradoresCanal as $cerradorCanal){
-                    foreach($cerradorCanal->comisionistas as $comisionistas){
-                        $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
-                        if(count($comisiones) > 0){
-                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
-                        }
-                    }
-                }
-
-                foreach($directivosCanal as $directivoCanal){
-                    foreach($directivoCanal->comisionistas as $comisionistas){
-                        $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
-                        if(isset($comisiones)){
-                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = $comisiones[0]->cantidad_comision_neta;
-                        }
-                    }
-                }
-
-                continue;
             }
 
             $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($reservacion->ReservacionDetalle[0]->numero_personas) ? $reservacion->ReservacionDetalle[0]->numero_personas : 0;
             $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->get();
-            if(isset($comisiones)){
+            if(count($comisiones) > 0){
                 $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones[0]->cantidad_comision_neta;
             }
             
             foreach($cerradoresCanal as $cerradorCanal){
                 foreach($cerradorCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
-                    if(isset($comisiones)){
+                    if(count($comisiones) > 0){
+                        if(!isset($comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id])){
+                            // Inicializar cerradoresCanal
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = 0;
+                        }
                         $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
                     }
                 }
@@ -273,7 +258,11 @@ class ReporteController extends Controller
             foreach($directivosCanal as $directivoCanal){
                 foreach($directivoCanal->comisionistas as $comisionistas){
                     $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->get();
-                    if(isset($comisiones)){
+                    if(count($comisiones) > 0){
+                        if(!isset($comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id])){
+                            // Inicializar directivosCanal
+                            $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] = 0;
+                        }
                         $comisionesEspecialesDetalle[$comisionistaId][$comisionistas->id] += $comisiones[0]->cantidad_comision_neta;
                     }
                 }
