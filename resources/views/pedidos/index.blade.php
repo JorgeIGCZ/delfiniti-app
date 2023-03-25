@@ -8,84 +8,6 @@
             }).on("change", function() {
                 isFechaRangoValida();
             });
-            
-            const pedidosTable = new DataTable('#pedidos', {
-                order: [[0, 'desc']],
-                ajax: function (d,cb,settings) {
-                    $('.loader').show();
-                    const pedidos = document.getElementById('pedidos-form');
-                    axios.post('/pedidos/show',{
-                        "_token"  : '{{ csrf_token() }}',
-                        "estatus" : pedidos.elements['estatus'].value,
-                        "fecha"   : pedidos.elements['fecha'].value,
-                        "fechaInicio"  : pedidos.elements['start_date'].value,
-                        "fechaFinal"  : pedidos.elements['end_date'].value
-                    })
-                    .then(function (response) {
-                        $('.loader').hide();
-                        cb(response.data)
-                    })
-                    .catch(function (error) {
-                        $('.loader').hide();
-                    });
-                },
-                rowCallback: function( row, data, index ) {
-                    if ( data.cortesia == "Cortesia" ) {
-                        $(row).addClass("highlight");
-                    }
-                },
-                columns: [
-                    { data: 'id' },
-                    { data: 'folio' },
-                    { data: 'cliente' },
-                    { data: 'productos' },
-                    { data: 'numeroProductos' },
-                    { defaultContent: 'Estatus', 'render': function ( data, type, row )
-                        {
-                            let estatus = '';
-                            switch (row.estatusPago) {
-                                case 0:
-                                    estatus = "<p class='pending'>Pendiente</p>";
-                                    break;
-                                case 1:
-                                    estatus = "<p class='partial'>Parcial</p>";
-                                    break;
-                                case 2:
-                                    estatus = "<p class='paid'>Pagado</p>";
-                                    break;
-                            }
-                            return  estatus;
-                        }
-                    },
-                    { data: 'fechaCreacion' },
-                    { data: 'notas' },
-                    { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
-                        {
-                            let cloneRow = '';
-                            let payRow = '';
-                            let editRow = '';
-                            let options = [];
-                            @can('Pedidos.update')
-                                @role('Administrador')
-                                    editRow = `<a href="pedidos/${row.id}/edit?accion=edit">Editar</a>`;
-                                @endrole
-
-                                if(row.estatusPago !== 2){
-                                    editRow = `<a href="pedidos/${row.id}/edit?accion=edit">Editar</a>`;
-                                }
-                            @endcan
-
-                            options = [editRow];
-                            options = options.filter(option => option != ""); 
-
-                            let view    =   `<small>
-                                                ${options.join(' | ')}
-                                            </small>`;
-                            return  view;
-                        }
-                    }
-                ]
-            } );
 
             document.getElementById('fecha_pedido').addEventListener('change', (event) =>{
                 const seleccion = event.target.value;
@@ -123,6 +45,8 @@
                 }
             });
 
+            
+
             function isFechaRangoValida(){
                 const fechaInicio = document.getElementById('end_date').value;
                 const fechaFinal = document.getElementById('start_date').value;
@@ -133,6 +57,117 @@
             }
             
         } );
+
+        const pedidosTable = new DataTable('#pedidos', {
+            order: [[0, 'desc']],
+            ajax: function (d,cb,settings) {
+                $('.loader').show();
+                const pedidos = document.getElementById('pedidos-form');
+                axios.post('/pedidos/show',{
+                    "_token"  : '{{ csrf_token() }}',
+                    "fecha"   : pedidos.elements['fecha'].value,
+                    "fechaInicio"  : pedidos.elements['start_date'].value,
+                    "fechaFinal"  : pedidos.elements['end_date'].value
+                })
+                .then(function (response) {
+                    $('.loader').hide();
+                    cb(response.data)
+                })
+                .catch(function (error) {
+                    $('.loader').hide();
+                });
+            },
+            rowCallback: function( row, data, index ) {
+                if ( data.cortesia == "Cortesia" ) {
+                    $(row).addClass("highlight");
+                }
+            },
+            columns: [
+                { data: 'id' },
+                { data: 'proveedor' },
+                { data: 'productos' },
+                { data: 'cantidad' },
+                { data: 'fechaCreacion' },
+                { data: 'comentarios' },
+                { defaultContent: 'estatus', 'render': function ( data, type, row ) 
+                    {
+                        if(row.estatus){
+                                return 'Activo';
+                        }
+                        return 'Inactivo';
+                    }
+                },
+                { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
+                    {
+                        let editStatusRow = '';
+                        let payRow = '';
+                        let editRow = '';
+                        let options = [];
+                        @can('TiendaPedidos.update')
+                            editRow = `<a href="pedidos/${row.id}/edit?accion=edit">Editar</a>`;
+                            
+                            if(row.estatus){
+                                editStatusRow = `<a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
+                            }else{
+                                editStatusRow = `<a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
+                            }
+                        @endcan
+                        options = [editRow,editStatusRow];
+                        options = options.filter(option => option != ""); 
+                        let view    =   `<small>
+                                            ${options.join(' | ')}
+                                        </small>`;
+                        return  view;
+                    }
+                }
+            ]
+        } );
+
+        function verificacionInactivar(id){
+            Swal.fire({
+                title: '¿Desea inactivar el pedido?',
+                text: "Los productos dejarán de estar disponibles!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '¡Si, Inactivar!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateActividadEstatus(id,0);
+                }else{
+                    return false;
+                }
+            }) 
+        }
+
+        function updateActividadEstatus(id,estatus){
+            $('.loader').show();
+            axios.post(`pedidos/estatus/${id}`, {
+                '_token'  : '{{ csrf_token() }}',
+                'estatus' : estatus,
+                '_method' : 'PATCH'
+            })
+            .then(function (response) {
+                $('.loader').hide();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro actualizado',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                pedidosTable.ajax.reload();
+            })
+            .catch(function (error) {
+                $('.loader').hide();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Actualización fallida',
+                    html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+                    showConfirmButton: true
+                })
+            });
+        }
     </script>
 @endsection
 @section('content')
@@ -171,13 +206,12 @@
                                 <thead>
                                     <tr>
                                         <th>Id</th>
-                                        <th>Folio</th>
-                                        <th>Cliente</th>
+                                        <th>Proveedor</th>
                                         <th>Productos</th>
                                         <th># Productos</th>
-                                        <th>Estatus</th>
                                         <th>Fecha creación</th>
-                                        <th>Notas</th>
+                                        <th>Comentarios</th>
+                                        <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('orden_facturas', function (Blueprint $table) {
+        Schema::create('venta_facturas', function (Blueprint $table) {
             $table->id();
+            $table->integer('venta_id');
             $table->float('total');
             $table->float('pagado');
             $table->float('adeudo');
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('orden_facturas');
+        Schema::dropIfExists('venta_facturas');
     }
 };

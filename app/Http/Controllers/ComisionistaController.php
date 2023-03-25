@@ -46,14 +46,14 @@ class ComisionistaController extends Controller
 
             $comisionista = Comisionista::create([
                 'codigo'             => $request->codigo,
-                'nombre'             => strtoupper($request->nombre),
+                'nombre'             => mb_strtoupper($request->nombre),
                 'canal_venta_id'     => $request->tipo,
                 'comision'           => $request->comision,
                 'iva'                => $request->iva,
                 'descuento_impuesto' => $request->descuentoImpuesto,
                 'descuentos'         => $request->descuentos,
-                'representante'      => strtoupper($request->representante),
-                'direccion'          => strtoupper($request->direccion),
+                'representante'      => mb_strtoupper($request->representante),
+                'direccion'          => mb_strtoupper($request->direccion),
                 'telefono'           => $request->telefono,
                 'comisiones_canal'   => $request->comisionesCanal
             ]);
@@ -110,14 +110,14 @@ class ComisionistaController extends Controller
                 $comisionistasArray[] = [
                     'id'                => $comisionista->id,
                     'codigo'            => $comisionista->codigo,
-                    'nombre'            => strtoupper($comisionista->nombre),
+                    'nombre'            => mb_strtoupper($comisionista->nombre),
                     'canal_venta_id'    => $comisionista->tipo->nombre,
                     'iva'               => $comisionista->iva,
                     'descuentoImpuesto' => $comisionista->descuento_impuesto,
                     'descuentos'        => $comisionista->descuentos,
                     'comision'          => $comisionista->comision,
-                    'representante'     => strtoupper($comisionista->representante),
-                    'direccion'         => strtoupper($comisionista->direccion),
+                    'representante'     => mb_strtoupper($comisionista->representante),
+                    'direccion'         => mb_strtoupper($comisionista->direccion),
                     'telefono'          => $comisionista->telefono,
                     'estatus'           => $comisionista->estatus
                 ];
@@ -173,14 +173,14 @@ class ComisionistaController extends Controller
     {
         try {
             $comisionista                     = Comisionista::find($id);
-            $comisionista->nombre             = strtoupper($request->nombre);
+            $comisionista->nombre             = mb_strtoupper($request->nombre);
             $comisionista->comision           = @$request->comision;
             $comisionista->iva                = @$request->iva;
             $comisionista->descuento_impuesto = @$request->descuento_impuesto;
             $comisionista->descuentos         = $request->has('descuentos');
             $comisionista->canal_venta_id     = $request->tipo;
-            $comisionista->representante      = strtoupper($request->representante);
-            $comisionista->direccion          = strtoupper($request->direccion);
+            $comisionista->representante      = mb_strtoupper($request->representante);
+            $comisionista->direccion          = mb_strtoupper($request->direccion);
             $comisionista->telefono           = $request->telefono;
             $comisionista->comisiones_canal   = $request->has('comisiones_canal');
             $comisionista->save();

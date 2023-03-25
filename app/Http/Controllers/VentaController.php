@@ -18,16 +18,19 @@ use App\Models\VentaTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
+use App\Models\Venta;
+use App\Models\VentaFactura;
+use App\Models\VentaPago;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class VentaController extends Controller
 {
-    // public function __construct() {
-    //     $this->middleware('permission:Ventas.index')->only('index'); 
-    //     $this->middleware('permission:Ventas.create')->only('create'); 
-    //     $this->middleware('permission:Ventas.update')->only('edit'); 
-    // }
+    public function __construct() {
+        $this->middleware('permission:TiendaVentas.index')->only('index'); 
+        $this->middleware('permission:TiendaVentas.create')->only('create'); 
+        $this->middleware('permission:TiendaVentas.update')->only('edit'); 
+    }
 
     public $folioSufijo   = "-D"; //????
     public $longitudFolio = 7;
@@ -41,12 +44,13 @@ class VentaController extends Controller
     {
         return view('ventas.index');
     }
+
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($venta = [])//(Venta $venta)
+    public function create(Venta $venta)
     {
         $productos = Producto::where('estatus',1)->get()->toArray();
         $estados = Estado::all();
@@ -122,109 +126,100 @@ class VentaController extends Controller
      */
     public function store(Request $request)
     {
-        // $producto = new ProductoController();
-        // $checkin   = new CheckinController();
-        // $email     = Auth::user()->email;
-        // $password  = "";
-        // $estatusPago  = ($request->estatus == "pagar-reservar");
-        // $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
-        // $adeudo   = ((float)$request->total - (float)$pagado);
-        // DB::beginTransaction();
-        // try{
-        //     $venta = Venta::create([
-        //         'nombre_cliente'  => strtoupper($request->nombre),
-        //         'email'           => strtoupper($request->email),
-        //         'alojamiento'     => strtoupper($request->alojamiento),
-        //         'origen'          => strtoupper($request->origen),
-        //         'agente_id'       => is_numeric($request->agente) ? $request->agente : 0,
-        //         'comisionista_id' => is_numeric($request->comisionista) ? $request->comisionista : 0,
-        //         'comisionista_producto_id' => is_numeric($request->comisionistaProducto) ? $request->comisionistaProducto : 0,
-        //         'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
-        //         'comentarios'     => strtoupper($request->comentarios),
-        //         'estatus_pago'    => $estatusPago,
-        //         'comisionable'    => $request->comisionable,
-        //         'fecha'           => $request->fecha,
-        //         'fecha_creacion'  => date('Y-m-d')
-        //     ]);
-        //     $factura = Factura::create([
-        //         'venta_id' =>  $venta['id'],
-        //         'total'          =>  (float)$request->total,
-        //         'pagado'         =>  $pagado,
-        //         'adeudo'         =>  $adeudo
-        //     ]);
+        $email     = Auth::user()->email;
+        $estatusPago  = ($request->estatus == "pagar");
+        $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
+        $adeudo   = ((float)$request->total - (float)$pagado);
+        DB::beginTransaction();
+        try{
+            $venta = Venta::create([
+                'folio'          => mb_strtoupper($request->folio),
+                'nombre_cliente' => mb_strtoupper($request->nombre),
+                'email'          => mb_strtoupper($request->email),
+                'direccion'      => mb_strtoupper($request->direccion),
+                'origen'         => mb_strtoupper($request->origen),
+                'RFC'            => mb_strtoupper($request->rfc),
+                'fecha'          => $request->fecha,
+                'fecha_creacion' => date('Y-m-d'),
+                'comentarios'    => mb_strtoupper($request->comentarios)
+            ]);
 
-        //     foreach($request->ventaArticulos as $ventaArticulo){
-        //         VentaDetalle::create([
-        //             'venta_id'       =>  $venta['id'],
-        //             'factura_id'           =>  $factura['id'],
-        //             'producto_id'         =>  $ventaArticulo['producto'],
-        //             'producto_horario_id' =>  $ventaArticulo['horario'],
-        //             'numero_personas'      =>  $ventaArticulo['cantidad'],
-        //             'PPU'                  =>  $ventaArticulo['precio']
-        //         ]);
-        //     }
+            $factura = VentaFactura::create([
+                'venta_id' =>  $venta['id'],
+                'total'    =>  (float)$request->total,
+                'pagado'   =>  $pagado,
+                'adeudo'   =>  $adeudo
+            ]);
 
-        //     if($estatusPago){
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
+            foreach($request->ventaProductos as $ventaProducto){
+                VentaDetalle::create([
+                    'venta_id'            =>  $venta['id'],
+                    'factura_id'          =>  $factura['id'],
+                    'producto_id'         =>  $ventaProducto['productoId'],
+                    'numero_productos'     =>  $ventaProducto['cantidad'],
+                    'PPU'                 =>  $ventaProducto['precio']
+                ]);
+            }
 
-        //         if($this->isValidDescuentoCupon($request)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
-        //         }
+            if($estatusPago){
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
 
-        //         if($this->isValidDescuentoCodigo($request,$email)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
-        //         }
+                // if($this->isValidDescuentoCupon($request)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
+                // }
 
-        //         if($this->isValidDescuentoPersonalizado($request,$email)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-        //         }
+                // if($this->isValidDescuentoCodigo($request,$email)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
+                // }
 
-        //     }
+                // if($this->isValidDescuentoPersonalizado($request,$email)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                // }
+            }
 
-        //     $venta        = Venta::find($venta['id']);
-        //     $venta->folio = str_pad($venta['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
-        //     $venta->save();
+            $venta        = Venta::find($venta['id']);
+            $venta->folio = str_pad($venta['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
+            $venta->save();
 
-        //     DB::commit();
+            DB::commit();
 
-        //     $venta = Venta::find($venta['id']);
+            $venta = Venta::find($venta['id']);
 
-        //     $this->setEstatusPago($venta['id']);
+            $this->setEstatusPago($venta['id']);
 
-        //     // $checkin->setCheckin($venta);
-        //     $comisiones     = new ComisionController();
-        //     $comisiones->setComisiones($venta['id']);
+            // $checkin->setCheckin($venta);
+            // $comisiones     = new ComisionController();
+            // $comisiones->setComisiones($venta['id']);
 
-        //     return json_encode(
-        //         [
-        //             'result' => 'Success',
-        //             'id' => $venta['id'],
-        //             'venta' => $venta
-        //         ]
-        //     );
-        // } catch (\Exception $e){
-        //     DB::rollBack();
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => 'Error','message' => $e->getMessage()]);
-        // }
+            return json_encode(
+                [
+                    'result' => 'Success',
+                    'id' => $venta['id'],
+                    'venta' => $venta
+                ]
+            );
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
     }
 
     private function getCantidadPagada($request,$email){
-        // $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
 
-        // $pagosAnteriores = (float)($request->pagosAnteriores) ?? 0;
-        // $pagado          = (
-        //           (float)$request->cupon['cantidad']
-        //         + (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
-        //         + (float)$request->pagos['efectivo']
-        //         + (float)$request->pagos['tarjeta']
-        //         + (float)$request->pagos['deposito']
-        //     );
+        $pagado          = (
+                //   (float)$request->cupon['cantidad'] + 
+                  (float)$request->pagos['efectivoUsd']*$dolarPrecioCompra->precio_compra
+                + (float)$request->pagos['efectivo']
+                + (float)$request->pagos['tarjeta']
+                + (float)$request->pagos['deposito']
+            );
 
         // if($this->isValidDescuentoCodigo($request,$email)){
         //     $pagado += (float)$request->descuentoCodigo['cantidad'];
@@ -234,7 +229,7 @@ class VentaController extends Controller
         //     $pagado += (float)$request->descuentoPersonalizado['cantidad'];
         // }
 
-        // return $pagado;
+        return $pagado;
     }
 
     public function getPagosAnteriores($id){
@@ -261,30 +256,29 @@ class VentaController extends Controller
     }
 
     private function setFaturaPago($ventaId,$facturaId,$request,$tipoPago){
-        // $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
-        // $tipoPagoId = $this->getTipoPagoId($tipoPago);
-        // $result     = true;
-        // $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
-        // if((float)$cantidad>0){
-        //     $pago = Pago::create([
-        //         'venta_id' =>  $ventaId,
-        //         'factura_id'     =>  $facturaId,
-        //         'cantidad'       =>  (float)$cantidad,
-        //         'tipo_pago_id'   =>  $tipoPagoId,
-        //         'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
-        //         'valor'          =>  $request[$tipoPago]['valor'] ?? '',
-        //         'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
-        //         'descuento_codigo_id' => $request[$tipoPago]['descuentoCodigoId'] ?? ''
-        //     ]);
-        //     $result = is_numeric($pago['id']);
+        $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
+        $tipoPagoId = $this->getTipoPagoId($tipoPago);
+        $result     = true;
+        $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
+        if((float)$cantidad>0){
+            $pago = VentaPago::create([
+                'venta_id' =>  $ventaId,
+                'factura_id'     =>  $facturaId,
+                'cantidad'       =>  (float)$cantidad,
+                'tipo_pago_id'   =>  $tipoPagoId,
+                'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
+                'valor'          =>  $request[$tipoPago]['valor'] ?? '',
+                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
+            ]);
+            $result = is_numeric($pago['id']);
 
-        // }
-        // return $result;
+        }
+        return $result;
     }
 
     public function getTipoPagoId($tipoPago){
-        // $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
-        // return $tipoPagoId;
+        $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
+        return $tipoPagoId;
     }
     /**
      * Display the specified resource.
@@ -505,15 +499,15 @@ class VentaController extends Controller
         //     $pagar    = ($request->estatus == "pagar");
 
         //     $venta                  = Venta::find($id);
-        //     $venta->nombre_cliente  = strtoupper($request->nombre);
-        //     $venta->email           = strtoupper($request->email);
-        //     $venta->alojamiento     = strtoupper($request->alojamiento);
-        //     $venta->origen          = strtoupper($request->origen);
+        //     $venta->nombre_cliente  = mb_strtoupper($request->nombre);
+        //     $venta->email           = mb_strtoupper($request->email);
+        //     $venta->alojamiento     = mb_strtoupper($request->alojamiento);
+        //     $venta->origen          = mb_strtoupper($request->origen);
         //     $venta->agente_id       = $request->agente;
         //     $venta->comisionista_id = $request->comisionista;
         //     $venta->comisionista_producto_id = $request->comisionistaProducto;
         //     $venta->cerrador_id     = $request->cerrador;
-        //     $venta->comentarios     = strtoupper($request->comentarios);
+        //     $venta->comentarios     = mb_strtoupper($request->comentarios);
         //     $venta->comisionable    = $request->comisionable;
         //     $venta->fecha           = $request->fecha;
         //     if($pagar){
@@ -530,14 +524,14 @@ class VentaController extends Controller
 
         //     VentaDetalle::where('venta_id', $venta['id'])->delete();
 
-        //     foreach($request->ventaArticulos as $ventaArticulo){
+        //     foreach($request->ventaProductos as $ventaProducto){
         //         VentaDetalle::create([
         //             'venta_id'       =>  $venta['id'],
         //             'factura_id'           =>  $factura['id'],
-        //             'producto_id'         =>  $ventaArticulo['producto'],
-        //             'producto_horario_id' =>  $ventaArticulo['horario'],
-        //             'numero_personas'      =>  $ventaArticulo['cantidad'],
-        //             'PPU'                  =>  $ventaArticulo['precio']
+        //             'producto_id'         =>  $ventaProducto['producto'],
+        //             'producto_horario_id' =>  $ventaProducto['horario'],
+        //             'numero_personas'      =>  $ventaProducto['cantidad'],
+        //             'PPU'                  =>  $ventaProducto['precio']
         //         ]);
         //     }
 

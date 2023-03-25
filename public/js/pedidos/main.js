@@ -61,7 +61,7 @@ async function eliminarProductoPedido(row,clave){
 }
 
 function removeProducto(row){
-    pedidosTable
+    productosTable
         .row( $(row).parents('tr') )
         .remove()
         .draw();
@@ -70,8 +70,8 @@ function removeProducto(row){
     const clave   = $(row).parents('tr')[0].firstChild.innerText;
     const horario = $(row).parents('tr')[0].childNodes[2].innerText;
     let updated   = 0;
-    productosArray = productosArray.filter(function (ventas) {
-        let result = (ventas.claveProducto !== clave && ventas.horario !== horario && updated == 0);
+    productosArray = productosArray.filter(function (productos) {
+        let result = (productos.claveProducto !== clave && productos.horario !== horario && updated == 0);
         updated > 0 ? result = true : '';
         !result ? updated++ : '';
         return result;
@@ -81,28 +81,29 @@ function removeProducto(row){
 function addProducto(){
     // debugger;
     const productoDetalle = document.getElementById('productos').value;
+    const productoId = document.getElementById('producto-id').value;
     const codigoProducto = document.getElementById('codigo').value;
     const claveProducto = document.getElementById('clave').value;
     const producto = document.getElementById('productos').value;
     const cantidad = document.getElementById('cantidad').value;
-    const precio = document.getElementById('precio').value;
+    const costo = document.getElementById('costo').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
 
-    pedidosTable.row.add([
+    productosTable.row.add([
         claveProducto,
         productoDetalle,
         cantidad,
-        precio,
-        precio * cantidad,
+        costo,
+        costo * cantidad,
         acciones
     ])
         .draw(false);
     productosArray = [...productosArray, {
         'codigoProducto': codigoProducto,
+        'productoId': productoId,
         'claveProducto': claveProducto,
-        'producto': producto,
         'cantidad': cantidad,
-        'precio': precio
+        'costo': costo
     }];
     setSubTotal();
 }
@@ -112,8 +113,9 @@ function clearSeleccion(){
     document.getElementById('codigo').value = "";
     document.getElementById('clave').value = "";
     document.getElementById('productos').value = "";
-    document.getElementById('cantidad').value = "";
-    document.getElementById('precio').value = "";
+    document.getElementById('producto-id').value = "";
+    document.getElementById('cantidad').value = 1;
+    document.getElementById('costo').value = "";
 }
 
 function resetVentas() {
@@ -150,8 +152,9 @@ function isProductoDuplicado(nuevoProducto){
     });
     return duplicado;
 }
-function cantidadIsValid() {
+function productoIsValid() {
     const cantidad = document.getElementById('cantidad');
+    const clave = document.getElementById('clave');
     
     if(cantidad.value < 1){
         Swal.fire({
@@ -160,6 +163,15 @@ function cantidadIsValid() {
         });
         cantidad.value = 1;
         cantidad.focus()
+        return false;
+    }
+
+    if(clave.value == "" || clave.value == "0"){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Producto invalido!`
+        });
+        clave.focus()
         return false;
     }
     return true;
@@ -177,7 +189,7 @@ function cantidadProductosIsValid() {
     return true;
 }
 
-let pedidosTable = new DataTable('#ventas', {
+let productosTable = new DataTable('#productosTable', {
     searching: false,
     paging: false,
     info: false
@@ -190,26 +202,26 @@ window.onload = function() {
 };
 
 //jQuery
-$('#ventas').on( 'click', '.eliminar-celda', function (event) {
+$('#productosTable').on( 'click', '.eliminar-celda', function (event) {
     event.preventDefault();
-    if(env == 'edit'){
-        Swal.fire({
-            title: '¿Eliminiar?',
-            text: "La producto será eliminada de la reservación, ¿desea proceder?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#17a2b8',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, eliminar!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                eliminarProductoPedido(this,$(this).parents('tr')[0].firstChild.innerText)
-            }
-        });
-    }else{
+    // if(env == 'edit'){
+    //     Swal.fire({
+    //         title: '¿Eliminiar?',
+    //         text: "El producto será eliminada de la reservación, ¿desea proceder?",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#17a2b8',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Sí, eliminar!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             eliminarProductoPedido(this,$(this).parents('tr')[0].firstChild.innerText)
+    //         }
+    //     });
+    // }else{
         removeProducto(this);
         setSubTotal();
-    }
+    // }
 } );
 
 
@@ -222,11 +234,32 @@ $('#productos').on('change', function (e) {
 
 document.getElementById('add-producto').addEventListener('click', (event) =>{
     event.preventDefault();
-    if(cantidadIsValid()){
+    if(productoIsValid()){
         addProductos();
         validateBotonGuardar();
     }
 });
+
+function addProductos() {
+    const codigoProducto = document.getElementById('codigo').value;
+
+    if (isProductoDuplicado({'codigoProducto': codigoProducto})) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'El prodducto ya se encuenta agregado.',
+            showConfirmButton: false,
+            timer: 900
+        });
+        clearSeleccion();
+        return false;
+    }
+    // if(!isDisponible()){
+    //     return false;
+    // }
+    addProducto();
+    clearSeleccion();
+    // enableBtn('reservar', productosArray.length > 0);
+}
 
 function validateBotonGuardar(){
     if(env == 'create'){
@@ -240,7 +273,7 @@ function changeCodigoProducto() {
     var value = document.getElementById('productos').value;
     const productos = document.querySelector(`#productos-list [value="${value}"]`);
 
-    document.getElementById('codigo').value = productos.getAttribute('data-id');
+    document.getElementById('codigo').value = productos.getAttribute('data-codigo');
     document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
 
     //$('#codigo').trigger('change.select2');
@@ -270,10 +303,42 @@ function getProductoMeta() {
     const codigo = document.getElementById('codigo').value;
     let costo = document.getElementById('costo');
     let clave = document.getElementById('clave');
+    let productoId = document.getElementById('producto-id');
+    
     for (var i = 0; i < allProductos.length; i++) {
         if (codigo == allProductos[i].codigo) {
-            precio.value = allProductos[i].costo;
+            costo.value = allProductos[i].costo;
             clave.value = allProductos[i].clave;
+            productoId.value = allProductos[i].id;
         }
     }
 }
+
+$('body').on('keydown', 'input, select, button', function(e) {
+    if (e.key === "Enter") {
+
+        if($(this).attr("id") == "cantidad"){
+            if(productoIsValid()){
+                addProductos();
+                validateBotonGuardar();
+                $('#codigo').focus();
+                return false;
+            }
+        }
+
+        if($(this).attr("id") == "codigo"){
+            $('#cantidad').focus();
+            return false;
+        }
+
+        var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+        focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
+        next = focusable.eq(focusable.index(this)+1);
+        if (next.length) {
+            next.focus();
+        } else {
+            form.submit();
+        }
+        return false;
+    }
+});

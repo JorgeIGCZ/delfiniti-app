@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ordenes', function (Blueprint $table) {
+        Schema::create('ventas', function (Blueprint $table) {
             $table->id(); 
             $table->string('folio');
             $table->string('nombre_cliente')->nullable();
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('direccion')->nullable();
             $table->string('origen')->nullable();
             $table->string('RFC')->nullable();
+            $table->date('fecha');
             $table->date('fecha_creacion');
             $table->text('comentarios');
             $table->boolean('estatus')->default(1)->comment('0 es orden cancelada 1 es orden activa');
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ordenes');
+        Schema::dropIfExists('ventas');
     }
 };

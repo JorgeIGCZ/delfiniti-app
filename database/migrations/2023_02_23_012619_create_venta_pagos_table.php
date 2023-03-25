@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('orden_pagos', function (Blueprint $table) {
+        Schema::create('venta_pagos', function (Blueprint $table) {
             $table->id();
             $table->integer('factura_id');
-            $table->integer('orden_id');
+            $table->integer('venta_id');
             $table->float('cantidad');
             $table->integer('tipo_pago_id');
             $table->float('tipo_cambio_usd')->nullable();
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('orden_pagos');
+        Schema::dropIfExists('venta_pagos');
     }
 };

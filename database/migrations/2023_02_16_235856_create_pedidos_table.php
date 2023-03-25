@@ -16,6 +16,10 @@ return new class extends Migration
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
             $table->integer('proveedor_id');
+            $table->date('fecha');
+            $table->date('fecha_creacion');
+            $table->longText('comentarios')->nullable();
+            $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
     }

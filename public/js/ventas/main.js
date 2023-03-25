@@ -78,6 +78,7 @@ function removeProducto(row){
 function addProducto(){
     // debugger;
     const productoDetalle = document.getElementById('productos').value;
+    const productoId = document.getElementById('producto-id').value;
     const codigoProducto = document.getElementById('codigo').value;
     const claveProducto = document.getElementById('clave').value;
     const producto = document.getElementById('productos').value;
@@ -96,6 +97,7 @@ function addProducto(){
         .draw(false);
     productosArray = [...productosArray, {
         'codigoProducto': codigoProducto,
+        'productoId': productoId,
         'claveProducto': claveProducto,
         'producto': producto,
         'cantidad': cantidad,
@@ -109,7 +111,7 @@ function clearSeleccion(){
     document.getElementById('codigo').value = "";
     document.getElementById('clave').value = "";
     document.getElementById('productos').value = "";
-    document.getElementById('cantidad').value = "";
+    document.getElementById('cantidad').value = 1;
     document.getElementById('precio').value = "";
 }
 
@@ -332,7 +334,7 @@ let ventasTable = new DataTable('#ventas', {
 
 window.onload = function() {
     // getDisponibilidad()
-    document.getElementById('venta-form').elements['nombre'].focus();
+    document.getElementById('venta-form').elements['codigo'].focus();
 
     //$('.to-uppercase').keyup(function() {
     //    this.value = this.value.toUpperCase();
@@ -489,7 +491,7 @@ $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
         // debugger;
         const element = $(this).attr("id");
-        if(element == "codigo" || element == "productos"){
+        if(element == "codigo" || element == "productos" || element == "cantidad"){
             if(element == "codigo"){
                 changeProducto();
             }else{
@@ -497,6 +499,8 @@ $('body').on('keydown', 'input, select, button', function(e) {
             }
             validateFecha();
             addProductos();
+            document.getElementById('venta-form').elements['codigo'].focus();
+            return true;
         }
 
         var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
@@ -552,28 +556,32 @@ function enableBtn(btnId,status){
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
 
-function getDisponibilidad(){
-    axios.get('/api/disponibilidad')
-    .then(function (response) {
-        allProductos = response.data.disponibilidad;
-        displayProducto();
-        getProductoMeta();
-        // getProductoDisponibilidad()
-        applyVariables();
-    })
-    .catch(function (error) {
-        productos = [];
-    });
-}
+// verify when product is selected
+// function getDisponibilidad(){
+//     axios.get('/api/disponibilidad')
+//     .then(function (response) {
+//         allProductos = response.data.disponibilidad;
+//         displayProducto();
+//         getProductoMeta();
+//         // getProductoDisponibilidad()
+//         applyVariables();
+//     })
+//     .catch(function (error) {
+//         productos = [];
+//     });
+// }
 
 function getProductoMeta() {
     const codigo = document.getElementById('codigo').value;
-    let precio = document.getElementById('precio');
+    let precio = document.getElementById('precio'); 
     let clave = document.getElementById('clave');
+    let productoId = document.getElementById('producto-id');
+
     for (var i = 0; i < allProductos.length; i++) {
         if (codigo == allProductos[i].codigo) {
             precio.value = allProductos[i].precio_venta;
             clave.value = allProductos[i].clave;
+            productoId.value = allProductos[i].id;
         }
     }
 }

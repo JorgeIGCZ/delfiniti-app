@@ -5,17 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Producto extends Model
+class VentaPago extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'clave',
-        'codigo',
-        'nombre',
-        'costo',
-        'precio_venta',
-        'estatus'
+        'factura_id',
+        'venta_id',
+        'cantidad',
+        'tipo_pago_id',
+        'tipo_cambio_usd',
+        'valor',
+        'tipo_valor'
     ];
     protected $primaryKey = 'id';
-}
+}   

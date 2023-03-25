@@ -22,7 +22,7 @@
         const detalleVenta = () =>{
             const venta   = document.getElementById('venta-form');
             const nombreCliente = venta.elements['nombre'].value;
-            const direccion     = venta.elements['alojamiento'].value;
+            const direccion     = venta.elements['direccion'].value;
             const ciudad        = venta.elements['origen'].value;
 
             return {
@@ -85,6 +85,7 @@
 
                                     <input type="hidden" name="precio" id="precio" value="0">
                                     <input type="hidden" name="clave" id="clave" value="0">
+                                    <input type="hidden" name="producto-id" id="producto-id" value="0">
                                 </div>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
@@ -94,21 +95,27 @@
                                     </div>
                                     <div class="form-group col-6 mt-0 mb-0">
                                         <label for="nombre" class="col-form-label">Nombre</label>
-                                        <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
+                                        <input type="text" name="nombre" class="form-control to-uppercase" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
                                     </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
+                                    <div class="form-group col-3 mt-0 mb-0">
                                         <label for="email" class="col-form-label">Email</label>
                                         <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="7" value="{{@$venta->email}}">
                                     </div>
                                     
-                                    <div class="form-group col-6 mt-0 mb-0">
+                                    <div class="form-group col-3 mt-0 mb-0">
                                         <label for="rfc" class="col-form-label">RFC</label>
                                         <input type="text" name="rfc" class="form-control to-uppercase" autocomplete="off" tabindex="8" value="{{@$venta->rfc}}">
                                     </div>
+
+                                    <div class="form-group col-6 mt-0 mb-0">
+                                        <label for="rfc" class="col-form-label">Dirección</label>
+                                        <input type="text" name="direccion" class="form-control to-uppercase" autocomplete="off" tabindex="9" value="{{@$venta->direccion}}">
+                                    </div>
+
                                     <div class="form-group col-6 mt-0 mb-0">
                                         <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="9" value="{{@$venta->origen}}"/>
+                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="10" value="{{@$venta->origen}}"/>
                                         <datalist id="ciudades">
                                             @foreach($estados as $estado)
                                                 <option value="{{$estado->nombre}}">
@@ -142,7 +149,7 @@
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="agente" class="col-form-label">Vendido por</label>
-                                                <select name="agente" class="form-control" tabindex="10">
+                                                <select name="agente" class="form-control" tabindex="11">
                                                     <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
                                                         {{Auth::user()->name}} ({{Auth::user()->email}})
                                                     </option>
@@ -150,7 +157,7 @@
                                             </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" class='to-uppercase' rows="11" style="width:100%;">{{@$venta->comentarios}}</textarea>
+                                                <textarea name="comentarios" class='to-uppercase' rows="12" style="width:100%;">{{@$venta->comentarios}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -192,32 +199,32 @@
                                                         <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="12">
+                                                        <input type="text" name="efectivo" id="efectivo" class="form-control amount height-auto" value="0.00" tabindex="13">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="efectivo-usd" class="col-form-label">Efectivo USD:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="13">
+                                                        <input type="text" name="efectio-usd" id="efectivo-usd" class="form-control amount height-auto" value="0.00" tabindex="14">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="tarjeta" class="col-form-label">Tarjeta crédito:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="14">
+                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="15">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="deposito" class="col-form-label">Depósito / transferencia:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="15">
+                                                        <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="16">
                                                     </div>
 
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block mt-3" id="pagar" disabled="disabled" tabindex="16">Pagar</button>
+                                                        <button class="btn btn-info btn-block mt-3" id="pagar" disabled="disabled" tabindex="17">Pagar</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -226,7 +233,7 @@
                                 </div>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="17">Cancelar</button>
+                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="18">Cancelar</button>
                             </div>
                         </form>
                     </div>

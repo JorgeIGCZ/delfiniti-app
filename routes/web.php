@@ -232,6 +232,7 @@ Route::controller(ProveedorController::class)->middleware(['auth'])->group(funct
 Route::controller(PedidoController::class)->middleware(['auth'])->group(function () {
     Route::get('pedidos/show/{pedido?}', 'show');
     Route::patch('pedidos/estatus/{pedido}', 'updateEstatus');
+    Route::post('pedidos/show/{pedido?}', 'show');
     Route::resource('pedidos',PedidoController::class, [
         'parameters' => [
             'pedidos' => 'pedido'

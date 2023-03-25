@@ -8,8 +8,8 @@
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
     </script>
-    <script src="{{ asset('js/pedidos/create.js') }}"></script>
     <script src="{{ asset('js/pedidos/main.js') }}"></script>
+    <script src="{{ asset('js/pedidos/create.js') }}"></script>
     <script src="{{ asset('js/pedidos/ticket.js') }}"></script>
 @endsection
 @section('content')
@@ -49,7 +49,7 @@
                                         <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
                                         <datalist id="codigos-list">
                                             @foreach($productos as $producto)
-                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['codigo']}}">
+                                                <option data-value="{{$producto['nombre']}}" data-id="{{$producto['id']}}" value="{{$producto['codigo']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -58,7 +58,7 @@
                                         <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             @foreach($productos as $producto)
-                                                <option data-id="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
+                                                <option data-codigo="{{$producto['codigo']}}" data-id="{{$producto['id']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -70,15 +70,16 @@
                                         <button class="btn btn-info btn-block mt-33" id="add-producto" tabindex="10">+</button>
                                     </div>
 
-                                    <input type="hidden" name="precio" id="precio" value="0">
+                                    <input type="hidden" name="costo" id="costo" value="0">
                                     <input type="hidden" name="clave" id="clave" value="0">
+                                    <input type="hidden" name="producto-id" id="producto-id" value="0">
                                 </div>
                             </div>
                             
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-2">
-                                        <table id="ventas" class="display" style="width:100%">
+                                        <table id="productosTable" class="display" style="width:100%">
                                             <thead>
                                                 <tr>
                                                     <th>Clave</th>

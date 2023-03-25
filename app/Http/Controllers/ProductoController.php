@@ -48,8 +48,8 @@ class ProductoController extends Controller
             $producto = Producto::create([
                 'clave'    => $request->clave,
                 'codigo'   => $request->codigo,
-                'costo'    => 0,
-                'nombre'   => strtoupper($request->nombre),
+                'nombre'   => mb_strtoupper($request->nombre),
+                'costo'    => $request->costo,
                 'precio_venta'    => $request->precioVenta,
             ]);
         } catch (\Exception $e){
@@ -96,9 +96,9 @@ class ProductoController extends Controller
     {
         try {
             $producto            = Producto::find($id);
-            $producto->nombre    = strtoupper($request->nombre);
-            // $producto->costo     = $request->costo;
-            $producto->precio_venta = strtoupper($request->precioVenta);
+            $producto->nombre    = mb_strtoupper($request->nombre);
+            $producto->costo     = floatval(str_replace('$','',$request->costo));
+            $producto->precio_venta = floatval(str_replace('$','',$request->precioVenta));
             $producto->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

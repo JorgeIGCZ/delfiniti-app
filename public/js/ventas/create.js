@@ -3,7 +3,7 @@ let productosArray = [];
 document.getElementById('pagar').addEventListener('click', (event) => {
     validateFecha();
     if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid()) {
-        createReservacion('pagar');
+        createVenta('pagar');
     }
 });
 
@@ -12,7 +12,7 @@ document.getElementById('cancelar').addEventListener('click', (event) => {
     resetReservaciones();
 });
 
-function createReservacion(estatus) {
+function createVenta(estatus) {
     const venta = document.getElementById('venta-form');
     const pagos = {
         'efectivo': venta.elements['efectivo'].getAttribute('value'),
@@ -26,29 +26,21 @@ function createReservacion(estatus) {
         '_token': token(),
         'nombre': venta.elements['nombre'].value,
         'email': venta.elements['email'].value,
-        'alojamiento': venta.elements['alojamiento'].value,
+        'rfc': venta.elements['rfc'].value,
+        'direccion': venta.elements['direccion'].value,
         'origen': venta.elements['origen'].value,
-        'agente': venta.elements['agente'].value,
-        'comisionista': venta.elements['comisionista'].value,
-        'comisionistaActividad': venta.elements['comisionista-actividad'].value,
-        'cerrador': venta.elements['cerrador'].value,
         'total': venta.elements['total'].getAttribute('value'),
         'fecha': venta.elements['fecha'].value,
         'pagos': pagos,
-        'cupon': {
-            'cantidad': venta.elements['cupon'].getAttribute('value'),
-            'tipo': venta.elements['cupon'].getAttribute('tipo')
-        },
         'comentarios': venta.elements['comentarios'].value,
         'estatus': estatus,
-        "comisionable"   : venta.elements['comisionable'].checked,
-        'ventaArticulos': productosArray
+        'ventaProductos': productosArray
     }).then(function (response) {
         $('.loader').hide();
         if (response.data.result == 'Success') {
             Swal.fire({
                 icon: 'success',
-                title: 'Reservacion creada',
+                title: 'Venta creada',
                 showConfirmButton: false,
                 footer: `<a href="/ventas/${response.data.id}/edit">Ver venta</a>`,
                 timer: 1500
@@ -61,7 +53,7 @@ function createReservacion(estatus) {
             $('.loader').hide();
             Swal.fire({
                 icon: 'error',
-                title: `Reservacion fallida`,
+                title: `Venta fallida`,
                 text: response.data.message,
                 showConfirmButton: true
             })
@@ -69,7 +61,7 @@ function createReservacion(estatus) {
     }).catch(function (error) {
         Swal.fire({
             icon: 'error',
-            title: `Reservacion fallida E:${error.message}`,
+            title: `Venta fallida E:${error.message}`,
             showConfirmButton: true
         })
     });
@@ -113,7 +105,7 @@ function setOperacionResultados() {
     setResta();
     setCambio();
 
-    // enableReservar((getResta() < total) ? true : false);
+    enablePagar((getResta() < total) ? true : false);
 }
 
 function getPagos(tipoUsd = 'compra') {
@@ -134,7 +126,7 @@ function getPagos(tipoUsd = 'compra') {
     return parseFloat(pagos);
 }
 
-// function enableReservar(status) {
-//     let pagarReservar = document.getElementById('pagar-reservar');
-//     (status) ? pagarReservar.removeAttribute('disabled') : pagarReservar.setAttribute('disabled', 'disabled');
-// }
+function enablePagar(status) {
+    let pagar = document.getElementById('pagar');
+    (status) ? pagar.removeAttribute('disabled') : pagar.setAttribute('disabled', 'disabled');
+}

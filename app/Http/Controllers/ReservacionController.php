@@ -7,25 +7,18 @@ use App\Models\ReservacionDetalle;
 use App\Models\Comisionista;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\Pais;
 use App\Models\Estado;
 use App\Models\Factura;
 use App\Models\Alojamiento;
 use App\Models\Pago;
 use App\Models\Reservacion;
-use Illuminate\Notifications\Action;
-use Illuminate\Database\Eloquent\Builder;
 use App\Classes\CustomErrorHandler;
-use App\Models\Cerrador;
-use App\Models\CodigoAutorizacionPeticion;
 use App\Models\DescuentoCodigo;
 use App\Models\ReservacionTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
-use Hamcrest\Type\IsNumeric;
 use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Stmt\Break_;
 use Carbon\Carbon;
 
 class ReservacionController extends Controller
@@ -164,15 +157,15 @@ class ReservacionController extends Controller
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
-                'nombre_cliente'  => strtoupper($request->nombre),
-                'email'           => strtoupper($request->email),
-                'alojamiento'     => strtoupper($request->alojamiento),
-                'origen'          => strtoupper($request->origen),
+                'nombre_cliente'  => mb_strtoupper($request->nombre),
+                'email'           => mb_strtoupper($request->email),
+                'alojamiento'     => mb_strtoupper($request->alojamiento),
+                'origen'          => mb_strtoupper($request->origen),
                 'agente_id'       => is_numeric($request->agente) ? $request->agente : 0,
                 'comisionista_id' => is_numeric($request->comisionista) ? $request->comisionista : 0,
                 'comisionista_actividad_id' => is_numeric($request->comisionistaActividad) ? $request->comisionistaActividad : 0,
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
-                'comentarios'     => strtoupper($request->comentarios),
+                'comentarios'     => mb_strtoupper($request->comentarios),
                 'estatus_pago'    => $estatusPago,
                 'comisionable'    => $request->comisionable,
                 'comisiones_especiales' => $this->isComisionesEspeciales($request->reservacionArticulos),
@@ -225,11 +218,13 @@ class ReservacionController extends Controller
 
             DB::commit();
 
-            $reservacion = Reservacion::find($reservacion['id']);
 
             $this->setEstatusPago($reservacion['id']);
 
+            $reservacion = Reservacion::find($reservacion['id']);
+
             $checkin->setCheckin($reservacion);
+
             // $comisiones     = new ComisionController();
             // $comisiones->setComisiones($reservacion['id']);
 
@@ -405,7 +400,7 @@ class ReservacionController extends Controller
                 'cliente'      => @$reservacion->nombre_cliente,
                 'personas'     => $numeroPersonas,
                 'notas'        => @$reservacion->comentarios,
-                'estatus'      => @$reservacion->comentarios,
+                'estatus'      => @$reservacion->estatus,
                 'cortesia'     => @($reservacion->descuentoCodigo->id > 0) ? 'Cortesia' : '',
                 'estatusPago'  => @$reservacion->estatus_pago
             ];
@@ -500,6 +495,7 @@ class ReservacionController extends Controller
     }
 
     public function removeDescuento(Request $request){
+        $checkin   = new CheckinController();
         try{
             DB::beginTransaction(); 
 
@@ -515,6 +511,11 @@ class ReservacionController extends Controller
             DB::commit();
             
             $this->setEstatusPago($request->reservacionId);
+
+            $reservacion = Reservacion::find($request->reservacionId);
+
+            $checkin->setCheckin($reservacion);
+            
             
             return json_encode(
                 [
@@ -552,15 +553,15 @@ class ReservacionController extends Controller
             $pagar    = ($request->estatus == "pagar");
 
             $reservacion                  = Reservacion::find($id);
-            $reservacion->nombre_cliente  = strtoupper($request->nombre);
-            $reservacion->email           = strtoupper($request->email);
-            $reservacion->alojamiento     = strtoupper($request->alojamiento);
-            $reservacion->origen          = strtoupper($request->origen);
+            $reservacion->nombre_cliente  = mb_strtoupper($request->nombre);
+            $reservacion->email           = mb_strtoupper($request->email);
+            $reservacion->alojamiento     = mb_strtoupper($request->alojamiento);
+            $reservacion->origen          = mb_strtoupper($request->origen);
             $reservacion->agente_id       = $request->agente;
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;
-            $reservacion->comentarios     = strtoupper($request->comentarios);
+            $reservacion->comentarios     = mb_strtoupper($request->comentarios);
             $reservacion->comisiones_especiales = $this->isComisionesEspeciales($request->reservacionArticulos);
             $reservacion->comisionable    = $request->comisionable;
             $reservacion->comisiones_canal = is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0;
@@ -609,14 +610,16 @@ class ReservacionController extends Controller
                 if($this->isValidDescuentoPersonalizado($request,$email)){
                     $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
                 }
-                $checkin->setCheckin($reservacion);
             }
 
             DB::commit();
 
-            $reservacion = Reservacion::find($reservacion['id']);
 
             $this->setEstatusPago($reservacion['id']);
+
+            $reservacion = Reservacion::find($reservacion['id']);
+
+            $checkin->setCheckin($reservacion);
 
             
             // $comisiones     = new ComisionController();

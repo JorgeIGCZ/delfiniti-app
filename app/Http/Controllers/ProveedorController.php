@@ -38,17 +38,17 @@ class ProveedorController extends Controller
 
             $proveedor = Proveedor::create([
                 'clave'             => $request->clave,
-                'razon_social'      => strtoupper($request->razonSocial),
-                'nombre_contacto'   => strtoupper($request->nombreContacto),
-                'cargo_contacto'    => strtoupper($request->cargoContacto),
-                'direccion'         => strtoupper($request->direccion),
-                'ciudad'            => strtoupper($request->ciudad),
-                'estado'            => strtoupper($request->estado),
+                'razon_social'      => mb_strtoupper($request->razonSocial),
+                'nombre_contacto'   => mb_strtoupper($request->nombreContacto),
+                'cargo_contacto'    => mb_strtoupper($request->cargoContacto),
+                'direccion'         => mb_strtoupper($request->direccion),
+                'ciudad'            => mb_strtoupper($request->ciudad),
+                'estado'            => mb_strtoupper($request->estado),
                 'cp'                => $request->cp,
-                'pais'              => strtoupper($request->pais),
+                'pais'              => mb_strtoupper($request->pais),
                 'telefono'          => $request->telefono,
-                'email'             => strtoupper($request->email),
-                'comentarios'       => strtoupper($request->comentarios),
+                'email'             => mb_strtoupper($request->email),
+                'comentarios'       => mb_strtoupper($request->comentarios),
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -74,17 +74,17 @@ class ProveedorController extends Controller
                 $proveedoresArray[] = [
                     'id'               => $proveedor->id,
                     'clave'            => $proveedor->clave,
-                    'razon_social'     => strtoupper($proveedor->razon_social),
-                    'nombre_contacto'  => strtoupper($proveedor->nombre_contacto),
-                    'cargo_contacto'   => strtoupper($proveedor->cargo_contacto),
-                    'direccion'        => strtoupper($proveedor->direccion),
-                    'ciudad'           => strtoupper($proveedor->ciudad),
-                    'estado'           => strtoupper($proveedor->estado),
+                    'razon_social'     => mb_strtoupper($proveedor->razon_social),
+                    'nombre_contacto'  => mb_strtoupper($proveedor->nombre_contacto),
+                    'cargo_contacto'   => mb_strtoupper($proveedor->cargo_contacto),
+                    'direccion'        => mb_strtoupper($proveedor->direccion),
+                    'ciudad'           => mb_strtoupper($proveedor->ciudad),
+                    'estado'           => mb_strtoupper($proveedor->estado),
                     'cp'               => $proveedor->cp,
-                    'pais'             => strtoupper($proveedor->pais),
+                    'pais'             => mb_strtoupper($proveedor->pais),
                     'telefono'         => $proveedor->telefono,
-                    'email'            => strtoupper($proveedor->email),
-                    'comentarios'      => strtoupper($proveedor->comentarios),
+                    'email'            => mb_strtoupper($proveedor->email),
+                    'comentarios'      => mb_strtoupper($proveedor->comentarios),
                     'estatus'          => $proveedor->estatus,
                 ];
             }
@@ -135,18 +135,18 @@ class ProveedorController extends Controller
     {
         try {
             $proveedor                     = Proveedor::find($id);
-            $proveedor->clave            = strtoupper($request->clave);
-            $proveedor->razon_social     = strtoupper($request->razon_social);
-            $proveedor->nombre_contacto  = strtoupper($request->nombre_contacto);
-            $proveedor->cargo_contacto   = strtoupper($request->cargo_contacto);
-            $proveedor->direccion        = strtoupper($request->direccion);
-            $proveedor->ciudad           = strtoupper($request->ciudad);
-            $proveedor->estado           = strtoupper($request->estado);
+            $proveedor->clave            = mb_strtoupper($request->clave);
+            $proveedor->razon_social     = mb_strtoupper($request->razon_social);
+            $proveedor->nombre_contacto  = mb_strtoupper($request->nombre_contacto);
+            $proveedor->cargo_contacto   = mb_strtoupper($request->cargo_contacto);
+            $proveedor->direccion        = mb_strtoupper($request->direccion);
+            $proveedor->ciudad           = mb_strtoupper($request->ciudad);
+            $proveedor->estado           = mb_strtoupper($request->estado);
             $proveedor->cp               = $request->cp;
-            $proveedor->pais             = strtoupper($request->pais);
+            $proveedor->pais             = mb_strtoupper($request->pais);
             $proveedor->telefono         = $request->telefono;
-            $proveedor->email            = strtoupper($request->email);
-            $proveedor->comentarios      = strtoupper($request->comentarios);
+            $proveedor->email            = mb_strtoupper($request->email);
+            $proveedor->comentarios      = mb_strtoupper($request->comentarios);
             $proveedor->estatus          = $request->estatus;
             $proveedor->save();
         } catch (\Exception $e){

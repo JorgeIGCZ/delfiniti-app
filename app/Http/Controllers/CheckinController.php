@@ -122,7 +122,7 @@ class CheckinController extends Controller
         return json_encode(['result' => 'Success']);
     }
 
-    //Deshabilitada
+    
     public function setCheckin($reservacion){
         $reservaciones  = new ReservacionController();
         $comisiones     = new ComisionController();

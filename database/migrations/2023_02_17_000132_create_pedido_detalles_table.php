@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('pedido_detalles', function (Blueprint $table) {
             $table->id();
             $table->integer('pedido_id');
-            $table->integer('produto_id');
+            $table->integer('producto_id');
             $table->integer('cantidad');
-            $table->float('costo');
+            $table->float('PPU');
             $table->float('subtotal');
             $table->timestamps();
         });

@@ -33,7 +33,7 @@ class CanalVentaController extends Controller
     {
         $newRequest = [
             'id'     => $request->id,
-            'nombre' => strtoupper($request->nombre)
+            'nombre' => mb_strtoupper($request->nombre)
         ];
 
         if($request->comisionista_tipo == 'comisionesCanal'){
@@ -91,7 +91,7 @@ class CanalVentaController extends Controller
     {
         try {
             $tipoComisionista                       = CanalVenta::find($id);
-            $tipoComisionista->nombre               = strtoupper($request->nombre);
+            $tipoComisionista->nombre               = mb_strtoupper($request->nombre);
             $tipoComisionista->comisionista_canal = ($request->comisionista_canal == 'on' ? 1 :0);
             $tipoComisionista->save();
         } catch (\Exception $e){

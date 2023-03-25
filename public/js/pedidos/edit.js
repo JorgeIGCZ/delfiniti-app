@@ -1,20 +1,20 @@
-let pagosTabla;
+// let pagosTabla;
 let allActividades = [];
-const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-reservacion');
+const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-pedido');
 const actualizar = document.getElementById('actualizar');
 const pagar = document.getElementById('pagar');
-const contenedorPagos = document.getElementById("detalle-reservacion-contenedor");
-const elementoPagos = contenedorPagos.querySelectorAll("input, select, checkbox, textarea");
+// const contenedorPagos = document.getElementById("detalle-pedido-contenedor");
+// const elementoPagos = contenedorPagos.querySelectorAll("input, select, checkbox, textarea");
 const detallePagoContainer = document.getElementById('detallePagoContainer');
 const anticipoContainer = document.getElementById('anticipo-container');
 
 setReservacionesTipoAccion();
-changeCuponDetalle();
+// changeCuponDetalle();
  
 if(actualizarEstatusReservacion !== null){
     actualizarEstatusReservacion.addEventListener('click', (event) =>{
         event.preventDefault();
-        if(document.getElementById('actualizar-estatus-reservacion').getAttribute('accion') == 'cancelar'){
+        if(document.getElementById('actualizar-estatus-pedido').getAttribute('accion') == 'cancelar'){
             validateCancelarReservacion();
             return true;
         }
@@ -25,7 +25,7 @@ if(actualizarEstatusReservacion !== null){
 if(actualizar !== null){
     actualizar.addEventListener('click', (event) => {
         event.preventDefault();
-        if (formValidity('reservacion-form')) {
+        if (formValidity('pedido-form')) {
             createReservacion('actualizar');
         }
     });
@@ -34,14 +34,14 @@ if(actualizar !== null){
 if(pagar !== null){
     pagar.addEventListener('click', (event) => {
         event.preventDefault();
-        if (formValidity('reservacion-form') && cantidadActividadesIsValid()) {
+        if (formValidity('pedido-form') && cantidadActividadesIsValid()) {
             createReservacion('pagar');
         }
     });
 }
-if ((isReservacionPagada())) {
-    bloquearPagos();
-}
+// if ((isReservacionPagada())) {
+//     bloquearPagos();
+// }
 
 //jQuery
 $('#pagos').on( 'click', '.editar-celda', function (event) {
@@ -74,23 +74,23 @@ $('#pagos').on( 'change', '.fecha-pago', function (event) {
 } );
 
 
-pagosTabla = new DataTable('#pagos', {
-    searching: false,
-    paging: false,
-    info: false
-});
+// pagosTabla = new DataTable('#pagos', {
+//     searching: false,
+//     paging: false,
+//     info: false
+// });
 
-fillReservacionDetallesTabla();
-fillPagosTabla();
+fillPedidoDetallesTabla();
+// fillPagosTabla();
 
 async function editarPagoReservacion(row){
     const pagoId = row.parents('tr')[0].firstChild.innerText;
     const fecha =  row.closest('tr').find('.fecha-pago').val()
 
     $('.loader').show();
-    result = await axios.post('/reservaciones/editPago', {
+    result = await axios.post('/pedidos/editPago', {
         '_token': token(),
-        'reservacionId': reservacionId(),
+        'pedidoId': pedidoId(),
         'fecha': fecha,
         'pagoId': pagoId
     });
@@ -129,130 +129,102 @@ function validateCancelarReservacion(){
         confirmButtonText: 'Sí, cancelar!'
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','cancelar-reservacion');
+            document.getElementById('validar-verificacion').setAttribute('action','cancelar-pedido');
             $('#verificacion-modal').modal('show');
         }
     });
 }
 
 function setReservacionesTipoAccion() {
-    const reservacion = document.getElementById('reservacion-form');
-    let disabledFields = [];
-    let hiddenFields = [];
-    if (accion === 'pago') {
-        hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
-        disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
-    } else {
-        hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
-        disabledFields = ['codigo-descuento'];
-    }
-    disabledFields.forEach((disabledField) => {
-        let campoDeshabilitado = reservacion.elements[disabledField];
-        if(campoDeshabilitado !== null){
-            campoDeshabilitado.setAttribute('disabled', 'disabled');
-            campoDeshabilitado.classList.add('not-editable');
-        }
-    });
-    hiddenFields.forEach((hideField) => {
-        let campoOcultar = document.getElementById(hideField);
-        if(campoOcultar !== null){
-            campoOcultar.style.setProperty('display', 'none', 'important');
-        }
-    });
+    // const pedido = document.getElementById('pedido-form');
+    // let disabledFields = [];
+    // let hiddenFields = [];
+    // if (accion === 'pago') {
+    //     hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
+    //     disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
+    // } else {
+    //     hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
+    //     disabledFields = ['codigo-descuento'];
+    // }
+    // disabledFields.forEach((disabledField) => {
+    //     let campoDeshabilitado = pedido.elements[disabledField];
+    //     if(campoDeshabilitado !== null){
+    //         campoDeshabilitado.setAttribute('disabled', 'disabled');
+    //         campoDeshabilitado.classList.add('not-editable');
+    //     }
+    // });
+    // hiddenFields.forEach((hideField) => {
+    //     let campoOcultar = document.getElementById(hideField);
+    //     if(campoOcultar !== null){
+    //         campoOcultar.style.setProperty('display', 'none', 'important');
+    //     }
+    // });
 }
 
 function createReservacion(estatus) {
-    const reservacion = document.getElementById('reservacion-form');
-    const codigoDescuentoCantidad = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
-        ? convertPorcentageCantidad(reservacion.elements['descuento-codigo'].getAttribute('value'))
-        : parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-    const cuponCantidad = reservacion.elements['cupon'].getAttribute('value');
-    const descuentoPersonalizadoCantidad = reservacion.elements['descuento-personalizado'].getAttribute('value');
-    const pagos = {
-        'efectivo': reservacion.elements['efectivo'].getAttribute('value'),
-        'efectivoUsd': reservacion.elements['efectio-usd'].getAttribute('value'),
-        'tarjeta': reservacion.elements['tarjeta'].getAttribute('value'),
-        'deposito': reservacion.elements['deposito'].getAttribute('value'),
-        'cambio': reservacion.elements['cambio'].getAttribute('value'),
-    };
+    const pedido = document.getElementById('pedido-form');
+    // const codigoDescuentoCantidad = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
+    //     ? convertPorcentageCantidad(pedido.elements['descuento-codigo'].getAttribute('value'))
+    //     : parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
+    // const cuponCantidad = pedido.elements['cupon'].getAttribute('value');
+    // const descuentoPersonalizadoCantidad = pedido.elements['descuento-personalizado'].getAttribute('value');
+    // const pagos = {
+    //     'efectivo': pedido.elements['efectivo'].getAttribute('value'),
+    //     'efectivoUsd': pedido.elements['efectio-usd'].getAttribute('value'),
+    //     'tarjeta': pedido.elements['tarjeta'].getAttribute('value'),
+    //     'deposito': pedido.elements['deposito'].getAttribute('value'),
+    //     'cambio': pedido.elements['cambio'].getAttribute('value'),
+    // };
     $('.loader').show();
-    axios.post(`/reservaciones/${reservacionId()}`, {
+    axios.post(`/pedidos/${pedidoId()}`, {
         '_token': token(),
         '_method': 'PATCH',
-        'nombre': reservacion.elements['nombre'].value,
-        'email': reservacion.elements['email'].value,
-        'alojamiento': reservacion.elements['alojamiento'].value,
-        'origen': reservacion.elements['origen'].value,
-        'agente': reservacion.elements['agente'].value,
-        'comisionista': reservacion.elements['comisionista'].value,
-        'comisionistaActividad': reservacion.elements['comisionista-actividad'].value,
-        'cerrador': reservacion.elements['cerrador'].value,
-        'total': reservacion.elements['total'].getAttribute('value'),
-        'pagosAnteriores': reservacion.elements['anticipo'].getAttribute('value'),
-        'fecha': reservacion.elements['fecha'].value,
-        'pagos': estatus === 'pagar' ? pagos : {},
-        'cupon': {
-            'cantidad': reservacion.elements['cupon'].getAttribute('value'),//convertPorcentageCantidad(reservacion.elements['cupon'].getAttribute('value'))
-            'tipo': reservacion.elements['cupon'].getAttribute('tipo')
-        },
-        'descuentoCodigo': {
-            'cantidad': codigoDescuentoCantidad,
-            'password': document.getElementById('descuento-codigo').getAttribute('password'),
-            'valor': document.getElementById('descuento-codigo').value,
-            'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo'),
-            'descuentoCodigoId': document.getElementById('codigo-descuento').value
-        },
-        'descuentoPersonalizado': {
-            'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad, codigoDescuentoCantidad, cuponCantidad),
-            'password': document.getElementById('descuento-personalizado').getAttribute('password'),
-            'valor': document.getElementById('descuento-personalizado').value,
-            'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
-        },
-        'comentarios': reservacion.elements['comentarios'].value,
-        "comisionable"   : reservacion.elements['comisionable'].checked,
+        'proveedor': pedido.elements['proveedor'].value,
+        'fecha': pedido.elements['fecha'].value,
+        'comentarios': pedido.elements['comentarios'].value,
         'estatus': estatus,
-        'reservacionArticulos': actvidadesArray
+        'pedidoProductos': productosArray
     })
-        .then(function (response) {
-            $('.loader').hide();
-            if (response.data.result == 'Success') {
-                if (estatus === 'pagar') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Pago actualizado',
-                        showConfirmButton: false,
-                        timer: 1000
-                    }).then(function() {
-                        if(getTicket(response.data.reservacion)){
-                            location.reload();
-                        } 
-                    });
-                }else{
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Reservacion actualizada',
-                        showConfirmButton: false,
-                        timer: 1000
-                    }).then(function() {
-                        location.reload();
-                    });
-                }
-            } else {
+    .then(function (response) {
+        $('.loader').hide();
+        if (response.data.result == 'Success') {
+            if (estatus === 'pagar') {
                 Swal.fire({
-                    icon: 'error',
-                    title: `Reservacion fallida E:${response.data.message}`,
-                    showConfirmButton: true
-                })
+                    icon: 'success',
+                    title: 'Pago actualizado',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(function() {
+                    if(getTicket(response.data.pedido)){
+                        location.reload();
+                    } 
+                });
+            }else{
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reservacion actualizada',
+                    showConfirmButton: false,
+                    timer: 1000
+                }).then(function() {
+                    location.reload();
+                });
             }
-        })
-        .catch(function (error) {
-            $('.loader').hide();
+        } else {
             Swal.fire({
                 icon: 'error',
-                title: `Reservacion fallida E:${error.message}`,
+                title: `Reservacion fallida E:${response.data.message}`,
                 showConfirmButton: true
             })
-        });
+        }
+    })
+    .catch(function (error) {
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'error',
+            title: `Reservacion fallida E:${error.message}`,
+            showConfirmButton: true
+        })
+    });
 }
 
 function addActividades() {
@@ -275,9 +247,9 @@ function addActividades() {
     addActividad();
 }
 
-function fillReservacionDetallesTabla() {
-    reservacionesTable.rows.add(reservacionesTableArray).draw(false);
-    setTotal();
+function fillPedidoDetallesTabla() {
+    productosTable.rows.add(productosTableArray).draw(false);
+    setSubTotal();
 }
 
 function setCantidadPagada(cantidadPagada) {
@@ -285,29 +257,29 @@ function setCantidadPagada(cantidadPagada) {
     document.getElementById('anticipo').value = formatter.format(cantidadPagada);
 }
 
-function fillPagosTabla() {
-    let cantidadPago = 0;
-    let cantidadPagada = 0;
-    //'1','efectivo'
-    //'2','efectivoUsd'
-    //'3','tarjeta'
-    //'8','deposito'
+// function fillPagosTabla() {
+//     let cantidadPago = 0;
+//     let cantidadPagada = 0;
+//     //'1','efectivo'
+//     //'2','efectivoUsd'
+//     //'3','tarjeta'
+//     //'8','deposito'
 
-    nombreTipoPagoArray.forEach(function (nombre) {
-        blockDescuentos(nombre);
-    });
+//     nombreTipoPagoArray.forEach(function (nombre) {
+//         blockDescuentos(nombre);
+//     });
 
-    pagosArray.forEach(function (pago) {
-        cantidadPago = parseFloat(getCantiodadPago(pago));
-        cantidadPagada += parseFloat(cantidadPago);
-        ;
-    });
+//     pagosArray.forEach(function (pago) {
+//         cantidadPago = parseFloat(getCantiodadPago(pago));
+//         cantidadPagada += parseFloat(cantidadPago);
+//         ;
+//     });
 
-    pagosTabla.rows.add(pagosTablaArray).draw(false);
+//     pagosTabla.rows.add(pagosTablaArray).draw(false);
 
-    setCantidadPagada(cantidadPagada);
-    setTotal();
-}
+//     setCantidadPagada(cantidadPagada);
+//     setTotal();
+// }
 
 function getCantiodadPago(pago){
     let cantidadPago = pago.cantidad;
@@ -332,12 +304,33 @@ function blockDescuentos(nombre) {
     }
 }
 
-function setTotal() {
-    let total = 0;
-    actvidadesArray.forEach(reservacion => {
-        total += (reservacion.cantidad * reservacion.precio);
+function setSubTotal() {
+    let subTotal = 0;
+    productosArray.forEach(producto => {
+        subTotal += (producto.cantidad * producto.costo);
     });
-    total = parseFloat(total).toFixed(2)
+    subTotal = parseFloat(subTotal).toFixed(2)
+    document.getElementById('subtotal').setAttribute('value', subTotal);
+    document.getElementById('subtotal').value = formatter.format(subTotal);
+    setTotal();
+}
+
+function setTotal() {
+    // let total = 0;
+    // productosArray.forEach(producto => {
+    //     total += (producto.cantidad * producto.costo);
+    // });
+    // total = parseFloat(total).toFixed(2)
+    // document.getElementById('total').setAttribute('value', total);
+    // document.getElementById('total').value = formatter.format(total);
+    let total = 0;
+    const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
+    const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
+    const descuento = parseFloat(document.getElementById('descuento').getAttribute('value'));
+    const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
+
+    total = parseFloat((subTotal + iva + ieps) - descuento).toFixed(2);
+
     document.getElementById('total').setAttribute('value', total);
     document.getElementById('total').value = formatter.format(total);
 
@@ -345,12 +338,13 @@ function setTotal() {
 }
 
 function setOperacionResultados() {
-    const total = document.getElementById('total').getAttribute('value');
-    setResta();
-    setCambio();
-    //document.getElementById('reservacion-form').elements['descuento-general'].focus();
+    // const total = document.getElementById('total').getAttribute('value');
+    // setResta();
+    // setCambio();
+    //document.getElementById('pedido-form').elements['descuento-general'].focus();
 
-    enableFinalizar((getResta() < total) ? true : false);
+    // enableFinalizar((getResta() < total) ? true : false);
+    enableFinalizar(true);
 }
 
 function getPagos(tipoUsd = 'compra') {
@@ -391,18 +385,18 @@ function enableFinalizar($status) {
     }
 }
 
-function bloquearPagos() {
-    elementoPagos.forEach(elemento => {
-        elemento.classList.add('not-editable');
-        elemento.setAttribute('disabled', 'disabled');
-    })
-    if(pagar !== null){
-        pagar.remove();
-    }
-    if(detallePagoContainer !== null){
-        detallePagoContainer.style.display = 'none';
-    }
-    if(anticipoContainer !== null){
-        anticipoContainer.style.display = 'none';
-    }
-}
+// function bloquearPagos() {
+//     elementoPagos.forEach(elemento => {
+//         elemento.classList.add('not-editable');
+//         elemento.setAttribute('disabled', 'disabled');
+//     })
+//     if(pagar !== null){
+//         pagar.remove();
+//     }
+//     if(detallePagoContainer !== null){
+//         detallePagoContainer.style.display = 'none';
+//     }
+//     if(anticipoContainer !== null){
+//         anticipoContainer.style.display = 'none';
+//     }
+// }

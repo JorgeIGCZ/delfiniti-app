@@ -80,7 +80,12 @@ class ComisionController extends Controller
             $this->setComisionCerrador($reservacion,$pagos,$fechaComisiones);
             $this->setComisionComisionistaCanal($reservacion,$pagos,$fechaComisiones);
             $this->setComisionComisionistaActividad($reservacion,$pagos,$fechaComisiones);
-            $this->setComisionPago($pagos,1);
+            
+            $comisiones = Comision::where('reservacion_id',$reservacion['id'])->get();
+            
+            if(count($comisiones) > 0){
+                $this->setComisionPago($pagos,1);
+            }
             DB::commit();
         } catch (\Exception $e){
             DB::rollBack();
