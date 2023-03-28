@@ -56,7 +56,7 @@
             }
         }
         /* Main styles */
-        .az-content-dashboard {
+        #dashboard {
             margin: 0;
             height: calc(100vh - 64px);
             color: #999;
@@ -77,7 +77,7 @@
             -o-animation-timing-function: linear;
             animation-timing-function: linear;
         }
-        .az-content-dashboard::before {
+        #dashboard::before {
             content: "DELFINITI APP";
             font-size: 8rem;
             font-weight: 100;
@@ -86,5 +86,6 @@
             top: calc(50% - 100px);
         }
     </style>
-   
+   <div id="dashboard">
+   </div>
 @endsection

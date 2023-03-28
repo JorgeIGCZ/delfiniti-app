@@ -13,6 +13,7 @@ use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\TipoCambioController;
 use App\Http\Controllers\CanalVentaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
@@ -38,9 +39,12 @@ Route::get('switchModule/{modulo}', [UsuarioController::class, 'switchModule']);
 
 Route::get('/', function () {
     return redirect()->route("dashboard")->with(["result" => ""]);
-})->middleware(['auth'])->name('disp');
+})->middleware(['auth']);
 
-Route::view('/dashboard', 'dashboard/index')->name('dashboard');;
+Route::controller(DashboardController::class)->middleware(['auth'])->group(function () {
+    Route::get('dashboard', 'index')->name('dashboard');
+});
+
 
 
 Route::controller(ComisionistaController::class)->middleware(['auth'])->group(function () {
