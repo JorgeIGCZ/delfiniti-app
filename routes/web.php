@@ -94,14 +94,14 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
 });
 
 Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
-    // Route::get('/reservaciones/create/{reservacion?}', 'create')->name('reservacionesCreate');
-    // Route::post('reservaciones/updateestatusreservacion', 'updateEstatusReservacion');
-    // Route::post('reservaciones/removeActividad', 'removeActividad');
-    // Route::post('reservaciones/editPago','editPago');
-    // Route::post('reservaciones/removeDescuento', 'removeDescuento');
-    // Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
-    // Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
-    // Route::post('reservaciones/show/{reservacion?}', 'show');
+    // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
+    // Route::post('ventas/updateestatusreservacion', 'updateEstatusReservacion');
+    // Route::post('ventas/removeActividad', 'removeActividad');
+    // Route::post('ventas/editPago','editPago');
+    // Route::post('ventas/removeDescuento', 'removeDescuento');
+    // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
+    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::post('ventas/show/{reservacion?}', 'show');
     Route::resource('ventas',VentaController::class, [
         'parameters' => [
             'ventas' => 'venta'

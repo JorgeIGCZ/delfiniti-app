@@ -22,4 +22,9 @@ class Venta extends Model
         'estatus'
     ];
     protected $primaryKey = 'id';
-}
+
+    public function ventaDetalle()
+    {
+        return $this->hasMany(VentaDetalle::class,'venta_id');
+    }
+} 

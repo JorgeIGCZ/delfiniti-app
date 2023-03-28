@@ -21,8 +21,8 @@ use App\Models\User;
 use App\Models\Venta;
 use App\Models\VentaFactura;
 use App\Models\VentaPago;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class VentaController extends Controller
 {
@@ -41,7 +41,7 @@ class VentaController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
+    { 
         return view('ventas.index');
     }
 
@@ -289,22 +289,22 @@ class VentaController extends Controller
     public function show(Request $request)
     {
 
-        // if(!is_null($request->fecha)){
-        //     switch (@$request->fecha) {
-        //         case 'dia':
-        //             $fechaInicio = Carbon::now()->startOfDay();
-        //             $fechaFinal  = Carbon::now()->endOfDay();
-        //             break;
-        //         case 'mes':
-        //             $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
-        //             $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
-        //             break;
-        //         case 'custom':
-        //             $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
-        //             $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
-        //             break;
-        //     }   
-        // }
+        if(!is_null($request->fecha)){
+            switch (@$request->fecha) {
+                case 'dia':
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->endOfDay();
+                    break;
+                case 'mes':
+                    $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
+                    $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
+                    break;
+                case 'custom':
+                    $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+                    $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+                    break;
+            }   
+        }
 
         // $estatus = [];
         // if(!is_null($request->estatus)){
@@ -324,40 +324,40 @@ class VentaController extends Controller
         //     }   
         // }
         
-        // DB::enableQueryLog();
-        // $ventas = Venta::whereBetween("fecha", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
-        //         $query->where("nombre",'like',"%CORTESIA%");
-        //     }])->orderByDesc('id')->where('estatus',1)->whereIn('estatus_pago',$estatus)->get();
-        // //dd(DB::getQueryLog());
-    
+        DB::enableQueryLog();
+        $ventas = Venta::whereBetween("fecha", [$fechaInicio,$fechaFinal]);
 
-        // $ventaDetalleArray = [];
-        // foreach($ventas as $venta){ 
-        //     $numeroPersonas = 0;
-        //     $horario        = "";
-        //     $productoes    = "";
-        //     foreach($venta->ventaDetalle as $ventaDetalle){
-        //         $numeroPersonas += $ventaDetalle->numero_personas;
-        //         $horario         = ($horario != "" ? $horario.", " : "").@$ventaDetalle->horario->horario_inicial;
-        //         $productoes     = ($productoes != "" ? $productoes.", " : "").@$ventaDetalle->producto->nombre;
-        //     }
-        //     $ventaDetalleArray[] = [
-        //         'id'           => @$venta->id,
-        //         'folio'        => @$venta->folio,
-        //         'producto'    => $productoes, 
-        //         'horario'      => $horario,
-        //         'fechaCreacion' => @Carbon::parse($venta->fecha_creacion)->format('d/m/Y'),//date_format(date_create($venta->fecha_creacion),"d/m/Y"),
-        //         'fecha'        => @Carbon::parse($venta->fecha)->format('d/m/Y'),//date_format(date_create($venta->fecha),"d-m-Y"),
-        //         'cliente'      => @$venta->nombre_cliente,
-        //         'personas'     => $numeroPersonas,
-        //         'notas'        => @$venta->comentarios,
-        //         'estatus'      => @$venta->comentarios,
-        //         'cortesia'     => @($venta->descuentoCodigo->id > 0) ? 'Cortesia' : '',
-        //         'estatusPago'  => @$venta->estatus_pago
-        //     ];
-        // }
+        if(!Auth::user()->hasRole('Administrador')){
+            $ventas = $ventas->where('estatus',1);
+        }
+
+        $ventas = $ventas->orderByDesc('id')->get();
+        // dd(DB::getQueryLog());
+
+        $ventaDetalleArray = [];
+        foreach($ventas as $venta){ 
+            $numeroProductos = 0;
+            $horario        = "";
+            $productos    = "";
+            foreach($venta->ventaDetalle as $ventaDetalle){
+                $numeroProductos += $ventaDetalle->numero_productos;
+                $horario         = ($horario != "" ? $horario.", " : "").@$ventaDetalle->horario->horario_inicial;
+                $productos     = ($productos != "" ? $productos.", " : "").@$ventaDetalle->producto->nombre;
+            }
+            $ventaDetalleArray[] = [
+                'id'           => @$venta->id,
+                'folio'        => @$venta->folio,
+                'productos'    => $productos, 
+                'fechaCreacion' => @Carbon::parse($venta->fecha_creacion)->format('d/m/Y'),//date_format(date_create($venta->fecha_creacion),"d/m/Y"),
+                'fecha'        => @Carbon::parse($venta->fecha)->format('d/m/Y'),//date_format(date_create($venta->fecha),"d-m-Y"),
+                'cliente'      => @$venta->nombre_cliente,
+                'numeroProductos' => $numeroProductos,
+                'notas'        => @$venta->comentarios,
+                'estatus'      => @$venta->estatus
+            ];
+        }
         
-        // return json_encode(['data' => $ventaDetalleArray]);
+        return json_encode(['data' => $ventaDetalleArray]);
     }
     /**
      * Show the form for editing the specified resource.

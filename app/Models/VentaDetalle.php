@@ -10,11 +10,16 @@ class VentaDetalle extends Model
     use HasFactory;
 
     protected $fillable = [
-        'factura_id',
+        'factura_id', 
         'venta_id',
         'producto_id',
         'numero_productos',
         'PPU'
     ];
     protected $primaryKey = 'id';
+
+    public function producto()
+    {
+        return $this->hasOne(Producto::class,'id','producto_id');
+    }
 }

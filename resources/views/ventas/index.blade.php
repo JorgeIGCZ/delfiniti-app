@@ -16,7 +16,7 @@
                     const ventas = document.getElementById('ventas-form');
                     axios.post('/ventas/show',{
                         "_token"  : '{{ csrf_token() }}',
-                        "estatus" : ventas.elements['estatus'].value,
+                        // "estatus" : ventas.elements['estatus'].value,
                         "fecha"   : ventas.elements['fecha'].value,
                         "fechaInicio"  : ventas.elements['start_date'].value,
                         "fechaFinal"  : ventas.elements['end_date'].value
@@ -40,23 +40,23 @@
                     { data: 'cliente' },
                     { data: 'productos' },
                     { data: 'numeroProductos' },
-                    { defaultContent: 'Estatus', 'render': function ( data, type, row )
-                        {
-                            let estatus = '';
-                            switch (row.estatusPago) {
-                                case 0:
-                                    estatus = "<p class='pending'>Pendiente</p>";
-                                    break;
-                                case 1:
-                                    estatus = "<p class='partial'>Parcial</p>";
-                                    break;
-                                case 2:
-                                    estatus = "<p class='paid'>Pagado</p>";
-                                    break;
-                            }
-                            return  estatus;
-                        }
-                    },
+                    // { defaultContent: 'Estatus', 'render': function ( data, type, row )
+                    //     {
+                    //         let estatus = '';
+                    //         switch (row.estatusPago) {
+                    //             case 0:
+                    //                 estatus = "<p class='pending'>Pendiente</p>";
+                    //                 break;
+                    //             case 1:
+                    //                 estatus = "<p class='partial'>Parcial</p>";
+                    //                 break;
+                    //             case 2:
+                    //                 estatus = "<p class='paid'>Pagado</p>";
+                    //                 break;
+                    //         }
+                    //         return  estatus;
+                    //     }
+                    // },
                     { data: 'fechaCreacion' },
                     { data: 'notas' },
                     { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
@@ -65,7 +65,7 @@
                             let payRow = '';
                             let editRow = '';
                             let options = [];
-                            @can('Ventas.update')
+                            @can('TiendaVentas.update')
                                 @role('Administrador')
                                     editRow = `<a href="ventas/${row.id}/edit?accion=edit">Editar</a>`;
                                 @endrole
@@ -102,17 +102,17 @@
                 rangoFecha.style.display = "block";
             });
 
-            document.getElementById('estatus_venta').addEventListener('change', (event) =>{
-                const rangoFecha = document.getElementById('rango-fecha');
+            // document.getElementById('estatus_venta').addEventListener('change', (event) =>{
+            //     const rangoFecha = document.getElementById('rango-fecha');
 
-                $('#start_date').datepicker('setDate', null);
-                $('#end_date').datepicker('setDate', null);
+            //     $('#start_date').datepicker('setDate', null);
+            //     $('#end_date').datepicker('setDate', null);
 
-                rangoFecha.style.display = "block";
+            //     rangoFecha.style.display = "block";
                 
-                ventasTable.ajax.reload();
-                return;
-            });
+            //     ventasTable.ajax.reload();
+            //     return;
+            // });
 
             document.getElementById('start_date').addEventListener('change', (event) =>{
                 const fechaInicio = event.target.value;
@@ -175,7 +175,7 @@
                                         <th>Cliente</th>
                                         <th>Productos</th>
                                         <th># Productos</th>
-                                        <th>Estatus</th>
+                                        {{-- <th>Estatus</th> --}}
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>
