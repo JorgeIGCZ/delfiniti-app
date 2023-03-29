@@ -64,7 +64,11 @@
                 "codigo"   : productos.elements['codigo'].value,
                 "nombre"   : productos.elements['nombre'].value,
                 "costo": productos.elements['costo'].getAttribute('value'),
-                "precioVenta" : productos.elements['precioVenta'].getAttribute('value')
+                "precioVenta" : productos.elements['precioVenta'].getAttribute('value'),
+                "margenGanancia" : productos.elements['margenGanancia'].getAttribute('value'),
+                "stockMinimo" : productos.elements['stockMinimo'].value,
+                "stockMaximo" : productos.elements['stockMaximo'].value,
+                "comentarios" : productos.elements['comentarios'].value,
             })
             .then(function (response) {
                 $('.loader').hide();
@@ -113,7 +117,17 @@
                     { data: 'nombre' },
                     { data: 'costo' },
                     { data: 'precio_venta' },
+                    { defaultContent: 'margen_ganancia', 'render': function ( data, type, row ) 
+                        {
+                            return `${row.margen_ganancia}%`;
+                        }
+                    },
                     { data: 'stock' },
+                    { data: 'stock_minimo' },
+                    { data: 'stock_maximo' },
+                    { data: 'ultima_entrada' },
+                    { data: 'ultima_salida' },
+                    { data: 'comentarios' },
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus){
@@ -150,7 +164,25 @@
                 const productos = document.getElementById('productos-form');
                 createProducto(productos);
             });
+
+            document.getElementById('costo').addEventListener('keyup', (event) =>{
+                setTimeout(setMargenGanancia(),500);
+            });
+
+            document.getElementById('precioVenta').addEventListener('keyup', (event) =>{
+                setTimeout(setMargenGanancia(),500);
+            });
             
+            function setMargenGanancia(){
+                const costo = document.getElementById('costo').getAttribute('value');
+                const precioVenta = document.getElementById('precioVenta').getAttribute('value');
+
+                const gananciaBruta = (precioVenta-costo);
+                const margenGanancia = parseFloat((gananciaBruta/precioVenta)*100).toFixed(2);
+
+                document.getElementById('margenGanancia').setAttribute('value', margenGanancia);
+                document.getElementById('margenGanancia').value = `${margenGanancia}%`;
+            }
         });
     </script>
 @endsection
@@ -174,23 +206,42 @@
                                 </div>
                                 <div class="form-group col-2 mt-3">
                                     <label for="codigo" class="col-form-label">Código</label>    
-                                    <input type="text" name="codigo" class="form-control"  autocomplete="off" tabindex="2" required="required">  
+                                    <input type="text" name="codigo" class="form-control"  autocomplete="off" tabindex="2" >  
                                 </div>
                                 <div class="form-group col-3 mt-3">
                                     <label for="nombre" class="col-form-label">Nombre del producto</label>    
                                     <input type="text" name="nombre" class="form-control to-uppercase" autocomplete="off" tabindex="3" required="required">  
                                 </div>
-                                <div class="form-group col-2 mt-2">
+                                <div class="form-group col-1 mt-2">
                                     <label for="costo" class="col-form-label">Costo</label>
-                                    <input type="text" name="costo" class="form-control amount"  autocomplete="off" tabindex="4">
+                                    <input type="text" name="costo" id="costo" class="form-control amount"  autocomplete="off" tabindex="4">
                                 </div>
-                                <div class="form-group col-2 mt-2">
+                                <div class="form-group col-1 mt-2">
                                     <label for="precioVenta" class="col-form-label">Precio venta</label>
-                                    <input type="text" name="precioVenta" class="form-control amount"  autocomplete="off" tabindex="5">
+                                    <input type="text" name="precioVenta" id="precioVenta" class="form-control amount"  autocomplete="off" tabindex="5">
+                                </div>
+
+
+                                <div class="form-group col-2 mt-2">
+                                    <label for="margenGanancia" class="col-form-label">Margen de ganancia</label>
+                                    <input type="text" name="margenGanancia" id="margenGanancia" class="form-control" value="0%" disabled="disabled">
+                                </div>
+
+                                <div class="form-group col-1 mt-2">
+                                    <label for="stockMinimo" class="col-form-label">Stock mín</label>
+                                    <input type="text" name="stockMinimo" class="form-control" autocomplete="off" tabindex="6" required="required">  
+                                </div>
+                                <div class="form-group col-1 mt-2">
+                                    <label for="stockMaximo" class="col-form-label">Stock máx</label>
+                                    <input type="text" name="stockMaximo" class="form-control" autocomplete="off" tabindex="7" required="required">  
+                                </div>
+                                <div class="form-group col-4 mt-2">
+                                    <label for="stockMaximo" class="col-form-label">Comentarios</label>
+                                    <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false"></textarea>
                                 </div>
                                 <div class="form-group col-2 mt-3">
-                                    <button class="btn btn-info btn-block mt-33" id="crear-producto" tabindex="6">Crear producto</button>
-                                </div>
+                                    <button class="btn btn-info btn-block mt-33" id="crear-producto" tabindex="8">Crear producto</button>
+                                </div> 
                             </form>
                         </div>
                     </div>
@@ -211,7 +262,13 @@
                                         <th>Nombre</th>
                                         <th>Costo</th>
                                         <th>Precio venta</th>
+                                        <th>Margen</th>
                                         <th>Stock</th>
+                                        <th>Stock mín</th>
+                                        <th>Stock máx</th>
+                                        <th>Última entrada</th>
+                                        <th>Última salida</th>
+                                        <th>Comentarios</th>
                                         <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>

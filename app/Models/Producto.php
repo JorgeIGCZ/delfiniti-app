@@ -15,6 +15,12 @@ class Producto extends Model
         'nombre',
         'costo',
         'precio_venta',
+        'margen_ganancia',
+        'stock_minimo',
+        'stock_maximo',
+        'ultima_entrada',
+        'ultima_salida',
+        'comentarios',
         'estatus'
     ];
     protected $primaryKey = 'id';

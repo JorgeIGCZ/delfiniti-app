@@ -51,6 +51,10 @@ class ProductoController extends Controller
                 'nombre'   => mb_strtoupper($request->nombre),
                 'costo'    => $request->costo,
                 'precio_venta'    => $request->precioVenta,
+                'stock_minimo'    => $request->stockMinimo,
+                'stock_maximo'    => $request->stockMaximo,
+                'margen_ganancia' => $request->margenGanancia,
+                'comentarios'     => mb_strtoupper($request->comentarios)
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -95,10 +99,14 @@ class ProductoController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $producto            = Producto::find($id);
-            $producto->nombre    = mb_strtoupper($request->nombre);
-            $producto->costo     = floatval(str_replace('$','',$request->costo));
-            $producto->precio_venta = floatval(str_replace('$','',$request->precioVenta));
+            $producto                  = Producto::find($id);
+            $producto->nombre          = mb_strtoupper($request->nombre);
+            $producto->costo           = floatval(str_replace('$','',$request->costo));
+            $producto->precio_venta    = floatval(str_replace('$','',$request->precioVenta));
+            $producto->margen_ganancia = floatval(str_replace('%','',$request->margenGanancia));
+            $producto->stock_minimo    = $request->stockMinimo;
+            $producto->stock_maximo    = $request->stockMaximo;
+            $producto->comentarios     = mb_strtoupper($request->comentarios);
             $producto->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -127,6 +135,16 @@ class ProductoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => 'Success']);
+    }
+
+    public function updateFechaMovimientoStock($productoId, $accion){
+        $producto          = Producto::find($productoId);
+        if($accion === 'ultima_entrada'){
+            $producto->ultima_entrada = date('Y-m-d');
+        }else{
+            $producto->ultima_salida = date('Y-m-d');
+        }
+        $producto->save();
     }
 
     /**

@@ -77,10 +77,11 @@
                 "_token"          : "{{ csrf_token() }}",
                 "clave"           : proveedores.elements['clave'].value,
                 "razonSocial"     : proveedores.elements['razon_social'].value,
+                "rfc"             : proveedores.elements['rfc'].value,
                 "nombreContacto"  : proveedores.elements['nombre_contacto'].value,
                 "cargoContacto"   : proveedores.elements['cargo_contacto'].value,
                 "direccion"       : proveedores.elements['direccion'].value,
-                "telefono"       : proveedores.elements['telefono'].value,
+                "telefono"        : proveedores.elements['telefono'].value,
                 "ciudad"          : proveedores.elements['ciudad'].checked,
                 "estado"          : proveedores.elements['estado'].value,
                 "cp"              : proveedores.elements['cp'].value,
@@ -133,12 +134,13 @@
                 columns: [
                     { data: 'clave' },
                     { data: 'razon_social' },
+                    { data: 'RFC' },
                     { data: 'nombre_contacto' },
                     { data: 'cargo_contacto' },
                     { data: 'estado' },
                     { data: 'telefono' },
                     { data: 'email' },
-                    { data: 'comentarios' },
+                    { data: 'comentarios' }, 
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus){
@@ -151,7 +153,7 @@
                         {
                             let estatusRow = '';
                             let view       = '';  
-                            // @can('Proveedor.update')
+                            @can('TiendaProveedores.update')
                                 if(row.estatus){
                                     estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
                                 }else{
@@ -161,7 +163,7 @@
                                                 <a href="proveedores/${row.id}/edit">Editar</a>
                                                 ${estatusRow}
                                             </small>`;
-                            // @endcan
+                            @endcan
                             return  view;
                         }
                     }
@@ -208,6 +210,10 @@
                                 <div class="form-group col-3 mt-3">
                                     <label for="razon_social" class="col-form-label">Razon social</label>    
                                     <input type="text" name="razon_social" class="form-control to-uppercase" required="required">  
+                                </div>
+                                <div class="form-group col-3 mt-3">
+                                    <label for="rfc" class="col-form-label">RFC</label>    
+                                    <input type="text" name="rfc" class="form-control to-uppercase">  
                                 </div>
 
                                 <div class="col-12 mt-3 general-settings">
@@ -277,6 +283,7 @@
                                     <tr>
                                         <th>Código</th>
                                         <th>Razón social</th>
+                                        <th>RFC</th>
                                         <th>Contacto</th>
                                         <th>Cargo</th>
                                         <th>Estado</th>

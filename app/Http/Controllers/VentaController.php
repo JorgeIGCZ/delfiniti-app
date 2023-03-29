@@ -130,6 +130,8 @@ class VentaController extends Controller
         $estatusPago  = ($request->estatus == "pagar");
         $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
+
+        $Productos = new ProductoController();
         DB::beginTransaction();
         try{
             $venta = Venta::create([
@@ -152,6 +154,7 @@ class VentaController extends Controller
             ]);
 
             foreach($request->ventaProductos as $ventaProducto){
+                $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
                 VentaDetalle::create([
                     'venta_id'            =>  $venta['id'],
                     'factura_id'          =>  $factura['id'],
@@ -327,9 +330,9 @@ class VentaController extends Controller
         DB::enableQueryLog();
         $ventas = Venta::whereBetween("fecha", [$fechaInicio,$fechaFinal]);
 
-        if(!Auth::user()->hasRole('Administrador')){
+        // if(!Auth::user()->hasRole('Administrador')){
             $ventas = $ventas->where('estatus',1);
-        }
+        // }
 
         $ventas = $ventas->orderByDesc('id')->get();
         // dd(DB::getQueryLog());

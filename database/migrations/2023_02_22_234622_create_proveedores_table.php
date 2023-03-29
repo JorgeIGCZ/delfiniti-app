@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('clave')->unique();
             $table->string('razon_social');
+            $table->string('RFC')->nullable();
             $table->string('nombre_contacto')->nullable();
             $table->string('cargo_contacto')->nullable();
             $table->string('direccion')->nullable();

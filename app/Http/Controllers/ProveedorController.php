@@ -39,6 +39,7 @@ class ProveedorController extends Controller
             $proveedor = Proveedor::create([
                 'clave'             => $request->clave,
                 'razon_social'      => mb_strtoupper($request->razonSocial),
+                'rfc'               => mb_strtoupper($request->rfc),
                 'nombre_contacto'   => mb_strtoupper($request->nombreContacto),
                 'cargo_contacto'    => mb_strtoupper($request->cargoContacto),
                 'direccion'         => mb_strtoupper($request->direccion),
@@ -75,6 +76,7 @@ class ProveedorController extends Controller
                     'id'               => $proveedor->id,
                     'clave'            => $proveedor->clave,
                     'razon_social'     => mb_strtoupper($proveedor->razon_social),
+                    'RFC'              => mb_strtoupper($proveedor->RFC),
                     'nombre_contacto'  => mb_strtoupper($proveedor->nombre_contacto),
                     'cargo_contacto'   => mb_strtoupper($proveedor->cargo_contacto),
                     'direccion'        => mb_strtoupper($proveedor->direccion),
@@ -135,10 +137,8 @@ class ProveedorController extends Controller
     {
         try {
             $proveedor                     = Proveedor::find($id);
-            $proveedor->clave            = mb_strtoupper($request->clave);
-            $proveedor->razon_social     = mb_strtoupper($request->razon_social);
-            $proveedor->nombre_contacto  = mb_strtoupper($request->nombre_contacto);
-            $proveedor->cargo_contacto   = mb_strtoupper($request->cargo_contacto);
+            $proveedor->nombre_contacto  = mb_strtoupper($request->nombreContacto);
+            $proveedor->cargo_contacto   = mb_strtoupper($request->cargoContacto);
             $proveedor->direccion        = mb_strtoupper($request->direccion);
             $proveedor->ciudad           = mb_strtoupper($request->ciudad);
             $proveedor->estado           = mb_strtoupper($request->estado);
@@ -147,7 +147,6 @@ class ProveedorController extends Controller
             $proveedor->telefono         = $request->telefono;
             $proveedor->email            = mb_strtoupper($request->email);
             $proveedor->comentarios      = mb_strtoupper($request->comentarios);
-            $proveedor->estatus          = $request->estatus;
             $proveedor->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

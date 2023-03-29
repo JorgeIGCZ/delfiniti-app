@@ -16,11 +16,16 @@ return new class extends Migration
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
             $table->string('clave')->unique();
-            $table->string('codigo')->unique();
+            $table->string('codigo')->unique()->nullable();
             $table->string('nombre');
             $table->double('costo');
             $table->double('precio_venta');
+            $table->double('margen_ganancia');
             $table->integer('stock');
+            $table->integer('stock_minimo');
+            $table->integer('stock_maximo');
+            $table->date('ultima_entrada');
+            $table->date('ultima_salida');
             $table->text('comentarios');
             $table->boolean('estatus')->default(1);
             $table->timestamps();

@@ -49,6 +49,8 @@ class PedidoController extends Controller
      */
     public function store(Request $request) 
     {
+        $Productos = new ProductoController();
+
         DB::beginTransaction();
         try{
             $pedido = Pedido::create([
@@ -59,6 +61,8 @@ class PedidoController extends Controller
             ]);
 
             foreach($request->pedidoProductos as $pedidoProducto){
+
+                $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
                 PedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
@@ -198,6 +202,8 @@ class PedidoController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $Productos = new ProductoController();
+
         DB::beginTransaction();
         try{
             $pedido = Pedido::find($id);
@@ -210,6 +216,8 @@ class PedidoController extends Controller
             PedidoDetalle::where('pedido_id', $pedido['id'])->delete();
 
             foreach($request->pedidoProductos as $pedidoProducto){
+
+                $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
                 PedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
