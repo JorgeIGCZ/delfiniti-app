@@ -13,9 +13,9 @@
             function setMargenGanancia(){
                 const costo = document.getElementById('costo').getAttribute('value');
                 const precioVenta = document.getElementById('precioVenta').getAttribute('value');
-
+                
                 const gananciaBruta = (precioVenta-costo);
-                const margenGanancia = parseFloat((gananciaBruta/precioVenta)*100).toFixed(2);
+                const margenGanancia = parseFloat(((gananciaBruta)*100)/costo).toFixed(2);
 
                 document.getElementById('margenGanancia').setAttribute('value', margenGanancia);
                 document.getElementById('margenGanancia').value = `${margenGanancia}%`;
@@ -57,7 +57,7 @@
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="codigo" class="col-form-label">Código</label>    
-                                <input type="text" name="codigo" class="form-control" value="{{$producto->codigo}}" disabled="disabled">  
+                                <input type="text" name="codigo" class="form-control" value="{{$producto->codigo}}">  
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="nombre" class="col-form-label">Nombre del producto</label>    

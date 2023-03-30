@@ -39,7 +39,7 @@ class ProductoController extends Controller
         try {
             if(isset($request->codigo)){
                 if(count(Producto::
-                    where('codigo',$request->codigo)->get()
+                    where('clave',$request->clave)->get()
                 ) > 0){
                     return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
                 }
@@ -96,10 +96,10 @@ class ProductoController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Producto $producto, Request $request)
     {
         try {
-            $producto                  = Producto::find($id);
+            $producto->codigo          = $request->codigo;
             $producto->nombre          = mb_strtoupper($request->nombre);
             $producto->costo           = floatval(str_replace('$','',$request->costo));
             $producto->precio_venta    = floatval(str_replace('$','',$request->precioVenta));

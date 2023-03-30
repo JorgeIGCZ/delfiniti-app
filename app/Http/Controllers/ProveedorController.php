@@ -133,11 +133,9 @@ class ProveedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Proveedor $proveedor, Request $request)
     {
         try {
-            $proveedor                     = Proveedor::find($id);
-
             $proveedor->razon_social     = mb_strtoupper($request->razonSocial);
             $proveedor->RFC              = mb_strtoupper($request->rfc);
             $proveedor->nombre_contacto  = mb_strtoupper($request->nombreContacto);

@@ -176,9 +176,9 @@
             function setMargenGanancia(){
                 const costo = document.getElementById('costo').getAttribute('value');
                 const precioVenta = document.getElementById('precioVenta').getAttribute('value');
-
+                
                 const gananciaBruta = (precioVenta-costo);
-                const margenGanancia = parseFloat((gananciaBruta/precioVenta)*100).toFixed(2);
+                const margenGanancia = parseFloat(((gananciaBruta)*100)/costo).toFixed(2);
 
                 document.getElementById('margenGanancia').setAttribute('value', margenGanancia);
                 document.getElementById('margenGanancia').value = `${margenGanancia}%`;
