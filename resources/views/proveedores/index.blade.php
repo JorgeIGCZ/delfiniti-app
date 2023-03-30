@@ -281,7 +281,7 @@
                             <table id="proveedores" class="display dt-responsive" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th>Código</th>
+                                        <th>Clave</th>
                                         <th>Razón social</th>
                                         <th>RFC</th>
                                         <th>Contacto</th>

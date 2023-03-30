@@ -54,11 +54,11 @@
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="razon_social" class="col-form-label">Razon social</label>    
-                                <input type="text" name="razonSocial" class="form-control" value="{{$proveedor->razon_social}}" disabled="disabled">  
+                                <input type="text" name="razonSocial" class="form-control" value="{{$proveedor->razon_social}}" >  
                             </div>
                             <div class="form-group col-3 mt-3">
                                 <label for="rfc" class="col-form-label">RFC</label>    
-                                <input type="text" name="rfc" class="form-control" value="{{$proveedor->RFC}}" disabled="disabled">  
+                                <input type="text" name="rfc" class="form-control" value="{{$proveedor->RFC}}">  
                             </div>
 
 

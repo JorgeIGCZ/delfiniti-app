@@ -39,7 +39,7 @@ class ProveedorController extends Controller
             $proveedor = Proveedor::create([
                 'clave'             => $request->clave,
                 'razon_social'      => mb_strtoupper($request->razonSocial),
-                'rfc'               => mb_strtoupper($request->rfc),
+                'RFC'               => mb_strtoupper($request->rfc),
                 'nombre_contacto'   => mb_strtoupper($request->nombreContacto),
                 'cargo_contacto'    => mb_strtoupper($request->cargoContacto),
                 'direccion'         => mb_strtoupper($request->direccion),
@@ -137,6 +137,9 @@ class ProveedorController extends Controller
     {
         try {
             $proveedor                     = Proveedor::find($id);
+
+            $proveedor->razon_social     = mb_strtoupper($request->razonSocial);
+            $proveedor->RFC              = mb_strtoupper($request->rfc);
             $proveedor->nombre_contacto  = mb_strtoupper($request->nombreContacto);
             $proveedor->cargo_contacto   = mb_strtoupper($request->cargoContacto);
             $proveedor->direccion        = mb_strtoupper($request->direccion);
