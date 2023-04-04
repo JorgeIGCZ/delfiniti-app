@@ -37,13 +37,23 @@ class ProductoController extends Controller
     public function store(Request $request)
     {
         try {
-            if(isset($request->codigo)){
+            if(isset($request->clave)){
                 if(count(Producto::
                     where('clave',$request->clave)->get()
                 ) > 0){
                     return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
                 }
             }
+
+            if(isset($request->codigo)){
+                if(count(Producto::
+                    where('codigo',$request->codigo)->get()
+                ) > 0){
+                    return json_encode(['result' => 'Error','message' => 'El código ya se encuentra registrado.']);
+                }
+            }
+
+            
 
             $producto = Producto::create([
                 'clave'    => $request->clave,
