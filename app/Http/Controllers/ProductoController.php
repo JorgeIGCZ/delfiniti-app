@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
+use App\Models\Impuesto;
 use App\Models\Producto;
+use App\Models\ProductoImpuesto;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -15,7 +17,8 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        return view('productos.index');
+        $impuestos = Impuesto::get();
+        return view('productos.index',['impuestos' => $impuestos]);
     }
 
     /**
@@ -53,8 +56,6 @@ class ProductoController extends Controller
                 }
             }
 
-            
-
             $producto = Producto::create([
                 'clave'    => $request->clave,
                 'codigo'   => $request->codigo,
@@ -66,6 +67,15 @@ class ProductoController extends Controller
                 'margen_ganancia' => $request->margenGanancia,
                 'comentarios'     => mb_strtoupper($request->comentarios)
             ]);
+
+            foreach($request->impuestos as $impuestos){
+                if($impuestos[1]){
+                    ProductoImpuesto::create([
+                        'producto_id' => $producto['id'],
+                        'impuesto_id' => $impuestos[0]
+                    ]);
+                }
+            }
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);

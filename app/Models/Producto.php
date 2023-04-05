@@ -24,4 +24,9 @@ class Producto extends Model
         'estatus'
     ];
     protected $primaryKey = 'id';
+
+    public function productoImpuesto()
+    {
+        return $this->hasMany(ProductoImpuesto::class,'producto_id');
+    }
 }

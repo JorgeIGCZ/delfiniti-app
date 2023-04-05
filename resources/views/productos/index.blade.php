@@ -58,6 +58,17 @@
         }
         function createProducto(productos){
             $('.loader').show();
+
+            let impuestos = [];
+
+            if(productos.elements['impuestos[]'].length > 0){
+                productos.elements['impuestos[]'].forEach(element => {
+                    impuestos.push([element.value, element.checked]);
+                });
+            }else{
+                impuestos.push([productos.elements['impuestos[]'].value, productos.elements['impuestos[]'].checked]);
+            }
+
             axios.post('/productos', {
                 '_token'   : '{{ csrf_token() }}',
                 "clave"   : productos.elements['clave'].value,
@@ -69,6 +80,7 @@
                 "stockMinimo" : productos.elements['stockMinimo'].value,
                 "stockMaximo" : productos.elements['stockMaximo'].value,
                 "comentarios" : productos.elements['comentarios'].value,
+                "impuestos"   : impuestos
             })
             .then(function (response) {
                 $('.loader').hide();
@@ -239,6 +251,14 @@
                                     <label for="stockMaximo" class="col-form-label">Comentarios</label>
                                     <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false"></textarea>
                                 </div>
+
+                                @foreach($impuestos as $impuesto)
+                                    <div class="form-group col-1 mt-3">
+                                        <label for="descuentos" class="col-form-label" style="display: block;">{{$impuesto->nombre}}</label>
+                                        <input type="checkbox" name="impuestos[]" value="{{$impuesto->id}}" class="form-control">
+                                    </div>
+                                @endforeach
+                                
                                 <div class="form-group col-2 mt-3">
                                     <button class="btn btn-info btn-block mt-33" id="crear-producto" tabindex="8">Crear producto</button>
                                 </div> 

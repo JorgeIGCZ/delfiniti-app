@@ -7,7 +7,6 @@ use App\Http\Controllers\ComisionistaController;
 use App\Http\Controllers\DisponibilidadController;
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\AlojamientoController;
-use App\Http\Controllers\CerradorController;
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\ComisionController;
 use App\Http\Controllers\ReporteController;
@@ -18,11 +17,13 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\ImpuestoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\VentaController;
+use App\Models\Impuesto;
 
 /*
 |--------------------------------------------------------------------------
@@ -159,16 +160,16 @@ Route::get('/roles/{rol}',[RolController::class,'show'])->middleware(['auth'])->
 
 Route::get('/imprimir/{actividad?}',[ImprimirController::class,'imprimirTicket'])->middleware(['auth'])->name('imprimirticket');
 
-Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
-    Route::get('cerradores/show/{cerrador?}', 'show');
-    Route::patch('cerradores/estatus/{actividad}', 'updateEstatus');
-    Route::resource('cerradores',CerradorController::class, [
-        'parameters' => [
-            'cerradores' => 'cerrador'
-        ]
-    ]);
+// Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
+//     Route::get('cerradores/show/{cerrador?}', 'show');
+//     Route::patch('cerradores/estatus/{actividad}', 'updateEstatus');
+//     Route::resource('cerradores',CerradorController::class, [
+//         'parameters' => [
+//             'cerradores' => 'cerrador'
+//         ]
+//     ]);
     
-});
+// });
 
 Route::controller(DescuentoCodigoController::class)->middleware(['auth'])->group(function () {
     Route::get('descuentocodigos/show/{descuentocodigo?}', 'show');
@@ -240,6 +241,16 @@ Route::controller(PedidoController::class)->middleware(['auth'])->group(function
     Route::resource('pedidos',PedidoController::class, [
         'parameters' => [
             'pedidos' => 'pedido'
+        ]
+    ]);
+});
+
+Route::controller(ImpuestoController::class)->middleware(['auth'])->group(function () {
+    Route::get('impuestos/show/{impuesto?}', 'show');
+    Route::patch('impuestos/estatus/{impuesto}', 'updateEstatus');
+    Route::resource('impuestos',ImpuestoController::class, [
+        'parameters' => [
+            'impuestos' => 'impuesto'
         ]
     ]);
 });
