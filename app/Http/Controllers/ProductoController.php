@@ -106,7 +106,10 @@ class ProductoController extends Controller
      */
     public function edit(Producto  $producto)
     {
-        return view('productos.edit',['producto' => $producto]);
+        $impuestos = Impuesto::get();
+        $productoImpuestos = ProductoImpuesto::where('producto_id',$producto->id)->get();
+
+        return view('productos.edit',['producto' => $producto,'impuestos' => $impuestos, 'productoImpuestos' => $productoImpuestos]);
     }
 
     /**
@@ -128,6 +131,15 @@ class ProductoController extends Controller
             $producto->stock_maximo    = $request->stockMaximo;
             $producto->comentarios     = mb_strtoupper($request->comentarios);
             $producto->save();
+
+            ProductoImpuesto::where('producto_id', $producto->id)->delete();
+
+            foreach($request->impuestos as $impuesto){
+                ProductoImpuesto::create([
+                    'producto_id' => $producto->id,
+                    'impuesto_id' => $impuesto
+                ]);
+            }
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);

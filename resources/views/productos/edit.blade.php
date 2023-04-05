@@ -86,6 +86,21 @@
                                 <input type="text" name="stockMaximo" class="form-control" autocomplete="off" tabindex="5" value="{{$producto->stock_maximo}}" required="required">  
                             </div>
 
+                            @foreach($impuestos as $impuesto)
+                                @php
+                                    $isChecked = '';
+                                    foreach($productoImpuestos as $productoImpuesto){
+                                        if($productoImpuesto->impuesto_id == $impuesto->id){
+                                            $isChecked = 'checked = checked';
+                                        }
+                                    }
+                                @endphp
+                                <div class="form-group col-1 mt-3">
+                                    <label for="descuentos" class="col-form-label" style="display: block;">{{$impuesto->nombre}}</label>
+                                    <input type="checkbox" name="impuestos[]" value="{{$impuesto->id}}" {{$isChecked}} class="form-control">
+                                </div>
+                            @endforeach
+
                             <div class="form-group col-4 mt-2">
                                 <label for="stockMaximo" class="col-form-label">Comentarios</label>
                                 <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false">{{@$producto->comentarios}}</textarea>
