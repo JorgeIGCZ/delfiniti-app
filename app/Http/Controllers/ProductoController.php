@@ -8,6 +8,7 @@ use App\Models\Producto;
 use App\Models\ProductoImpuesto;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class ProductoController extends Controller
 {
@@ -155,6 +156,11 @@ class ProductoController extends Controller
         }
 
         return redirect()->route("productos.index")->with(["result" => "Producto actualizado"]);
+    }
+
+    public function getProductoByProveedor(Request $request){
+        $productos = Producto::where('proveedor_id', $request->proveedorId)->get();
+        return json_encode(['result' => $productos]);
     }
 
     /**

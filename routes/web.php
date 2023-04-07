@@ -217,6 +217,7 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 Route::controller(ProductoController::class)->middleware(['auth'])->group(function () {
     Route::get('/productos/show/{producto?}', 'show');
     Route::patch('productos/estatus/{producto}', 'updateEstatus');
+    Route::post('productos/getproductobyproveedor', 'getProductoByProveedor');
     Route::resource('productos',ProductoController::class, [
         'parameters' => [
             'productos' => 'producto'

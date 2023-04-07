@@ -89,7 +89,7 @@
                                     </div>
                                     <div class="form-group col-8 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
-                                        <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$pedido->producto}}" autocomplete="off"/>
+                                        <input list="productos-list" name="productos" id="producto" class="form-control to-uppercase" tabindex="2" value="{{@$pedido->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             @foreach($productos as $producto)
                                                 <option data-codigo="{{$producto['codigo']}}" data-id="{{$producto['id']}}" value="{{$producto['nombre']}}">

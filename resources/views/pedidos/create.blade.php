@@ -48,20 +48,20 @@
 
                                         <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
                                         <datalist id="codigos-list">
-                                            @foreach($productos as $producto)
+                                            {{-- @foreach($productos as $producto)
                                                 <option data-value="{{$producto['nombre']}}" data-id="{{$producto['id']}}" value="{{$producto['codigo']}}">
-                                            @endforeach
+                                            @endforeach --}}
                                         </datalist>
                                     </div>
                                     <div class="form-group col-8 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
-                                        <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
+                                        <input list="productos-list" name="productos" id="producto" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
-                                            @foreach($productos as $producto)
+                                            {{-- @foreach($productos as $producto)
                                                 <option data-codigo="{{$producto['codigo']}}" data-id="{{$producto['id']}}" value="{{$producto['nombre']}}">
-                                            @endforeach
+                                            @endforeach --}}
                                         </datalist>
-                                    </div>
+                                    </div> 
                                     <div class="form-group col-1 mt-0 mb-0">
                                         <label for="cantidad" class="col-form-label">Cantidad</label>
                                         <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="3">
