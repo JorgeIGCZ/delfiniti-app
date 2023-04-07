@@ -117,7 +117,7 @@
                                 <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
-                                        <option value="{{$alojamiento->id}}" {{@$reservacion->alojamiento == $alojamiento->id ? 'selected="selected' : ""}} >{{$alojamiento->nombre}}</option>
+                                        <option value="{{$alojamiento->id}}" {{@$reservacion->alojamiento == $alojamiento->id ? 'selected="selected"' : ""}} >{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>

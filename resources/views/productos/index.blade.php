@@ -61,6 +61,9 @@
 
             let impuestos = [];
 
+            let proveedorId = productos.elements['proveedor'];
+            proveedorId     = proveedorId.options[proveedorId.selectedIndex];
+
             if(productos.elements['impuestos[]'].length > 0){
                 productos.elements['impuestos[]'].forEach(element => {
                     impuestos.push([element.value, element.checked]);
@@ -73,6 +76,7 @@
                 '_token'   : '{{ csrf_token() }}',
                 "clave"   : productos.elements['clave'].value,
                 "codigo"   : productos.elements['codigo'].value,
+                "proveedorId": proveedorId.value,
                 "nombre"   : productos.elements['nombre'].value,
                 "costo": productos.elements['costo'].getAttribute('value'),
                 "precioVenta" : productos.elements['precioVenta'].getAttribute('value'),
@@ -241,23 +245,33 @@
 
                                 <div class="form-group col-1 mt-2">
                                     <label for="stockMinimo" class="col-form-label">Stock mín</label>
-                                    <input type="text" name="stockMinimo" class="form-control" autocomplete="off" tabindex="6" required="required">  
+                                    <input type="number" name="stockMinimo" class="form-control" autocomplete="off" tabindex="6" required="required">  
                                 </div>
                                 <div class="form-group col-1 mt-2">
                                     <label for="stockMaximo" class="col-form-label">Stock máx</label>
-                                    <input type="text" name="stockMaximo" class="form-control" autocomplete="off" tabindex="7" required="required">  
-                                </div>
-                                <div class="form-group col-4 mt-2">
-                                    <label for="stockMaximo" class="col-form-label">Comentarios</label>
-                                    <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false"></textarea>
+                                    <input type="number" name="stockMaximo" class="form-control" autocomplete="off" tabindex="7" required="required">  
                                 </div>
 
+                                <div class="form-group col-4 mt-2">
+                                    <label for="proveedor" class="col-form-label">Proveedor</label>
+                                    <select name="proveedor" id="proveedor" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="8">
+                                        @foreach($proveedores as $proveedor)
+                                            <option value="{{$proveedor->id}}">{{$proveedor->razon_social}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
                                 @foreach($impuestos as $impuesto)
                                     <div class="form-group col-1 mt-3">
                                         <label for="descuentos" class="col-form-label" style="display: block;">{{$impuesto->nombre}}</label>
                                         <input type="checkbox" name="impuestos[]" value="{{$impuesto->id}}" class="form-control">
                                     </div>
                                 @endforeach
+
+                                <div class="form-group col-4 mt-2">
+                                    <label for="stockMaximo" class="col-form-label">Comentarios</label>
+                                    <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false"></textarea>
+                                </div>
                                 
                                 <div class="form-group col-2 mt-3">
                                     <button class="btn btn-info btn-block mt-33" id="crear-producto" tabindex="8">Crear producto</button>

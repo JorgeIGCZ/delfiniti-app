@@ -86,6 +86,15 @@
                                 <input type="text" name="stockMaximo" class="form-control" autocomplete="off" tabindex="5" value="{{$producto->stock_maximo}}" required="required">  
                             </div>
 
+                            <div class="form-group col-4 mt-2">
+                                <label for="proveedor" class="col-form-label">Proveedor</label>
+                                <select name="proveedor" id="proveedor" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="8">
+                                    @foreach($proveedores as $proveedor)
+                                        <option value="{{$proveedor->id}}" {{$producto->proveedor_id === $proveedor->id ? 'selected="selected"' : ""}}>{{$proveedor->razon_social}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             @foreach($impuestos as $impuesto)
                                 @php
                                     $isChecked = '';

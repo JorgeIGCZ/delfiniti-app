@@ -65,7 +65,7 @@
                                         <label for="proveedor" class="col-form-label">Proveedor</label>
                                         <select name="proveedor" id="proveedor" class="form-control" tabindex="1">
                                             @foreach($proveedores as $proveedor)
-                                                <option value="{{$proveedor->id}}" {{$pedido->proveedor_id == $proveedor->id ? 'selected="selected' : ""}}>{{$proveedor->razon_social}}</option>
+                                                <option value="{{$proveedor->id}}" {{$pedido->proveedor_id == $proveedor->id ? 'selected="selected"' : ""}}>{{$proveedor->razon_social}}</option>
                                             @endforeach
                                         </select>
                                     </div>

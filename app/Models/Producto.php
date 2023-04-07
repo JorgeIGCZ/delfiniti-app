@@ -12,6 +12,7 @@ class Producto extends Model
     protected $fillable = [
         'clave',
         'codigo',
+        'proveedor_id',
         'nombre',
         'costo',
         'precio_venta',

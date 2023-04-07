@@ -60,7 +60,7 @@
                                 <label for="tipo" class="col-form-label">Tipo</label>
                                 <select name="tipo" id="tipo" class="form-control">
                                     @foreach($tipos as $tipo)
-                                        <option value="{{$tipo->id}}" {{$tipo->id === $comisionista->canal_venta_id ? 'selected="selected' : ""}} comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
+                                        <option value="{{$tipo->id}}" {{$tipo->id === $comisionista->canal_venta_id ? 'selected="selected"' : ""}} comisionistaCanal={{$tipo->comisionista_canal}} comisionistaActividad={{$tipo->comisionista_actividad}}>{{$tipo->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>

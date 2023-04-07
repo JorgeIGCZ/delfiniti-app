@@ -6,6 +6,7 @@ use App\Classes\CustomErrorHandler;
 use App\Models\Impuesto;
 use App\Models\Producto;
 use App\Models\ProductoImpuesto;
+use App\Models\Proveedor;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -18,7 +19,8 @@ class ProductoController extends Controller
     public function index()
     {
         $impuestos = Impuesto::get();
-        return view('productos.index',['impuestos' => $impuestos]);
+        $proveedores = Proveedor::get();
+        return view('productos.index',['impuestos' => $impuestos, 'proveedores' => $proveedores]);
     }
 
     /**
@@ -59,6 +61,7 @@ class ProductoController extends Controller
             $producto = Producto::create([
                 'clave'    => $request->clave,
                 'codigo'   => $request->codigo,
+                'proveedor_id' => $request->proveedorId,
                 'nombre'   => mb_strtoupper($request->nombre),
                 'costo'    => $request->costo,
                 'precio_venta'    => $request->precioVenta,
@@ -68,12 +71,14 @@ class ProductoController extends Controller
                 'comentarios'     => mb_strtoupper($request->comentarios)
             ]);
 
-            foreach($request->impuestos as $impuestos){
-                if($impuestos[1]){
-                    ProductoImpuesto::create([
-                        'producto_id' => $producto['id'],
-                        'impuesto_id' => $impuestos[0]
-                    ]);
+            if(isset($request->impuestos)){
+                foreach($request->impuestos as $impuestos){
+                    if($impuestos[1]){
+                        ProductoImpuesto::create([
+                            'producto_id' => $producto['id'],
+                            'impuesto_id' => $impuestos[0]
+                        ]);
+                    }
                 }
             }
         } catch (\Exception $e){
@@ -107,9 +112,10 @@ class ProductoController extends Controller
     public function edit(Producto  $producto)
     {
         $impuestos = Impuesto::get();
+        $proveedores = Proveedor::get();
         $productoImpuestos = ProductoImpuesto::where('producto_id',$producto->id)->get();
 
-        return view('productos.edit',['producto' => $producto,'impuestos' => $impuestos, 'productoImpuestos' => $productoImpuestos]);
+        return view('productos.edit',['producto' => $producto,'impuestos' => $impuestos, 'productoImpuestos' => $productoImpuestos, 'proveedores' => $proveedores]);
     }
 
     /**
@@ -123,6 +129,7 @@ class ProductoController extends Controller
     {
         try {
             $producto->codigo          = $request->codigo;
+            $producto->proveedor_id    = $request->proveedor;
             $producto->nombre          = mb_strtoupper($request->nombre);
             $producto->costo           = floatval(str_replace('$','',$request->costo));
             $producto->precio_venta    = floatval(str_replace('$','',$request->precioVenta));
@@ -132,13 +139,14 @@ class ProductoController extends Controller
             $producto->comentarios     = mb_strtoupper($request->comentarios);
             $producto->save();
 
-            ProductoImpuesto::where('producto_id', $producto->id)->delete();
-
-            foreach($request->impuestos as $impuesto){
-                ProductoImpuesto::create([
-                    'producto_id' => $producto->id,
-                    'impuesto_id' => $impuesto
-                ]);
+            if(isset($request->impuestos)){
+                ProductoImpuesto::where('producto_id', $producto->id)->delete();
+                foreach($request->impuestos as $impuesto){
+                    ProductoImpuesto::create([
+                        'producto_id' => $producto->id,
+                        'impuesto_id' => $impuesto
+                    ]);
+                }
             }
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

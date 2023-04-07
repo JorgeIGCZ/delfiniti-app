@@ -239,7 +239,7 @@
                                 <select name="alojamiento" class="form-control to-uppercase" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->email}}">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
-                                        <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento == $alojamiento->id ? 'selected="selected' : ""}} >{{$alojamiento->nombre}}</option>
+                                        <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento == $alojamiento->id ? 'selected="selected"' : ""}} >{{$alojamiento->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -353,7 +353,7 @@
                                                 <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
-                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
+                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected"' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -363,7 +363,7 @@
                                                 <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar cerrador</option>
                                                     @foreach($cerradores as $cerrador)
-                                                        <option value="{{$cerrador->id}}" {{$reservacion->cerrador_id === $cerrador->id ? 'selected="selected' : ""}}>{{$cerrador->nombre}}</option>
+                                                        <option value="{{$cerrador->id}}" {{$reservacion->cerrador_id === $cerrador->id ? 'selected="selected"' : ""}}>{{$cerrador->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -386,7 +386,7 @@
                                                 <select name="comisionista-actividad" id="comisionista-actividad" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="14">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistasActividad as $comisionistaActividad)
-                                                        <option value="{{$comisionistaActividad->id}}" {{$reservacion->comisionista_actividad_id === $comisionistaActividad->id ? 'selected="selected' : ""}}>{{$comisionistaActividad->nombre}}</option>
+                                                        <option value="{{$comisionistaActividad->id}}" {{$reservacion->comisionista_actividad_id === $comisionistaActividad->id ? 'selected="selected"' : ""}}>{{$comisionistaActividad->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>

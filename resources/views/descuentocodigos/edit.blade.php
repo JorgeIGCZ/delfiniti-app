@@ -44,8 +44,8 @@
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Tipo</label>
                                 <select name="tipo" id="tipo" class="form-control">
-                                    <option value="cantidad" {{'cantidad' === $descuentocodigo->tipo ? 'selected="selected' : ""}} >Cantidad</option>
-                                    <option value="porcentaje" {{'porcentaje' === $descuentocodigo->tipo ? 'selected="selected' : ""}} >Porcentaje</option>
+                                    <option value="cantidad" {{'cantidad' === $descuentocodigo->tipo ? 'selected="selected"' : ""}} >Cantidad</option>
+                                    <option value="porcentaje" {{'porcentaje' === $descuentocodigo->tipo ? 'selected="selected"' : ""}} >Porcentaje</option>
                                 </select>
                             </div>
                             <div class="form-group col-2 mt-3">

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('clave')->unique();
             $table->string('codigo')->unique()->nullable();
+            $table->integer('proveedor_id');
             $table->string('nombre');
             $table->double('costo');
             $table->double('precio_venta');
