@@ -18,6 +18,7 @@ class RoleSeeder extends Seeder
     {
 
         $administrador = Role::create(['name' => 'Administrador']);
+        $tienda        = Role::create(['name' => 'Tienda']);
         $supervisor    = Role::create(['name' => 'Supervisor']);
         $recepcion     = Role::create(['name' => 'Recepcion']);
         $mercadotecnia = Role::create(['name' => 'Mercadotecnia']);

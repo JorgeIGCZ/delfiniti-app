@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
 use App\Models\Impuesto;
+use App\Models\MovimientoInventario;
 use App\Models\Producto;
 use App\Models\ProductoImpuesto;
 use App\Models\Proveedor;
@@ -110,7 +111,7 @@ class ProductoController extends Controller
      * @param  \App\Models\Producto  $producto
      * @return \Illuminate\Http\Response
      */
-    public function edit(Producto  $producto)
+    public function edit(Producto $producto)
     {
         $impuestos = Impuesto::get();
         $proveedores = Proveedor::get();
@@ -161,6 +162,41 @@ class ProductoController extends Controller
     public function getProductoByProveedor(Request $request){
         $productos = Producto::where('proveedor_id', $request->proveedorId)->get();
         return json_encode(['result' => $productos]);
+    }
+    
+    /**
+     * Mostrar vista de edicion de inventario
+     *
+     * @param  \App\Models\Producto  $producto
+     * @return \Illuminate\Http\Response
+     */
+    public function editInventario(Producto $producto){
+        return view('productos.inventario',['producto' => $producto]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateInventario(Request $request, $id){
+        try{
+            $producto          = Producto::find($id);
+            $producto->stock = ($request->movimiento === 'baja' ? $producto->stock - $request->numeroProductos : $producto->stock + $request->numeroProductos);
+            $producto->save();
+
+            MovimientoInventario::create([
+                'producto_id' => $id,
+                'movimiento' => $request->movimiento,
+                'comentarios' => $request->comentarios
+            ]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+        }
+        return redirect()->route("productos.index")->with(["result" => "Inventario actualizado"]);
     }
 
     /**
