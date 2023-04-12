@@ -116,6 +116,7 @@
                 @can('Usuarios.Roles.index')
                   <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
                 @endcan
+
                 @if(session('modulo') == 'tienda')
                   {{-- @can('TipoCambio.index') --}}
                     <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos</a>

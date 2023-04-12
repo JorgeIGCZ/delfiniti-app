@@ -29,6 +29,13 @@
             <h2 class="az-dashboard-title">Producto</h2>
         </div>
         <div class="az-content-header-right">
+            @role('Administrador')
+            <div class="media">
+                <div class="media-body">
+                    <a href="/productos/inventario/{{$producto->id}}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Modificar inventario</a>
+                </div><!-- media-body -->
+            </div><!-- media -->
+            @endrole
             <div class="media">
                 <div class="media-body">
                     <label>Fecha de última entrada</label>
