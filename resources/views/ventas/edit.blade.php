@@ -325,10 +325,10 @@
                                     <div class="form-group col-8 mt-0 mb-0">
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
-                                                <label for="agente" class="col-form-label">Vendido por</label>
-                                                <select name="agente" class="form-control" tabindex="10">
-                                                    <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
-                                                        {{Auth::user()->name}} ({{Auth::user()->email}})
+                                                <label for="usuario" class="col-form-label">Vendido por</label>
+                                                <select name="usuario" class="form-control" tabindex="10">
+                                                    <option value="{{$venta->usuario->id}}" usuario="{{$venta->usuario->username}}" selected="selected" disabled="disabled">
+                                                        {{$venta->usuario->name}} ({{$venta->usuario->email}})
                                                     </option>
                                                 </select>
                                             </div>

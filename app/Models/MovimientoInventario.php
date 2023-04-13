@@ -11,7 +11,8 @@ class MovimientoInventario extends Model
 
     protected $fillable = [
         'producto_id',
-        'movimiento',
+        'accion',
+        'usuario_id',
         'comentarios'
     ];
     protected $primaryKey = 'id';

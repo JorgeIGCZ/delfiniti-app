@@ -18,6 +18,7 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
 use App\Http\Controllers\ImpuestoController;
+use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -216,11 +217,19 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 
 Route::controller(ProductoController::class)->middleware(['auth'])->group(function () {
     Route::get('productos/show/{producto?}', 'show');
-    Route::get('productos/inventario/{producto?}', 'editInventario');
-    Route::patch('productos/inventario/{producto?}', 'updateInventario')->name('productos.inventario');;
+    // Route::get('productos/inventario/{producto?}', 'editInventario');
+    // Route::patch('productos/inventario/{producto?}', 'updateInventario')->name('productos.inventario');
     Route::patch('productos/estatus/{producto}', 'updateEstatus');
     Route::post('productos/getproductobyproveedor', 'getProductoByProveedor');
     Route::resource('productos',ProductoController::class, [
+        'parameters' => [
+            'productos' => 'producto'
+        ]
+    ]);
+});
+
+Route::controller(InventarioController::class)->middleware(['auth'])->group(function () {
+    Route::resource('inventario',InventarioController::class, [
         'parameters' => [
             'productos' => 'producto'
         ]

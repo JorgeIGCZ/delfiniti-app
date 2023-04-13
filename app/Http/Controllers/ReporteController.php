@@ -600,10 +600,10 @@ class ReporteController extends Controller
         $creadaPor   = $request->data['cajero'];
         $showCupones = ($request->data['cupones'] === "1");
         
-        $agentes = User::role(['Administrador','Recepcion'])->get()->pluck('id');
+        $usuarios = User::role(['Administrador','Recepcion'])->get()->pluck('id');
 
         if($creadaPor !== "0"){
-            $agentes = [$creadaPor];
+            $usuarios = [$creadaPor];
         }
         
         // $fechaInicio = '2022-08-15 00:00:00';
@@ -612,8 +612,8 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
         $tipoCambio = TipoCambio::where("seccion_uso","reportes")->get()[0]["precio_compra"];
 
-        $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal,$agentes,$showCupones);
-        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes);
+        $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios);
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "CORTE DE CAJA");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");
@@ -635,7 +635,7 @@ class ReporteController extends Controller
             } 
 
             $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("agente_id", $agentes)->get();
+            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("usuario_id", $usuarios)->get();
             
             //Estilo de encabezado
             $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:G{$rowNumber}");
@@ -804,7 +804,7 @@ class ReporteController extends Controller
         foreach($actividadesPagos as $actividadPagos){
 
             $reservacionesPago = $actividadPagos->pagos->pluck('reservacion.id');
-            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("agente_id", $agentes)->get();
+            $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("usuario_id", $usuarios)->get();
             
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadPagos->nombre);
             $totalEfectivo = 0;
@@ -940,10 +940,10 @@ class ReporteController extends Controller
         $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
         $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
 
-        $agentes = User::role('Recepcion')->get()->pluck('id');
+        $usuarios = User::role('Recepcion')->get()->pluck('id');
 
         //if($creadaPor !== 0){
-        //    $agentes = [$creadaPor];
+        //    $usuarios = [$creadaPor];
         //}
 
         // $fechaInicio = '2022-08-15 00:00:00';
@@ -952,7 +952,7 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
-        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios);
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
@@ -1224,12 +1224,12 @@ class ReporteController extends Controller
         return $numeroPersonas;
     }
 
-    private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$agentes){
+    private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios){
 
-        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$agentes) {
+        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$usuarios) {
             $query
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
-                ->whereIn("agente_id", $agentes)
+                ->whereIn("usuario_id", $usuarios)
                 ->where('estatus',1);
         }])->get();
 
@@ -1374,7 +1374,7 @@ class ReporteController extends Controller
         return [$actividadIndividualPago,$actividadIndividualPendiente];
     }
 
-    private function getActividadesFechaPagos($fechaInicio,$fechaFinal,$agentes,$showCupones){
+    private function getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones){
         $tiposPago = [1,2,3,5,8];
         ($showCupones ?  array_push($tiposPago,4) : '');
 
@@ -1383,9 +1383,9 @@ class ReporteController extends Controller
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id',$tiposPago)->count();
         }])
-        ->with(['reservaciones' => function ($query) use ($agentes) {
+        ->with(['reservaciones' => function ($query) use ($usuarios) {
             $query
-                ->whereIn('agente_id',$agentes);
+                ->whereIn('usuario_id',$usuarios);
         }])
         ->orderBy('actividades.reporte_orden','asc')->get();
          

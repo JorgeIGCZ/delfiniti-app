@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('movimientos_inventario', function (Blueprint $table) {
             $table->id();
             $table->integer('producto_id');
-            $table->string('movimiento');
+            $table->string('accion');
+            $table->integer('usuario_id');
             $table->text('comentarios');
             $table->timestamps();
         });

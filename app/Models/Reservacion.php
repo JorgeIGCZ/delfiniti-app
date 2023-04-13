@@ -15,7 +15,7 @@ class Reservacion extends Model
         'email',
         'alojamiento',
         'origen',
-        'agente_id',
+        'usuario_id',
         'comisionista_id',
         'comisionista_actividad_id',
         'cerrador_id',
@@ -64,9 +64,9 @@ class Reservacion extends Model
         return $this->hasOne(Comisionista::class,'id','comisionista_id');
     }
 
-    public function agente()
+    public function usuario()
     {
-        return $this->hasOne(User::class,'id','agente_id');
+        return $this->hasOne(User::class,'id','usuario_id');
     }
     
     public function actividad()

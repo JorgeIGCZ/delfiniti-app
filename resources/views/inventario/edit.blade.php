@@ -3,7 +3,7 @@
     <script>
         $(function(){
             const inventario = {{$producto->stock}};
-            document.getElementById('movimiento').addEventListener('change', (event) =>{
+            document.getElementById('accion').addEventListener('change', (event) =>{
                 const numeroProductos = document.getElementById('numeroProductos');
                 if(event.target.value == 'baja'){
                     numeroProductos.setAttribute('max',inventario);
@@ -40,7 +40,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form method="POST" class="row g-3 align-items-center f-auto" id="inventario-form" action="{{route("productos.inventario",$producto['id'])}}">
+                        <form method="POST" class="row g-3 align-items-center f-auto" id="inventario-form" action="{{route("inventario.update",$producto['id'])}}">
                             @csrf
                             <input type="hidden" name="_method" value="PATCH">
                             <div class="form-group col-1 mt-3">
@@ -57,8 +57,8 @@
                             </div>
 
                             <div class="form-group col-2 mt-2">
-                                <label for="movimiento" class="col-form-label">Movimiento</label>
-                                <select name="movimiento" id="movimiento" class="form-control" data-show-subtext="true" tabindex="1">
+                                <label for="accion" class="col-form-label">Movimiento</label>
+                                <select name="accion" id="accion" class="form-control" data-show-subtext="true" tabindex="1">
                                     <option value="alta" selected="selected">Alta</option>
                                     <option value="baja">Baja</option>
                                 </select>

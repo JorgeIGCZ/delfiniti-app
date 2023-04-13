@@ -91,7 +91,7 @@
                           @php
                             use App\Models\User;
                             use App\Models\CanalVenta;
-                            $agentes = User::role('Recepcion')->get();
+                            $usuarios = User::role('Recepcion')->get();
                             $canales = CanalVenta::get();
                           @endphp
                           
@@ -99,12 +99,12 @@
                             <div class="row">
                                 <div class="form-group col-6 mt-0 mb-0">
                                     <label for="cajero" class="col-form-label">Seleccionar el cajero.</label>
-                                    <select id="corte-agente" class="form-control" >
+                                    <select id="corte-usuario" class="form-control" >
                                         <option value="0" selected="selected">
                                           TODOS
                                         </option>
-                                        @foreach($agentes as $agente)
-                                          <option value="{{$agente->id}}" >{{$agente->name}}</option>
+                                        @foreach($usuarios as $usuario)
+                                          <option value="{{$usuario->id}}" >{{$usuario->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>

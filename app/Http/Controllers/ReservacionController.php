@@ -161,7 +161,7 @@ class ReservacionController extends Controller
                 'email'           => mb_strtoupper($request->email),
                 'alojamiento'     => mb_strtoupper($request->alojamiento),
                 'origen'          => mb_strtoupper($request->origen),
-                'agente_id'       => is_numeric($request->agente) ? $request->agente : 0,
+                'usuario_id'       => is_numeric($request->usuario) ? $request->usuario : 0,
                 'comisionista_id' => is_numeric($request->comisionista) ? $request->comisionista : 0,
                 'comisionista_actividad_id' => is_numeric($request->comisionistaActividad) ? $request->comisionistaActividad : 0,
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
@@ -557,7 +557,7 @@ class ReservacionController extends Controller
             $reservacion->email           = mb_strtoupper($request->email);
             $reservacion->alojamiento     = mb_strtoupper($request->alojamiento);
             $reservacion->origen          = mb_strtoupper($request->origen);
-            $reservacion->agente_id       = $request->agente;
+            $reservacion->usuario_id       = $request->usuario;
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;

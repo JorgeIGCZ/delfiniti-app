@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('RFC')->nullable();
             $table->date('fecha');
             $table->date('fecha_creacion');
+            $table->integer('usuario_id');
             $table->text('comentarios');
             $table->boolean('estatus')->default(1)->comment('0 es orden cancelada 1 es orden activa');
             $table->timestamps();

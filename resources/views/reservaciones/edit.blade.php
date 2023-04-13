@@ -341,10 +341,10 @@
                                     <div class="form-group col-8 mt-0 mb-0">
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
-                                                <label for="agente" class="col-form-label">Reservado por</label>
-                                                <select name="agente" class="form-control" tabindex="11">
-                                                    <option value="{{$reservacion->agente->id}}" usuario="{{$reservacion->agente->username}}" selected="selected" disabled="disabled">
-                                                        {{$reservacion->agente->name}} ({{$reservacion->agente->email}})
+                                                <label for="usuario" class="col-form-label">Reservado por</label>
+                                                <select name="usuario" class="form-control" tabindex="11">
+                                                    <option value="{{$reservacion->usuario->id}}" usuario="{{$reservacion->usuario->username}}" selected="selected" disabled="disabled">
+                                                        {{$reservacion->usuario->name}} ({{$reservacion->usuario->email}})
                                                     </option>
                                                 </select>
                                             </div>

@@ -32,7 +32,7 @@
             @role('Administrador')
             <div class="media">
                 <div class="media-body">
-                    <a href="/productos/inventario/{{$producto->id}}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Modificar inventario</a>
+                    <a href="/inventario/{{$producto->id}}/edit" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Modificar inventario</a>
                 </div><!-- media-body -->
             </div><!-- media -->
             @endrole

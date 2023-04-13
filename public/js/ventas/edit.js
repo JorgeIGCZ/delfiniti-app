@@ -141,7 +141,7 @@ function setReservacionesTipoAccion() {
     let hiddenFields = [];
     if (accion === 'pago') {
         hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
-        disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
+        disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'usuario', 'cerrador'];
     } else {
         hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
         disabledFields = ['codigo-descuento'];
@@ -183,7 +183,7 @@ function createReservacion(estatus) {
         'email': reservacion.elements['email'].value,
         'alojamiento': reservacion.elements['alojamiento'].value,
         'origen': reservacion.elements['origen'].value,
-        'agente': reservacion.elements['agente'].value,
+        'usuario': reservacion.elements['usuario'].value,
         'comisionista': reservacion.elements['comisionista'].value,
         'comisionistaActividad': reservacion.elements['comisionista-actividad'].value,
         'cerrador': reservacion.elements['cerrador'].value,

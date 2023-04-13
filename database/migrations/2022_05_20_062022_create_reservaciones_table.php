@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('alojamiento')->nullable();
             $table->string('origen')->nullable();
-            $table->integer('agente_id');
+            $table->integer('usuario_id');
             $table->integer('comisionista_id');
             $table->integer('comisionista_actividad_id');
             $table->integer('cerrador_id');

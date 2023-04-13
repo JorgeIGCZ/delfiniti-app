@@ -55,7 +55,7 @@ $(function () {
                 return false;
             }
     
-            const cajero      = document.getElementById('corte-agente').value;
+            const cajero      = document.getElementById('corte-usuario').value;
             const cupones     = (document.getElementById('corte-cupones').checked ? 1 : 0);
     
             const action      = document.getElementById('crear-reporte').getAttribute('action');

@@ -163,41 +163,6 @@ class ProductoController extends Controller
         $productos = Producto::where('proveedor_id', $request->proveedorId)->get();
         return json_encode(['result' => $productos]);
     }
-    
-    /**
-     * Mostrar vista de edicion de inventario
-     *
-     * @param  \App\Models\Producto  $producto
-     * @return \Illuminate\Http\Response
-     */
-    public function editInventario(Producto $producto){
-        return view('productos.inventario',['producto' => $producto]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updateInventario(Request $request, $id){
-        try{
-            $producto          = Producto::find($id);
-            $producto->stock = ($request->movimiento === 'baja' ? $producto->stock - $request->numeroProductos : $producto->stock + $request->numeroProductos);
-            $producto->save();
-
-            MovimientoInventario::create([
-                'producto_id' => $id,
-                'movimiento' => $request->movimiento,
-                'comentarios' => $request->comentarios
-            ]);
-        } catch (\Exception $e){
-            $CustomErrorHandler = new CustomErrorHandler();
-            $CustomErrorHandler->saveError($e->getMessage(),$request);
-        }
-        return redirect()->route("productos.index")->with(["result" => "Inventario actualizado"]);
-    }
 
     /**
      * Update the specified resource in storage.
@@ -226,6 +191,12 @@ class ProductoController extends Controller
         }else{
             $producto->ultima_salida = date('Y-m-d');
         }
+        $producto->save();
+    }
+
+    public function updateStock($productoId, $accion, $numeroProductos){
+        $producto          = Producto::find($productoId);
+        $producto->stock = ($accion === 'baja' ? $producto->stock - $numeroProductos : $producto->stock + $numeroProductos);
         $producto->save();
     }
 

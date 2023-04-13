@@ -18,6 +18,7 @@ class Venta extends Model
         'RFC',
         'fecha',
         'fecha_creacion',
+        'usuario_id',
         'comentarios',
         'estatus'
     ];

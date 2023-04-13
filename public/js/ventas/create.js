@@ -31,7 +31,8 @@ function createVenta(estatus) {
         'origen': venta.elements['origen'].value,
         'total': venta.elements['total'].getAttribute('value'),
         'fecha': venta.elements['fecha'].value,
-        'pagos': pagos,
+        'pagos': pagos, 
+        'usuario': venta.elements['usuario'].value,
         'comentarios': venta.elements['comentarios'].value,
         'estatus': estatus,
         'ventaProductos': productosArray

@@ -143,6 +143,7 @@ class VentaController extends Controller
                 'RFC'            => mb_strtoupper($request->rfc),
                 'fecha'          => $request->fecha,
                 'fecha_creacion' => date('Y-m-d'),
+                'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0,
                 'comentarios'    => mb_strtoupper($request->comentarios)
             ]);
 
@@ -155,11 +156,12 @@ class VentaController extends Controller
 
             foreach($request->ventaProductos as $ventaProducto){
                 $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
+                $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
                 VentaDetalle::create([
                     'venta_id'            =>  $venta['id'],
                     'factura_id'          =>  $factura['id'],
                     'producto_id'         =>  $ventaProducto['productoId'],
-                    'numero_productos'     =>  $ventaProducto['cantidad'],
+                    'numero_productos'    =>  $ventaProducto['cantidad'],
                     'PPU'                 =>  $ventaProducto['precio']
                 ]);
             }
@@ -506,7 +508,7 @@ class VentaController extends Controller
         //     $venta->email           = mb_strtoupper($request->email);
         //     $venta->alojamiento     = mb_strtoupper($request->alojamiento);
         //     $venta->origen          = mb_strtoupper($request->origen);
-        //     $venta->agente_id       = $request->agente;
+        //     $venta->usuario_id       = $request->usuario;
         //     $venta->comisionista_id = $request->comisionista;
         //     $venta->comisionista_producto_id = $request->comisionistaProducto;
         //     $venta->cerrador_id     = $request->cerrador;

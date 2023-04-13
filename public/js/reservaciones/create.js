@@ -90,7 +90,7 @@ function createReservacion(estatus) {
         'email': reservacion.elements['email'].value,
         'alojamiento': reservacion.elements['alojamiento'].value,
         'origen': reservacion.elements['origen'].value,
-        'agente': reservacion.elements['agente'].value,
+        'usuario': reservacion.elements['usuario'].value,
         'comisionista': reservacion.elements['comisionista'].value,
         'comisionistaActividad': reservacion.elements['comisionista-actividad'].value,
         'cerrador': reservacion.elements['cerrador'].value,

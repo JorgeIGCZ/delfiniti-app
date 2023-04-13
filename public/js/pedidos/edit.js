@@ -141,7 +141,7 @@ function setReservacionesTipoAccion() {
     // let hiddenFields = [];
     // if (accion === 'pago') {
     //     hiddenFields = ['add-actividad', 'actualizar','actividad-container'];
-    //     disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'agente', 'cerrador'];
+    //     disabledFields = ['nombre', 'email', 'alojamiento', 'origen', 'clave', 'actividad', 'horario', 'fecha', 'cantidad', 'usuario', 'cerrador'];
     // } else {
     //     hiddenFields = ['pagar', 'detallePagoContainer', 'add-descuento-personalizado', 'add-codigo-descuento'];
     //     disabledFields = ['codigo-descuento'];
