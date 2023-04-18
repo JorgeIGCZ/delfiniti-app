@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class InventarioController extends Controller
 {
     public function __construct() {
-        // $this->middleware('role:Administrador')->only('edit'); 
+        $this->middleware('role:Administrador')->only('edit'); 
     }
 
     /**
