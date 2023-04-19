@@ -75,7 +75,7 @@ async function eliminarActividadReservacion(row,clave){
 
     return true;
 }
-async function eliminarDescuentoReservacion(row,pagoId){
+async function eliminarPagoReservacion(row,pagoId){
     $('.loader').show();
     result = await axios.post('/reservaciones/removeDescuento', {
         '_token': token(),
@@ -88,7 +88,7 @@ async function eliminarDescuentoReservacion(row,pagoId){
         $('.loader').hide();
         Swal.fire({
             icon: 'success',
-            title: `Descuento eliminado!`,
+            title: `Eliminado!`,
             showConfermButton: false,
             timer: 1000
         })
@@ -768,7 +768,7 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
     if(env == 'edit'){
         Swal.fire({
             title: '¿Eliminiar?',
-            text: "El descuento será eliminado de la reservación, ¿desea proceder?",
+            text: "El pago/descuento será eliminado de la reservación, ¿desea proceder?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#17a2b8',
@@ -776,7 +776,7 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
             confirmButtonText: 'Sí, eliminar!'
         }).then((result) => {
             if (result.isConfirmed) {
-                eliminarDescuentoReservacion(this,$(this).parents('tr')[0].firstChild.innerText)
+                eliminarPagoReservacion(this,$(this).parents('tr')[0].firstChild.innerText)
             }
         });
     }

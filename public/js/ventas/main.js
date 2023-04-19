@@ -106,15 +106,6 @@ function addProducto(){
     setTotal();
 }
 
-function clearSeleccion(){
-    document.getElementById('productos').value = "";
-    document.getElementById('codigo').value = "";
-    document.getElementById('clave').value = "";
-    document.getElementById('productos').value = "";
-    document.getElementById('cantidad').value = 1;
-    document.getElementById('precio').value = "";
-}
-
 function resetVentas() {
     location.reload();
 }
@@ -279,7 +270,7 @@ function validateFecha() {
     if(fecha.value == ''){
         Swal.fire({
             icon: 'warning',
-            title: `¡Fecha de reservación invalida!`
+            title: `¡Fecha de venta invalida!`
         });
         /*
         const year = (new Date()).toLocaleDateString('es-MX',{year: 'numeric'});
@@ -458,7 +449,7 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
     if(env == 'edit'){
         Swal.fire({
             title: '¿Eliminiar?',
-            text: "El descuento será eliminado de la reservación, ¿desea proceder?",
+            text: "El pago/descuento será eliminado de la reservación, ¿desea proceder?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#17a2b8',
@@ -466,11 +457,40 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
             confirmButtonText: 'Sí, eliminar!'
         }).then((result) => {
             if (result.isConfirmed) {
-                eliminarDescuentoVenta(this,$(this).parents('tr')[0].firstChild.innerText)
+                eliminarPagoReservacion(this,$(this).parents('tr')[0].firstChild.innerText)
             }
         });
     }
 } );
+
+async function eliminarPagoReservacion(row,pagoId){
+    $('.loader').show();
+    result = await axios.post('/ventas/removePago', {
+        '_token': token(),
+        'ventaId': ventaId(),
+        'pagoId': pagoId
+    });
+
+    if(result.data.result == "Success"){
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'success',
+            title: `Eliminado!`,
+            showConfermButton: false,
+            timer: 1000
+        })
+        location.reload();
+    }else{
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'error',
+            title: `Petición fallida`,
+            showConfirmButton: true
+        })
+    }
+
+    return true;
+}
 
  $('#codigo').on('change', function (e) {
     // debugger;
@@ -490,6 +510,7 @@ $('#productos').on('change', function (e) {
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
         // debugger;
+        e.preventDefault();
         const element = $(this).attr("id");
         if(element == "codigo" || element == "productos" || element == "cantidad"){
             if(element == "codigo"){
@@ -497,10 +518,12 @@ $('body').on('keydown', 'input, select, button', function(e) {
             }else{
                 changeCodigoProducto();
             }
-            validateFecha();
-            addProductos();
-            document.getElementById('venta-form').elements['codigo'].focus();
-            return true;
+            if(productoIsValid()){
+                validateFecha();
+                addProductos();
+                document.getElementById('venta-form').elements['codigo'].focus();
+                return true;
+            }
         }
 
         var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
@@ -509,35 +532,60 @@ $('body').on('keydown', 'input, select, button', function(e) {
         if (next.length) {
             next.focus();
         } else {
-            form.submit();
+            // form.submit();
         }
         return false;
     }
 });
 
-function changeCodigoProducto() {
-    var value = document.getElementById('productos').value;
-    const productos = document.querySelector(`#productos-list [value="${value}"]`);
+function productoIsValid() {
+    const cantidad = document.getElementById('cantidad');
+    const clave = document.getElementById('clave');
+    
+    if(cantidad.value < 1){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Cantidad invalida!`
+        });
+        cantidad.value = 1;
+        cantidad.focus()
+        return false;
+    }
 
-    document.getElementById('codigo').value = productos.getAttribute('data-id');
-    document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
-
-    //$('#codigo').trigger('change.select2');
-    // getProductoDisponibilidad();
-    getProductoMeta();
+    if(clave.value == "" || clave.value == "0"){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Producto invalido!`
+        });
+        clave.focus()
+        return false;
+    }
+    return true;
 }
 
-function changeProducto() {
-    var value = document.getElementById('codigo').value;
-    const codigos = document.querySelector(`#codigos-list [value="${value}"]`);
+function addProductos() {
+    const codigoProducto = document.getElementById('codigo').value;
 
-    document.getElementById('productos').value = codigos.getAttribute('data-value');
-    // document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
+    if (isProductoDuplicado({'codigoProducto': codigoProducto})) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'El prodducto ya se encuenta agregado.',
+            showConfirmButton: false,
+            timer: 900
+        });
 
-    //$('#productos').trigger('change.select2');
-    // getProductoDisponibilidad();
-    getProductoMeta();
+        resetProductoMeta();
+        return false;
+    }
+    // if(!isDisponible()){
+    //     return false;
+    // }
+    addProducto();
+    resetProductoMeta();
+    // enableBtn('reservar', productosArray.length > 0);
 }
+
+
 
 function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
     const total    = parseFloat(document.getElementById('total').getAttribute('value'));
@@ -571,17 +619,3 @@ function enableBtn(btnId,status){
 //     });
 // }
 
-function getProductoMeta() {
-    const codigo = document.getElementById('codigo').value;
-    let precio = document.getElementById('precio'); 
-    let clave = document.getElementById('clave');
-    let productoId = document.getElementById('producto-id');
-
-    for (var i = 0; i < allProductos.length; i++) {
-        if (codigo == allProductos[i].codigo) {
-            precio.value = allProductos[i].precio_venta;
-            clave.value = allProductos[i].clave;
-            productoId.value = allProductos[i].id;
-        }
-    }
-}

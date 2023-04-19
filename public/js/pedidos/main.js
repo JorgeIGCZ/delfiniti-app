@@ -92,11 +92,11 @@ function resetProductoTabla(){
 
 function addProducto(){
     // debugger;
-    const productoDetalle = document.getElementById('producto').value;
+    const productoDetalle = document.getElementById('productos').value;
     const productoId = document.getElementById('producto-id').value;
     const codigoProducto = document.getElementById('codigo').value;
     const claveProducto = document.getElementById('clave').value;
-    const producto = document.getElementById('producto').value;
+    const producto = document.getElementById('productos').value;
     const cantidad = document.getElementById('cantidad').value;
     const costo = document.getElementById('costo').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
@@ -124,7 +124,7 @@ function resetVentas() {
     location.reload();
 }
 
-function isProductoDuplicado(nuevoProducto){
+function isProductoDuplicado(nuevoProducto){ 
     let duplicado = 0;
     productosArray.forEach( function (producto) {
         if(producto.codigoProducto == nuevoProducto.codigoProducto){
@@ -216,7 +216,7 @@ $('#productosTable').on( 'click', '.eliminar-celda', function (event) {
 $('#codigo').on('change', function (e) {
     changeProducto();
 });
-$('#producto').on('change', function (e) {
+$('#productos').on('change', function (e) {
     changeCodigoProducto();
 });
 
@@ -323,37 +323,6 @@ function showCodigoProductos(productos){
     }
 }
 
-function changeCodigoProducto() {
-    var value = document.getElementById('producto').value;
-    const productos = document.querySelector(`#productos-list [value="${value}"]`);
-
-    if(productos !== null){
-        document.getElementById('codigo').value = productos.getAttribute('data-codigo');
-        document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
-
-        getProductoMeta();
-        return;
-    }
-
-    resetProductoMeta();
-}
-
-function changeProducto() {
-    var value = document.getElementById('codigo').value;
-    const codigos = document.querySelector(`#codigos-list [value="${value}"]`);
-
-    if(codigos !== null){
-        document.getElementById('producto').value = codigos.getAttribute('data-value');
-        // document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
-
-        //$('#producto').trigger('change.select2');
-        // getProductoDisponibilidad();
-        getProductoMeta();
-        return;
-    }
-
-    resetProductoMeta();
-}
 
 
 function enableBtn(btnId,status){
@@ -361,28 +330,8 @@ function enableBtn(btnId,status){
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
 
-function getProductoMeta() {
-    const codigo = document.getElementById('codigo').value;
-    let costo = document.getElementById('costo');
-    let clave = document.getElementById('clave');
-    let productoId = document.getElementById('producto-id');
-    
-    for (var i = 0; i < allProductos.length; i++) {
-        if (codigo == allProductos[i].codigo) {
-            costo.value = allProductos[i].costo;
-            clave.value = allProductos[i].clave;
-            productoId.value = allProductos[i].id;
-        }
-    }
-}
 
-function resetProductoMeta() {
-    document.getElementById('producto').value = "";
-    document.getElementById('codigo').value = "";
-    document.getElementById('costo').value = "";
-    document.getElementById('clave').value = "";
-    document.getElementById('producto-id').value = "";
-}
+
 
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {

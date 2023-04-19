@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
+        const modulo = 'pedidos';
         const env = 'create';
         const allProductos = @php echo(json_encode($productos)) @endphp;
 
@@ -8,6 +9,8 @@
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
     </script>
+
+    <script src="{{ asset('js/seleccion/select.js') }}"></script>
     <script src="{{ asset('js/pedidos/main.js') }}"></script>
     <script src="{{ asset('js/pedidos/create.js') }}"></script>
     <script src="{{ asset('js/pedidos/ticket.js') }}"></script>
@@ -55,7 +58,7 @@
                                     </div>
                                     <div class="form-group col-8 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
-                                        <input list="productos-list" name="productos" id="producto" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
+                                        <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             {{-- @foreach($productos as $producto)
                                                 <option data-codigo="{{$producto['codigo']}}" data-id="{{$producto['id']}}" value="{{$producto['nombre']}}">

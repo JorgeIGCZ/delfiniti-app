@@ -24,6 +24,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->date('fecha_creacion');
             $table->integer('usuario_id');
+            $table->boolean('estatus_pago')->comment('0 es orden reservada 1 es orden parcialmente pagada 2 es orden pagada');
             $table->text('comentarios');
             $table->boolean('estatus')->default(1)->comment('0 es orden cancelada 1 es orden activa');
             $table->timestamps();

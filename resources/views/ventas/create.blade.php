@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
+        const modulo = 'ventas';
         const env = 'create';
         const allProductos = @php echo(json_encode($productos)) @endphp;
 
@@ -33,6 +34,7 @@
             };
         }
     </script>
+    <script src="{{ asset('js/seleccion/select.js') }}"></script>
     <script src="{{ asset('js/ventas/create.js') }}"></script>
     <script src="{{ asset('js/ventas/main.js') }}"></script>
     <script src="{{ asset('js/ventas/ticket.js') }}"></script>
@@ -70,7 +72,7 @@
                                         <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             @foreach($productos as $producto)
-                                                <option data-id="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
+                                                <option data-codigo="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>

@@ -18,5 +18,10 @@ class VentaPago extends Model
         'valor',
         'tipo_valor'
     ];
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id'; 
+
+    public function tipoPago()
+    {
+        return $this->hasOne(TipoPago::class,'id','tipo_pago_id');
+    }
 }   

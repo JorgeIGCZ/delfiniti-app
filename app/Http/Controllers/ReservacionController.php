@@ -151,8 +151,8 @@ class ReservacionController extends Controller
         $checkin   = new CheckinController();
         $email     = Auth::user()->email;
         $password  = "";
-        $estatusPago  = ($request->estatus == "pagar-reservar");
-        $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
+        $isPago  = ($request->estatus == "pagar-reservar");
+        $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
         DB::beginTransaction();
         try{
@@ -166,7 +166,7 @@ class ReservacionController extends Controller
                 'comisionista_actividad_id' => is_numeric($request->comisionistaActividad) ? $request->comisionistaActividad : 0,
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
                 'comentarios'     => mb_strtoupper($request->comentarios),
-                'estatus_pago'    => $estatusPago,
+                'estatus_pago'    => $isPago,
                 'comisionable'    => $request->comisionable,
                 'comisiones_especiales' => $this->isComisionesEspeciales($request->reservacionArticulos),
                 'comisiones_canal' => is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0,
@@ -191,7 +191,7 @@ class ReservacionController extends Controller
                 ]);
             }
 
-            if($estatusPago){
+            if($isPago){
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
@@ -557,7 +557,6 @@ class ReservacionController extends Controller
             $reservacion->email           = mb_strtoupper($request->email);
             $reservacion->alojamiento     = mb_strtoupper($request->alojamiento);
             $reservacion->origen          = mb_strtoupper($request->origen);
-            $reservacion->usuario_id       = $request->usuario;
             $reservacion->comisionista_id = $request->comisionista;
             $reservacion->comisionista_actividad_id = $request->comisionistaActividad;
             $reservacion->cerrador_id     = $request->cerrador;

@@ -127,8 +127,8 @@ class VentaController extends Controller
     public function store(Request $request)
     {
         $email     = Auth::user()->email;
-        $estatusPago  = ($request->estatus == "pagar");
-        $pagado   = ($estatusPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
+        $isPago  = ($request->estatus === "pagar");
+        $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
 
         $Productos = new ProductoController();
@@ -141,6 +141,7 @@ class VentaController extends Controller
                 'direccion'      => mb_strtoupper($request->direccion),
                 'origen'         => mb_strtoupper($request->origen),
                 'RFC'            => mb_strtoupper($request->rfc),
+                'estatus_pago'   => $isPago,
                 'fecha'          => $request->fecha,
                 'fecha_creacion' => date('Y-m-d'),
                 'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0,
@@ -166,7 +167,7 @@ class VentaController extends Controller
                 ]);
             }
 
-            if($estatusPago){
+            if($isPago){
                 $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
                 $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
                 $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
@@ -215,7 +216,7 @@ class VentaController extends Controller
         }
     }
 
-    private function getCantidadPagada($request,$email){
+    private function getCantidadPagada($request){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
 
         $pagado          = (
@@ -238,8 +239,8 @@ class VentaController extends Controller
     }
 
     public function getPagosAnteriores($id){
-        // $factura = Factura::where("venta_id",$id)->first();
-        // return $factura['pagado'];
+        $factura = VentaFactura::where("venta_id",$id)->first();
+        return $factura['pagado'];
     }
 
     private function isValidDescuentoCupon($request){
@@ -370,115 +371,86 @@ class VentaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    //public function edit(Venta $venta)
-    public function edit()
+    public function edit(Venta $venta)
     {
-        // $estados          = Estado::all();
-        // $alojamientos     = Alojamiento::orderBy('nombre','asc')->get();
-        // $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
-        // $productoes      = Producto::where('estatus',1)
-        //     ->whereRaw('NOW() >= fecha_inicial')
-        //     ->whereRaw('NOW() <= fecha_final')
-        //     ->orWhere('duracion','indefinido')
-        //     ->get();
+        $productos = Producto::where('estatus',1)->get();
+        $estados = Estado::all();
 
-        // $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-        //     $query
-        //     ->where('comisionista_cerrador',1);
-        // })->get();
-            
-        // $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-        //     $query
-        //     ->where('comisionista_canal',0)
-        //     ->where('comisionista_producto',0)
-        //     ->where('comisionista_cerrador',0);
-        // })->get();
-
-        // $comisionistasProducto = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
-        //     $query
-        //     ->where('comisionista_producto',1);
-        // })->get();
-
-        // $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
+        $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
         // $tickets           = VentaTicket::where('venta_id',$venta->id)->get();
-        return view('ventas.edit');
-        // return view('ventas.edit',[
-        //     'venta' => $venta,
-        //     'estados' => $estados,
-        //     'productoes' => $productoes,
-        //     'alojamientos' => $alojamientos,
-        //     'comisionistas' => $comisionistas,
-        //     'comisionistasProducto' => $comisionistasProducto,
-        //     'dolarPrecio' => $dolarPrecio,
-        //     'cerradores' => $cerradores,
-        //     'descuentosCodigo' => $descuentosCodigo,
-        //     'tickets' => $tickets
-        // ]);
+        // return view('ventas.edit');
+        return view('ventas.edit',[
+            'venta' => $venta,
+            'productos' => $productos,
+            'estados' => $estados,
+            'dolarPrecio' => $dolarPrecio,
+            'tickets' => []//$tickets
+        ]);
     }
 
     public function editPago(Request $request){
-        // try{
-        //     $pago              = Pago::find($request->pagoId);
-        //     $pago->created_at  = $request->fecha;
-        //     $pago->save();
-        //     return json_encode(
-        //         [
-        //             'result' => 'Success'
-        //         ]
-        //     );
-        // } catch (\Exception $e){
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => 'Error','message' => $e->getMessage()]);
-        // }
+        try{
+            $pago              = VentaPago::find($request->pagoId);
+            $pago->created_at  = $request->fecha;
+            $pago->save();
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
     }
     
     public function removeProducto(Request $request){
-        // try{
-        //     $producto = Producto::where('clave',$request->productoClave)->get()[0];
+        try{
+            $producto = Producto::where('clave',$request->productoClave)->get()[0];
             
-        //     VentaDetalle::where('venta_id', $request->ventaId)
-        //         ->where('producto_id', $producto['id'])->delete();
-        //     return json_encode(
-        //         [
-        //             'result' => 'Success'
-        //         ]
-        //     );
-        // } catch (\Exception $e){
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => 'Error','message' => $e->getMessage()]);
-        // }
+            VentaDetalle::where('venta_id', $request->ventaId)
+                ->where('producto_id', $producto['id'])->delete();
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
     }
 
-    public function removeDescuento(Request $request){
-        // try{
-        //     DB::beginTransaction(); 
+    public function removePago(Request $request){
+        try{
+            DB::beginTransaction(); 
 
-        //     $pago = Pago::find($request->pagoId);
+            $pago = VentaPago::find($request->pagoId);
 
-        //     $factura                 = Factura::find($request->ventaId);
-        //     $factura->pagado         = (float)$factura->pagado - (float)$pago['cantidad'];
-        //     $factura->adeudo         = (float)$factura->adeudo + (float)$pago['cantidad'];
-        //     $factura->save();
+            $factura                 = VentaFactura::find($request->ventaId);
+            $factura->pagado         = (float)$factura->pagado - (float)$pago['cantidad'];
+            $factura->adeudo         = (float)$factura->adeudo + (float)$pago['cantidad'];
+            $factura->save();
 
-        //     $pago->delete();
+            $pago->delete();
 
-        //     DB::commit();
+            DB::commit();
             
-        //     $this->setEstatusPago($request->ventaId);
+            $this->setEstatusPago($request->ventaId);
             
-        //     return json_encode(
-        //         [
-        //             'result' => 'Success'
-        //         ]
-        //     );
-        // } catch (\Exception $e){
-        //     DB::rollBack();
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => 'Error','message' => $e->getMessage()]);
-        // }
+            return json_encode(
+                [
+                    'result' => 'Success'
+                ]
+            );
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
     }
     /**
      * Update the specified resource in storage.
@@ -493,116 +465,111 @@ class VentaController extends Controller
         // $password = "";
         // $checkin   = new CheckinController();
 
-        // DB::beginTransaction();
+        DB::beginTransaction();
 
-        // try{
-        //     $pagosAnteriores = $this->getPagosAnteriores($id);
+        try{
+            $pagosAnteriores = $this->getPagosAnteriores($id);
 
-        //     $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0);
-        //     $pagado   = ((float) $pagado + (float) $pagosAnteriores);
-        //     $adeudo   = ((float)$request->total - (float)$pagado);
-        //     $pagar    = ($request->estatus == "pagar");
+            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request) : 0);
+            $pagado   = ((float) $pagado + (float) $pagosAnteriores);
+            $adeudo   = ((float)$request->total - (float)$pagado);
+            $pagar    = ($request->estatus == "pagar");
 
-        //     $venta                  = Venta::find($id);
-        //     $venta->nombre_cliente  = mb_strtoupper($request->nombre);
-        //     $venta->email           = mb_strtoupper($request->email);
-        //     $venta->alojamiento     = mb_strtoupper($request->alojamiento);
-        //     $venta->origen          = mb_strtoupper($request->origen);
-        //     $venta->usuario_id       = $request->usuario;
-        //     $venta->comisionista_id = $request->comisionista;
-        //     $venta->comisionista_producto_id = $request->comisionistaProducto;
-        //     $venta->cerrador_id     = $request->cerrador;
-        //     $venta->comentarios     = mb_strtoupper($request->comentarios);
-        //     $venta->comisionable    = $request->comisionable;
-        //     $venta->fecha           = $request->fecha;
-        //     if($pagar){
-        //         $venta->estatus_pago = 1;
-        //     }
-        //     $venta->save();
+            $venta                  = Venta::find($id);
+            $venta->nombre_cliente  = mb_strtoupper($request->nombre);
+            $venta->email           = mb_strtoupper($request->email);
+            $venta->direccion       = mb_strtoupper($request->direccion);
+            $venta->origen          = mb_strtoupper($request->origen);
+            $venta->RFC             = mb_strtoupper($request->rfc);
+            $venta->fecha           = $request->fecha;
+            $venta->comentarios     = mb_strtoupper($request->comentarios);
+            if($pagar){
+                $venta->estatus_pago = 1;
+            }
+            $venta->save(); 
 
-        //     $factura                 = Factura::where("venta_id",$id)->first();
-        //     $factura->venta_id =  $venta['id'];
-        //     $factura->total          =  $request->total;
-        //     $factura->pagado         =  (float)$pagado;
-        //     $factura->adeudo         =  (float)$adeudo;
-        //     $factura->save();
+            $factura                 = VentaFactura::where("venta_id",$id)->first();
+            $factura->venta_id       =  $venta['id'];
+            $factura->total          =  $request->total;
+            $factura->pagado         =  (float)$pagado;
+            $factura->adeudo         =  (float)$adeudo;
+            $factura->save();
 
-        //     VentaDetalle::where('venta_id', $venta['id'])->delete();
+            VentaDetalle::where('venta_id', $venta['id'])->delete();
 
-        //     foreach($request->ventaProductos as $ventaProducto){
-        //         VentaDetalle::create([
-        //             'venta_id'       =>  $venta['id'],
-        //             'factura_id'           =>  $factura['id'],
-        //             'producto_id'         =>  $ventaProducto['producto'],
-        //             'producto_horario_id' =>  $ventaProducto['horario'],
-        //             'numero_personas'      =>  $ventaProducto['cantidad'],
-        //             'PPU'                  =>  $ventaProducto['precio']
-        //         ]);
-        //     }
+            foreach($request->ventaProductos as $ventaProducto){
+                VentaDetalle::create([
+                    'venta_id'            =>  $venta['id'],
+                    'factura_id'          =>  $factura['id'],
+                    'producto_id'         =>  $ventaProducto['productoId'],
+                    'numero_productos'    =>  $ventaProducto['cantidad'],
+                    'PPU'                 =>  $ventaProducto['precio']
+                ]);
+            }
 
-        //     if($pagar){
+            if($pagar){
 
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-        //         $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
+                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
 
-        //         if($this->isValidDescuentoCupon($request)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
-        //         }
+                // if($this->isValidDescuentoCupon($request)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
+                // }
 
-        //         if($this->isValidDescuentoCodigo($request,$email)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
-        //         }
+                // if($this->isValidDescuentoCodigo($request,$email)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
+                // }
 
-        //         if($this->isValidDescuentoPersonalizado($request,$email)){
-        //             $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-        //         }
+                // if($this->isValidDescuentoPersonalizado($request,$email)){
+                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                // }
 
-        //     }
+            }
 
-        //     DB::commit();
+            DB::commit();
 
-        //     $venta = Venta::find($venta['id']);
+            $venta = Venta::find($venta['id']);
 
-        //     $this->setEstatusPago($venta['id']);
+            $this->setEstatusPago($venta['id']);
 
-        //     // $checkin->setCheckin($venta);
-        //     $comisiones     = new ComisionController();
-        //     $comisiones->setComisiones($venta['id']);
+            // $checkin->setCheckin($venta);
+            // $comisiones     = new ComisionController();
+            // $comisiones->setComisiones($venta['id']);
 
-        //     return json_encode(
-        //         [
-        //             'result' => 'Success',
-        //             'venta' => $venta
-        //         ]
-        //     );
-        // } catch (\Exception $e){
-        //     DB::rollBack();
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => 'Error','message' => $e->getMessage()]);
-        // }
-        // return json_encode(['result' => is_numeric($venta['id']) ? 'Success' : 'Error']);
+            return json_encode(
+                [
+                    'result' => 'Success',
+                    'venta' => $venta
+                ]
+            );
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+        return json_encode(['result' => is_numeric($venta['id']) ? 'Success' : 'Error']);
     }
     
 
     private function setEstatusPago($ventaId){
-        // $venta               = Venta::find($ventaId);
-        // $venta->estatus_pago = $this->getEstatusPagoVenta($ventaId);
-        // $venta->save();
+        $venta               = Venta::find($ventaId);
+        $venta->estatus_pago = $this->getEstatusPagoVenta($ventaId);
+        $venta->save();
     }
 
     public function getEstatusPagoVenta($ventaId){
-        // $factura = Factura::where('venta_id',$ventaId)->first();
-        // if($factura->pagado == 0){
-        //     return 0;//'pendiente'
-        // }else if($factura->pagado < $factura->total){
-        //     return 1;//'parcial'
-        // }else if($factura->pagado >= $factura->total){
-        //     return 2;//'pagado'
-        // }
+        $factura = VentaFactura::where('venta_id',$ventaId)->first();
+        if($factura->pagado == 0){
+            return 0;//'pendiente'
+        }else if($factura->pagado < $factura->total){
+            return 1;//'parcial'
+        }else if($factura->pagado >= $factura->total){
+            return 2;//'pagado'
+        }
     }
 
     private function isValidDescuentoCodigo($request,$email){

@@ -1,7 +1,12 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
+        const modulo = 'ventas';
+
         const env = 'edit';
+
+        const allProductos = @php echo(json_encode($productos)) @endphp;
+        
         const accion = '{{ (@$_GET["accion"] === "pago" ? "pago" : "edit"); }}';
         const ventaId = () => {
             return {{$venta->id}};
@@ -19,7 +24,7 @@
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
         }
         const canEdit = () => {
-            return {{Auth::user()->can('Ventas.update') ? 1 : 0}};
+            return {{Auth::user()->can('TiendaVentas.update') ? 1 : 0}};
         }
         const userEmail = () =>{
             return  '{{Auth::user()->email}}';
@@ -27,10 +32,10 @@
         const logo = () =>{
             return '{{asset("assets/img/logo.png")}}';
         }
-        const detalleVenta = () =>{ 
+        const detalleVenta = () =>{
             const venta   = document.getElementById('venta-form');
             const nombreCliente = venta.elements['nombre'].value;
-            const direccion     = venta.elements['alojamiento'].value;
+            const direccion     = venta.elements['direccion'].value;
             const ciudad        = venta.elements['origen'].value;
 
             return {
@@ -50,7 +55,7 @@
             return
         }
 
-        let actvidadesArray         = [];
+        let productosArray         = [];
         let ventasTableArray = [];
         let pagosArray              = [];
         let pagosTablaArray         = [];
@@ -61,21 +66,20 @@
             ventasTableArray = [...ventasTableArray,[
                 '{{$detalle->producto->clave}}',
                 '{{$detalle->producto->nombre}}',
-                '{{$detalle->horario->horario_inicial}}',
-                '{{$detalle->numero_personas}}',
+                '{{$detalle->numero_productos}}',
                 formatter.format('{{$detalle->PPU}}'),
-                formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
+                formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_productos}}'),
                 (canEdit() && ((accion !== 'pago' && {{ ($venta->estatus_pago !== 2) ? 1 : 0 }}) || isAdmin()) 
                     ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
                     : '')
             ]];
-            actvidadesArray = [...actvidadesArray,{
+            productosArray = [...productosArray, {
+                'codigoProducto': '{{$detalle->producto->codigo}}',
+                'productoId': '{{$detalle->producto->id}}',
                 'claveProducto': '{{$detalle->producto->clave}}',
-                'productoDetalle' : '{{$detalle->producto->nombre}}',
-                'producto'     : '{{$detalle->producto_id}}',
-                'cantidad'      : '{{$detalle->numero_personas}}',
-                'precio'        : '{{$detalle->PPU}}',
-                'horario'       : '{{$detalle->producto_horario_id}}'
+                'producto': '{{$detalle->producto_id}}',
+                'cantidad': '{{$detalle->numero_productos}}',
+                'precio': '{{$detalle->PPU}}'
             }];
         @endforeach
         
@@ -83,6 +87,7 @@
         let editar   = '';
         let accionesArray = [];
         @forEach($venta->pagos as $pago)
+        
             accionesArray = [];
             (isAdmin())
                     ? accionesArray.push(`<a href="#!" class='editar-celda'>Editar</a>` )
@@ -92,10 +97,10 @@
                     ?  accionesArray.push(`<a href="#!" class='eliminar-celda'>Eliminar</a>` )
                     : '';
 
-            pagosTablaArray = [...pagosTablaArray,[
+            pagosTablaArray = [...pagosTablaArray,[ 
                 '{{$pago->id}}',
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
-                '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
+                '{{@$pago->tipoPago->nombre}}',
                 '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;" disabled="disabled">',
                 accionesArray.join(" | ")
             ]];
@@ -111,18 +116,18 @@
         @endforeach
 
     </script>
-
+    <script src="{{ asset('js/seleccion/select.js') }}"></script>
     <script src="{{ asset('js/ventas/main.js') }}"></script>
     <script src="{{ asset('js/ventas/edit.js') }}"></script>
     <script src="{{ asset('js/ventas/ticket.js') }}"></script>
 @endsection
 @section('content')
-    <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
             <h6 class="modal-title">Verificación</h6>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <button type="button" class="`se" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
             </button>
             </div>
@@ -137,7 +142,7 @@
             </div>
         </div>
         </div><!-- modal-dialog -->
-    </div>
+    </div> --}}
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">FOLIO: {{$venta->folio}}</h2>
@@ -156,14 +161,6 @@
                 </div><!-- media-body -->
             </div><!-- media -->
 
-            @can('Ventas.create')
-                <div class="media">
-                    <div class="media-body">
-                        <a href="{{ url('ventas/create/'.$venta->id) }}" class="btn btn-secondary btn-outline-warning" style="padding-top: 2px;">Clonar</a>
-                    </div>
-                </div>
-            @endcan
-
             @if($venta->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
@@ -172,7 +169,7 @@
                 </div>
             @endif
             
-            @can('Ventas.update')
+            @can('TiendaVentas.update')
                 @if(@$_GET["accion"] === "pago")
                     <div class="media">
                         <div class="media-body">
@@ -182,7 +179,7 @@
                 @endif
             @endcan
 
-            @can('Ventas.cancel')
+            @can('TiendaVentas.cancel')
                 @if($venta->estatus)
                     <div class="media">
                         <div class="media-body">
@@ -228,15 +225,21 @@
                                         <strong>Datos de la venta</strong>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="clave" class="col-form-label">Clave</label>
-                                        <input type="text" name="clave" id="clave" class="form-control" tabindex="1">
+                                        <label for="codigo" class="col-form-label">Codigo</label>
+
+                                        <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
+                                        <datalist id="codigos-list">
+                                            @foreach($productos as $producto)
+                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['codigo']}}">
+                                            @endforeach
+                                        </datalist>
                                     </div>
                                     <div class="form-group col-10 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
-                                        <input list="productos" name="origen" class="form-control to-uppercase" tabindex="2" value="{{@$venta->prducto}}"/>
-                                        <datalist id="productos">
-                                            @foreach($estados as $estado)
-                                                <option value="{{$estado->nombre}}">
+                                        <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
+                                        <datalist id="productos-list">
+                                            @foreach($productos as $producto)
+                                                <option data-codigo="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -248,6 +251,10 @@
                                         <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
                                         <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="4">
                                     </div>
+
+                                    <input type="hidden" name="precio" id="precio" value="0">
+                                    <input type="hidden" name="clave" id="clave" value="0">
+                                    <input type="hidden" name="producto-id" id="producto-id" value="0">
                                 </div>
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
@@ -259,19 +266,22 @@
                                         <label for="nombre" class="col-form-label">Nombre</label>
                                         <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
                                     </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
+                                    <div class="form-group col-3 mt-0 mb-0">
                                         <label for="email" class="col-form-label">Email</label>
                                         <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="7" value="{{@$venta->email}}">
                                     </div>
-                                    
-                                    <div class="form-group col-6 mt-0 mb-0">
+                                    <div class="form-group col-3 mt-0 mb-0">
                                         <label for="rfc" class="col-form-label">RFC</label>
-                                        <input type="text" name="rfc" class="form-control to-uppercase" autocomplete="off" tabindex="8" value="{{@$venta->rfc}}">
+                                        <input type="text" name="rfc" class="form-control to-uppercase" autocomplete="off" tabindex="8" value="{{@$venta->RFC}}">
+                                    </div>
+                                    <div class="form-group col-6 mt-0 mb-0">
+                                        <label for="rfc" class="col-form-label">Dirección</label>
+                                        <input type="text" name="direccion" class="form-control to-uppercase" autocomplete="off" tabindex="9" value="{{@$venta->direccion}}">
                                     </div>
                                     <div class="form-group col-6 mt-0 mb-0">
                                         <label for="origen" class="col-form-label">Lugar de origen</label>
-
-                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="9" value="{{@$venta->origen}}"/>
+        
+                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$venta->origen}}"/>
                                         <datalist id="ciudades">
                                             @foreach($estados as $estado)
                                                 <option value="{{$estado->nombre}}">
@@ -408,8 +418,16 @@
                                                             <div class="form-group col-5 mt-0 mb-0">
                                                                 <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="20">
                                                             </div>
-                                                        </div>
+                                                        </div>                                                        
                                                     </div>
+
+                                                    @can('TiendaVentas.update') 
+                                                        @if($venta->estatus_pago !== 2)
+                                                            <div class="form-group col-12 mt-3 mb-0">
+                                                                <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
+                                                            </div>
+                                                        @endif
+                                                    @endcan
 
                                                     <!--div class="form-group col-7 mt-0 mb-0">
                                                         <label for="cupon" class="col-form-label">Cupón</label>
@@ -422,18 +440,10 @@
                                         </div>
                                     </div>
                                     
-                                    @can('Ventas.update') 
-                                        @if($venta->estatus_pago !== 2)
-                                            <div class="form-group col-2 mt-0 mb-0">
-                                                <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
-                                            </div>
-                                        @else
-                                            @role('Administrador')
-                                                <div class="form-group col-2 mt-0 mb-0">
-                                                    <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
-                                                </div>
-                                            @endrole
-                                        @endif
+                                    @can('TiendaVentas.update') 
+                                        <div class="form-group col-2 mt-0 mb-0">
+                                            <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
+                                        </div>
                                     @endcan
 
                                 </div>

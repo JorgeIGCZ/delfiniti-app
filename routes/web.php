@@ -98,9 +98,9 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
 Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
     // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
     // Route::post('ventas/updateestatusreservacion', 'updateEstatusReservacion');
-    // Route::post('ventas/removeActividad', 'removeActividad');
-    // Route::post('ventas/editPago','editPago');
-    // Route::post('ventas/removeDescuento', 'removeDescuento');
+    Route::post('ventas/removeProducto', 'removeProducto');
+    Route::post('ventas/editPago','editPago');
+    Route::post('ventas/removePago', 'removePago');
     // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
     // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::post('ventas/show/{reservacion?}', 'show');

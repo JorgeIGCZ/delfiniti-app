@@ -78,14 +78,14 @@ function addProductos() {
             showConfirmButton: false,
             timer: 900
         });
-        clearSeleccion();
+        resetProductoMeta();
         return false;
     }
     // if(!isDisponible()){
     //     return false;
     // }
     addProducto();
-    clearSeleccion();
+    resetProductoMeta();
     // enableBtn('reservar', productosArray.length > 0);
 }
 
