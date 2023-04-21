@@ -197,7 +197,7 @@
                                                             <td class="folio-link">
                                                                 <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
-                                                            <td>{{ strlen($reservacion->nombre_cliente) > 15 ? substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
+                                                            <td>{{ mb_strlen($reservacion->nombre_cliente) > 15 ? mb_substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
                                                         </tr>
                                                     @endforeach
