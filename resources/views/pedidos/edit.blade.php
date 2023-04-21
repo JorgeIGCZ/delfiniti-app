@@ -8,7 +8,9 @@
         const pedidoId = () => {
             return {{$pedido->id}};
         }
-
+        const logo = () =>{
+            return '{{asset("assets/img/logo.png")}}';
+        }
         const canEdit = () => {
             return {{Auth::user()->can('Reservaciones.update') ? 1 : 0}};
         }

@@ -1,7 +1,7 @@
 let actividades = '';
-const format    = (reservacion) => {
+const format    = (venta) => {
 
-    const descuentos = getDescuentos(reservacion);
+    const descuentos = '';//getDescuentos(venta);
     return `
         <!DOCTYPE html>
         <html>
@@ -95,18 +95,18 @@ const format    = (reservacion) => {
                         <br/>
                         C.P. 40884
                         <br/>
-                        <p class="f-16 centrado ">FOLIO: ${reservacion.folio}</p>
+                        <p class="f-16 centrado ">FOLIO: ${venta.folio}</p>
                         <br/>
                         <p class="f-11">LUGAR DE EXPEDICIÓN: IXTAPA - ZIHUATANEJO</p>
                         <p class="f-11">
                         FECHA DE EXPEDICIÓN: ${moment().format('YYYY-MM-DD hh:mm a')}
                         </p>
                         <br/>
-                        CAJERO: ${detalleReservacion().cajero}
+                        CAJERO: ${detalleVenta().cajero}
                         <br/>
-                        NOMBRE: ${detalleReservacion().cliente}
+                        NOMBRE: ${detalleVenta().cliente}
                         <br/>
-                        CIUDAD: ${(detalleReservacion().ciudad === undefined ? '' : detalleReservacion().ciudad)}
+                        CIUDAD: ${(detalleVenta().ciudad === undefined ? '' : detalleVenta().ciudad)}
                         <br/>
                     </p>
                     <table>
@@ -120,7 +120,7 @@ const format    = (reservacion) => {
                             </tr>
                         </thead>
                         <tbody class="border">
-                            ${getTicketActividades()}
+                            ${getTicketProductos()}
                         </tbody>
                     </table>
                     <br/>
@@ -167,34 +167,34 @@ const format    = (reservacion) => {
     `;
 }
 
-function getTicketActividades(){
-    let actividades = '';
-    actvidadesArray.forEach(actividad => {
-        actividades += `
+function getTicketProductos(){
+    let productos = '';
+    productosArray.forEach(producto => {
+        productos += `
         <tr>
-            <td class="clave">${actividad.claveActividad}</td>
-            <td class="centrado cantidad">${actividad.cantidad}</td>
-            <td class="descripcion">${actividad.actividadDetalle.slice(0,7)}...</td>
-            <td class="derecha precio">${formatter.format(actividad.precio)}</td>
-            <td class="derecha importe">${formatter.format(actividad.cantidad * actividad.precio)}</td>
+            <td class="clave">${producto.claveProducto}</td>
+            <td class="centrado cantidad">${producto.cantidad}</td>
+            <td class="descripcion">${producto.producto.slice(0,7)}...</td>
+            <td class="derecha precio">${formatter.format(producto.precio)}</td>
+            <td class="derecha importe">${formatter.format(producto.cantidad * producto.precio)}</td>
         </tr>
         `;
     });
-    return actividades;
+    return productos;
 }
 function getTicketPagos(){
-    const reservacion   = document.getElementById('reservacion-form');
-    const efectivo      = reservacion.elements['efectivo'];
-    const efectivoUsd   = reservacion.elements['efectio-usd'];
-    const tarjeta       = reservacion.elements['tarjeta'];
-    const deposito       = reservacion.elements['deposito'];
+    const venta   = document.getElementById('venta-form');
+    const efectivo      = venta.elements['efectivo'];
+    const efectivoUsd   = venta.elements['efectio-usd'];
+    const tarjeta       = venta.elements['tarjeta'];
+    const deposito       = venta.elements['deposito'];
     const total         = formatter.format(parseFloat(
         parseFloat(tarjeta.getAttribute('value'))+
         parseFloat(deposito.getAttribute('value'))+
         parseFloat(efectivoUsd.getAttribute('value'))+
         parseFloat(efectivo.getAttribute('value'))
     ).toFixed(2));
-    const cambio        = reservacion.elements['cambio'];
+    const cambio        = venta.elements['cambio'];
 
     let pagos = `
         <tr class="izq">
@@ -232,61 +232,61 @@ function getTicketPagos(){
     return pagos;
 }
 
-function getDescuentos(reservacion){
+// function getDescuentos(venta){
 
-    let descuentosHTML  = "";
-    const reservacionForm   = document.getElementById('reservacion-form');
-    const descuento     = reservacionForm.elements['descuento-personalizado'];
-    const codigo        = reservacionForm.elements['descuento-codigo'];
-    const codigoOpcion  = reservacionForm.elements['codigo-descuento'];
-    const cupon         = reservacionForm.elements['cupon'];
+//     let descuentosHTML  = "";
+//     const ventaForm   = document.getElementById('venta-form');
+//     const descuento     = ventaForm.elements['descuento-personalizado'];
+//     const codigo        = ventaForm.elements['descuento-codigo'];
+//     const codigoOpcion  = ventaForm.elements['codigo-descuento'];
+//     const cupon         = ventaForm.elements['cupon'];
 
-    const descuentos = new Map([
-        ["descuento", descuento.getAttribute('value')],
-        ["codigo", codigo.getAttribute('value')],
-        ["cupon", cupon.getAttribute('value')]
-    ]);
+//     const descuentos = new Map([
+//         ["descuento", descuento.getAttribute('value')],
+//         ["codigo", codigo.getAttribute('value')],
+//         ["cupon", cupon.getAttribute('value')]
+//     ]);
 
-    for(let [key, descuento] of descuentos){
-        if(parseFloat(descuento) !== 0){
-            switch (key) {
-                //case 'cupon':
-                //    descuentosHTML = descuentosHTML.concat(`
-                //        <tr class="centrado">
-                //            <td class="vacio"></td>
-                //            <td class="etiqueta">CUPÓN</td>
-                //            <td class="importe">-$${descuento}</td>
-                //        </tr>`);
-                //    break;
-                case 'descuento':
-                    descuentosHTML = descuentosHTML.concat(`
-                        <p class="centrado">
-                            ${descuento}% OFF
-                        </p>
-                    `);
-                    break;
-                //case 'codigo':
-                //    descuentosHTML = descuentosHTML.concat(`
-                //        <tr class="centrado">
-                //            <td class="vacio"></td>
-                //            <td class="etiqueta">${codigoOpcion.options[codigoOpcion.selectedIndex].text}</td>
-                //            <td class="importe">-${descuento}%</td>
-                //        </tr>`);
-                //    break;
-                default:
-                    break;
-            }
-        }
-    }
+//     for(let [key, descuento] of descuentos){
+//         if(parseFloat(descuento) !== 0){
+//             switch (key) {
+//                 //case 'cupon':
+//                 //    descuentosHTML = descuentosHTML.concat(`
+//                 //        <tr class="centrado">
+//                 //            <td class="vacio"></td>
+//                 //            <td class="etiqueta">CUPÓN</td>
+//                 //            <td class="importe">-$${descuento}</td>
+//                 //        </tr>`);
+//                 //    break;
+//                 case 'descuento':
+//                     descuentosHTML = descuentosHTML.concat(`
+//                         <p class="centrado">
+//                             ${descuento}% OFF
+//                         </p>
+//                     `);
+//                     break;
+//                 //case 'codigo':
+//                 //    descuentosHTML = descuentosHTML.concat(`
+//                 //        <tr class="centrado">
+//                 //            <td class="vacio"></td>
+//                 //            <td class="etiqueta">${codigoOpcion.options[codigoOpcion.selectedIndex].text}</td>
+//                 //            <td class="importe">-${descuento}%</td>
+//                 //        </tr>`);
+//                 //    break;
+//                 default:
+//                     break;
+//             }
+//         }
+//     }
 
-    return descuentosHTML;
-}
+//     return descuentosHTML;
+// }
 
-function getTicket(reservacion){
+function getTicket(venta){
     let result = true;
     try{
         let w = window.open();
-        w.document.write(format(reservacion));
+        w.document.write(format(venta));
         w.window.print();
         w.document.close();
         result = true;    
@@ -299,12 +299,12 @@ function getTicket(reservacion){
         });
         result = false;
     }
-    saveTicket(reservacion.id,format(reservacion));
+    // saveTicket(venta.id,format(venta));
     return result;
 }
 
 function imprimirTicket(id){
-    axios.get(`/reservacionticket/${id}`)
+    axios.get(`/ventaticket/${id}`)
     .then(function (response) {
         let w = window.open();
         w.document.write(response.data.ticket);
@@ -317,12 +317,12 @@ function imprimirTicket(id){
     });
 }
 
-function saveTicket(reservacionId,ticket){
+function saveTicket(ventaId,ticket){
     $('.loader').show();
-    axios.post('/reservacionticket', {
+    axios.post('/ventaticket', {
         '_token': token(),
         'ticket': ticket,
-        'reservacionId': reservacionId
+        'ventaId': ventaId
     }).then(function (response) {
         $('.loader').hide();
         if (response.data.result == 'Success') {

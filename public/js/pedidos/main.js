@@ -113,6 +113,7 @@ function addProducto(){
     productosArray = [...productosArray, {
         'codigoProducto': codigoProducto,
         'productoId': productoId,
+        'producto': producto,
         'claveProducto': claveProducto,
         'cantidad': cantidad,
         'costo': costo
