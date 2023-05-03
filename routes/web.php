@@ -17,6 +17,8 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\FotoVideoProductoController;
+use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\ImpuestoController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\PedidoController;
@@ -24,6 +26,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\VentaController;
+use App\Models\FotoVideoVenta;
 use App\Models\Impuesto;
 
 /*
@@ -91,22 +94,6 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::resource('reservaciones',ReservacionController::class, [
         'parameters' => [
             'reservaciones' => 'reservacion'
-        ]
-    ]);
-});
-
-Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
-    // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
-    // Route::post('ventas/updateestatusreservacion', 'updateEstatusReservacion');
-    Route::post('ventas/removeProducto', 'removeProducto');
-    Route::post('ventas/editPago','editPago');
-    Route::post('ventas/removePago', 'removePago');
-    // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
-    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
-    Route::post('ventas/show/{reservacion?}', 'show');
-    Route::resource('ventas',VentaController::class, [
-        'parameters' => [
-            'ventas' => 'venta'
         ]
     ]);
 });
@@ -215,6 +202,24 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
     ]);
 });
 
+
+// TIENDA
+Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
+    // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
+    // Route::post('ventas/updateestatusreservacion', 'updateEstatusReservacion');
+    Route::post('ventas/removeProducto', 'removeProducto');
+    Route::post('ventas/editPago','editPago');
+    Route::post('ventas/removePago', 'removePago');
+    // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
+    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::post('ventas/show/{reservacion?}', 'show');
+    Route::resource('ventas',VentaController::class, [
+        'parameters' => [
+            'ventas' => 'venta'
+        ]
+    ]);
+});
+
 Route::controller(ProductoController::class)->middleware(['auth'])->group(function () {
     Route::get('productos/show/{producto?}', 'show');
     // Route::get('productos/inventario/{producto?}', 'editInventario');
@@ -263,6 +268,37 @@ Route::controller(ImpuestoController::class)->middleware(['auth'])->group(functi
     Route::resource('impuestos',ImpuestoController::class, [
         'parameters' => [
             'impuestos' => 'impuesto'
+        ]
+    ]);
+});
+
+
+
+// FOTO Y VIDEO
+Route::controller(FotoVideoVentaController::class)->middleware(['auth'])->group(function () {
+    // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
+    Route::post('fotovideoventas/updateestatus', 'updateEstatus');
+    Route::post('fotovideoventas/removeProducto', 'removeProducto');
+    Route::post('fotovideoventas/editPago','editPago');
+    Route::post('fotovideoventas/removePago', 'removePago');
+    // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
+    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::post('fotovideoventas/show/{reservacion?}', 'show');
+    Route::resource('fotovideoventas',FotoVideoVentaController::class, [
+        'parameters' => [
+            'fotovideoventas' => 'fotoVideoVenta'
+        ]
+    ]);
+});
+
+Route::controller(FotoVideoProductoController::class)->middleware(['auth'])->group(function () {
+    Route::get('fotovideoproductos/show/{producto?}', 'show');
+    // Route::get('productos/inventario/{producto?}', 'editInventario');
+    // Route::patch('productos/inventario/{producto?}', 'updateInventario')->name('productos.inventario');
+    Route::patch('fotovideoproductos/estatus/{producto}', 'updateEstatus');
+    Route::resource('fotovideoproductos',FotoVideoProductoController::class, [
+        'parameters' => [
+            'fotovideoproductos' => 'fotoVideoProducto'
         ]
     ]);
 });

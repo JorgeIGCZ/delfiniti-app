@@ -38,6 +38,8 @@ function resetProductoMeta() {
 	}else{
 		document.getElementById('costo').value = "";
 	}
+    
+    document.getElementById('cantidad').value = 1;
 
     document.getElementById('clave').value = "";
     document.getElementById('producto-id').value = "";
@@ -56,34 +58,6 @@ function getProductoMeta() {
     let clave = document.getElementById('clave');
     let productoId = document.getElementById('producto-id');
 
-    for (var i = 0; i < allProductos.length; i++) {
-        if (codigo == allProductos[i].codigo) {
-
-			if(modulo === 'ventas'){
-				precio.value = allProductos[i].precio_venta;
-			}else{
-				costo.value = allProductos[i].costo;
-			}
-
-            clave.value = allProductos[i].clave;
-            productoId.value = allProductos[i].id;
-        }
-    }
-}
-
-function getProductoMeta() {
-    const codigo = document.getElementById('codigo').value;
-
-	if(modulo === 'ventas'){
-		let precio = document.getElementById('precio');
-	}else{
-		let costo = document.getElementById('costo');
-	}
-
-    
-    let clave = document.getElementById('clave');
-    let productoId = document.getElementById('producto-id');
-    
     for (var i = 0; i < allProductos.length; i++) {
         if (codigo == allProductos[i].codigo) {
 

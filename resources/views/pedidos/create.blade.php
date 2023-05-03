@@ -21,10 +21,10 @@
         }
     </script>
 
-    <script src="{{ asset('js/seleccion/select.js') }}"></script>
-    <script src="{{ asset('js/pedidos/main.js') }}"></script>
-    <script src="{{ asset('js/pedidos/create.js') }}"></script>
-    <script src="{{ asset('js/pedidos/ticket.js') }}"></script>
+    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
+    <script src="{{ asset('js/tiendaPedido/main.js') }}"></script>
+    <script src="{{ asset('js/tiendaPedido/create.js') }}"></script>
+    <script src="{{ asset('js/tiendaPedido/ticket.js') }}"></script>
 @endsection
 @section('content')
     <div class="az-dashboard-one-title">

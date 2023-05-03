@@ -55,8 +55,8 @@
             return
         }
 
-        let productosArray         = [];
-        let ventasTableArray = [];
+        let productosArray          = [];
+        let ventasTableArray        = [];
         let pagosArray              = [];
         let pagosTablaArray         = [];
         let nombreTipoPagoArray     = [];
@@ -74,7 +74,7 @@
                     : '')
             ]];
             productosArray = [...productosArray, {
-                'codigoProducto': '{{$detalle->producto->codigo}}',
+                'claveProducto': '{{$detalle->producto->clave}}',
                 'productoId': '{{$detalle->producto->id}}',
                 'claveProducto': '{{$detalle->producto->clave}}',
                 'producto': '{{$detalle->producto_id}}',
@@ -116,10 +116,10 @@
         @endforeach
 
     </script>
-    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/main.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/edit.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/ticket.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoSeleccionProducto/select.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/main.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/edit.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/ticket.js') }}"></script>
 @endsection
 @section('content')
     {{-- <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -164,7 +164,7 @@
             @if($venta->estatus_pago !== 2 && @$_GET["accion"] !== "pago")
                 <div class="media">
                     <div class="media-body">
-                        <a href="{{ url('ventas/'.$venta->id.'/edit?accion=pago#detalle-venta-contenedor') }}" class="btn btn-secondary btn-block" style="padding-top: 5px;">Pagar</a>
+                        <a href="{{ url('fotovideoventas/'.$venta->id.'/edit?accion=pago#detalle-venta-contenedor') }}" class="btn btn-secondary btn-block" style="padding-top: 5px;">Pagar</a>
                     </div>
                 </div>
             @endif
@@ -173,7 +173,7 @@
                 @if(@$_GET["accion"] === "pago")
                     <div class="media">
                         <div class="media-body">
-                            <a href="{{ url('ventas/'.$venta->id.'/edit?accion=edit') }}"  class="btn btn-secondary btn-block" style="padding-top: 5px;">Editar</a>
+                            <a href="{{ url('fotovideoventas/'.$venta->id.'/edit?accion=edit') }}"  class="btn btn-secondary btn-block" style="padding-top: 5px;">Editar</a>
                         </div>
                     </div>
                 @endif
@@ -225,12 +225,12 @@
                                         <strong>Datos de la venta</strong>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="codigo" class="col-form-label">Codigo</label>
+                                        <label for="clave" class="col-form-label">Clave</label>
 
-                                        <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
-                                        <datalist id="codigos-list">
+                                        <input list="claves-list" name="clave" id="clave" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
+                                        <datalist id="claves-list">
                                             @foreach($productos as $producto)
-                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['codigo']}}">
+                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['clave']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -239,7 +239,7 @@
                                         <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             @foreach($productos as $producto)
-                                                <option data-codigo="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
+                                                <option data-clave="{{$producto['clave']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -253,7 +253,7 @@
                                     </div>
 
                                     <input type="hidden" name="precio" id="precio" value="0">
-                                    <input type="hidden" name="clave" id="clave" value="0">
+                                    {{-- <input type="hidden" name="clave" id="clave" value="0"> --}}
                                     <input type="hidden" name="producto-id" id="producto-id" value="0">
                                 </div>
                             </div>
@@ -264,7 +264,7 @@
                                     </div>
                                     <div class="form-group col-6 mt-0 mb-0">
                                         <label for="nombre" class="col-form-label">Nombre</label>
-                                        <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
+                                        <input type="text" name="nombre" class="form-control to-uppercase" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
                                     </div>
                                     <div class="form-group col-3 mt-0 mb-0">
                                         <label for="email" class="col-form-label">Email</label>

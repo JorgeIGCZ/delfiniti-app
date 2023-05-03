@@ -23,6 +23,7 @@ class RoleSeeder extends Seeder
         $recepcion     = Role::create(['name' => 'Recepcion']);
         $mercadotecnia = Role::create(['name' => 'Mercadotecnia']);
         $contabilidad  = Role::create(['name' => 'Contabilidad']);
+        $fotoVideo     = Role::create(['name' => 'FotoVideo']);
 
         Permission::create(['name' => 'SeccionReservaciones.index'])->assignRole($administrador);
 
@@ -96,6 +97,16 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'TiendaProductos.create'])->assignRole($administrador);
         Permission::create(['name' => 'TiendaProductos.update'])->assignRole($administrador);
 
+
         Permission::create(['name' => 'SeccionFotoVideo.index'])->assignRole($administrador);
+
+        Permission::create(['name' => 'FotoVideoVentas.index'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoVentas.create'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoVentas.update'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoVentas.cancel'])->assignRole($administrador);
+
+        Permission::create(['name' => 'FotoVideoProductos.index'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoProductos.create'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoProductos.update'])->assignRole($administrador);
     }
 }

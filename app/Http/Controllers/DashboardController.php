@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class DashboardController extends Controller
 {
     public function __construct() {
-        $this->middleware('permission:SeccionReservaciones.index|SeccionTienda.index')->only('index');
+        $this->middleware('permission:SeccionReservaciones.index|SeccionTienda.index|SeccionFotoVideo.index')->only('index');
     }
     
     /**

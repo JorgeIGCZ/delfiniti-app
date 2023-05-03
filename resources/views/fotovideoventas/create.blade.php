@@ -34,10 +34,10 @@
             };
         }
     </script>
-    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/create.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/main.js') }}"></script>
-    <script src="{{ asset('js/tiendaVenta/ticket.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoSeleccionProducto/select.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/create.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/main.js') }}"></script>
+    <script src="{{ asset('js/fotoVideoVenta/ticket.js') }}"></script>
 @endsection
 @section('content')
     <div class="az-dashboard-one-title">
@@ -58,12 +58,12 @@
                                         <strong>Datos de la venta</strong>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="codigo" class="col-form-label">Codigo</label>
+                                        <label for="clave" class="col-form-label">Clave</label>
 
-                                        <input list="codigos-list" name="codigo" id="codigo" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
-                                        <datalist id="codigos-list">
+                                        <input list="claves-list" name="clave" id="clave" class="form-control to-uppercase" tabindex="1" autocomplete="off"/>
+                                        <datalist id="claves-list">
                                             @foreach($productos as $producto)
-                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['codigo']}}">
+                                                <option data-value="{{$producto['nombre']}}" value="{{$producto['clave']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -72,7 +72,7 @@
                                         <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
                                             @foreach($productos as $producto)
-                                                <option data-codigo="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
+                                                <option data-clave="{{$producto['clave']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
                                     </div>
@@ -86,10 +86,10 @@
                                     </div>
 
                                     <input type="hidden" name="precio" id="precio" value="0">
-                                    <input type="hidden" name="clave" id="clave" value="0">
+                                    {{-- <input type="hidden" name="clave" id="clave" value="0"> --}}
                                     <input type="hidden" name="producto-id" id="producto-id" value="0">
                                 </div>
-                            </div>
+                            </div> 
                             <div class="form-group col-6 mt-0 mb-0">
                                 <div class="row">
                                     <div class="col-12 mt-3">
@@ -243,5 +243,4 @@
             </div>
         </div>
     </div>
-
 @endsection

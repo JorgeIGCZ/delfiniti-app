@@ -1,9 +1,9 @@
 function updateEstatusVenta(accion){
     const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
     $('.loader').show();
-    axios.post('/ventas/updateestatus', {
+    axios.post('/fotovideoventas/updateestatus', {
         '_token': token(),
-        'ventaId': ventaId(),
+        'ventaId': ventaId(), 
         'accion': accion,
     })
     .then(function (response) {
@@ -33,9 +33,10 @@ function updateEstatusVenta(accion){
         })
     });
 }
+
 async function eliminarProductoVenta(row,clave){
     $('.loader').show();
-    result = await axios.post('/ventas/removeProducto', {
+    result = await axios.post('/fotovideoventas/removeProducto', {
         '_token': token(),
         'ventaId': ventaId(),
         'productoClave': clave
@@ -58,6 +59,7 @@ async function eliminarProductoVenta(row,clave){
 
     return true;
 }
+
 function removeProducto(row){
     ventasTable
         .row( $(row).parents('tr') )
@@ -75,11 +77,11 @@ function removeProducto(row){
         return result;
     });
 }
+
 function addProducto(){
     // debugger;
     const productoDetalle = document.getElementById('productos').value;
     const productoId = document.getElementById('producto-id').value;
-    const codigoProducto = document.getElementById('codigo').value;
     const claveProducto = document.getElementById('clave').value;
     const producto = document.getElementById('productos').value;
     const cantidad = document.getElementById('cantidad').value;
@@ -96,9 +98,8 @@ function addProducto(){
     ])
         .draw(false);
     productosArray = [...productosArray, {
-        'codigoProducto': codigoProducto,
-        'productoId': productoId,
         'claveProducto': claveProducto,
+        'productoId': productoId,
         'producto': producto,
         'cantidad': cantidad,
         'precio': precio
@@ -178,7 +179,7 @@ function getUSDFromVentaMXN(usd) {
 }
 
 function displayProducto() {
-    let productosClaveSelect = document.getElementById('codigo');
+    let productosClaveSelect = document.getElementById('clave');
     let productosSelect = document.getElementById('productos');
     let optionNombre;
     let optionClave;
@@ -208,6 +209,7 @@ function displayProducto() {
 //         displayDisponibilidad(0);
 //     });
 // }
+
 function displayDisponibilidad(disponibilidad){
     const cantidadElement       = document.getElementById('cantidad');
     const disponibilidadElement = document.getElementById('disponibilidad');
@@ -216,15 +218,17 @@ function displayDisponibilidad(disponibilidad){
     cantidadElement.setAttribute('minimo',(disponibilidad == 0 ? 0 : 1));
     disponibilidadElement.value = disponibilidad;
 }
+
 function isProductoDuplicado(nuevoProducto){
     let duplicado = 0;
     productosArray.forEach( function (producto) {
-        if(producto.codigoProducto == nuevoProducto.codigoProducto){
+        if(producto.claveProducto == nuevoProducto.claveProducto){
             duplicado += 1;
         }
     });
     return duplicado;
 }
+
 function cantidadIsValid() {
     const cantidad = document.getElementById('cantidad');
     
@@ -239,6 +243,7 @@ function cantidadIsValid() {
     }
     return true;
 }
+
 function cantidadProductosIsValid() {
     if(productosArray.length < 1){
         Swal.fire({
@@ -251,6 +256,7 @@ function cantidadProductosIsValid() {
     }
     return true;
 }
+
 function cambioValidoIsValid(){
     if(getCambio() > 0){
         Swal.fire({
@@ -262,6 +268,7 @@ function cambioValidoIsValid(){
     }
     return true;
 }
+
 function validateFecha() {
     const fecha = document.getElementById('fecha');
     const fechaValor = new Date(`${fecha.value} 23:59:000`);
@@ -325,7 +332,7 @@ let ventasTable = new DataTable('#ventas', {
 
 window.onload = function() {
     // getDisponibilidad()
-    document.getElementById('venta-form').elements['codigo'].focus();
+    document.getElementById('venta-form').elements['clave'].focus();
 
     //$('.to-uppercase').keyup(function() {
     //    this.value = this.value.toUpperCase();
@@ -492,36 +499,37 @@ async function eliminarPagoReservacion(row,pagoId){
     return true;
 }
 
- $('#codigo').on('change', function (e) {
+ $('#clave').on('change', function (e) {
     // debugger;
     validateFecha();
     changeProducto();
 });
+
 $('#productos').on('change', function (e) {
     validateFecha();
-    changeCodigoProducto();
+    changeClaveProducto();
 });
+
 // $('#comisionista').on('change', function (e) {
 //     changeCuponDetalle();
 //     document.getElementById('venta-form').elements['cupon'].focus();
 // });
-
 
 $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
         // debugger;
         e.preventDefault();
         const element = $(this).attr("id");
-        if(element == "codigo" || element == "productos" || element == "cantidad"){
-            if(element == "codigo"){
+        if(element == "clave" || element == "productos" || element == "cantidad"){
+            if(element == "clave"){
                 changeProducto();
             }else{
-                changeCodigoProducto();
+                changeClaveProducto();
             }
             if(productoIsValid()){
                 validateFecha();
                 addProductos();
-                document.getElementById('venta-form').elements['codigo'].focus();
+                document.getElementById('venta-form').elements['clave'].focus();
                 return true;
             }
         }
@@ -564,9 +572,9 @@ function productoIsValid() {
 }
 
 function addProductos() {
-    const codigoProducto = document.getElementById('codigo').value;
+    const claveProducto = document.getElementById('clave').value;
 
-    if (isProductoDuplicado({'codigoProducto': codigoProducto})) {
+    if (isProductoDuplicado({'claveProducto': claveProducto})) {
         Swal.fire({
             icon: 'warning',
             title: 'El prodducto ya se encuenta agregado.',
@@ -585,11 +593,9 @@ function addProductos() {
     // enableBtn('reservar', productosArray.length > 0);
 }
 
-
-
-function calculatePagoPersonalizado(descuentoPersonalizado,cantidadCodigo,cupon){
+function calculatePagoPersonalizado(descuentoPersonalizado,cantidadClave,cupon){
     const total    = parseFloat(document.getElementById('total').getAttribute('value'));
-    const subTotal = total - ((cantidadCodigo));//+parseFloat(cupon));
+    const subTotal = total - ((cantidadClave));//+parseFloat(cupon));
 
     return (subTotal/100) * parseFloat(descuentoPersonalizado);
 }
@@ -603,19 +609,3 @@ function enableBtn(btnId,status){
     let reservar = document.getElementById(btnId);
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
-
-// verify when product is selected
-// function getDisponibilidad(){
-//     axios.get('/api/disponibilidad')
-//     .then(function (response) {
-//         allProductos = response.data.disponibilidad;
-//         displayProducto();
-//         getProductoMeta();
-//         // getProductoDisponibilidad()
-//         applyVariables();
-//     })
-//     .catch(function (error) {
-//         productos = [];
-//     });
-// }
-

@@ -54,7 +54,7 @@
             @endcan
 
             @can('SeccionFotoVideo.index')
-              <a href="#" class="dropdown-item"><i class="typcn typcn-time"></i> Foto y video</a>
+              <a href="/switchModule/fotovideo" class="dropdown-item {{(session('modulo') == 'tienda') ? 'selected' : ''}}"><i class="typcn typcn-time"></i> Foto y video</a>
             @endcan
             {{-- <a href="#" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a> --}}
             <form method="POST" action="{{ route('logout') }}">
