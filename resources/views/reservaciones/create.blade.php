@@ -31,9 +31,9 @@
             };
         }
     </script>
-    <script src="{{ asset('js/reservaciones/create.js') }}"></script>
-    <script src="{{ asset('js/reservaciones/main.js') }}"></script>
-    <script src="{{ asset('js/reservaciones/ticket.js') }}"></script>
+    <script src="{{ asset('js/reservacion/create.js') }}"></script>
+    <script src="{{ asset('js/reservacion/main.js') }}"></script>
+    <script src="{{ asset('js/reservacion/ticket.js') }}"></script>
 @endsection
 @section('content')
     <div class="modal fade" id="alojamiento-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
