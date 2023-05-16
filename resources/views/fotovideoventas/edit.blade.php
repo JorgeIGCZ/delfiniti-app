@@ -342,6 +342,17 @@
                                                     </option>
                                                 </select>
                                             </div>
+
+                                            <div class="form-group col-4 mt-0 mb-0">
+                                                <label for="comisionista" class="col-form-label">Fotógrafo</label>
+                                                <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                    <option value='0' selected="true">Seleccionar fotógrafo</option>
+                                                    @foreach($comisionistas as $comisionista)
+                                                        <option value="{{$comisionista->id}}" {{$venta->comisionista_id === $comisionista->id ? 'selected="selected"' : ""}}>{{$venta->nombre}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
                                                 <textarea name="comentarios" class='to-uppercase' rows="11" style="width:100%;">{{@$venta->comentarios}}</textarea>

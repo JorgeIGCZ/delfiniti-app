@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
 use App\Models\Estado;
+use App\Models\FotoVideoComision;
+use App\Models\FotoVideoComisionista;
 use App\Models\FotoVideoProducto;
 use App\Models\FotoVideoVenta;
 use App\Models\FotoVideoVentaDetalle;
@@ -19,9 +21,9 @@ use Illuminate\Support\Facades\DB;
 class FotoVideoVentaController extends Controller
 {
     public function __construct() {
-        // $this->middleware('permission:TiendaVentas.index')->only('index'); 
-        // $this->middleware('permission:TiendaVentas.create')->only('create'); 
-        // $this->middleware('permission:TiendaVentas.update')->only('edit'); 
+        $this->middleware('permission:FotoVideoVentas.index')->only('index'); 
+        $this->middleware('permission:FotoVideoVentas.create')->only('create'); 
+        $this->middleware('permission:FotoVideoVentas.update')->only('edit'); 
     }
 
     public $folioSufijo   = "-F"; //????
@@ -44,13 +46,14 @@ class FotoVideoVentaController extends Controller
      */
     public function create(FotoVideoVenta $fotoVideoVenta)
     {
-        $productos = FotoVideoProducto::where('estatus',1)->get()->toArray();
-        $estados = Estado::all();
+        $productos     = FotoVideoProducto::where('estatus',1)->get()->toArray();
+        $estados       = Estado::all();
+        $comisionistas = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
 
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
-        return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados,'dolarPrecio' => $dolarPrecio]);
+        return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados, 'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio]);
     }
 
     /**
@@ -66,7 +69,7 @@ class FotoVideoVentaController extends Controller
         $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
 
-        $Productos = new FotoVideoProductoController();
+        // $Productos = new FotoVideoProductoController();
         DB::beginTransaction();
         try{
             $venta = FotoVideoVenta::create([
@@ -80,6 +83,7 @@ class FotoVideoVentaController extends Controller
                 'fecha'          => $request->fecha,
                 'fecha_creacion' => date('Y-m-d'),
                 'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0,
+                'comisionista_id'=> is_numeric($request->comisionista) ? $request->comisionista : 0,
                 'comentarios'    => mb_strtoupper($request->comentarios)
             ]);
 
@@ -132,9 +136,10 @@ class FotoVideoVentaController extends Controller
 
             $this->setEstatusPago($venta['id']);
 
-            // $checkin->setCheckin($venta);
-            // $comisiones     = new ComisionController();
-            // $comisiones->setComisiones($venta['id']);
+            $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+
+            $comisiones     = new FotoVideoComisionController();
+            $comisiones->setComisiones($venta['id'], $fechaComisiones);
 
             return json_encode(
                 [
@@ -310,6 +315,8 @@ class FotoVideoVentaController extends Controller
         $estados = Estado::all();
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
+
+        $comisionistas = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
         // $tickets           = VentaTicket::where('venta_id',$venta->id)->get();
         // return view('ventas.edit');
         return view('fotovideoventas.edit',[
@@ -317,6 +324,7 @@ class FotoVideoVentaController extends Controller
             'productos' => $productos,
             'estados' => $estados,
             'dolarPrecio' => $dolarPrecio,
+            'comisionistas' => $comisionistas,
             'tickets' => []//$tickets
         ]);
     }
@@ -416,6 +424,7 @@ class FotoVideoVentaController extends Controller
             $venta->origen          = mb_strtoupper($request->origen);
             $venta->RFC             = mb_strtoupper($request->rfc);
             $venta->fecha           = $request->fecha;
+            $venta->comisionista_id = is_numeric($request->comisionista) ? $request->comisionista : 0;
             $venta->comentarios     = mb_strtoupper($request->comentarios);
             if($pagar){
                 $venta->estatus_pago = 1;
@@ -470,8 +479,10 @@ class FotoVideoVentaController extends Controller
             $this->setEstatusPago($venta['id']);
 
             // $checkin->setCheckin($venta);
-            // $comisiones     = new ComisionController();
-            // $comisiones->setComisiones($venta['id']);
+            $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+
+            $comisiones     = new FotoVideoComisionController();
+            $comisiones->setComisiones($venta['id'], $fechaComisiones);
 
             return json_encode(
                 [

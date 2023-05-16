@@ -19,6 +19,7 @@ class FotoVideoVenta extends Model
         'fecha',
         'fecha_creacion',
         'usuario_id',
+        'comisionista_id',
         'estatus_pago',
         'comentarios',
         'estatus'
