@@ -108,5 +108,9 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'FotoVideoProductos.index'])->assignRole($administrador);
         Permission::create(['name' => 'FotoVideoProductos.create'])->assignRole($administrador);
         Permission::create(['name' => 'FotoVideoProductos.update'])->assignRole($administrador);
+
+        Permission::create(['name' => 'FotoVideoComisionistas.index'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoComisionistas.create'])->assignRole($administrador);
+        Permission::create(['name' => 'FotoVideoComisionistas.update'])->assignRole($administrador);
     }
 }

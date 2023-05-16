@@ -205,6 +205,9 @@
                     @can('FotoVideoProductos.index')
                       <a href="{{ url('/fotovideoproductos') }}" class="nav-link {{url()->current() == url('fotovideoproductos') ? 'active' : ''}}">Productos</a>
                     @endcan
+                    @can('FotoVideoComisionistas.index')
+                      <a href="{{ url('/fotovideocomisionistas') }}" class="nav-link {{url()->current() == url('fotovideocomisionistas') ? 'active' : ''}}">Fotógrafos</a>
+                    @endcan
                   @endif
               </nav>
             </div>

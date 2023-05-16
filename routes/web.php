@@ -17,6 +17,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\ImpuestoController;
@@ -301,5 +302,16 @@ Route::controller(FotoVideoProductoController::class)->middleware(['auth'])->gro
             'fotovideoproductos' => 'fotoVideoProducto'
         ]
     ]);
+});
+
+Route::controller(FotoVideoComisionistaController::class)->middleware(['auth'])->group(function () {
+    Route::get('fotovideocomisionistas/show/{comisionista?}', 'show');
+    Route::patch('fotovideocomisionistas/estatus/{comisionista}', 'updateEstatus');
+    Route::resource('fotovideocomisionistas',FotoVideoComisionistaController::class, [
+        'parameters' => [
+            'fotovideocomisionistas' => 'fotovideocomisionista'
+        ]
+    ]);
+    
 });
 require __DIR__.'/auth.php';
