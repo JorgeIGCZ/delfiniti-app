@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\DB;
 
 class FotoVideoComisionController extends Controller
 {
+
+    public function __construct() {
+        $this->middleware('permission:FotoVideoComisiones.index')->only('index');
+        $this->middleware('permission:FotoVideoComisiones.update')->only('edit'); 
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,7 +26,7 @@ class FotoVideoComisionController extends Controller
      */
     public function index()
     { 
-        return view('fotovideocomisiones.index');
+        return view('fotovideocomisiones.index'); 
     }
 
     public function recalculateComisiones(Request $request){
@@ -33,7 +39,7 @@ class FotoVideoComisionController extends Controller
 
             FotoVideoComision::where('foto_video_venta_id',$request->ventaId)->delete(); 
 
-            $pagos = FotoVideoVentaPago::where('foto_video_venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
+            $pagos = FotoVideoVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
                     ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
             })->get();
@@ -170,9 +176,49 @@ class FotoVideoComisionController extends Controller
      * @param  \App\Models\FotoVideoComision  $fotoVideoComision
      * @return \Illuminate\Http\Response
      */
-    public function show(FotoVideoComision $fotoVideoComision)
-    {
-        //
+    public function show(Request $request)
+    { 
+        if(!is_null($request->fecha)){
+            switch (@$request->fecha) {
+                case 'dia':
+                    $fechaInicio = Carbon::now()->startOfDay();
+                    $fechaFinal  = Carbon::now()->endOfDay();
+                    break;
+                case 'mes':
+                    $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
+                    $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
+                    break;
+                case 'custom':
+                    $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+                    $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+                    break;
+            }   
+        }
+        // if(is_null($comision)){
+
+            $comisiones      = FotoVideoComision::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('venta',function ($query){
+                $query
+                    ->where("estatus", 1);
+            })->orderBy('id','desc')->get();
+
+            $comisionesArray = [];
+            foreach ($comisiones as $comision) {
+                $comisionesArray[] = [
+                    'id'                => $comision->id,
+                    'comisionista'      => $comision->comisionista->nombre,
+                    'venta'             => $comision->venta->folio,
+                    'ventaId'           => $comision->venta->id,
+                    'total'             => $comision->pago_total,
+                    'comisionBruta'     => $comision->cantidad_comision_bruta,
+                    'iva'               => $comision->iva,
+                    'descuentoImpuesto' => $comision->descuento_impuesto,
+                    'comisionNeta'      => $comision->cantidad_comision_neta,
+                    'fecha'             => date_format($comision->created_at,'d-m-Y'),
+                    'estatus'           => $comision->estatus
+                ];
+            }
+            return json_encode(['data' => $comisionesArray]);
+        //}
     }
 
     /**
@@ -181,21 +227,34 @@ class FotoVideoComisionController extends Controller
      * @param  \App\Models\FotoVideoComision  $fotoVideoComision
      * @return \Illuminate\Http\Response
      */
-    public function edit(FotoVideoComision $fotoVideoComision)
+    public function edit(FotoVideoComision $fotovideocomision)
     {
-        //
+        return view('fotovideocomisiones.edit',['comision' => $fotovideocomision]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\FotoVideoComision  $fotoVideoComision
+     * @param  \App\Models\Comision  $comision
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, FotoVideoComision $fotoVideoComision)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $comision                         = FotoVideoComision::find($id);
+            $comision->iva                    = $request->iva;
+            $comision->descuento_impuesto     = $request->descuento_impuesto;
+            $comision->cantidad_comision_neta = $request->cantidad_comision_neta;
+            $comision->created_at             = $request->fecha_registro_comision;
+            $comision->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+
+        return redirect()->route("fotovideocomisiones.index")->with(["result" => "Comision actualizada"]);
     }
 
     /**

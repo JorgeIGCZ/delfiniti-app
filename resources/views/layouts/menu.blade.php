@@ -133,6 +133,12 @@
           <li class="nav-item {{url()->current() == url('fotovideoventas') ? 'active' : ''}}">
             <a href="{{ url('fotovideoventas') }}" class="nav-link {{url()->current() == url('fotovideoventas') ? 'active' : ''}}"><i class="typcn typcn-contacts"></i> Ver ventas</a>
           </li>
+        @endcan 
+
+        @can('FotoVideoComisiones.index')
+          <li class="nav-item {{url()->current() == url('fotovideocomisiones') ? 'active' : ''}}">
+            <a href="{{ url('fotovideocomisiones') }}" class="nav-link"><i class="typcn typcn-group-outline"></i> Comisiones</a>
+          </li>
         @endcan
       @endif
 

@@ -17,6 +17,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\FotoVideoComisionController;
 use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\VentaController;
+use App\Models\FotoVideoComision;
 use App\Models\FotoVideoVenta;
 use App\Models\Impuesto;
 
@@ -180,7 +182,6 @@ Route::controller(ComisionController::class)->middleware(['auth'])->group(functi
             'comisiones' => 'comision'
         ]
     ]);
-    
 });
 
 Route::controller(CheckinController::class)->middleware(['auth'])->group(function () {
@@ -313,5 +314,16 @@ Route::controller(FotoVideoComisionistaController::class)->middleware(['auth'])-
         ]
     ]);
     
+});
+
+Route::controller(FotoVideoComisionController::class)->middleware(['auth'])->group(function () {
+    Route::post('fotovideocomisiones/recalculateComisiones', 'recalculateComisiones');
+    Route::post('fotovideocomisiones/show/{comision?}', 'show');
+    Route::patch('fotovideocomisiones/estatus/{comision}', 'updateComisiones');
+    Route::resource('fotovideocomisiones',FotoVideoComisionController::class, [
+        'parameters' => [
+            'fotovideocomisiones' => 'fotovideocomision'
+        ]
+    ]);
 });
 require __DIR__.'/auth.php';

@@ -26,12 +26,12 @@ class FotoVideoComision extends Model
 
     public function venta()
     {
-        return $this->belongsTo(FotoVideoVenta::class,'venta_id');
+        return $this->belongsTo(FotoVideoVenta::class,'foto_video_venta_id');
     }
 
     public function comisionista()
     {
-        return $this->belongsTo(FotoVideoComisionista::class,'comisionista_id');
+        return $this->belongsTo(FotoVideoComisionista::class,'foto_video_comisionista_id');
     }
 
     public function canalVenta()

@@ -130,6 +130,10 @@
                 'FotoVideoComisionistas.index'    : roles.elements['FotoVideoComisionistas.index'      ].checked,
                 'FotoVideoComisionistas.create'   : roles.elements['FotoVideoComisionistas.create'     ].checked,
                 'FotoVideoComisionistas.update'   : roles.elements['FotoVideoComisionistas.update'     ].checked,
+
+                'FotoVideoComisiones.index'    : roles.elements['FotoVideoComisiones.index'      ].checked,
+                'FotoVideoComisiones.create'   : roles.elements['FotoVideoComisiones.create'     ].checked,
+                'FotoVideoComisiones.update'   : roles.elements['FotoVideoComisiones.update'     ].checked,
             }
         })
         .then(function (response) {
@@ -724,6 +728,28 @@
                                 <div class="checkbox checkbox-primary">
                                     <input name="FotoVideoComisionistas.update" type="checkbox" >
                                     <label for="FotoVideoComisionistas.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Comisiones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideoComisiones.index" type="checkbox" >
+                                    <label for="FotoVideoComisiones.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="FotoVideoComisiones.create" type="checkbox" >
+                                <label for="FotoVideoComisiones.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="FotoVideoComisiones.update" type="checkbox" >
+                                    <label for="FotoVideoComisiones.update">
                                         Modificar 
                                     </label>
                                 </div>
