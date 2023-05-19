@@ -234,7 +234,7 @@
                                             @endforeach
                                         </datalist>
                                     </div>
-                                    <div class="form-group col-10 mt-0 mb-0">
+                                    <div class="form-group col-8 mt-0 mb-0">
                                         <label for="actividad" class="col-form-label">Producto</label>
                                         <input list="productos-list" name="productos" id="productos" class="form-control to-uppercase" tabindex="2" value="{{@$venta->producto}}" autocomplete="off"/>
                                         <datalist id="productos-list">
@@ -242,6 +242,10 @@
                                                 <option data-codigo="{{$producto['codigo']}}" value="{{$producto['nombre']}}">
                                             @endforeach
                                         </datalist>
+                                    </div>
+
+                                    <div class="form-group col-2 mt-1 mb-0">
+                                        <button class="btn btn-info btn-block mt-33" id="add-producto" tabindex="10">+</button>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
                                         <label for="cantidad" class="col-form-label">Cantidad</label>

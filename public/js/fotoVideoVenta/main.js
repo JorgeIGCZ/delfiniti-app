@@ -340,13 +340,14 @@ window.onload = function() {
 
 
 
-    // document.getElementById('add-producto').addEventListener('click', (event) =>{
-    //     event.preventDefault();
-    //     if(cantidadIsValid()){
-    //         validateFecha();
-    //         addProductos();
-    //     }
-    // });
+    document.getElementById('add-producto').addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(productoIsValid()){
+            validateFecha();
+            addProductos();
+            document.getElementById('venta-form').elements['codigo'].focus();
+        }
+    });
 
     document.getElementById('efectivo').addEventListener('keyup', (event) =>{
         //if(getResta() < 0){
@@ -520,7 +521,7 @@ $('body').on('keydown', 'input, select, button', function(e) {
         // debugger;
         e.preventDefault();
         const element = $(this).attr("id");
-        if(element == "clave" || element == "productos" || element == "cantidad"){
+        if(element == "clave" || element == "productos" || element == "cantidad" || "add-producto"){
             if(element == "clave"){
                 changeProducto();
             }else{
