@@ -109,7 +109,7 @@ class FotoVideoProductoController extends Controller
     {
         try {
             $fotoVideoProducto->nombre          = mb_strtoupper($request->nombre);
-            $fotoVideoProducto->precio_venta    = floatval(str_replace('$','',$request->precioVenta));
+            $fotoVideoProducto->precio_venta    = floatval(str_replace(str_split('$,'), '', $request->precioVenta));
             $fotoVideoProducto->comentarios     = mb_strtoupper($request->comentarios);
             $fotoVideoProducto->save();
 

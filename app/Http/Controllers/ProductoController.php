@@ -133,8 +133,8 @@ class ProductoController extends Controller
             $producto->codigo          = $request->codigo;
             $producto->proveedor_id    = $request->proveedor;
             $producto->nombre          = mb_strtoupper($request->nombre);
-            $producto->costo           = floatval(str_replace('$','',$request->costo));
-            $producto->precio_venta    = floatval(str_replace('$','',$request->precioVenta));
+            $producto->costo           = floatval(str_replace(str_split('$,'), '', $request->costo));
+            $producto->precio_venta    = floatval(str_replace(str_split('$,'), '', $request->precioVenta));
             $producto->margen_ganancia = floatval(str_replace('%','',$request->margenGanancia));
             $producto->stock_minimo    = $request->stockMinimo;
             $producto->stock_maximo    = $request->stockMaximo;

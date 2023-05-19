@@ -156,7 +156,7 @@ class ActividadController extends Controller
         try{
             $actividad                  = Actividad::find($id);
             $actividad->nombre          = mb_strtoupper($request->nombre);
-            $actividad->precio          = $request->precio;
+            $actividad->precio          = floatval(str_replace(str_split('$,'), '', $request->precio));
             $actividad->capacidad       = $request->capacidad;
             $actividad->comisionable    = $request->has('comisionable');
             $actividad->comisiones_especiales  = ($request->comisiones_especiales == 'on');
@@ -190,8 +190,8 @@ class ActividadController extends Controller
                         ActividadComisionDetalle::create([
                             'actividad_id'          => $id,
                             'canal_venta_id'        => $key,
-                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
-                            'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto'],
+                            'comision'              => floatval(str_replace('%', '', $detalle['comision'])),
+                            'descuento_impuesto'    => floatval(str_replace('%', '', $detalle['descuento_impuesto']))
                         ]);
                     }
                 }

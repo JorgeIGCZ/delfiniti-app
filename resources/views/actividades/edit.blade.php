@@ -80,8 +80,8 @@
  
 
                             <div class="form-group col-1">
-                                <label for="precio" class="col-form-label">Precio</label>    
-                                <input type="text" name="precio" class="form-control" value="{{$actividad['precio']}}">  
+                                <label for="precio" class="col-form-label">Precio</label>      
+                                <input type="text" name="precio" class="form-control amount" value="{{$actividad['precio']}}">  
                             </div>
                             
                             <div class="form-group col-2">
@@ -125,10 +125,10 @@
                                         <tr canalId="{{$canal->id}}" class="canales">
                                             <td>{{$canal->nombre}}</td>
                                             <td>
-                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][comision]" class="canal_comision form-control" value="{{$cantidad}}">
+                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][comision]" class="canal_comision form-control percentage" value="{{$cantidad}}">
                                             </td>
                                             <td>
-                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][descuento_impuesto]" class="canal_comision form-control" value="{{$descuentoImpuesto}}">  
+                                                <input type="text" step="0.01" name="canal_comision[{{$key}}][{{$canal->id}}][descuento_impuesto]" class="canal_comision form-control percentage" value="{{$descuentoImpuesto}}">  
                                             </td>
                                         </tr>
                                     @endforeach
