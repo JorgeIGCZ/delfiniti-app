@@ -13,9 +13,23 @@
       </div><!-- az-header-menu -->
       <div class="az-header-right">
         <!--a href="#" class="az-header-search-link"><i class="fas fa-search"></i></a-->
-        <!--div class="az-header-message">
-          <a href="app-chat.html"><i class="typcn typcn-messages"></i></a>
-        </div--><!-- az-header-message -->
+        <div class="az-header-message">
+          <a href="dashboard" class="nav-link">
+            <b style="font-size: initial;color: #2aa2b8;">
+              @switch(session('modulo'))
+                @case('reservaciones')
+                    Reservaciones
+                  @break
+                @case('tienda')
+                  Tienda
+                  @break
+                @case('fotovideo')
+                  Foto y video
+                  @break
+              @endswitch
+            </b>
+          </a>
+        </div>
         <!--div class="dropdown az-header-notification">
           <a href="#" class="new"><i class="typcn typcn-bell"></i></a>
           <div class="dropdown-menu">
