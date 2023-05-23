@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Proveedor;
 use Illuminate\Http\Request;
 use App\Classes\CustomErrorHandler;
+use App\Models\TiendaProveedor;
 
-class ProveedorController extends Controller
+class TiendaProveedorController extends Controller
 {
     public function __construct() {
         // $this->middleware('permission:Proveedor.index')->only('index');
@@ -30,13 +30,13 @@ class ProveedorController extends Controller
     public function store(Request $request)
     {
         try {
-            if(count(Proveedor::
+            if(count(TiendaProveedor::
                 where('clave',$request->clave)->get()
             ) > 0){
                 return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
             }
 
-            $proveedor = Proveedor::create([
+            $proveedor = TiendaProveedor::create([
                 'clave'             => $request->clave,
                 'razon_social'      => mb_strtoupper($request->razonSocial),
                 'RFC'               => mb_strtoupper($request->rfc),
@@ -66,10 +66,10 @@ class ProveedorController extends Controller
      * @param  \App\Models\Proveedor  $proveedor
      * @return \Illuminate\Http\Response
      */
-    public function show(Proveedor $proveedor = null)
+    public function show(TiendaProveedor $proveedor = null)
     {
         if(is_null($proveedor)){
-            $proveedores      = Proveedor::all();
+            $proveedores      = TiendaProveedor::all();
             $proveedoresArray = [];
             foreach ($proveedores as $proveedor) {
                 $proveedoresArray[] = [
@@ -98,10 +98,10 @@ class ProveedorController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Proveedor  $proveedor
+     * @param  \App\Models\TiendaProveedor  $proveedor
      * @return \Illuminate\Http\Response
      */
-    public function edit(Proveedor $proveedor)
+    public function edit(TiendaProveedor $proveedor)
     {
         return view('proveedores.edit',['proveedor' => $proveedor]);
     }
@@ -115,7 +115,7 @@ class ProveedorController extends Controller
      */
     public function updateEstatus(Request $request, $id){
         try{
-            $proveedor          = Proveedor::find($id);
+            $proveedor          = TiendaProveedor::find($id);
             $proveedor->estatus = $request->estatus;
             $proveedor->save();
         } catch (\Exception $e){
@@ -133,7 +133,7 @@ class ProveedorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Proveedor $proveedor, Request $request)
+    public function update(TiendaProveedor $proveedor, Request $request)
     {
         try {
             $proveedor->razon_social     = mb_strtoupper($request->razonSocial);
@@ -172,10 +172,10 @@ class ProveedorController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  Proveedor  $proveedor
+     * @param  TiendaProveedor  $proveedor
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Proveedor $proveedor)
+    public function destroy(TiendaProveedor $proveedor)
     {
         $result = $proveedor->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);

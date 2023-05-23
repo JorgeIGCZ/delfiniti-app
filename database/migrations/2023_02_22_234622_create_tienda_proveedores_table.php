@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('proveedores', function (Blueprint $table) {
+        Schema::create('tienda_proveedores', function (Blueprint $table) {
             $table->id();
             $table->string('clave')->unique();
             $table->string('razon_social');
@@ -40,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('proveedores');
+        Schema::dropIfExists('tienda_proveedores');
     }
 };

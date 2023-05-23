@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
-use App\Models\Pedido;
-use App\Models\PedidoDetalle;
-use App\Models\Producto;
-use App\Models\Proveedor;
+use App\Models\TiendaPedido;
+use App\Models\TiendaPedidoDetalle;
+use App\Models\TiendaProducto;
+use App\Models\TiendaProveedor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PedidoController extends Controller
+class TiendaPedidoController extends Controller
 {
 
 
@@ -35,8 +35,8 @@ class PedidoController extends Controller
      */
     public function create($pedido = [])//(Pedido $pedido)
     {
-        $proveedores = Proveedor::where('estatus',1)->get();
-        $productos = Producto::where('estatus',1)->get()->toArray();
+        $proveedores = TiendaProveedor::where('estatus',1)->get();
+        $productos = TiendaProducto::where('estatus',1)->get()->toArray();
 
         return view('pedidos.create',['pedido' => $pedido,'proveedores' => $proveedores,'productos' => $productos]);
     }
@@ -49,11 +49,11 @@ class PedidoController extends Controller
      */
     public function store(Request $request) 
     {
-        $Productos = new ProductoController();
+        $Productos = new TiendaProductoController();
 
         DB::beginTransaction();
         try{
-            $pedido = Pedido::create([
+            $pedido = TiendaPedido::create([
                 'proveedor_id'  => mb_strtoupper($request->proveedor),
                 'comentarios'   => mb_strtoupper($request->comentarios),
                 'fecha'           => $request->fecha,
@@ -63,7 +63,7 @@ class PedidoController extends Controller
             foreach($request->pedidoProductos as $pedidoProducto){
 
                 $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
-                PedidoDetalle::create([
+                TiendaPedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
                     'cantidad'    =>  $pedidoProducto['cantidad'],
@@ -71,7 +71,7 @@ class PedidoController extends Controller
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
                 ]);
                 
-                $producto          = Producto::find($pedidoProducto['productoId']);
+                $producto          = TiendaProducto::find($pedidoProducto['productoId']);
                 $producto->stock   = $producto->stock + $pedidoProducto['cantidad'];
                 $producto->save();
             }
@@ -123,7 +123,7 @@ class PedidoController extends Controller
 
         
         DB::enableQueryLog();
-        $pedidos = Pedido::whereBetween("fecha", [$fechaInicio,$fechaFinal])->orderByDesc('id')->get();
+        $pedidos = TiendaPedido::whereBetween("fecha", [$fechaInicio,$fechaFinal])->orderByDesc('id')->get();
         //dd(DB::getQueryLog());
     
 
@@ -159,14 +159,14 @@ class PedidoController extends Controller
      */
     public function updateEstatus(Request $request, $id){
         try{
-            $pedido          = Pedido::find($id);
+            $pedido          = TiendaPedido::find($id);
             $pedido->estatus = $request->estatus;
             $pedido->save();
 
-            $pedidoDetalles = PedidoDetalle::where('pedido_id',$id)->get();
+            $pedidoDetalles = TiendaPedidoDetalle::where('pedido_id',$id)->get();
 
             foreach($pedidoDetalles as $pedidoDetalle){
-                $producto          = Producto::find($pedidoDetalle->producto_id);
+                $producto          = TiendaProducto::find($pedidoDetalle->producto_id);
                 $producto->stock   = $request->estatus ? $producto->stock + $pedidoDetalle->cantidad : $producto->stock - $pedidoDetalle->cantidad;
                 $producto->save();
             }
@@ -185,10 +185,10 @@ class PedidoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Pedido $pedido)
+    public function edit(TiendaPedido $pedido)
     {
-        $proveedores = Proveedor::where('estatus',1)->get();
-        $productos   = Producto::where('estatus',1)->get()->toArray();
+        $proveedores = TiendaProveedor::where('estatus',1)->get();
+        $productos   = TiendaProducto::where('estatus',1)->get()->toArray();
 
         return view('pedidos.edit',['pedido' => $pedido,'proveedores' => $proveedores,'productos' => $productos]);
     }
@@ -202,23 +202,23 @@ class PedidoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $Productos = new ProductoController();
+        $Productos = new TiendaProductoController();
 
         DB::beginTransaction();
         try{
-            $pedido = Pedido::find($id);
+            $pedido = TiendaPedido::find($id);
             $pedido->proveedor_id    = mb_strtoupper($request->proveedor);
             $pedido->comentarios     = mb_strtoupper($request->comentarios);
             $pedido->fecha           = $request->fecha;
             $pedido->save();
 
             $this->removeProductoStock($pedido['id']);
-            PedidoDetalle::where('pedido_id', $pedido['id'])->delete();
+            TiendaPedidoDetalle::where('pedido_id', $pedido['id'])->delete();
 
             foreach($request->pedidoProductos as $pedidoProducto){
 
                 $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
-                PedidoDetalle::create([
+                TiendaPedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
                     'cantidad'    =>  $pedidoProducto['cantidad'],
@@ -226,7 +226,7 @@ class PedidoController extends Controller
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
                 ]);
                 
-                $producto          = Producto::find($pedidoProducto['productoId']);
+                $producto          = TiendaProducto::find($pedidoProducto['productoId']);
                 $producto->stock   = $producto->stock + $pedidoProducto['cantidad'];
                 $producto->save();
             }
@@ -251,9 +251,9 @@ class PedidoController extends Controller
     }
 
     private function removeProductoStock($pedidoId){
-        $pedidoDetalles = PedidoDetalle::where('pedido_id',$pedidoId)->get();
+        $pedidoDetalles = TiendaPedidoDetalle::where('pedido_id',$pedidoId)->get();
         foreach($pedidoDetalles as $pedidoDetalle){
-            $producto          = Producto::find($pedidoDetalle['producto_id']);
+            $producto          = TiendaProducto::find($pedidoDetalle['producto_id']);
             $producto->stock   = $producto->stock - $pedidoDetalle['cantidad'];
             $producto->save();
         }

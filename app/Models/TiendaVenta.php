@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Venta extends Model
+class TiendaVenta extends Model
 {
     use HasFactory;
 
@@ -27,19 +27,19 @@ class Venta extends Model
 
     public function ventaDetalle()
     {
-        return $this->hasMany(VentaDetalle::class,'venta_id');
+        return $this->hasMany(TiendaVentaDetalle::class,'venta_id');
     }
 
     public function pagos()
     {
-        return $this->hasMany(VentaPago::class,'venta_id');
+        return $this->hasMany(TiendaVentaPago::class,'venta_id');
     }
 
     public function tipoPago()
     {
         return $this->hasOneThrough(
             TipoPago::class,
-            VentaPago::class,
+            TiendaVentaPago::class,
             'venta_id', // FK Pago como comunica a Ventas
             'id', // FK Pago como comunica a TipoPago
             'id', //local key TipoPago

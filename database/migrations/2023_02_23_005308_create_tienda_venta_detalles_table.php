@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('impuestos', function (Blueprint $table) {
+        Schema::create('tienda_venta_detalles', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->float('impuesto')->default(0);
-            $table->boolean('estatus')->default(1);
+            $table->integer('factura_id');
+            $table->integer('venta_id');
+            $table->integer('producto_id');
+            $table->integer('numero_productos');
+            $table->float('PPU');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('impuestos');
+        Schema::dropIfExists('tienda_venta_detalles');
     }
 };

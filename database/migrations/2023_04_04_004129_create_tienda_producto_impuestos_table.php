@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('pedidos', function (Blueprint $table) {
+        Schema::create('tienda_producto_impuestos', function (Blueprint $table) {
             $table->id();
-            $table->integer('proveedor_id');
-            $table->date('fecha');
-            $table->date('fecha_creacion');
-            $table->longText('comentarios')->nullable();
-            $table->boolean('estatus')->default(1);
+            $table->integer('producto_id');
+            $table->integer('impuesto_id');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pedidos');
+        Schema::dropIfExists('tienda_producto_impuestos');
     }
 };

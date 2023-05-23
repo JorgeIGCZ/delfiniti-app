@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
-use App\Models\Impuesto;
+use App\Models\TiendaImpuesto;
 use Illuminate\Http\Request;
 
-class ImpuestoController extends Controller
+class TiendaImpuestoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -38,7 +38,7 @@ class ImpuestoController extends Controller
     {
         try {
 
-            $impuesto = Impuesto::create([
+            $impuesto = TiendaImpuesto::create([
                 'nombre'   => mb_strtoupper($request->nombre),
                 'impuesto'    => $request->impuesto
             ]);
@@ -53,14 +53,14 @@ class ImpuestoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Impuesto  $impuesto
+     * @param  \App\Models\TiendaImpuesto  $impuesto
      * @return \Illuminate\Http\Response
      */
-    public function show(Impuesto $impuesto = null)
+    public function show(TiendaImpuesto $impuesto = null)
     {
         if(is_null($impuesto)){
             
-            $impuesto = Impuesto::all();
+            $impuesto = TiendaImpuesto::all();
 
             return json_encode(['data' => $impuesto]);
         }
@@ -69,10 +69,10 @@ class ImpuestoController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Impuesto  $impuesto
+     * @param  \App\Models\TiendaImpuesto  $impuesto
      * @return \Illuminate\Http\Response
      */
-    public function edit(Impuesto $impuesto)
+    public function edit(TiendaImpuesto $impuesto)
     {
         return view('impuestos.edit',['impuesto' => $impuesto]);
     }
@@ -81,10 +81,10 @@ class ImpuestoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Impuesto  $impuesto
+     * @param  \App\Models\TiendaImpuesto  $impuesto
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Impuesto $impuesto)
+    public function update(Request $request, TiendaImpuesto $impuesto)
     {
         try {
             $impuesto->nombre   = mb_strtoupper($request->nombre);
@@ -108,7 +108,7 @@ class ImpuestoController extends Controller
      */
     public function updateEstatus(Request $request, $id){
         try{
-            $impuesto          = Impuesto::find($id);
+            $impuesto          = TiendaImpuesto::find($id);
             $impuesto->estatus = $request->estatus;
             $impuesto->save();
         } catch (\Exception $e){
@@ -122,10 +122,10 @@ class ImpuestoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Impuesto  $impuesto
+     * @param  \App\Models\TiendaImpuesto  $impuesto
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Impuesto $impuesto)
+    public function destroy(TiendaImpuesto $impuesto)
     {
         $result = $impuesto->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);

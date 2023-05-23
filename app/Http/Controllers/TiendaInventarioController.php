@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
-use App\Models\MovimientoInventario;
-use App\Models\Producto;
+use App\Models\TiendaMovimientoInventario;
+use App\Models\TiendaProducto;
 use Illuminate\Http\Request;
 
-class InventarioController extends Controller
+class TiendaInventarioController extends Controller
 {
     public function __construct() {
         $this->middleware('role:Administrador')->only('edit'); 
@@ -61,7 +61,7 @@ class InventarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Producto $inventario)
+    public function edit(TiendaProducto $inventario)
     {
         return view('inventario.edit',['producto' => $inventario]);
     }
@@ -76,10 +76,10 @@ class InventarioController extends Controller
     public function update(Request $request, $id)
     {
         try{
-            $Productos = new ProductoController();
+            $Productos = new TiendaProductoController();
             $Productos->updateStock($id, $request->accion, $request->numeroProductos);
 
-            MovimientoInventario::create([
+            TiendaMovimientoInventario::create([
                 'producto_id' => $id,
                 'accion' => $request->accion,
                 'usuario_id' => auth()->user()->id,

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Producto;
-use App\Models\VentaDetalle;
 use App\Models\Comisionista;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -11,20 +9,21 @@ use App\Models\Estado;
 use App\Models\Factura;
 use App\Models\Alojamiento;
 use App\Models\Pago;
-// use App\Models\Venta;
 use App\Classes\CustomErrorHandler;
 use App\Models\DescuentoCodigo;
+use App\Models\TiendaProducto;
+use App\Models\TiendaVenta;
+use App\Models\TiendaVentaDetalle;
+use App\Models\TiendaVentaFactura;
+use App\Models\TiendaVentaPago;
 use App\Models\VentaTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
-use App\Models\Venta;
-use App\Models\VentaFactura;
-use App\Models\VentaPago;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class VentaController extends Controller
+class TiendaVentaController extends Controller
 {
     public function __construct() {
         $this->middleware('permission:TiendaVentas.index')->only('index'); 
@@ -50,9 +49,9 @@ class VentaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Venta $venta)
+    public function create(TiendaVenta $venta)
     {
-        $productos = Producto::where('estatus',1)->get()->toArray();
+        $productos = TiendaProducto::where('estatus',1)->get()->toArray();
         $estados = Estado::all();
 
 
@@ -131,10 +130,10 @@ class VentaController extends Controller
         $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
 
-        $Productos = new ProductoController();
+        $Productos = new TiendaProductoController();
         DB::beginTransaction();
         try{
-            $venta = Venta::create([
+            $venta = TiendaVenta::create([
                 'folio'          => mb_strtoupper($request->folio),
                 'nombre_cliente' => mb_strtoupper($request->nombre),
                 'email'          => mb_strtoupper($request->email),
@@ -148,7 +147,7 @@ class VentaController extends Controller
                 'comentarios'    => mb_strtoupper($request->comentarios)
             ]);
 
-            $factura = VentaFactura::create([
+            $factura = TiendaVentaFactura::create([
                 'venta_id' =>  $venta['id'],
                 'total'    =>  (float)$request->total,
                 'pagado'   =>  $pagado,
@@ -158,7 +157,7 @@ class VentaController extends Controller
             foreach($request->ventaProductos as $ventaProducto){
                 $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
                 $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
-                VentaDetalle::create([
+                TiendaVentaDetalle::create([
                     'venta_id'            =>  $venta['id'],
                     'factura_id'          =>  $factura['id'],
                     'producto_id'         =>  $ventaProducto['productoId'],
@@ -187,13 +186,13 @@ class VentaController extends Controller
                 // }
             }
 
-            $venta        = Venta::find($venta['id']);
+            $venta        = TiendaVenta::find($venta['id']);
             $venta->folio = str_pad($venta['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
             $venta->save();
 
             DB::commit();
 
-            $venta = Venta::find($venta['id']);
+            $venta = TiendaVenta::find($venta['id']);
 
             $this->setEstatusPago($venta['id']);
 
@@ -239,7 +238,7 @@ class VentaController extends Controller
     }
 
     public function getPagosAnteriores($id){
-        $factura = VentaFactura::where("venta_id",$id)->first();
+        $factura = TiendaVentaFactura::where("venta_id",$id)->first();
         return $factura['pagado'];
     }
 
@@ -267,7 +266,7 @@ class VentaController extends Controller
         $result     = true;
         $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
         if((float)$cantidad>0){
-            $pago = VentaPago::create([
+            $pago = TiendaVentaPago::create([
                 'venta_id' =>  $ventaId,
                 'factura_id'     =>  $facturaId,
                 'cantidad'       =>  (float)$cantidad,
@@ -331,7 +330,7 @@ class VentaController extends Controller
         // }
         
         DB::enableQueryLog();
-        $ventas = Venta::whereBetween("fecha", [$fechaInicio,$fechaFinal]);
+        $ventas = TiendaVenta::whereBetween("fecha", [$fechaInicio,$fechaFinal]);
 
         // if(!Auth::user()->hasRole('Administrador')){
             $ventas = $ventas->where('estatus',1);
@@ -371,9 +370,9 @@ class VentaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Venta $venta)
+    public function edit(TiendaVenta $venta)
     {
-        $productos = Producto::where('estatus',1)->get();
+        $productos = TiendaProducto::where('estatus',1)->get();
         $estados = Estado::all();
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
@@ -390,7 +389,7 @@ class VentaController extends Controller
 
     public function editPago(Request $request){
         try{
-            $pago              = VentaPago::find($request->pagoId);
+            $pago              = TiendaVentaPago::find($request->pagoId);
             $pago->created_at  = $request->fecha;
             $pago->save();
             return json_encode(
@@ -407,9 +406,9 @@ class VentaController extends Controller
     
     public function removeProducto(Request $request){
         try{
-            $producto = Producto::where('clave',$request->productoClave)->get()[0];
+            $producto = TiendaProducto::where('clave',$request->productoClave)->get()[0];
             
-            VentaDetalle::where('venta_id', $request->ventaId)
+            TiendaVentaDetalle::where('venta_id', $request->ventaId)
                 ->where('producto_id', $producto['id'])->delete();
             return json_encode(
                 [
@@ -427,9 +426,9 @@ class VentaController extends Controller
         try{
             DB::beginTransaction(); 
 
-            $pago = VentaPago::find($request->pagoId);
+            $pago = TiendaVentaPago::find($request->pagoId);
 
-            $factura                 = VentaFactura::find($request->ventaId);
+            $factura                 = TiendaVentaFactura::find($request->ventaId);
             $factura->pagado         = (float)$factura->pagado - (float)$pago['cantidad'];
             $factura->adeudo         = (float)$factura->adeudo + (float)$pago['cantidad'];
             $factura->save();
@@ -475,7 +474,7 @@ class VentaController extends Controller
             $adeudo   = ((float)$request->total - (float)$pagado);
             $pagar    = ($request->estatus == "pagar");
 
-            $venta                  = Venta::find($id);
+            $venta                  = TiendaVenta::find($id);
             $venta->nombre_cliente  = mb_strtoupper($request->nombre);
             $venta->email           = mb_strtoupper($request->email);
             $venta->direccion       = mb_strtoupper($request->direccion);
@@ -488,17 +487,17 @@ class VentaController extends Controller
             }
             $venta->save(); 
 
-            $factura                 = VentaFactura::where("venta_id",$id)->first();
+            $factura                 = TiendaVentaFactura::where("venta_id",$id)->first();
             $factura->venta_id       =  $venta['id'];
             $factura->total          =  $request->total;
             $factura->pagado         =  (float)$pagado;
             $factura->adeudo         =  (float)$adeudo;
             $factura->save();
 
-            VentaDetalle::where('venta_id', $venta['id'])->delete();
+            TiendaVentaDetalle::where('venta_id', $venta['id'])->delete();
 
             foreach($request->ventaProductos as $ventaProducto){
-                VentaDetalle::create([
+                TiendaVentaDetalle::create([
                     'venta_id'            =>  $venta['id'],
                     'factura_id'          =>  $factura['id'],
                     'producto_id'         =>  $ventaProducto['productoId'],
@@ -531,7 +530,7 @@ class VentaController extends Controller
 
             DB::commit();
 
-            $venta = Venta::find($venta['id']);
+            $venta = TiendaVenta::find($venta['id']);
 
             $this->setEstatusPago($venta['id']);
 
@@ -556,13 +555,13 @@ class VentaController extends Controller
     
 
     private function setEstatusPago($ventaId){
-        $venta               = Venta::find($ventaId);
+        $venta               = TiendaVenta::find($ventaId);
         $venta->estatus_pago = $this->getEstatusPagoVenta($ventaId);
         $venta->save();
     }
 
     public function getEstatusPagoVenta($ventaId){
-        $factura = VentaFactura::where('venta_id',$ventaId)->first();
+        $factura = TiendaVentaFactura::where('venta_id',$ventaId)->first();
         if($factura->pagado == 0){
             return 0;//'pendiente'
         }else if($factura->pagado < $factura->total){

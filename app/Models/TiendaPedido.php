@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pedido extends Model
+class TiendaPedido extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class Pedido extends Model
 
     public function pedidoDetalle()
     {
-        return $this->hasMany(PedidoDetalle::class,'pedido_id');
+        return $this->hasMany(TiendaPedidoDetalle::class,'pedido_id');
     }
 
     // public function producto()
@@ -37,6 +37,6 @@ class Pedido extends Model
 
     public function proveedor()
     {
-        return $this->hasOne(Proveedor::class,'id','proveedor_id');
+        return $this->hasOne(TiendaProveedor::class,'id','proveedor_id');
     }
 }

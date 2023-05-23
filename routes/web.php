@@ -21,16 +21,12 @@ use App\Http\Controllers\FotoVideoComisionController;
 use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
-use App\Http\Controllers\ImpuestoController;
-use App\Http\Controllers\InventarioController;
-use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ReservacionTicketController;
-use App\Http\Controllers\VentaController;
-use App\Models\FotoVideoComision;
-use App\Models\FotoVideoVenta;
-use App\Models\Impuesto;
+use App\Http\Controllers\TiendaImpuestoController;
+use App\Http\Controllers\TiendaInventarioController;
+use App\Http\Controllers\TiendaPedidoController;
+use App\Http\Controllers\TiendaProductoController;
+use App\Http\Controllers\TiendaVentaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -206,7 +202,7 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 
 
 // TIENDA
-Route::controller(VentaController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(function () {
     // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
     // Route::post('ventas/updateestatusreservacion', 'updateEstatusReservacion');
     Route::post('ventas/removeProducto', 'removeProducto');
@@ -215,59 +211,59 @@ Route::controller(VentaController::class)->middleware(['auth'])->group(function 
     // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
     // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::post('ventas/show/{reservacion?}', 'show');
-    Route::resource('ventas',VentaController::class, [
+    Route::resource('ventas',TiendaVentaController::class, [
         'parameters' => [
             'ventas' => 'venta'
         ]
     ]);
 });
 
-Route::controller(ProductoController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(function () {
     Route::get('productos/show/{producto?}', 'show');
     // Route::get('productos/inventario/{producto?}', 'editInventario');
     // Route::patch('productos/inventario/{producto?}', 'updateInventario')->name('productos.inventario');
     Route::patch('productos/estatus/{producto}', 'updateEstatus');
     Route::post('productos/getproductobyproveedor', 'getProductoByProveedor');
-    Route::resource('productos',ProductoController::class, [
+    Route::resource('productos',TiendaProductoController::class, [
         'parameters' => [
             'productos' => 'producto'
         ]
     ]);
 });
 
-Route::controller(InventarioController::class)->middleware(['auth'])->group(function () {
-    Route::resource('inventario',InventarioController::class, [
+Route::controller(TiendaInventarioController::class)->middleware(['auth'])->group(function () {
+    Route::resource('inventario',TiendaInventarioController::class, [
         'parameters' => [
             'productos' => 'producto'
         ]
     ]);
 });
 
-Route::controller(ProveedorController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(function () {
     Route::get('proveedores/show/{proveedor?}', 'show');
     Route::patch('proveedores/estatus/{proveedor}', 'updateEstatus');
-    Route::resource('proveedores',ProveedorController::class, [
+    Route::resource('proveedores',TiendaProductoController::class, [
         'parameters' => [
             'proveedores' => 'proveedor'
         ]
     ]);
 });
 
-Route::controller(PedidoController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaPedidoController::class)->middleware(['auth'])->group(function () {
     Route::get('pedidos/show/{pedido?}', 'show');
     Route::patch('pedidos/estatus/{pedido}', 'updateEstatus');
     Route::post('pedidos/show/{pedido?}', 'show');
-    Route::resource('pedidos',PedidoController::class, [
+    Route::resource('pedidos',TiendaPedidoController::class, [
         'parameters' => [
             'pedidos' => 'pedido'
         ]
     ]);
 });
 
-Route::controller(ImpuestoController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaImpuestoController::class)->middleware(['auth'])->group(function () {
     Route::get('impuestos/show/{impuesto?}', 'show');
     Route::patch('impuestos/estatus/{impuesto}', 'updateEstatus');
-    Route::resource('impuestos',ImpuestoController::class, [
+    Route::resource('impuestos',TiendaImpuestoController::class, [
         'parameters' => [
             'impuestos' => 'impuesto'
         ]

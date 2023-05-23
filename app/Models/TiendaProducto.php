@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Producto extends Model
+class TiendaProducto extends Model
 {
     use HasFactory;
 
@@ -28,6 +28,6 @@ class Producto extends Model
 
     public function productoImpuesto()
     {
-        return $this->hasMany(ProductoImpuesto::class,'producto_id');
+        return $this->hasMany(TiendaProductoImpuesto::class,'producto_id');
     }
 }

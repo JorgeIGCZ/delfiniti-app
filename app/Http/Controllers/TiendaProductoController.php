@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
-use App\Models\Impuesto;
 use App\Models\MovimientoInventario;
-use App\Models\Producto;
-use App\Models\ProductoImpuesto;
-use App\Models\Proveedor;
+use App\Models\TiendaImpuesto;
+use App\Models\TiendaProducto;
+use App\Models\TiendaProductoImpuesto;
+use App\Models\TiendaProveedor;
 use Illuminate\Http\Request;
-use Symfony\Component\CssSelector\Node\FunctionNode;
 
-class ProductoController extends Controller
+class TiendaProductoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,8 +19,8 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        $impuestos = Impuesto::get();
-        $proveedores = Proveedor::get();
+        $impuestos = TiendaImpuesto::get();
+        $proveedores = TiendaProveedor::get();
         return view('productos.index',['impuestos' => $impuestos, 'proveedores' => $proveedores]);
     }
 
@@ -45,7 +44,7 @@ class ProductoController extends Controller
     {
         try {
             if(isset($request->clave)){
-                if(count(Producto::
+                if(count(TiendaProducto::
                     where('clave',$request->clave)->get()
                 ) > 0){
                     return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
@@ -55,14 +54,14 @@ class ProductoController extends Controller
             }
 
             if(isset($request->codigo)){
-                if(count(Producto::
+                if(count(TiendaProducto::
                     where('codigo',$request->codigo)->get()
                 ) > 0){
                     return json_encode(['result' => 'Error','message' => 'El código ya se encuentra registrado.']);
                 }
             }
 
-            $producto = Producto::create([
+            $producto = TiendaProducto::create([
                 'clave'    => $request->clave,
                 'codigo'   =>  $this->getProductoCodigo($request),
                 'proveedor_id' => $request->proveedorId,
@@ -78,7 +77,7 @@ class ProductoController extends Controller
             if(isset($request->impuestos)){
                 foreach($request->impuestos as $impuestos){
                     if($impuestos[1]){
-                        ProductoImpuesto::create([
+                        TiendaProductoImpuesto::create([
                             'producto_id' => $producto['id'],
                             'impuesto_id' => $impuestos[0]
                         ]);
@@ -105,10 +104,10 @@ class ProductoController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function show(Producto  $producto = null)
+    public function show(TiendaProducto  $producto = null)
     {
         if(is_null($producto)){
-            $producto = Producto::all();
+            $producto = TiendaProducto::all();
             return json_encode(['data' => $producto]);
         }
     }
@@ -119,11 +118,11 @@ class ProductoController extends Controller
      * @param  \App\Models\Producto  $producto
      * @return \Illuminate\Http\Response
      */
-    public function edit(Producto $producto)
+    public function edit(TiendaProducto $producto)
     {
-        $impuestos = Impuesto::get();
-        $proveedores = Proveedor::get();
-        $productoImpuestos = ProductoImpuesto::where('producto_id',$producto->id)->get();
+        $impuestos = TiendaImpuesto::get();
+        $proveedores = TiendaProveedor::get();
+        $productoImpuestos = TiendaProductoImpuesto::where('producto_id',$producto->id)->get();
 
         return view('productos.edit',['producto' => $producto,'impuestos' => $impuestos, 'productoImpuestos' => $productoImpuestos, 'proveedores' => $proveedores]);
     }
@@ -135,7 +134,7 @@ class ProductoController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function update(Producto $producto, Request $request)
+    public function update(TiendaProducto $producto, Request $request)
     {
         try {
             $producto->codigo          = $request->codigo;
@@ -150,9 +149,9 @@ class ProductoController extends Controller
             $producto->save();
 
             if(isset($request->impuestos)){
-                ProductoImpuesto::where('producto_id', $producto->id)->delete();
+                TiendaProductoImpuesto::where('producto_id', $producto->id)->delete();
                 foreach($request->impuestos as $impuesto){
-                    ProductoImpuesto::create([
+                    TiendaProductoImpuesto::create([
                         'producto_id' => $producto->id,
                         'impuesto_id' => $impuesto
                     ]);
@@ -168,7 +167,7 @@ class ProductoController extends Controller
     }
 
     public function getProductoByProveedor(Request $request){
-        $productos = Producto::where('proveedor_id', $request->proveedorId)->get();
+        $productos = TiendaProducto::where('proveedor_id', $request->proveedorId)->get();
         return json_encode(['result' => $productos]);
     }
 
@@ -181,7 +180,7 @@ class ProductoController extends Controller
      */
     public function updateEstatus(Request $request, $id){
         try{
-            $producto          = Producto::find($id);
+            $producto          = TiendaProducto::find($id);
             $producto->estatus = $request->estatus;
             $producto->save();
         } catch (\Exception $e){
@@ -193,7 +192,7 @@ class ProductoController extends Controller
     }
 
     public function updateFechaMovimientoStock($productoId, $accion){
-        $producto          = Producto::find($productoId);
+        $producto          = TiendaProducto::find($productoId);
         if($accion === 'ultima_entrada'){
             $producto->ultima_entrada = date('Y-m-d');
         }else{
@@ -203,7 +202,7 @@ class ProductoController extends Controller
     }
 
     public function updateStock($productoId, $accion, $numeroProductos){
-        $producto          = Producto::find($productoId);
+        $producto          = TiendaProducto::find($productoId);
         $producto->stock = ($accion === 'baja' ? $producto->stock - $numeroProductos : $producto->stock + $numeroProductos);
         $producto->save();
     }
@@ -214,7 +213,7 @@ class ProductoController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Producto $producto)
+    public function destroy(TiendaProducto $producto)
     {
         $result = $producto->delete();
         return json_encode(['result' => $result ? 'Success' : 'Error']);

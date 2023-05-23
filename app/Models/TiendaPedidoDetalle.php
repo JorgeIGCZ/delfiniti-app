@@ -5,17 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MovimientoInventario extends Model
+class TiendaPedidoDetalle extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'pedido_id',
         'producto_id',
-        'accion',
-        'usuario_id',
-        'comentarios'
+        'cantidad',
+        'PPU',
+        'subtotal'
     ];
     protected $primaryKey = 'id';
 
-    protected $table = 'movimientos_inventario';
+    public function producto()
+    {
+        return $this->hasOne(TiendaProducto::class,'id','producto_id');
+    }
 }

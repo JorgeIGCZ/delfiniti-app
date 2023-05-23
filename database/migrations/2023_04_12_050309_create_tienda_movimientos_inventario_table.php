@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('venta_facturas', function (Blueprint $table) {
+        Schema::create('tienda_movimientos_inventario', function (Blueprint $table) {
             $table->id();
-            $table->integer('venta_id');
-            $table->float('total');
-            $table->float('pagado');
-            $table->float('adeudo');
+            $table->integer('producto_id');
+            $table->string('accion');
+            $table->integer('usuario_id');
+            $table->text('comentarios');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('venta_facturas');
+        Schema::dropIfExists('tienda_movimientos_inventario');
     }
 };
