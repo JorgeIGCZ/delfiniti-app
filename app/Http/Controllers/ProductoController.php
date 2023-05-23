@@ -50,6 +50,8 @@ class ProductoController extends Controller
                 ) > 0){
                     return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
                 }
+            }else{
+                return json_encode(['result' => 'Error','message' => 'El código es obligatorio.']);
             }
 
             if(isset($request->codigo)){
@@ -62,7 +64,7 @@ class ProductoController extends Controller
 
             $producto = Producto::create([
                 'clave'    => $request->clave,
-                'codigo'   => $request->codigo,
+                'codigo'   =>  $this->getProductoCodigo($request),
                 'proveedor_id' => $request->proveedorId,
                 'nombre'   => mb_strtoupper($request->nombre),
                 'costo'    => $request->costo,
@@ -89,6 +91,12 @@ class ProductoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
         return json_encode(['result' => is_numeric($producto['id']) ? 'Success' : 'Error','id' => $producto['id']]);
+    }
+
+    private function getProductoCodigo($request)
+    {
+        $codigoPrefix = "NOCODIGO";
+        return isset($request->codigo) && $request->codigo !== "" ? $request->codigo : sprintf("%s%s",$codigoPrefix,$request->clave);
     }
 
     /**
