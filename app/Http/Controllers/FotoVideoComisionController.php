@@ -31,13 +31,13 @@ class FotoVideoComisionController extends Controller
 
     public function recalculateComisiones(Request $request){
         try {
-            $oldComision = FotoVideoComision::where('foto_video_venta_id',$request->ventaId)->get(); 
+            $oldComision = FotoVideoComision::where('venta_id',$request->ventaId)->get(); 
             $oldFechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
             if(count($oldComision) > 0){
                 $oldFechaComisiones = $oldComision[0]->created_at;
             }
 
-            FotoVideoComision::where('foto_video_venta_id',$request->ventaId)->delete(); 
+            FotoVideoComision::where('venta_id',$request->ventaId)->delete(); 
 
             $pagos = FotoVideoVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
@@ -86,7 +86,7 @@ class FotoVideoComisionController extends Controller
             // $this->setComisionComisionistaCanal($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaActividad($venta,$pagos,$fechaComisiones);
             
-            $comisiones = FotoVideoComision::where('foto_video_venta_id',$venta['id'])->get();
+            $comisiones = FotoVideoComision::where('venta_id',$venta['id'])->get();
             
             if(count($comisiones) > 0){
                 $this->setComisionPago($pagos,1);
@@ -126,16 +126,16 @@ class FotoVideoComisionController extends Controller
         $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
         $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
 
-        $isComisionDuplicada = FotoVideoComision::where('foto_video_comisionista_id',$comisionistaId)
-                                        ->where('foto_video_venta_id',$venta['id'])->get()->count();
+        $isComisionDuplicada = FotoVideoComision::where('comisionista_id',$comisionistaId)
+                                        ->where('venta_id',$venta['id'])->get()->count();
         
         if($isComisionDuplicada){
             return false;
         }
 
         $comsion = FotoVideoComision::create([   
-            'foto_video_comisionista_id'  =>  $comisionistaId,
-            'foto_video_venta_id'         =>  $venta['id'],
+            'comisionista_id'  =>  $comisionistaId,
+            'venta_id'         =>  $venta['id'],
             'pago_total'                  =>  $totalPagoReservacion,
             'pago_total_sin_iva'          =>  (float)$totalVentaSinIva,
             'cantidad_comision_bruta'     =>  (float)$cantidadComisionBruta,

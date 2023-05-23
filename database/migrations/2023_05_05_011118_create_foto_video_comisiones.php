@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('foto_video_comisiones', function (Blueprint $table) {
             $table->id();
-            $table->integer('foto_video_comisionista_id');
-            $table->integer('foto_video_venta_id');
+            $table->integer('comisionista_id');
+            $table->integer('venta_id');
             $table->float('pago_total')->default(0);
             $table->float('pago_total_sin_iva')->default(0);
             $table->float('cantidad_comision_bruta')->default(0);

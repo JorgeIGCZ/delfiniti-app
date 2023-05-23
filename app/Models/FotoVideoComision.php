@@ -10,8 +10,8 @@ class FotoVideoComision extends Model
     use HasFactory;
 
     protected $fillable = [
-        'foto_video_comisionista_id',
-        'foto_video_venta_id',
+        'comisionista_id',
+        'venta_id',
         'pago_total',
         'pago_total_sin_iva',
         'cantidad_comision_bruta',
@@ -26,12 +26,12 @@ class FotoVideoComision extends Model
 
     public function venta()
     {
-        return $this->belongsTo(FotoVideoVenta::class,'foto_video_venta_id');
+        return $this->belongsTo(FotoVideoVenta::class,'venta_id');
     }
 
     public function comisionista()
     {
-        return $this->belongsTo(FotoVideoComisionista::class,'foto_video_comisionista_id');
+        return $this->belongsTo(FotoVideoComisionista::class,'comisionista_id');
     }
 
     public function canalVenta()
