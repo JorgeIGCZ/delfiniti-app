@@ -166,7 +166,7 @@ function updateVenta(estatus) {
     //     ? convertPorcentageCantidad(venta.elements['descuento-codigo'].getAttribute('value'))
     //     : parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
     // const cuponCantidad = venta.elements['cupon'].getAttribute('value');
-    // const descuentoPersonalizadoCantidad = venta.elements['descuento-personalizado'].getAttribute('value');
+    const descuentoPersonalizadoCantidad = venta.elements['descuento-personalizado'].getAttribute('value');
     const pagos = {
         'efectivo': venta.elements['efectivo'].getAttribute('value'),
         'efectivoUsd': venta.elements['efectio-usd'].getAttribute('value'),
@@ -202,12 +202,12 @@ function updateVenta(estatus) {
         //     'tipoValor': document.getElementById('descuento-codigo').getAttribute('tipo'),
         //     'descuentoCodigoId': document.getElementById('codigo-descuento').value
         // },
-        // 'descuentoPersonalizado': {
-        //     'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad, codigoDescuentoCantidad, cuponCantidad),
-        //     'password': document.getElementById('descuento-personalizado').getAttribute('password'),
-        //     'valor': document.getElementById('descuento-personalizado').value,
-        //     'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
-        // },
+        'descuentoPersonalizado': {
+            'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad),
+            'password': document.getElementById('descuento-personalizado').getAttribute('password'),
+            'valor': document.getElementById('descuento-personalizado').value,
+            'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
+        },
     })
         .then(function (response) {
             $('.loader').hide();
@@ -368,12 +368,12 @@ function getPagos(tipoUsd = 'compra') {
 
     // const cupon = parseFloat(document.getElementById('cupon').getAttribute('value'));
 
-    // const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-    // const cantidadPersonalizado = calculatePagoPersonalizado(descuentoPersonalizado, cantidadCodigo, cupon); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
+    const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
+    const cantidadPersonalizado = calculatePagoPersonalizado(descuentoPersonalizado); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
 
     const anticipo = parseFloat(document.getElementById('anticipo').getAttribute('value'));
 
-    const pagos = (efectivo + efectivoUsd + tarjeta + deposito + anticipo);// + cantidadPersonalizado + cantidadCodigo + anticipo);
+    const pagos = (efectivo + efectivoUsd + tarjeta + deposito + anticipo + cantidadPersonalizado);//  + cantidadCodigo + anticipo);
 
     return parseFloat(pagos);
 }

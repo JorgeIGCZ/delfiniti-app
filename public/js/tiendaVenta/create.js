@@ -14,6 +14,7 @@ document.getElementById('cancelar').addEventListener('click', (event) => {
 
 function createVenta(estatus) {
     const venta = document.getElementById('venta-form');
+    const descuentoPersonalizadoCantidad = venta.elements['descuento-personalizado'].getAttribute('value');
     const pagos = {
         'efectivo': venta.elements['efectivo'].getAttribute('value'),
         'efectivoUsd': venta.elements['efectio-usd'].getAttribute('value'),
@@ -33,6 +34,12 @@ function createVenta(estatus) {
         'fecha': venta.elements['fecha'].value,
         'pagos': pagos, 
         'usuario': venta.elements['usuario'].value,
+        'descuentoPersonalizado': {
+            'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad),
+            'password': document.getElementById('descuento-personalizado').getAttribute('password'),
+            'valor': document.getElementById('descuento-personalizado').value,
+            'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
+        },
         'comentarios': venta.elements['comentarios'].value,
         'estatus': estatus,
         'ventaProductos': productosArray
@@ -122,7 +129,11 @@ function getPagos(tipoUsd = 'compra') {
 
     const deposito = parseFloat(document.getElementById('deposito').getAttribute('value'));
 
-    const pagos = (efectivo + efectivoUsd + tarjeta + deposito);
+    const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
+    const cantidadPersonalizado = calculatePagoPersonalizado(descuentoPersonalizado); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
+
+
+    const pagos = (efectivo + efectivoUsd + tarjeta + deposito + cantidadPersonalizado);
 
     return parseFloat(pagos);
 }

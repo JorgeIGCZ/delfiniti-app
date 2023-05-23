@@ -209,7 +209,7 @@ Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(fun
     Route::post('ventas/editPago','editPago');
     Route::post('ventas/removePago', 'removePago');
     // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
-    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::post('ventas/show/{reservacion?}', 'show');
     Route::resource('ventas',TiendaVentaController::class, [
         'parameters' => [

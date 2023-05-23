@@ -75,19 +75,19 @@ class TiendaVentaController extends Controller
     }
 
     public function getDescuentoPersonalizadoValidacion(Request $request){
-        // try{
-        //     $limite = $this->getLimitesDescuentoPersonalizado($request);
-        //     return json_encode(['result' => "Success",'limite' => $limite]);
-        // } catch (\Exception $e){
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => "Error"]);
-        // }
+        try{
+            $limite = $this->getLimitesDescuentoPersonalizado($request);
+            return json_encode(['result' => "Success",'limite' => $limite]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        }
     }
 
     private function getLimitesDescuentoPersonalizado($request){
-        // $descuento = User::where('email', $request['email'])->first();
-        // return $descuento->limite_descuento;
+        $descuento = User::where('email', $request['email'])->first();
+        return $descuento->limite_descuento;
     }
 
     public function getCodigoDescuento(Request $request){
@@ -181,9 +181,9 @@ class TiendaVentaController extends Controller
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
                 // }
 
-                // if($this->isValidDescuentoPersonalizado($request,$email)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-                // }
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                }
             }
 
             $venta        = TiendaVenta::find($venta['id']);
@@ -215,7 +215,7 @@ class TiendaVentaController extends Controller
         }
     }
 
-    private function getCantidadPagada($request){
+    private function getCantidadPagada($request, $email ){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
 
         $pagado          = (
@@ -230,9 +230,9 @@ class TiendaVentaController extends Controller
         //     $pagado += (float)$request->descuentoCodigo['cantidad'];
         // }
 
-        // if($this->isValidDescuentoPersonalizado($request,$email)){
-        //     $pagado += (float)$request->descuentoPersonalizado['cantidad'];
-        // }
+        if($this->isValidDescuentoPersonalizado($request,$email)){
+            $pagado += (float)$request->descuentoPersonalizado['cantidad'];
+        }
 
         return $pagado;
     }
@@ -253,11 +253,11 @@ class TiendaVentaController extends Controller
     }
 
     private function isDescuentoValid($total,$email){
-        // $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
-        // $maximoDescuento = (float)(($total/100) * $limite);
-        // $total = (float)$total;
+        $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
+        $maximoDescuento = (float)(($total/100) * $limite);
+        $total = (float)$total;
 
-        // return (round($total,2) >= round($maximoDescuento,2));
+        return (round($total,2) >= round($maximoDescuento,2));
     }
 
     private function setFaturaPago($ventaId,$facturaId,$request,$tipoPago){
@@ -460,7 +460,7 @@ class TiendaVentaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $email    = Auth::user()->email;
+        $email    = Auth::user()->email;
         // $password = "";
         // $checkin   = new CheckinController();
 
@@ -469,7 +469,7 @@ class TiendaVentaController extends Controller
         try{
             $pagosAnteriores = $this->getPagosAnteriores($id);
 
-            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request) : 0);
+            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request, $email) : 0);
             $pagado   = ((float) $pagado + (float) $pagosAnteriores);
             $adeudo   = ((float)$request->total - (float)$pagado);
             $pagar    = ($request->estatus == "pagar");
@@ -587,20 +587,20 @@ class TiendaVentaController extends Controller
     }
 
     private function isValidDescuentoPersonalizado($request,$email){
-        // if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
-        //     //$password = $request['descuentoPersonalizado']['password'];
-        //     //if($this->verifyUserAuth(
-        //     //    [
-        //     //        'email'    => $email,
-        //     //        'password' => $password
-        //     //    ])
-        //     //){
-        //         if($this->isDescuentoValid($request->total,$email)){
-        //             return true;
-        //         }
-        //     //}
-        // }
-        // return false;
+        if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
+            //$password = $request['descuentoPersonalizado']['password'];
+            //if($this->verifyUserAuth(
+            //    [
+            //        'email'    => $email,
+            //        'password' => $password
+            //    ])
+            //){
+                if($this->isDescuentoValid($request->total,$email)){
+                    return true;
+                }
+            //}
+        }
+        return false;
     }
     /**
      * Remove the specified resource from storage.

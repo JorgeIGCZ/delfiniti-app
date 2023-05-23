@@ -122,7 +122,7 @@
     <script src="{{ asset('js/tiendaVenta/ticket.js') }}"></script>
 @endsection
 @section('content')
-    {{-- <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -142,7 +142,7 @@
             </div>
         </div>
         </div><!-- modal-dialog -->
-    </div> --}}
+    </div>
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">FOLIO: {{$venta->folio}}</h2>
@@ -346,6 +346,10 @@
                                                     </option>
                                                 </select>
                                             </div>
+                                            <div class="form-group col-2 mt-0 mb-0">
+                                                <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
+                                                <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
+                                            </div>
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
                                                 <textarea name="comentarios" class='to-uppercase' rows="11" style="width:100%;">{{@$venta->comentarios}}</textarea>
@@ -421,6 +425,17 @@
                                                             </div>
                                                             <div class="form-group col-5 mt-0 mb-0">
                                                                 <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="20">
+                                                            </div>
+
+                                                            <div id="descuento-personalizado-container" class="form-group col-12 mt-0 mb-0 hidden">
+                                                                <div class="row ">
+                                                                    <div class="form-group col-7 mt-0 mb-0">
+                                                                        <label for="descuento-personalizado" class="col-form-label">Descuento (Personalizado):</label>
+                                                                    </div>
+                                                                    <div class="form-group col-5 mt-0 mb-0">
+                                                                        <input type="text" name="descuento-personalizado" id="descuento-personalizado" password="" limite="" class="form-control percentage height-auto" value="0" tipo='porcentaje'>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>                                                        
                                                     </div>
