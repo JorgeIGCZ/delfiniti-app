@@ -59,15 +59,15 @@
 
                             <div class="form-group col-2 mt-3 general-settings">
                                 <label for="comision" class="col-form-label">Comisión %</label>
-                                <input type="number" step="0.01" name="comision" class="form-control" min="0" max="90" value="{{$comisionista->comision}}">
+                                <input type="number" step="0.01" name="comision" class="form-control" min="0" max="100" value="{{$comisionista->comision}}" required="required">
                             </div>
                             <div class="form-group col-2 mt-3 general-settings">
                                 <label for="iva" class="col-form-label">Iva %</label>
-                                <input type="number" name="iva" class="form-control" min="0" max="90" value="{{$comisionista->iva}}">
+                                <input type="number" name="iva" class="form-control" min="0" max="100" value="{{$comisionista->iva}}" required="required">
                             </div>
                             <div class="form-group col-2 mt-3 general-settings">
                                 <label for="descuento_impuesto" class="col-form-label">Descuentro por imp. %</label>
-                                <input type="number" step="0.01" name="descuento_impuesto" class="form-control" min="0" max="90" value="{{$comisionista->descuento_impuesto}}">
+                                <input type="number" step="0.01" name="descuento_impuesto" class="form-control" min="0" max="100" value="{{$comisionista->descuento_impuesto}}" required="required">
                             </div>
                             <div class="form-group col-4 mt-3 general-settings">
                                 <label for="direccion" class="col-form-label">Dirección</label>
