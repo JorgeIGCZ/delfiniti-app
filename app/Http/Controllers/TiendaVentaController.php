@@ -522,9 +522,9 @@ class TiendaVentaController extends Controller
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
                 // }
 
-                // if($this->isValidDescuentoPersonalizado($request,$email)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-                // }
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                }
 
             }
 

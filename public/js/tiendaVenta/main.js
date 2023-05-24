@@ -635,7 +635,6 @@ function setLimiteDescuentoPersonalizado(limite) {
     setOperacionResultados();
 }
 
-
 function isLimite() {
     const total = parseFloat(document.getElementById('total').getAttribute('value'));
     const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
