@@ -426,6 +426,39 @@ window.onload = function() {
         // getProductoDisponibilidad();
         setTimeout(validateFecha(),500);
     });
+
+    document.getElementById('descuento-personalizado').addEventListener('keyup', (event) =>{
+        if(getResta() < 0){
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+        }
+        if(!isLimite()){
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+        }
+        setTimeout(setOperacionResultados(),500);
+    });
+
+    document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
+        //resetDescuentos();
+        if(document.getElementById('add-descuento-personalizado').checked){
+            $('#verificacion-modal').modal('show');
+            document.getElementById('add-descuento-personalizado').checked = false;
+            document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
+            document.getElementById('password').focus();
+        }else{
+            document.getElementById('descuento-personalizado').setAttribute('disabled','disabled');
+            document.getElementById('descuento-personalizado').setAttribute('limite','0');
+            document.getElementById('descuento-personalizado-container').classList.add("hidden");
+            document.getElementById('descuento-personalizado').value = '0';
+            document.getElementById('descuento-personalizado').setAttribute('value',0);
+            setOperacionResultados();
+        }
+    });
+
+    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
+        validarVerificacion();
+    });
 };
 
 //jQuery
@@ -470,6 +503,8 @@ $('#pagos').on( 'click', '.eliminar-celda', function (event) {
         });
     }
 } );
+
+
 
 async function eliminarPagoReservacion(row,pagoId){
     $('.loader').show();
@@ -547,6 +582,77 @@ $('body').on('keydown', 'input, select, button', function(e) {
     }
 });
 
+
+async function validarVerificacion(){
+    const action      = document.getElementById('validar-verificacion').getAttribute('action');
+    if(formValidity('venta-form')){
+        if(await validateUsuario(document.getElementById('password').value)){
+            if(action === 'add-descuento-personalizado'){
+                validateDescuentoPersonalizado();
+            }
+        }else{
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseña incorrecta!',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+    }
+}
+
+function validateDescuentoPersonalizado() {
+    $('.loader').show();
+    axios.post('/ventas/getDescuentoPersonalizadoValidacion', {
+        '_token': token(),
+        'email': userEmail()
+    })
+        .then(function (response) {
+            $('.loader').hide();
+            if (response.data.result == 'Success') {
+                $('#verificacion-modal').modal('hide');
+                setLimiteDescuentoPersonalizado(response.data.limite);
+                document.getElementById('add-descuento-personalizado').checked = true;
+                $('#descuento-personalizado').focus();
+            } else {
+                $('.loader').hide();
+                Swal.fire({
+                    icon: 'error',
+                    title: `Petición fallida`,
+                    showConfirmButton: true
+                })
+                document.getElementById('add-descuento-personalizado').checked = false;
+            }
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: `Autorización fallida E:${error.message}`,
+                showConfirmButton: true
+            })
+            document.getElementById('add-descuento-personalizado').checked = false;
+        });
+}
+
+function setLimiteDescuentoPersonalizado(limite) {
+    document.getElementById('descuento-personalizado').removeAttribute('disabled');
+    if (limite !== null) {
+        document.getElementById('descuento-personalizado').setAttribute('limite', limite);
+        document.getElementById('descuento-personalizado-container').classList.remove("hidden");
+    } else {
+        document.getElementById('descuento-personalizado-container').classList.add("hidden");
+    }
+    setOperacionResultados();
+}
+
+function isLimite() {
+    const total = parseFloat(document.getElementById('total').getAttribute('value'));
+    const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
+    const limite = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
+    //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
+    return limite >= descuento;
+}
+
 function productoIsValid() {
     const cantidad = document.getElementById('cantidad');
     const clave = document.getElementById('clave');
@@ -594,9 +700,9 @@ function addProductos() {
     // enableBtn('reservar', productosArray.length > 0);
 }
 
-function calculatePagoPersonalizado(descuentoPersonalizado,cantidadClave,cupon){
+function calculatePagoPersonalizado(descuentoPersonalizado){
     const total    = parseFloat(document.getElementById('total').getAttribute('value'));
-    const subTotal = total - ((cantidadClave));//+parseFloat(cupon));
+    const subTotal = total;// - ((cantidadClave));//+parseFloat(cupon));
 
     return (subTotal/100) * parseFloat(descuentoPersonalizado);
 }

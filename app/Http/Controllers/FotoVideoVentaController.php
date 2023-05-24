@@ -13,9 +13,10 @@ use App\Models\FotoVideoVentaFactura;
 use App\Models\FotoVideoVentaPago;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\DB;
 
 class FotoVideoVentaController extends Controller
@@ -54,6 +55,22 @@ class FotoVideoVentaController extends Controller
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
         return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados, 'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio]);
+    }
+
+    public function getDescuentoPersonalizadoValidacion(Request $request){
+        try{
+            $limite = $this->getLimitesDescuentoPersonalizado($request);
+            return json_encode(['result' => "Success",'limite' => $limite]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        }
+    }
+
+    private function getLimitesDescuentoPersonalizado($request){
+        $descuento = User::where('email', $request['email'])->first();
+        return $descuento->limite_descuento;
     }
 
     /**
@@ -121,9 +138,9 @@ class FotoVideoVentaController extends Controller
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
                 // }
 
-                // if($this->isValidDescuentoPersonalizado($request,$email)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-                // }
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                }
             }
 
             $venta        = FotoVideoVenta::find($venta['id']);
@@ -170,7 +187,7 @@ class FotoVideoVentaController extends Controller
         } 
     }
     
-    private function getCantidadPagada($request){
+    private function getCantidadPagada($request, $email){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
 
         $pagado          = (
@@ -185,9 +202,9 @@ class FotoVideoVentaController extends Controller
         //     $pagado += (float)$request->descuentoCodigo['cantidad'];
         // }
 
-        // if($this->isValidDescuentoPersonalizado($request,$email)){
-        //     $pagado += (float)$request->descuentoPersonalizado['cantidad'];
-        // }
+        if($this->isValidDescuentoPersonalizado($request,$email)){
+            $pagado += (float)$request->descuentoPersonalizado['cantidad'];
+        }
 
         return $pagado;
     }
@@ -200,6 +217,14 @@ class FotoVideoVentaController extends Controller
     public function getTipoPagoId($tipoPago){
         $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
         return $tipoPagoId;
+    }
+
+    private function isDescuentoValid($total,$email){
+        $limite = $this->getLimitesDescuentoPersonalizado(['email' => $email]);
+        $maximoDescuento = (float)(($total/100) * $limite);
+        $total = (float)$total;
+
+        return (round($total,2) >= round($maximoDescuento,2));
     }
 
     private function setFaturaPago($ventaId,$facturaId,$request,$tipoPago){
@@ -403,7 +428,7 @@ class FotoVideoVentaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $email    = Auth::user()->email;
+        $email    = Auth::user()->email;
         // $password = "";
         // $checkin   = new CheckinController();
 
@@ -412,7 +437,7 @@ class FotoVideoVentaController extends Controller
         try{
             $pagosAnteriores = $this->getPagosAnteriores($id);
 
-            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request) : 0);
+            $pagado   = (count($request->pagos) > 0 ? $this->getCantidadPagada($request, $email) : 0);
             $pagado   = ((float) $pagado + (float) $pagosAnteriores);
             $adeudo   = ((float)$request->total - (float)$pagado);
             $pagar    = ($request->estatus == "pagar");
@@ -466,9 +491,9 @@ class FotoVideoVentaController extends Controller
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
                 // }
 
-                // if($this->isValidDescuentoPersonalizado($request,$email)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
-                // }
+                if($this->isValidDescuentoPersonalizado($request,$email)){
+                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                }
 
             }
 
@@ -514,6 +539,23 @@ class FotoVideoVentaController extends Controller
         }else if($factura->pagado >= $factura->total){
             return 2;//'pagado'
         }
+    }
+
+    private function isValidDescuentoPersonalizado($request,$email){
+        if((float)$request['descuentoPersonalizado']['cantidad'] > 0){
+            //$password = $request['descuentoPersonalizado']['password'];
+            //if($this->verifyUserAuth(
+            //    [
+            //        'email'    => $email,
+            //        'password' => $password
+            //    ])
+            //){
+                if($this->isDescuentoValid($request->total,$email)){
+                    return true;
+                }
+            //}
+        }
+        return false;
     }
 
     /**

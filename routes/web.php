@@ -280,7 +280,7 @@ Route::controller(FotoVideoVentaController::class)->middleware(['auth'])->group(
     Route::post('fotovideoventas/editPago','editPago');
     Route::post('fotovideoventas/removePago', 'removePago');
     // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
-    // Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
+    Route::post('fotovideoventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
     Route::post('fotovideoventas/show/{reservacion?}', 'show');
     Route::resource('fotovideoventas',FotoVideoVentaController::class, [
         'parameters' => [
