@@ -104,7 +104,7 @@ const format    = (venta) => {
                         <br/>
                         CAJERO: ${detalleVenta().cajero}
                         <br/>
-                        NOMBRE: ${detalleVenta().cliente}
+                        NOMBRE: ${detalleVenta().cliente === "" ? "CLIENTE EN MOSTRADOR" : detalleVenta().cliente}
                         <br/>
                         CIUDAD: ${(detalleVenta().ciudad === undefined ? '' : detalleVenta().ciudad)}
                         <br/>

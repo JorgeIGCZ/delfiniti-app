@@ -135,7 +135,7 @@ class TiendaVentaController extends Controller
         try{
             $venta = TiendaVenta::create([
                 'folio'          => mb_strtoupper($request->folio),
-                'nombre_cliente' => mb_strtoupper($request->nombre),
+                'nombre_cliente' => mb_strtoupper(isset($request->nombre) ? $request->nombre : "cliente en mostrador"),
                 'email'          => mb_strtoupper($request->email),
                 'direccion'      => mb_strtoupper($request->direccion),
                 'origen'         => mb_strtoupper($request->origen),
