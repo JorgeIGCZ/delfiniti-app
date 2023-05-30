@@ -1,12 +1,10 @@
-getProductos();
-
 function updateEstatusPedido(accion){
     const title = (accion === 'cancelar') ? 'cancelado' : 'reactivado';
     $('.loader').show();
-    axios.post('/pedidos/updateestatus', {
+    axios.post(`/pedidos/estatus/${pedidoId()}`, {
         '_token': token(),
-        'pedidoId': pedidoId(),
-        'accion': accion,
+        'estatus' : (accion === 'activar'),
+        '_method' : 'PATCH'
     })
     .then(function (response) {
         $('.loader').hide();
@@ -181,11 +179,14 @@ window.onload = function() {
     // getDisponibilidad()
     document.getElementById('pedido-form').elements['proveedor'].focus();
 
+    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
+        validarVerificacion();
+    });
 };
 
 //jQuery
 $('#productosTable').on( 'click', '.eliminar-celda', function (event) {
-    event.preventDefault();
+    event.preventDefault(); 
     // if(env == 'edit'){
     //     Swal.fire({
     //         title: '¿Eliminiar?',
@@ -236,13 +237,42 @@ document.getElementById('add-producto').addEventListener('click', (event) =>{
     }
 });
 
+
+async function validarVerificacion(){
+    const action      = document.getElementById('validar-verificacion').getAttribute('action');
+    if(await validateUsuario(document.getElementById('password').value)){
+        if(action === 'cancelar-pedido'){
+            updateEstatusPedido('cancelar');
+        }else if(action === 'activar-pedido'){
+            updateEstatusPedido('activar');
+        }
+    }else{
+        Swal.fire({
+            icon: 'error',
+            title: 'Contraseña incorrecta!',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    }
+}
+
+async function validateUsuario($password){
+    result = await axios.post('/usuarios/validateUsuario', {
+        '_token': token(),
+        'email': userEmail(),
+        'password': $password
+    });
+    $('#verificacion-modal').modal('hide');
+    return (result.data.result == 'Autorized') ? true : false;
+}
+
 function addProductos() {
     const codigoProducto = document.getElementById('codigo').value;
 
     if (isProductoDuplicado({'codigoProducto': codigoProducto})) {
         Swal.fire({
             icon: 'warning',
-            title: 'El prodducto ya se encuenta agregado.',
+            title: 'El producto ya se encuenta agregado.',
             showConfirmButton: false,
             timer: 900
         });
@@ -322,6 +352,12 @@ function showCodigoProductos(productos){
         option.setAttribute('data-value', productos[i].nombre);
         codigosList.appendChild(option);
     }
+}
+
+
+function fillPedidoDetallesTabla() {
+    productosTable.rows.add(productosTableArray).draw(false);
+    setSubTotal();
 }
 
 

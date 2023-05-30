@@ -12,13 +12,14 @@
             return '{{asset("assets/img/logo.png")}}';
         }
         const canEdit = () => {
-            return {{Auth::user()->can('Reservaciones.update') ? 1 : 0}};
+            return {{Auth::user()->can('TiendaPedidos.update') ? 1 : 0}};
         }
-        
         const allProductos = @php echo(json_encode($productos)) @endphp;
-
         const isAdmin = () => {
             return {{Auth::user()->hasRole('Administrador') ? 1 : 0}};
+        }
+        const userEmail = () =>{
+            return  '{{Auth::user()->email}}';
         }
 
         let productosArray    = [];
@@ -36,6 +37,7 @@
                     : '')
             ]];
             productosArray = [...productosArray,{
+                'codigoProducto'  : '{{$detalle->producto->codigo}}',
                 'claveProducto'   : '{{$detalle->producto->clave}}',
                 'productoDetalle' : '{{$detalle->producto->nombre}}',
                 'productoId'      : '{{$detalle->producto_id}}',
@@ -51,9 +53,47 @@
     <script src="{{ asset('js/tiendaPedido/ticket.js') }}"></script>
 @endsection
 @section('content')
+    <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h6 class="modal-title">Verificación</h6>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group col-12 mt-0 mb-0">
+                        <label for="password" class="col-form-label">Contraseña</label>
+                        <input type="password" id="password" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button id="validar-verificacion" action="" class="btn btn-info btn-block form-control">Aplicar</button>
+                </div>
+            </div>
+        </div><!-- modal-dialog -->
+    </div>
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Editar Pedido</h2>
+            <h2 class="az-dashboard-title">Editar Pedido</h2>   
+        </div>
+        <div class="az-content-header-right">
+            @can('TiendaPedidos.cancel')
+                @if($pedido->estatus)
+                    <div class="media">
+                        <div class="media-body">
+                            <button class="btn btn-danger" id="actualizar-estatus-pedido" accion='cancelar'>Cancelar</button>
+                        </div>
+                    </div>
+                @else
+                    <div class="media">
+                        <div class="media-body">
+                            <button class="btn btn-success" id="actualizar-estatus-pedido" accion='reactivar'>Activar pedido</button>
+                        </div>
+                    </div>
+                @endif
+            @endcan  
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">

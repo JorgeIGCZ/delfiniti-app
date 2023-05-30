@@ -24,17 +24,17 @@
                 rangoFecha.style.display = "block";
             });
 
-            document.getElementById('estatus_pedido').addEventListener('change', (event) =>{
-                const rangoFecha = document.getElementById('rango-fecha');
+            // document.getElementById('estatus_pedido').addEventListener('change', (event) =>{
+            //     const rangoFecha = document.getElementById('rango-fecha');
 
-                $('#start_date').datepicker('setDate', null);
-                $('#end_date').datepicker('setDate', null);
+            //     $('#start_date').datepicker('setDate', null);
+            //     $('#end_date').datepicker('setDate', null);
 
-                rangoFecha.style.display = "block";
+            //     rangoFecha.style.display = "block";
                 
-                pedidosTable.ajax.reload();
-                return;
-            });
+            //     pedidosTable.ajax.reload();
+            //     return;
+            // });
 
             document.getElementById('start_date').addEventListener('change', (event) =>{
                 const fechaInicio = event.target.value;
@@ -63,11 +63,12 @@
             ajax: function (d,cb,settings) {
                 $('.loader').show();
                 const pedidos = document.getElementById('pedidos-form');
-                axios.post('/pedidos/show',{
+                axios.post('/pedidos/get',{
                     "_token"  : '{{ csrf_token() }}',
                     "fecha"   : pedidos.elements['fecha'].value,
                     "fechaInicio"  : pedidos.elements['start_date'].value,
-                    "fechaFinal"  : pedidos.elements['end_date'].value
+                    "fechaFinal"  : pedidos.elements['end_date'].value,
+                    "view" : "index"
                 })
                 .then(function (response) {
                     $('.loader').hide();
@@ -85,34 +86,44 @@
             columns: [
                 { data: 'id' },
                 { data: 'proveedor' },
-                { data: 'productos' },
                 { data: 'cantidad' },
                 { data: 'fechaCreacion' },
                 { data: 'comentarios' },
-                { defaultContent: 'estatus', 'render': function ( data, type, row ) 
+                { defaultContent: 'estatus_proceso', 'render': function ( data, type, row ) 
                     {
-                        if(row.estatus){
-                                return 'Activo';
+                        if(row.estatusProceso){
+                            return "<p class='paid'>Validado</p>";
                         }
-                        return 'Inactivo';
+                        return "<p class='partial'>Pendiente</p>";
                     }
-                },
+                }, 
                 { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
                     {
                         let editStatusRow = '';
                         let payRow = '';
                         let editRow = '';
+                        let viewRow = '';
                         let options = [];
+
                         @can('TiendaPedidos.update')
-                            editRow = `<a href="pedidos/${row.id}/edit?accion=edit">Editar</a>`;
-                            
-                            if(row.estatus){
-                                editStatusRow = `<a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
-                            }else{
-                                editStatusRow = `<a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
+                            if(!row.estatusProceso){
+                                editRow = `<a href="/pedidos/${row.id}/edit?accion=edit">Editar</a>`;
                             }
                         @endcan
-                        options = [editRow,editStatusRow];
+
+                        // @can('TiendaPedidos.cancel')
+                        //     if(row.estatus){
+                        //         editStatusRow = `<a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
+                        //     }else{
+                        //         editStatusRow = `<a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
+                        //     }
+                        // @endcan
+
+                        @can('TiendaPedidos.index')
+                            viewRow = `<a href="/pedidos/${row.id}">Ver</a>`;
+                        @endcan
+                        
+                        options = [viewRow,editRow,editStatusRow];
                         options = options.filter(option => option != ""); 
                         let view    =   `<small>
                                             ${options.join(' | ')}
@@ -207,7 +218,6 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Proveedor</th>
-                                        <th>Productos</th>
                                         <th># Productos</th>
                                         <th>Fecha creación</th>
                                         <th>Comentarios</th>

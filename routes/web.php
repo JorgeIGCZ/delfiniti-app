@@ -26,6 +26,7 @@ use App\Http\Controllers\TiendaImpuestoController;
 use App\Http\Controllers\TiendaInventarioController;
 use App\Http\Controllers\TiendaPedidoController;
 use App\Http\Controllers\TiendaProductoController;
+use App\Http\Controllers\TiendaProveedorController;
 use App\Http\Controllers\TiendaVentaController;
 
 /*
@@ -239,10 +240,10 @@ Route::controller(TiendaInventarioController::class)->middleware(['auth'])->grou
     ]);
 });
 
-Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(function () {
+Route::controller(TiendaProveedorController::class)->middleware(['auth'])->group(function () {
     Route::get('proveedores/show/{proveedor?}', 'show');
     Route::patch('proveedores/estatus/{proveedor}', 'updateEstatus');
-    Route::resource('proveedores',TiendaProductoController::class, [
+    Route::resource('proveedores',TiendaProveedorController::class, [
         'parameters' => [
             'proveedores' => 'proveedor'
         ]
@@ -250,9 +251,11 @@ Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(
 });
 
 Route::controller(TiendaPedidoController::class)->middleware(['auth'])->group(function () {
-    Route::get('pedidos/show/{pedido?}', 'show');
+    Route::get('pedidos/validate/', 'validatePedido');
+    Route::post('pedidos/validate/{pedido?}/update', 'updateProductoStock');
+    Route::get('pedidos/get/{pedido?}', 'get');
     Route::patch('pedidos/estatus/{pedido}', 'updateEstatus');
-    Route::post('pedidos/show/{pedido?}', 'show');
+    Route::post('pedidos/get/{pedido?}', 'get');
     Route::resource('pedidos',TiendaPedidoController::class, [
         'parameters' => [
             'pedidos' => 'pedido'

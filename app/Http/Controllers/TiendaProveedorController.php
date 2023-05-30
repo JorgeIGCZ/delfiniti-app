@@ -9,8 +9,8 @@ use App\Models\TiendaProveedor;
 class TiendaProveedorController extends Controller
 {
     public function __construct() {
-        // $this->middleware('permission:Proveedor.index')->only('index');
-        // $this->middleware('permission:Proveedor.update')->only('edit'); 
+        $this->middleware('permission:TiendaProveedores.index')->only('index');
+        $this->middleware('permission:TiendaProveedores.update')->only('edit'); 
     }
     /**
      * Display a listing of the resource.

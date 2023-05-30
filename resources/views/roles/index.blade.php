@@ -116,6 +116,9 @@
                 'TiendaProductos.create'      : roles.elements['TiendaProductos.create'        ].checked,
                 'TiendaProductos.update'      : roles.elements['TiendaProductos.update'        ].checked,
 
+                'TiendaProductosValidacion.index'  : roles.elements['TiendaProductosValidacion.index' ].checked,
+                'TiendaProductosValidacion.update' : roles.elements['TiendaProductosValidacion.update'].checked,
+
                 'SeccionFotoVideo.index'      : roles.elements['SeccionFotoVideo.index'        ].checked,
 
                 'FotoVideoVentas.index'       : roles.elements['FotoVideoVentas.index'         ].checked,
@@ -614,6 +617,22 @@
                                 <div class="checkbox checkbox-primary">
                                     <input name="TiendaProductos.update" type="checkbox" >
                                     <label for="TiendaProductos.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Validación productos</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProductosValidacion.index" type="checkbox" >
+                                    <label for="TiendaProductosValidacion.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaProductosValidacion.update" type="checkbox" >
+                                    <label for="TiendaProductosValidacion.update">
                                         Modificar 
                                     </label>
                                 </div>

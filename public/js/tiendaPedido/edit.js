@@ -9,16 +9,17 @@ const detallePagoContainer = document.getElementById('detallePagoContainer');
 const anticipoContainer = document.getElementById('anticipo-container');
 
 setReservacionesTipoAccion();
+getProductos();
 // changeCuponDetalle();
  
 if(actualizarEstatusReservacion !== null){
     actualizarEstatusReservacion.addEventListener('click', (event) =>{
         event.preventDefault();
         if(document.getElementById('actualizar-estatus-pedido').getAttribute('accion') == 'cancelar'){
-            validateCancelarReservacion();
+            validateCancelarPedido();
             return true;
         }
-        validateActivarReservacion();
+        validateActivarPedido();
     });
 }
 
@@ -118,10 +119,10 @@ async function editarPagoReservacion(row){
     return true;
 }
 
-function validateCancelarReservacion(){
+function validateCancelarPedido(){
     Swal.fire({
         title: '¿Cancelar?',
-        text: "La reservación será cancelada, ¿desea proceder?",
+        text: "El pedido será cancelado, ¿desea proceder?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#17a2b8',
@@ -130,6 +131,23 @@ function validateCancelarReservacion(){
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('validar-verificacion').setAttribute('action','cancelar-pedido');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+
+function validateActivarPedido(){
+    Swal.fire({
+        title: '¿Activar?',
+        text: "El pedido será activado, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, activar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','activar-pedido');
             $('#verificacion-modal').modal('show');
         }
     });
@@ -225,31 +243,6 @@ function createReservacion(estatus) {
             showConfirmButton: true
         })
     });
-}
-
-function addActividades() {
-    let claveActividad = document.getElementById('clave-actividad');
-    claveActividad     = claveActividad.options[claveActividad.selectedIndex].text;
-    const horario      = document.getElementById('horarios').value;
-
-    if (isActividadDuplicada({'claveActividad': claveActividad, 'horario': horario})) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'La actividad ya se encuentra agregada.',
-            showConfirmButton: false,
-            timer: 900
-        });
-        return false;
-    }
-    if(!isDisponible()){
-        return false;
-    }
-    addActividad();
-}
-
-function fillPedidoDetallesTabla() {
-    productosTable.rows.add(productosTableArray).draw(false);
-    setSubTotal();
 }
 
 function setCantidadPagada(cantidadPagada) {

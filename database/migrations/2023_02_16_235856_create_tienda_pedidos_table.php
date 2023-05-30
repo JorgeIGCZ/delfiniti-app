@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('fecha_creacion');
             $table->longText('comentarios')->nullable();
             $table->boolean('estatus')->default(1);
+            $table->boolean('estatus_proceso')->default(0)->comment('0 es pedido pendiente de aprovacion 1 es pedido aprovado');;
             $table->timestamps();
         });
     }

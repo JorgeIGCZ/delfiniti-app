@@ -49,8 +49,6 @@ class TiendaPedidoController extends Controller
      */
     public function store(Request $request) 
     {
-        $Productos = new TiendaProductoController();
-
         DB::beginTransaction();
         try{
             $pedido = TiendaPedido::create([
@@ -61,8 +59,6 @@ class TiendaPedidoController extends Controller
             ]);
 
             foreach($request->pedidoProductos as $pedidoProducto){
-
-                $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
                 TiendaPedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
@@ -70,10 +66,6 @@ class TiendaPedidoController extends Controller
                     'PPU'         =>  $pedidoProducto['costo'],
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
                 ]);
-                
-                $producto          = TiendaProducto::find($pedidoProducto['productoId']);
-                $producto->stock   = $producto->stock + $pedidoProducto['cantidad'];
-                $producto->save();
             }
 
             $pedido->save();
@@ -95,59 +87,122 @@ class TiendaPedidoController extends Controller
         }
     }
 
+	public function validatePedido(){
+        return view('pedidos.validate');
+	}
+
+    public function updateProductoStock($id){
+        try { 
+            DB::beginTransaction();
+
+            $Productos = new TiendaProductoController();
+            $pedido = TiendaPedido::find($id);
+
+            foreach($pedido->pedidoDetalle as $pedidoDetalle){
+                $Productos->updateFechaMovimientoStock($pedidoDetalle->producto_id, 'ultima_entrada');
+
+                $producto          = TiendaProducto::find($pedidoDetalle->producto_id);
+                $producto->stock   = $producto->stock + $pedidoDetalle->cantidad;
+                $producto->save();   
+            }
+
+            $pedido->estatus_proceso = 1;
+            $pedido->save();   
+
+            DB::commit();
+
+            return json_encode(
+                [
+                    'result' => 'Success',
+                    'id' => $pedido->id,
+                    'pedido' => $pedido
+                ]
+            );
+
+
+        } catch (\Exception $e){
+            DB::rollBack();
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$id);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+    * Display the specified resource.
+    *
+    * @param  \Illuminate\Http\Request  $request
+    * @return \Illuminate\Http\Response
+    */
+   public function get(Request $request)
+   {
+
+       if(!is_null($request->fecha)){
+           switch (@$request->fecha) {
+               case 'dia':
+                   $fechaInicio = Carbon::now()->startOfDay();
+                   $fechaFinal  = Carbon::now()->endOfDay();
+                   break;
+               case 'mes':
+                   $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
+                   $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
+                   break;
+               case 'custom':
+                   $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
+                   $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+                   break;
+           }   
+       }
+
+       
+       DB::enableQueryLog();
+       $pedidos = TiendaPedido::where("estatus", 1)->orderByDesc('id');
+       if($request->view === "validate"){
+            $pedidos = $pedidos->where("estatus_proceso", 0);
+       }else{
+            $pedidos = $pedidos->whereBetween("fecha", [$fechaInicio, $fechaFinal]);
+       }
+	   $pedidos = $pedidos->get();
+       //dd(DB::getQueryLog());
+   
+
+       $pedidoDetalleArray = [];
+       foreach($pedidos as $pedido){ 
+           $cantidad = 0;
+           $productos    = "";
+           foreach($pedido->pedidoDetalle as $pedidoDetalle){
+               $cantidad += $pedidoDetalle->cantidad;
+               $productos = ($productos != "" ? $productos.", " : "").@$pedidoDetalle->producto->nombre;
+           }
+           $pedidoDetalleArray[] = [
+               'id'           => @$pedido->id,
+               'productos'    => $productos, 
+               'fechaCreacion' => @Carbon::parse($pedido->fecha_creacion)->format('d/m/Y'),
+               'fecha'        => @Carbon::parse($pedido->fecha)->format('d/m/Y'),
+               'proveedor'    => @$pedido->proveedor->razon_social,
+               'cantidad'     => $cantidad,
+               'comentarios'  => @$pedido->comentarios,
+               'estatusProceso' => @$pedido->estatus_proceso,
+               'estatus'        => @$pedido->estatus
+           ];
+       }
+       
+       return json_encode(['data' => $pedidoDetalleArray]);
+   }
+
+
     /**
      * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(TiendaPedido $pedido)
     {
-
-        if(!is_null($request->fecha)){
-            switch (@$request->fecha) {
-                case 'dia':
-                    $fechaInicio = Carbon::now()->startOfDay();
-                    $fechaFinal  = Carbon::now()->endOfDay();
-                    break;
-                case 'mes':
-                    $fechaInicio = Carbon::parse('first day of this month')->startOfDay();
-                    $fechaFinal  = Carbon::parse('last day of this month')->endOfDay();
-                    break;
-                case 'custom':
-                    $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
-                    $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
-                    break;
-            }   
+        $subtotal = 0;
+        foreach($pedido->pedidoDetalle as $pedidoDetalle){
+            $subtotal += $pedidoDetalle->subtotal;
         }
-
-        
-        DB::enableQueryLog();
-        $pedidos = TiendaPedido::whereBetween("fecha", [$fechaInicio,$fechaFinal])->orderByDesc('id')->get();
-        //dd(DB::getQueryLog());
-    
-
-        $pedidoDetalleArray = [];
-        foreach($pedidos as $pedido){ 
-            $cantidad = 0;
-            $productos    = "";
-            foreach($pedido->pedidoDetalle as $pedidoDetalle){
-                $cantidad += $pedidoDetalle->cantidad;
-                $productos = ($productos != "" ? $productos.", " : "").@$pedidoDetalle->producto->nombre;
-            }
-            $pedidoDetalleArray[] = [
-                'id'           => @$pedido->id,
-                'productos'    => $productos, 
-                'fechaCreacion' => @Carbon::parse($pedido->fecha_creacion)->format('d/m/Y'),//date_format(date_create($reservacion->fecha_creacion),"d/m/Y"),
-                'fecha'        => @Carbon::parse($pedido->fecha)->format('d/m/Y'),//date_format(date_create($reservacion->fecha),"d-m-Y"),
-                'proveedor'    => @$pedido->proveedor->razon_social,
-                'cantidad'     => $cantidad,
-                'comentarios'  => @$pedido->comentarios,
-                'estatus'      => @$pedido->estatus
-            ];
-        }
-        
-        return json_encode(['data' => $pedidoDetalleArray]);
+        $total = $subtotal;
+        return view('pedidos.view',['pedido' => $pedido, 'subtotal' => $subtotal, 'total' => $total]);
     }
 
     /**
@@ -187,6 +242,10 @@ class TiendaPedidoController extends Controller
      */
     public function edit(TiendaPedido $pedido)
     {
+        if($pedido->estatus_proceso){
+            return view('pedidos.index');
+        }
+        
         $proveedores = TiendaProveedor::where('estatus',1)->get();
         $productos   = TiendaProducto::where('estatus',1)->get()->toArray();
 
@@ -212,12 +271,10 @@ class TiendaPedidoController extends Controller
             $pedido->fecha           = $request->fecha;
             $pedido->save();
 
-            $this->removeProductoStock($pedido['id']);
             TiendaPedidoDetalle::where('pedido_id', $pedido['id'])->delete();
 
             foreach($request->pedidoProductos as $pedidoProducto){
-
-                $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
+                // $Productos->updateFechaMovimientoStock($pedidoProducto['productoId'], 'ultima_entrada');
                 TiendaPedidoDetalle::create([
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
@@ -226,9 +283,9 @@ class TiendaPedidoController extends Controller
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
                 ]);
                 
-                $producto          = TiendaProducto::find($pedidoProducto['productoId']);
-                $producto->stock   = $producto->stock + $pedidoProducto['cantidad'];
-                $producto->save();
+                // $producto          = TiendaProducto::find($pedidoProducto['productoId']);
+                // $producto->stock   = $producto->stock + $pedidoProducto['cantidad'];
+                // $producto->save();
             }
 
             $pedido->save();
@@ -250,14 +307,14 @@ class TiendaPedidoController extends Controller
         }
     }
 
-    private function removeProductoStock($pedidoId){
-        $pedidoDetalles = TiendaPedidoDetalle::where('pedido_id',$pedidoId)->get();
-        foreach($pedidoDetalles as $pedidoDetalle){
-            $producto          = TiendaProducto::find($pedidoDetalle['producto_id']);
-            $producto->stock   = $producto->stock - $pedidoDetalle['cantidad'];
-            $producto->save();
-        }
-    }
+    // private function removeProductoStock($pedidoId){
+    //     $pedidoDetalles = TiendaPedidoDetalle::where('pedido_id',$pedidoId)->get();
+    //     foreach($pedidoDetalles as $pedidoDetalle){
+    //         $producto          = TiendaProducto::find($pedidoDetalle['producto_id']);
+    //         $producto->stock   = $producto->stock - $pedidoDetalle['cantidad'];
+    //         $producto->save();
+    //     }
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -268,5 +325,5 @@ class TiendaPedidoController extends Controller
     public function destroy($id)
     {
         //
-    }
+    } 
 }

@@ -14,6 +14,7 @@ class TiendaPedido extends Model
         'fecha',
         'fecha_creacion',
         'comentarios',
+        'estatus_proceso',
         'estatus'
     ];
     protected $primaryKey = 'id';

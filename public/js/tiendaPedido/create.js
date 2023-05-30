@@ -1,4 +1,5 @@
 let productosArray = [];
+getProductos();
 
 
 document.getElementById('cancelar').addEventListener('click', (event) => {

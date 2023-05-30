@@ -33,10 +33,18 @@
           </li>
         @endcan
 
-
         @can('Reservaciones.create')
-          <li class="nav-item {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">
-            <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
+          @role('Recepcion')
+            <li class="nav-item {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">
+              <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
+            </li>
+          @endrole
+        @endcan
+
+        @can('FotoVideoVentas.create')
+
+          <li class="nav-item {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}">
+            <a href="{{ url('fotovideoventas/create') }}" class="nav-link {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>
           </li>
         @endcan
 
@@ -78,6 +86,15 @@
             <a href="{{ url('ventas/create') }}" class="nav-link {{url()->current() == url('ventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>
           </li>
         @endcan
+
+        @can('FotoVideoVentas.create')
+          @role('Tienda')
+            <li class="nav-item {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}">
+              <a href="{{ url('fotovideoventas/create') }}" class="nav-link {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta (foto y video)</a>
+            </li>
+          @endrole
+        @endcan
+
 
         @can('TiendaVentas.index')
           <li class="nav-item {{url()->current() == url('ventas') ? 'active' : ''}}">
@@ -146,7 +163,7 @@
         <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
         <div class="az-menu-sub az-menu-sub-mega">
           <div class="container">
-            @if(session('modulo') == 'tienda' || session('modulo') == 'reservaciones')
+            @if(session('modulo') == 'tienda' || session('modulo') == 'reservaciones' || session('modulo') == 'fotovideo')
               <div>
                 <nav class="nav">
                   <span>General</span>
@@ -159,16 +176,14 @@
                     <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
                   @endcan
 
+                  @can('TipoCambio.index')
+                    <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
+                  @endcan
+                  
                   @if(session('modulo') == 'tienda')
                     {{-- @can('TipoCambio.index') --}}
                       <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos</a>
                     {{-- @endcans --}}
-                  @endif
-
-                  @if(session('modulo') == 'reservaciones')
-                    @can('TipoCambio.index')
-                      <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
-                    @endcan
                   @endif
                 </nav>
               </div>
