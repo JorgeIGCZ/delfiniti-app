@@ -33,11 +33,12 @@
                     {
                         let validate = "";
                         let viewRow = "";
-
-                        if(row.estatus && !row.estatus_proceso){
-                            validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Validar</button>`;
-                        }
-
+                        @can('TiendaProductosValidacion.update')
+                            if(row.estatus && !row.estatus_proceso){
+                                validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Validar</button>`;
+                            }
+                        @endcan
+                        
                         @can('TiendaPedidos.index')
                             viewRow = `<a href="/pedidos/${row.id}">Ver</a>`;
                         @endcan

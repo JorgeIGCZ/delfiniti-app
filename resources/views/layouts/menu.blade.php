@@ -62,7 +62,7 @@
       @endif
 
       @if(session('modulo') == 'tienda')
-       @can('Reportes.index')
+        @can('Reportes.index')
           <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
             <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
             {{-- <div class="az-menu-sub">
@@ -95,13 +95,11 @@
           @endrole
         @endcan
 
-
         @can('TiendaVentas.index')
           <li class="nav-item {{url()->current() == url('ventas') ? 'active' : ''}}">
             <a href="{{ url('ventas') }}" class="nav-link {{url()->current() == url('ventas') ? 'active' : ''}}"><i class="typcn typcn-contacts"></i> Ver ventas</a>
           </li>
         @endcan
-
 
         @can('TiendaPedidos.index')
           <li class="nav-item {{url()->current() == url('pedidos') ? 'active' : ''}}">
@@ -113,6 +111,9 @@
                 @endcan
                 @can('TiendaPedidos.create')
                   <a href="{{ url('/pedidos/create') }}" class="nav-link {{url()->current() == url('pedidos/create') ? 'active' : ''}}">Nuevo pedido</a>
+                @endcan
+                @can('TiendaProductosValidacion.index')
+                    <a href="{{ url('/pedidos/validate') }}" class="nav-link {{url()->current() == url('/pedidos/validate') ? 'active' : ''}}">Validar pedidos</a>
                 @endcan
               </nav>
             </div>
