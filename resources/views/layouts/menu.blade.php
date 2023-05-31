@@ -34,18 +34,17 @@
         @endcan
 
         @can('Reservaciones.create')
-          @role('Recepcion')
-            <li class="nav-item {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">
-              <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
-            </li>
-          @endrole
+          <li class="nav-item {{url()->current() == url('reservaciones/create') ? 'active' : ''}}">
+            <a href="{{ url('reservaciones/create') }}" class="nav-link {{url()->current() == url('reservaciones/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva reservación</a>
+          </li>
         @endcan
 
         @can('FotoVideoVentas.create')
-
-          <li class="nav-item {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}">
-            <a href="{{ url('fotovideoventas/create') }}" class="nav-link {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>
-          </li>
+          @role('Recepcion')
+            <li class="nav-item {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}">
+              <a href="{{ url('fotovideoventas/create') }}" class="nav-link {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>
+            </li>
+          @endrole
         @endcan
 
         @can('Reservaciones.index')
