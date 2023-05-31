@@ -221,7 +221,7 @@
                                         <th># Productos</th>
                                         <th>Fecha creación</th>
                                         <th>Comentarios</th>
-                                        <th>Estatus</th>
+                                        <th>Estatus validación</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
