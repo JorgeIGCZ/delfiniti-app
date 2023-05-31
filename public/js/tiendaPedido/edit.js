@@ -168,9 +168,9 @@ function createReservacion(estatus) {
                     showConfirmButton: false,
                     timer: 1000
                 }).then(function() {
-                    if(getTicket(response.data.pedido)){
+                    // if(getTicket(response.data.pedido)){
                         location.reload();
-                    } 
+                    // } 
                 });
             }else{
                 Swal.fire({

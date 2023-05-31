@@ -35,9 +35,9 @@ function createPedido(estatus) {
                 footer: `<a href="/pedidos/${response.data.id}/edit">Ver pedido</a>`,
                 timer: 1500
             }).then(function() {
-                if(getTicket(response.data.pedido)){
+                // if(getTicket(response.data.pedido)){
                     location.reload();
-                }
+                // }
             });
         } else {
             $('.loader').hide();
