@@ -87,6 +87,7 @@
                 "duracion"       : actividades.elements['duracion'].value,
                 "comisionable"   : actividades.elements['comisionable'].checked,
                 "comisionesEspeciales" : actividades.elements['comisiones-especiales'].checked,
+                "exclusionEspecial" : actividades.elements['exclusion-especial'].checked,
                 "fechaInicial"   : actividades.elements['rango'].getAttribute('fechainicial'),
                 "fechaFinal"     : actividades.elements['rango'].getAttribute('fechafinal'),
                 "horarioInicial" : horario_inicial,
@@ -325,6 +326,10 @@
                                 <div class="form-group col-2"> 
                                     <label for="comisiones-especiales" class="col-form-label">Comisiones especiales</label>    
                                     <input type="checkbox" name="comisiones-especiales" id="comisiones-especiales" class="form-control" style="display: block;">
+                                </div>
+                                <div class="form-group col-2"> 
+                                    <label for="exclusion-especial" class="col-form-label">Excluir de disponibilidad</label>    
+                                    <input type="checkbox" name="exclusion-especial" id="exclusion-especial" class="form-control" style="display: block;">
                                 </div>
 
                                 <div class="form-group col-12 mt-3" id="comisiones-especiales-container" style="display: none;">

@@ -99,6 +99,11 @@
                                 <input type="checkbox" name="comisiones_especiales" id="comisiones_especiales" class="form-control" @if($actividad->comisiones_especiales) checked="checked" @endif style="display: block;">
                             </div>
 
+                            <div class="form-group col-2"> 
+                                <label for="exclusion_especial" class="col-form-label">Excluir de disponibilidad</label>    
+                                <input type="checkbox" name="exclusion_especial" id="exclusion_especial" class="form-control" @if($actividad->exclusion_especial) checked="checked" @endif style="display: block;">
+                            </div>
+
                             <div class="form-group col-12 mt-3" id="comisiones-especiales-container" @if($actividad->comisiones_especiales) style="display: block;" @else style="display: none;" @endif>
                                 <strong>
                                     Comisiones especiales actividad

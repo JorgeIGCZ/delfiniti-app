@@ -18,6 +18,7 @@ class Actividad extends Model
         'reporte_orden',
         'comisionable',
         'comisiones_especiales',
+        'exclusion_especial',
         'fecha_inicial',
         'fecha_final'
     ];

@@ -82,6 +82,7 @@ class ActividadController extends Controller
                 'duracion'        => $request->duracion,
                 'comisionable'    => $request->comisionable,
                 'comisiones_especiales' => $request->comisionesEspeciales,
+                'exclusion_especial' => $request->exclusionEspecial,
                 'fecha_inicial'   => $request->fechaInicial,
                 'fecha_final'     => $request->fechaFinal,
             ]);        
@@ -160,6 +161,7 @@ class ActividadController extends Controller
             $actividad->capacidad       = $request->capacidad;
             $actividad->comisionable    = $request->has('comisionable');
             $actividad->comisiones_especiales  = ($request->comisiones_especiales == 'on');
+            $actividad->exclusion_especial  = ($request->exclusion_especial == 'on');
             $actividad->save();
             
             ActividadHorario::where('actividad_id', $id)
