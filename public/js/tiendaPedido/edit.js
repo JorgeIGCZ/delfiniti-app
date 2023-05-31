@@ -1,6 +1,5 @@
 // let pagosTabla;
 let allActividades = [];
-const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-pedido');
 const actualizar = document.getElementById('actualizar');
 const pagar = document.getElementById('pagar');
 // const contenedorPagos = document.getElementById("detalle-pedido-contenedor");
@@ -11,17 +10,6 @@ const anticipoContainer = document.getElementById('anticipo-container');
 setReservacionesTipoAccion();
 getProductos();
 // changeCuponDetalle();
- 
-if(actualizarEstatusReservacion !== null){
-    actualizarEstatusReservacion.addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(document.getElementById('actualizar-estatus-pedido').getAttribute('accion') == 'cancelar'){
-            validateCancelarPedido();
-            return true;
-        }
-        validateActivarPedido();
-    });
-}
 
 if(actualizar !== null){
     actualizar.addEventListener('click', (event) => {
@@ -82,6 +70,7 @@ $('#pagos').on( 'change', '.fecha-pago', function (event) {
 // });
 
 fillPedidoDetallesTabla();
+setSubTotal();
 // fillPagosTabla();
 
 async function editarPagoReservacion(row){
@@ -117,40 +106,6 @@ async function editarPagoReservacion(row){
     }
 
     return true;
-}
-
-function validateCancelarPedido(){
-    Swal.fire({
-        title: '¿Cancelar?',
-        text: "El pedido será cancelado, ¿desea proceder?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, cancelar!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','cancelar-pedido');
-            $('#verificacion-modal').modal('show');
-        }
-    });
-}
-
-function validateActivarPedido(){
-    Swal.fire({
-        title: '¿Activar?',
-        text: "El pedido será activado, ¿desea proceder?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#17a2b8',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, activar!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','activar-pedido');
-            $('#verificacion-modal').modal('show');
-        }
-    });
 }
 
 function setReservacionesTipoAccion() {

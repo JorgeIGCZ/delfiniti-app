@@ -31,19 +31,31 @@
                 { data: 'comentarios' },
                 { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
                     {
-                        let validate = "";
                         let viewRow = "";
+                        
+                        @can('TiendaPedidos.index')
+                            viewRow = `<a href="/pedidos/${row.id}">Ver</a>`;
+                        @endcan
+                        
+                        options = [viewRow];
+                        options = options.filter(option => option != ""); 
+
+                        let view    =   `<small>
+                                            ${options.join(' | ')}
+                                        </small>`;
+                        return  view;
+                    }
+                },
+                { defaultContent: 'Validacion', className: 'dt-center', 'render': function ( data, type, row )
+                    {
+                        let validate = "";
                         @can('TiendaProductosValidacion.update')
                             if(row.estatus && !row.estatus_proceso){
                                 validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Validar</button>`;
                             }
                         @endcan
                         
-                        @can('TiendaPedidos.index')
-                            viewRow = `<a href="/pedidos/${row.id}">Ver</a>`;
-                        @endcan
-                        
-                        options = [viewRow,validate];
+                        options = [validate];
                         options = options.filter(option => option != ""); 
 
                         let view    =   `<small>
@@ -130,6 +142,7 @@
                                         <th>Fecha creación</th>
                                         <th>Comentarios</th>
                                         <th>Acciones</th>
+                                        <th>Validación</th>
                                     </tr>
                                 </thead>
                             </table>

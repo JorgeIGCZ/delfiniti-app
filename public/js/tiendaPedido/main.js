@@ -1,3 +1,61 @@
+const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-pedido');
+const agregarProducto = document.getElementById('add-producto');
+ 
+if(actualizarEstatusReservacion !== null){
+    actualizarEstatusReservacion.addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(document.getElementById('actualizar-estatus-pedido').getAttribute('accion') == 'cancelar'){
+            validateCancelarPedido();
+            return true;
+        }
+        validateActivarPedido();
+    });
+}
+
+if(agregarProducto !== null){
+    agregarProducto.addEventListener('click', (event) =>{
+        event.preventDefault();
+        if(productoIsValid()){
+            addProductos();
+            validateBotonGuardar();
+        }
+    });
+}
+
+function validateCancelarPedido(){
+    Swal.fire({
+        title: '¿Cancelar?',
+        text: "El pedido será cancelado, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cancelar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','cancelar-pedido');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+
+function validateActivarPedido(){
+    Swal.fire({
+        title: '¿Activar?',
+        text: "El pedido será activado, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, activar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','activar-pedido');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+
 function updateEstatusPedido(accion){
     const title = (accion === 'cancelar') ? 'cancelado' : 'reactivado';
     $('.loader').show();
@@ -11,12 +69,12 @@ function updateEstatusPedido(accion){
         if (response.data.result == 'Success') {
             Swal.fire({
                 icon: 'success',
-                title: `Venta ${title}`,
+                title: `Pedido ${title}`,
                 showConfirmButton: false,
                 timer: 1500
             })
             location.reload();
-        } else {
+        } else { 
             Swal.fire({
                 icon: 'error',
                 title: `Petición fallida`,
@@ -119,9 +177,9 @@ function addProducto(){
     setSubTotal();
 }
 
-function resetVentas() {
-    location.reload();
-}
+// function resetVentas() {
+//     location.reload();
+// }
 
 function isProductoDuplicado(nuevoProducto){ 
     let duplicado = 0;
@@ -177,7 +235,11 @@ let productosTable = new DataTable('#productosTable', {
 
 window.onload = function() {
     // getDisponibilidad()
-    document.getElementById('pedido-form').elements['proveedor'].focus();
+    const pedidoForm = document.getElementById('pedido-form').elements['proveedor'];
+ 
+    if(pedidoForm !== undefined){
+        pedidoForm.focus();
+    }
 
     document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
         validarVerificacion();
@@ -228,15 +290,6 @@ $('#proveedor').on('change', function (e) {
     resetProductoTabla();
     resetProductoMeta();
 });
-
-document.getElementById('add-producto').addEventListener('click', (event) =>{
-    event.preventDefault();
-    if(productoIsValid()){
-        addProductos();
-        validateBotonGuardar();
-    }
-});
-
 
 async function validarVerificacion(){
     const action      = document.getElementById('validar-verificacion').getAttribute('action');
@@ -357,7 +410,6 @@ function showCodigoProductos(productos){
 
 function fillPedidoDetallesTabla() {
     productosTable.rows.add(productosTableArray).draw(false);
-    setSubTotal();
 }
 
 
