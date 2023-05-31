@@ -613,7 +613,8 @@ class ReporteController extends Controller
         $tipoCambio = TipoCambio::where("seccion_uso","reportes")->get()[0]["precio_compra"];
 
         $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones);
-        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios);
+        //Exclude visitas
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios)->whereRaw('exclusion_especial = 0')->get();
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "CORTE DE CAJA");
         $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");
@@ -873,13 +874,13 @@ class ReporteController extends Controller
         $rowNumber += 3;
         
         //# PROGRAMAS PAGADOS
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFont()->setBold(true);
             
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFont()->setSize(12);
             
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
+        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:E{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
@@ -952,7 +953,7 @@ class ReporteController extends Controller
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
 
         $actividadesHorarios = $this->getActividadesHorarios($fechaInicio,$fechaFinal);
-        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios);
+        $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios)->get();
         
 
         $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE RESERVACIONES");
@@ -1231,7 +1232,7 @@ class ReporteController extends Controller
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
                 ->whereIn("usuario_id", $usuarios)
                 ->where('estatus',1);
-        }])->get();
+        }]);
 
         return $actividades;
     }

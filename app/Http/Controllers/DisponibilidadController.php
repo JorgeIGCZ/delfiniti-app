@@ -26,7 +26,15 @@ class DisponibilidadController extends Controller
         $fechaActividades    = (is_null($request->fecha_actividades) ? date('Y-m-d') : $request->fecha_actividades);
         $actividadesHorarios = $this->getActividadesHorarios($fechaActividades);
 
-        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->get();
+        $reservaciones       = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 0');
+        })->get(); 
+
         $reservacionesPersonas = 0;
         foreach($reservaciones as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
@@ -34,7 +42,15 @@ class DisponibilidadController extends Controller
             }
         }
         
-        $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->get();
+        $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 0');
+        })->get(); 
+
         $reservacionesPendientesPersonas = 0;
         foreach($reservacionesPendientes as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
@@ -42,10 +58,18 @@ class DisponibilidadController extends Controller
             }
         }
 
-        $cortesias           = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
+        $cortesias = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
                 ->whereRaw("nombre LIKE '%CORTESIA%' ");
-        })->get();
+        })->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 0');
+        })->get(); 
+
         $cortesiasPersonas = 0;
         foreach($cortesias as $reservacion){
             foreach($reservacion->reservacionDetalle as $reservacionDetalle){
@@ -53,8 +77,15 @@ class DisponibilidadController extends Controller
             }
         }
 
+        $reservacionesPagadas = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 0');
+        })->get(); 
 
-        $reservacionesPagadas= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->where('estatus_pago',2)->get();
         $reservacionesPagadasPersonas = 0;
         $reservacionesPagadasSinCortesiasPersonas = 0;
         foreach($reservacionesPagadas as $reservacion){
@@ -81,7 +112,8 @@ class DisponibilidadController extends Controller
                 ->whereRaw(" '$fechaActividades' >= fecha_inicial")
                 ->whereRaw(" '$fechaActividades' <= fecha_final")
                 ->orWhere('duracion','indefinido')
-                ->whereRaw('estatus = 1');
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 0');
         })->with(['reservacion' => function ($query) use ($fechaActividades) {
                 $query->where('fecha', "{$fechaActividades}")
                 ->where('estatus',1);
@@ -130,9 +162,9 @@ class DisponibilidadController extends Controller
      */
     public function show(Request $request)
     {
-        $actividadesHorarios = $this->getActividadesHorarios($request->fecha_actividades);
+        // $actividadesHorarios = $this->getActividadesHorarios($request->fecha_actividades);
         
-        return redirect()->route("disponibilidad")->with(['actividadesHorarios' => $actividadesHorarios,'fechaActividades' => "2022-06-07"]);
+        // return redirect()->route("disponibilidad")->with(['actividadesHorarios' => $actividadesHorarios,'fechaActividades' => "2022-06-07"]);
     }
 
     /**
