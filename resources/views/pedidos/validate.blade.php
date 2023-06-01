@@ -51,7 +51,7 @@
                         let validate = "";
                         @can('TiendaProductosValidacion.update')
                             if(row.estatus && !row.estatus_proceso){
-                                validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Validar</button>`;
+                                validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Autorizar</button>`;
                             }
                         @endcan
                         
@@ -124,7 +124,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Validación Pedidos</h2>
+            <h2 class="az-dashboard-title">Autorización Pedidos</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -142,7 +142,7 @@
                                         <th>Fecha creación</th>
                                         <th>Comentarios</th>
                                         <th>Acciones</th>
-                                        <th>Validación</th>
+                                        <th>Autorización</th>
                                     </tr>
                                 </thead>
                             </table>

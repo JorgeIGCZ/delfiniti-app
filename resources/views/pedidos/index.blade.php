@@ -92,7 +92,7 @@
                 { defaultContent: 'estatus_proceso', 'render': function ( data, type, row ) 
                     {
                         if(row.estatusProceso){
-                            return "<p class='paid'>Validado</p>";
+                            return "<p class='paid'>Autorizado</p>";
                         }
                         return "<p class='partial'>Pendiente</p>";
                     }
@@ -221,7 +221,7 @@
                                         <th># Productos</th>
                                         <th>Fecha creación</th>
                                         <th>Comentarios</th>
-                                        <th>Estatus validación</th>
+                                        <th>Estatus autorización</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
