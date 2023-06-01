@@ -112,7 +112,7 @@
                   <a href="{{ url('/pedidos/create') }}" class="nav-link {{url()->current() == url('pedidos/create') ? 'active' : ''}}">Nuevo pedido</a>
                 @endcan
                 @can('TiendaProductosValidacion.index')
-                    <a href="{{ url('/pedidos/validate') }}" class="nav-link {{url()->current() == url('/pedidos/validate') ? 'active' : ''}}">Validar pedidos</a>
+                    <a href="{{ url('/pedidos/validate') }}" class="nav-link {{url()->current() == url('/pedidos/validate') ? 'active' : ''}}">Autorizar pedidos</a>
                 @endcan
               </nav>
             </div>
