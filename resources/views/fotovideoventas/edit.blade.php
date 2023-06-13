@@ -222,6 +222,39 @@
                             <div class="form-group col-6 mt-0 mb-0">
                                 <div class="row">
                                     <div class="col-12 mt-3">
+                                        <strong>Datos del ciente</strong>
+                                    </div>
+                                    <div class="form-group col-6 mt-0 mb-0">
+                                        <label for="nombre" class="col-form-label">Nombre</label>
+                                        <input type="text" name="nombre" class="form-control to-uppercase" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
+                                    </div>
+                                    <div class="form-group col-3 mt-0 mb-0">
+                                        <label for="email" class="col-form-label">Email</label>
+                                        <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="7" value="{{@$venta->email}}">
+                                    </div>
+                                    <div class="form-group col-3 mt-0 mb-0">
+                                        <label for="rfc" class="col-form-label">RFC</label>
+                                        <input type="text" name="rfc" class="form-control to-uppercase" autocomplete="off" tabindex="8" value="{{@$venta->RFC}}">
+                                    </div>
+                                    <div class="form-group col-6 mt-0 mb-0">
+                                        <label for="rfc" class="col-form-label">Dirección</label>
+                                        <input type="text" name="direccion" class="form-control to-uppercase" autocomplete="off" tabindex="9" value="{{@$venta->direccion}}">
+                                    </div>
+                                    <div class="form-group col-6 mt-0 mb-0">
+                                        <label for="origen" class="col-form-label">Lugar de origen</label>
+        
+                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$venta->origen}}"/>
+                                        <datalist id="ciudades">
+                                            @foreach($estados as $estado)
+                                                <option value="{{$estado->nombre}}">
+                                            @endforeach
+                                        </datalist>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-6 mt-0 mb-0">
+                                <div class="row">
+                                    <div class="col-12 mt-3">
                                         <strong>Datos de la venta</strong>
                                     </div>
                                     <div class="form-group col-2 mt-0 mb-0">
@@ -258,39 +291,6 @@
                                     <input type="hidden" name="precio" id="precio" value="0">
                                     {{-- <input type="hidden" name="clave" id="clave" value="0"> --}}
                                     <input type="hidden" name="producto-id" id="producto-id" value="0">
-                                </div>
-                            </div>
-                            <div class="form-group col-6 mt-0 mb-0">
-                                <div class="row">
-                                    <div class="col-12 mt-3">
-                                        <strong>Datos del ciente</strong>
-                                    </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
-                                        <label for="nombre" class="col-form-label">Nombre</label>
-                                        <input type="text" name="nombre" class="form-control to-uppercase" autocomplete="off" tabindex="6" value="{{@$venta->nombre_cliente}}">
-                                    </div>
-                                    <div class="form-group col-3 mt-0 mb-0">
-                                        <label for="email" class="col-form-label">Email</label>
-                                        <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="7" value="{{@$venta->email}}">
-                                    </div>
-                                    <div class="form-group col-3 mt-0 mb-0">
-                                        <label for="rfc" class="col-form-label">RFC</label>
-                                        <input type="text" name="rfc" class="form-control to-uppercase" autocomplete="off" tabindex="8" value="{{@$venta->RFC}}">
-                                    </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
-                                        <label for="rfc" class="col-form-label">Dirección</label>
-                                        <input type="text" name="direccion" class="form-control to-uppercase" autocomplete="off" tabindex="9" value="{{@$venta->direccion}}">
-                                    </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
-                                        <label for="origen" class="col-form-label">Lugar de origen</label>
-        
-                                        <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$venta->origen}}"/>
-                                        <datalist id="ciudades">
-                                            @foreach($estados as $estado)
-                                                <option value="{{$estado->nombre}}">
-                                            @endforeach
-                                        </datalist>
-                                    </div>
                                 </div>
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
