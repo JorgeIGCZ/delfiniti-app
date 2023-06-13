@@ -35,7 +35,7 @@ class TiendaPedidoController extends Controller
      */
     public function create($pedido = [])//(Pedido $pedido)
     {
-        $proveedores = TiendaProveedor::where('estatus',1)->get();
+        $proveedores = TiendaProveedor::where('estatus',1)->orderBy('razon_social','asc')->get();
         $productos = TiendaProducto::where('estatus',1)->get()->toArray();
 
         return view('pedidos.create',['pedido' => $pedido,'proveedores' => $proveedores,'productos' => $productos]);
