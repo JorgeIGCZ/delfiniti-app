@@ -274,10 +274,9 @@ function setTotal() {
     let total = 0;
     const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
     const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
-    const descuento = parseFloat(document.getElementById('descuento').getAttribute('value'));
     const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
 
-    total = parseFloat((subTotal + iva + ieps) - descuento).toFixed(2);
+    total = parseFloat((subTotal + iva + ieps)).toFixed(2);
 
     document.getElementById('total').setAttribute('value', total);
     document.getElementById('total').value = formatter.format(total);
@@ -307,19 +306,11 @@ function getPagos(tipoUsd = 'compra') {
 
     const deposito = parseFloat(document.getElementById('deposito').getAttribute('value'));
 
-    const descuentoCodigo = parseFloat(document.getElementById('descuento-codigo').getAttribute('value'));
-    const cantidadCodigo = (document.getElementById('descuento-codigo').getAttribute('tipo') == 'porcentaje')
-        ? convertPorcentageCantidad(descuentoCodigo)
-        : parseFloat(descuentoCodigo);
-
     const cupon = parseFloat(document.getElementById('cupon').getAttribute('value'));
-
-    const descuentoPersonalizado = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-    const cantidadPersonalizado = calculatePagoPersonalizado(descuentoPersonalizado, cantidadCodigo, cupon); //(document.getElementById('descuento-personalizado').getAttribute('tipo') == 'porcentaje') ? (total*(descuentoPersonalizado/100)) : descuentoPersonalizado;
 
     const anticipo = parseFloat(document.getElementById('anticipo').getAttribute('value'));
 
-    const pagos = (cupon + efectivo + efectivoUsd + tarjeta + deposito + cantidadPersonalizado + cantidadCodigo + anticipo);
+    const pagos = (cupon + efectivo + efectivoUsd + tarjeta + deposito + anticipo);
 
     return parseFloat(pagos);
 }

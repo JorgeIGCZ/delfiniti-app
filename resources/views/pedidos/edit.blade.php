@@ -204,13 +204,6 @@
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="descuento" class="col-form-label"><strong>Descuento:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="descuento" id="descuento" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="ieps" class="col-form-label"><strong>IEPS:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">

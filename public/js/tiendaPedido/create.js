@@ -72,10 +72,9 @@ function setTotal(){
     let total = 0;
     const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
     const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
-    const descuento = parseFloat(document.getElementById('descuento').getAttribute('value'));
     const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
 
-    total = parseFloat((subTotal + iva + ieps) - descuento).toFixed(2);
+    total = parseFloat((subTotal + iva + ieps)).toFixed(2);
 
     document.getElementById('total').setAttribute('value', total);
     document.getElementById('total').value = formatter.format(total);
