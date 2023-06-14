@@ -4,4 +4,5 @@
 @import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
 @import "daterangepicker/daterangepicker.css";
 @import "select2";
-
+@import "filter_multi_select.css";
+@import "main.css";

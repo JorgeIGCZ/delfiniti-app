@@ -5077,6 +5077,8 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 __webpack_require__(/*! ./utils */ "./resources/js/utils.js");
 
+__webpack_require__(/*! ./tabs */ "./resources/js/tabs.js");
+
 
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_0__["default"];
@@ -5150,6 +5152,34 @@ var on = function on(eventName, selector, handler) {
       });
     });
   }, true);
+};
+
+/***/ }),
+
+/***/ "./resources/js/tabs.js":
+/*!******************************!*\
+  !*** ./resources/js/tabs.js ***!
+  \******************************/
+/***/ (() => {
+
+var tabs = document.querySelector(".wrapper");
+var tabButton = document.querySelectorAll(".tab-button");
+var contents = document.querySelectorAll(".content");
+
+tabs.onclick = function (e) {
+  var id = e.target.dataset.id;
+
+  if (id) {
+    tabButton.forEach(function (btn) {
+      btn.classList.remove("active");
+    });
+    e.target.classList.add("active");
+    contents.forEach(function (content) {
+      content.classList.remove("active");
+    });
+    var element = document.getElementById(id);
+    element.classList.add("active");
+  }
 };
 
 /***/ }),

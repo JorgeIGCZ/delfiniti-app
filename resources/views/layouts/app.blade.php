@@ -45,10 +45,8 @@
     <link href="{{asset('assets/lib/typicons.font/typicons.css')}}" rel="stylesheet">
     <link href="{{asset('assets/lib/flag-icon-css/css/flag-icon.min.css')}}" rel="stylesheet">
 
-    <!-- azia CSS -->
-    <link rel="stylesheet" href="{{asset('assets/css/app.css')}}">
+    <!-- MAIN CSS -->
     <link rel="stylesheet" href="{{asset('css/app.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/css/filter_multi_select.css')}}">
     <script>
       const token = () =>{
         return  '{{ csrf_token() }}';
