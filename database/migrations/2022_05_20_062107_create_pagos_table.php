@@ -22,6 +22,7 @@ return new class extends Migration
             $table->float('tipo_cambio_usd')->nullable();
             $table->string('valor')->nullable();
             $table->string('tipo_valor')->nullable();
+            $table->integer('descuento_codigo_id');
             $table->boolean('comision_creada')->default(0);
             $table->timestamps();
         });
