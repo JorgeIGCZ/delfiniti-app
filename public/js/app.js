@@ -5166,21 +5166,23 @@ var tabs = document.querySelector(".wrapper");
 var tabButton = document.querySelectorAll(".tab-button");
 var contents = document.querySelectorAll(".content");
 
-tabs.onclick = function (e) {
-  var id = e.target.dataset.id;
+if (tabs !== null && tabButton !== null && contents !== null) {
+  tabs.onclick = function (e) {
+    var id = e.target.dataset.id;
 
-  if (id) {
-    tabButton.forEach(function (btn) {
-      btn.classList.remove("active");
-    });
-    e.target.classList.add("active");
-    contents.forEach(function (content) {
-      content.classList.remove("active");
-    });
-    var element = document.getElementById(id);
-    element.classList.add("active");
-  }
-};
+    if (id) {
+      tabButton.forEach(function (btn) {
+        btn.classList.remove("active");
+      });
+      e.target.classList.add("active");
+      contents.forEach(function (content) {
+        content.classList.remove("active");
+      });
+      var element = document.getElementById(id);
+      element.classList.add("active");
+    }
+  };
+}
 
 /***/ }),
 
