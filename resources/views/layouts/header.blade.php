@@ -14,7 +14,7 @@
       <div class="az-header-right">
         <!--a href="#" class="az-header-search-link"><i class="fas fa-search"></i></a-->
         <div class="az-header-message">
-          <a href="dashboard" class="nav-link">
+          <a href="/dashboard" class="nav-link">
             <b style="font-size: initial;color: #2aa2b8;">
               @switch(session('modulo'))
                 @case('reservaciones')

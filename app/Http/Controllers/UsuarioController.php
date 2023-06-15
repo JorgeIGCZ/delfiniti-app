@@ -164,6 +164,6 @@ class UsuarioController extends Controller
 
     public function switchModule($modulo){
         session(['modulo' => $modulo]);
-        return redirect()->route("/dashboard")->with(["result" => ""]);
+        return redirect()->route("dashboard")->with(["result" => ""]);
     }
 }
