@@ -43902,6 +43902,7 @@ ul.list-ckeck-soft li::after {
 .col-horario h3{
   align-self: center;
   margin-bottom: 0;
+  font-size: 15px;
 }
 .col-programas{
   overflow: auto;
