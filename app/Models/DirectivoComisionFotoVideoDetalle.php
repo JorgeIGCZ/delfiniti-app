@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ComisionistaCanalDetalle extends Model
+class DirectivoComisionFotoVideoDetalle extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'comisionista_id',
-        'canal_venta_id',
+        'directivo_id',
         'comision',
         'iva',
         'descuento_impuesto'
     ];
     protected $primaryKey = 'id';
-    protected $table = 'comisionista_canal_detalle';
+    protected $table = 'directivo_comisiones_foto_video_detalle';
 }

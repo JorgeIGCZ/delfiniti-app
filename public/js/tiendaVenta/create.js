@@ -88,9 +88,9 @@ function addProductos() {
         resetProductoMeta();
         return false;
     }
-    // if(!isDisponible()){
-    //     return false;
-    // }
+    if(!isDisponible()){
+        return false;
+    }
     addProducto();
     resetProductoMeta();
     // enableBtn('reservar', productosArray.length > 0);

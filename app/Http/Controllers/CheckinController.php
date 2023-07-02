@@ -114,7 +114,7 @@ class CheckinController extends Controller
             $Alojamiento->check_in = $request->estatus;
             $Alojamiento->save();
 
-            $comisiones->setComisiones($id,$fechaComisiones);
+            $comisiones->setComisionesReservacion($id,$fechaComisiones);
         } catch (\Exception $e){
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
@@ -134,7 +134,7 @@ class CheckinController extends Controller
             $reservacion           = Reservacion::find($reservacion['id']);
             $reservacion->check_in = 1;
             $reservacion->save();
-            $comisiones->setComisiones($reservacion['id'],$fechaComisiones);
+            $comisiones->setComisionesReservacion($reservacion['id'],$fechaComisiones);
         }
     }
 

@@ -137,6 +137,16 @@
                                             </td>
                                         </tr>
                                     @endforeach
+                                    {{-- DIRECTIVO --}}
+                                    <tr class="directivo">
+                                        <td><b>DIRECTIVOS VENTAS</b></td>
+                                        <td>
+                                            <input type="text" step="0.01" name="directivo_comision" class="canal_comision form-control percentage" value="{{$directivoComisioneActividadDetalle->comision ?? 0}}">
+                                        </td>
+                                        <td>
+                                            <input type="text" step="0.01" name="directivo_descuento_impuesto" class="canal_comision form-control percentage" value="{{$directivoComisioneActividadDetalle->descuento_impuesto ?? 0}}">  
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                             <div class="col-12">

@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Actividad;
 use App\Models\ActividadHorario;
-use Illuminate\Http\Request;
-use App\Classes\CustomErrorHandler;
 use App\Models\ActividadComisionDetalle;
 use App\Models\CanalVenta;
 use App\Models\ReservacionDetalle;
+use App\Classes\CustomErrorHandler;
+use App\Models\DirectivoComisionReservacionActividadDetalle;
+use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -73,7 +74,8 @@ class ActividadController extends Controller
             ) > 0){
                 return json_encode(['result' => 'Error','message' => 'La clave ya se encuentra registrada.']);
             }
-
+            
+            DB::beginTransaction();
             $actividad = Actividad::create([
                 'clave'           => $request->clave,
                 'nombre'          => mb_strtoupper($request->nombre),
@@ -97,7 +99,9 @@ class ActividadController extends Controller
             if($request->comisionesEspeciales){
                 $this->createComisionistaActividadDetalle($actividad['id'],$request);
             }
+            DB::commit();
         } catch (\Exception $e){
+            DB::rollBack();
             $CustomErrorHandler = new CustomErrorHandler();
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
@@ -106,7 +110,7 @@ class ActividadController extends Controller
     }
 
     private function createComisionistaActividadDetalle($actividadId,$request){
-        foreach($request->comisionesSobreActividades as $key => $comisionSobreActividades){
+        foreach($request->comisionesSobreActividades['canales_comisiones'] as $key => $comisionSobreActividades){
             ActividadComisionDetalle::create([
                 'actividad_id'       => $actividadId,
                 'canal_venta_id'     => $key,
@@ -114,6 +118,12 @@ class ActividadController extends Controller
                 'descuento_impuesto' => $comisionSobreActividades['descuento_impuesto']
             ]);
         }
+
+        DirectivoComisionReservacionActividadDetalle::create([
+            'actividad_id'       => $actividadId,
+            'comision'           => $request->comisionesSobreActividades['directivo_comisiones']['comision'],
+            'descuento_impuesto' => $request->comisionesSobreActividades['directivo_comisiones']['descuento_impuesto']
+        ]);
     }
 
     /**
@@ -142,7 +152,16 @@ class ActividadController extends Controller
         $canales = CanalVenta::get();
         $comisionesPersonalizadas = ActividadComisionDetalle::where('actividad_id',$actividad['id'])->get();
         $actividadHorarios = ActividadHorario::where('actividad_id',$actividad['id'])->where('estatus',1)->orderBy('horario_inicial', 'asc')->get();
-        return view('actividades.edit',['actividad' => $actividad,'actividadHorarios' => $actividadHorarios,'comisionesPersonalizadas' => $comisionesPersonalizadas,'canales' => $canales]);
+
+        $directivoComisionesReservacionActividadDetalle = DirectivoComisionReservacionActividadDetalle::where('actividad_id',$actividad['id'])->first();
+        
+        return view('actividades.edit',[
+            'actividad' => $actividad,
+            'actividadHorarios' => $actividadHorarios,
+            'comisionesPersonalizadas' => $comisionesPersonalizadas,
+            'canales' => $canales,
+            'directivoComisioneActividadDetalle' => $directivoComisionesReservacionActividadDetalle
+        ]);
     }
 
     /**
@@ -197,6 +216,15 @@ class ActividadController extends Controller
                         ]);
                     }
                 }
+            }
+
+            DirectivoComisionReservacionActividadDetalle::where('actividad_id',$id)->delete();
+            if(isset($request->directivo_comision) || isset($request->directivo_descuento_impuesto)){
+                DirectivoComisionReservacionActividadDetalle::create([
+                    'actividad_id'          => $id,
+                    'comision'              => floatval(str_replace('%', '', $request->directivo_comision)),
+                    'descuento_impuesto'    => floatval(str_replace('%', '', $request->directivo_descuento_impuesto))
+                ]);
             }
             
         } catch (\Exception $e){

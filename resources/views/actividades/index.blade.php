@@ -46,7 +46,7 @@
                 })
             });
         }
-        function getComisionesSobreActividades(){
+        function getComisionesSobreActividades(actividades){
             let comisionesSobreActividades = [];
             $('.canales').each(function(index, value) {
                 comisionesSobreActividades = {...comisionesSobreActividades,[$(value).attr('canalId')] :
@@ -57,10 +57,18 @@
                     };
             });
 
-            return comisionesSobreActividades;
+            const directivoComisiones = {
+                'comision'          : actividades.elements['directivo_comision'].getAttribute('value'),
+                'descuento_impuesto' : actividades.elements['directivo_descuento_impuesto'].getAttribute('value')
+            }
+
+            return {
+                'directivo_comisiones' : directivoComisiones,
+                'canales_comisiones' : comisionesSobreActividades
+            };
         }
         function createActividad(actividades){
-            const comisionesSobreActividades = getComisionesSobreActividades();
+            const comisionesSobreActividades = getComisionesSobreActividades(actividades);
 
             let horario_inicial = [],
                 horario_final   = [];
@@ -353,6 +361,17 @@
                                                 </td>
                                             </tr>
                                         @endforeach
+
+                                        {{-- DIRECTIVO --}}
+                                        <tr class="directivo">
+                                            <td><b>DIRECTIVOS VENTAS</b></td>
+                                            <td>
+                                                <input type="text" step="0.01" name="directivo_comision" class="directivo_comision form-control percentage">
+                                            </td>
+                                            <td>
+                                                <input type="text" step="0.01" name="directivo_descuento_impuesto" class="directivo_descuento_impuesto form-control percentage">  
+                                            </td>
+                                        </tr>
                                     </table>
                                 </div>
 

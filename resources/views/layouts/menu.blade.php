@@ -163,31 +163,29 @@
         <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
         <div class="az-menu-sub az-menu-sub-mega">
           <div class="container">
-            @if(session('modulo') == 'tienda' || session('modulo') == 'reservaciones' || session('modulo') == 'fotovideo')
-              <div>
-                <nav class="nav">
-                  <span>General</span>
-
-                  @can('Usuarios.index')
-                    <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
-                  @endcan
-
-                  @can('Usuarios.Roles.index')
-                    <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
-                  @endcan
-
-                  @can('TipoCambio.index')
-                    <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
-                  @endcan
-                  
-                  @if(session('modulo') == 'tienda')
-                    {{-- @can('TipoCambio.index') --}}
-                      <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos</a>
-                    {{-- @endcans --}}
-                  @endif
-                </nav>
-              </div>
-            @endif
+            <div>
+              <nav class="nav">
+                <span>General</span>
+                @can('Usuarios.index')
+                  <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
+                @endcan
+                @can('Usuarios.Roles.index')
+                  <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
+                @endcan
+                @can('TipoCambio.index')
+                  <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
+                @endcan
+                @can('Directivos.index')
+                  <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
+                @endcan
+                
+                @if(session('modulo') == 'tienda')
+                  {{-- @can('TipoCambio.index') --}}
+                    <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos</a>
+                  {{-- @endcans --}}
+                @endif
+              </nav>
+            </div>
             <div>
               <nav class="nav">
                 <span>Catálogos</span>

@@ -216,14 +216,13 @@ class ReservacionController extends Controller
             $reservacion->folio = str_pad($reservacion['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
             $reservacion->save();
 
-            DB::commit();
-
-
             $this->setEstatusPago($reservacion['id']);
 
             $reservacion = Reservacion::find($reservacion['id']);
 
             $checkin->setCheckin($reservacion);
+
+            DB::commit();
 
             // $comisiones     = new ComisionController();
             // $comisiones->setComisiones($reservacion['id']);

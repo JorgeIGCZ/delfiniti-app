@@ -17,6 +17,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ImprimirController;
 use App\Http\Controllers\DescuentoCodigoController;
+use App\Http\Controllers\DirectivoController;
 use App\Http\Controllers\FotoVideoComisionController;
 use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
@@ -133,6 +134,16 @@ Route::controller(CanalVentaController::class)->middleware(['auth'])->group(func
     Route::resource('canalesventa',CanalVentaController::class, [
         'parameters' => [
             'canalesventa' => 'canalVenta'
+        ]
+    ]);
+});
+
+Route::controller(DirectivoController::class)->middleware(['auth'])->group(function () {
+    Route::get('directivos/show/{directivo?}', 'show');
+    Route::patch('directivos/estatus/{directivo}', 'updateEstatus');
+    Route::resource('directivos',DirectivoController::class, [
+        'parameters' => [
+            'directivos' => 'directivo'
         ]
     ]);
 });

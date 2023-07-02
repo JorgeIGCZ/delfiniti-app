@@ -13,13 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('directivo_canal_detalle', function (Blueprint $table) {
+        Schema::create('directivo_comisiones_foto_video', function (Blueprint $table) {
             $table->id();
             $table->integer('directivo_id');
-            $table->integer('canal_venta_id');
-            $table->float('comision')->default(0)->comment('Solo porcentaje');
+            $table->integer('venta_id');
+            $table->float('pago_total')->default(0);
+            $table->float('pago_total_sin_iva')->default(0);
+            $table->float('cantidad_comision_bruta')->default(0);
             $table->float('iva')->default(0);
             $table->float('descuento_impuesto')->default(0);
+            $table->float('cantidad_comision_neta')->default(0);
+            $table->boolean('estatus')->default(0);
             $table->timestamps();
         });
     }
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('directivo_canal_detalle');
+        Schema::dropIfExists('directivo_comisiones_foto_video');
     }
 };

@@ -64,6 +64,16 @@ class Reservacion extends Model
         return $this->hasOne(Comisionista::class,'id','comisionista_id');
     }
 
+    public function comisionesDirectivos()
+    {
+        return $this->hasMany(DirectivoComisionReservacion::class,'reservacion_id');
+    }
+
+    public function directivo()
+    {
+        return $this->hasOne(Directivo::class,'id','directivo_id');
+    }
+
     public function usuario()
     {
         return $this->hasOne(User::class,'id','usuario_id');

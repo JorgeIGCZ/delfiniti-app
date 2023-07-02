@@ -64,33 +64,6 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="form-group col-12 mt-3 comisiones-sobre-canales" style="display: none;">
-                                <strong>
-                                    Comisiones sobre canales
-                                </strong>
-                                <table class="mt-3">
-                                    <tr>
-                                        <th>Canal de venta</th>
-                                        <th>Comisión %</th>
-                                        <th>Iva %</th>
-                                        <th>Descuentro por imp. %</th>
-                                    </tr>
-                                    @foreach($comisionistaGeneralTipos as $key => $comisionistaGeneralTipo)
-                                        <tr tipoid="{{$comisionistaGeneralTipo->id}}" class="tipo_comisiones">
-                                            <td>{{$comisionistaGeneralTipo->nombre}}</td>
-                                            <td>
-                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][comision]" class="tipo_comision form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->comision}}">  
-                                            </td>
-                                            <td>
-                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][iva]" class="tipo_iva form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->iva}}">  
-                                            </td>
-                                            <td>
-                                                <input type="number" step="0.01" name="comisionista_canal_detalles[{{$key}}][{{$comisionistaGeneralTipo->id}}][descuento_impuesto]" class="tipo_descuento_impuesto form-control" value="{{@$comisionista->comisionistaCanalDetalle->groupBy('canal_venta_id')[$comisionistaGeneralTipo->id][0]->descuento_impuesto}}">  
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </table>
-                            </div>
 
                             <div class="form-group col-12 mt-3 comisiones-sobre-actividades" style="display: none;">
                                 <strong>
