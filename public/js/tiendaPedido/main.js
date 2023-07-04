@@ -16,7 +16,9 @@ if(agregarProducto !== null){
     agregarProducto.addEventListener('click', (event) =>{
         event.preventDefault();
         if(productoIsValid()){
-            addProductos();
+            validateProductos();
+            addProducto();
+            resetProductoMeta();
             validateBotonGuardar();
         }
     });
@@ -156,13 +158,14 @@ function addProducto(){
     const cantidad = document.getElementById('cantidad').value;
     const costo = document.getElementById('costo').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
+    const totalCosto = costo * cantidad;
 
     productosTable.row.add([
         claveProducto,
         productoDetalle,
         cantidad,
         costo,
-        costo * cantidad,
+        totalCosto.toFixed(2),
         acciones
     ])
         .draw(false);
@@ -319,7 +322,7 @@ async function validateUsuario($password){
     return (result.data.result == 'Autorized') ? true : false;
 }
 
-function addProductos() {
+function validateProductos() {
     const codigoProducto = document.getElementById('codigo').value;
 
     if (isProductoDuplicado({'codigoProducto': codigoProducto})) {
@@ -335,8 +338,6 @@ function addProductos() {
     // if(!isDisponible()){
     //     return false;
     // }
-    addProducto();
-    resetProductoMeta()
     // enableBtn('reservar', productosArray.length > 0);
 }
 
@@ -427,7 +428,9 @@ $('body').on('keydown', 'input, select, button', function(e) {
 
         if($(this).attr("id") == "cantidad"){
             if(productoIsValid()){
-                addProductos();
+                validateProductos();
+                addProducto();
+                resetProductoMeta();
                 validateBotonGuardar();
                 $('#codigo').focus();
                 return false;

@@ -147,6 +147,7 @@ function addActividad(){
     const precio = document.getElementById('precio').value;
     const horario = document.getElementById('horarios').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
+    const totalPrecio = precio * cantidad;
 
     reservacionesTable.row.add([
         claveActividad,
@@ -154,7 +155,7 @@ function addActividad(){
         horarioDetalle,
         cantidad,
         precio,
-        precio * cantidad,
+        totalPrecio.toFixed(2),
         acciones
     ]).draw(false);
 

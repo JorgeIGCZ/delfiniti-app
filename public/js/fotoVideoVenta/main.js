@@ -87,13 +87,14 @@ function addProducto(){
     const cantidad = document.getElementById('cantidad').value;
     const precio = document.getElementById('precio').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
+    const totalPrecio = precio * cantidad;
 
     ventasTable.row.add([
         claveProducto,
         productoDetalle,
         cantidad,
         precio,
-        precio * cantidad,
+        totalPrecio.toFixed(2),
         acciones
     ])
         .draw(false);
