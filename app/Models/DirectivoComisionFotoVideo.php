@@ -21,4 +21,14 @@ class DirectivoComisionFotoVideo extends Model
     ];
     protected $primaryKey = 'id';
     protected $table = 'directivo_comisiones_foto_video';
+
+    public function venta()
+    {
+        return $this->belongsTo(FotoVideoVenta::class,'venta_id');
+    }
+
+    public function directivo()
+    {
+        return $this->belongsTo(Directivo::class,'directivo_id');
+    }
 }
