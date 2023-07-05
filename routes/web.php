@@ -23,6 +23,7 @@ use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\ReservacionTicketController;
+use App\Http\Controllers\TiendaComisionController;
 use App\Http\Controllers\TiendaImpuestoController;
 use App\Http\Controllers\TiendaInventarioController;
 use App\Http\Controllers\TiendaPedidoController;
@@ -280,6 +281,18 @@ Route::controller(TiendaImpuestoController::class)->middleware(['auth'])->group(
     Route::resource('impuestos',TiendaImpuestoController::class, [
         'parameters' => [
             'impuestos' => 'impuesto'
+        ]
+    ]);
+});
+
+
+Route::controller(TiendaComisionController::class)->middleware(['auth'])->group(function () {
+    Route::post('tiendacomisiones/recalculateComisiones', 'recalculateComisiones');
+    Route::post('tiendacomisiones/show/{comision?}', 'show');
+    Route::patch('tiendacomisiones/estatus/{comision}', 'updateComisiones');
+    Route::resource('tiendacomisiones',TiendaComisionController::class, [
+        'parameters' => [
+            'tiendacomisiones' => 'tiendacomision'
         ]
     ]);
 });

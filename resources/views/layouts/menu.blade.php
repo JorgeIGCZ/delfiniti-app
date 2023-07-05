@@ -118,6 +118,12 @@
             </div>
           </li>
         @endcan
+
+        @can('TiendaComisiones.index')
+          <li class="nav-item {{url()->current() == url('tiendacomisiones') ? 'active' : ''}}">
+            <a href="{{ url('tiendacomisiones') }}" class="nav-link"><i class="typcn typcn-group-outline"></i> Comisiones</a>
+          </li>
+        @endcan
       @endif
 
       @if(session('modulo') == 'fotovideo')

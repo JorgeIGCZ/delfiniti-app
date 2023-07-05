@@ -119,6 +119,10 @@
                 'TiendaProductosValidacion.index'  : roles.elements['TiendaProductosValidacion.index' ].checked,
                 'TiendaProductosValidacion.update' : roles.elements['TiendaProductosValidacion.update'].checked,
 
+                'TiendaComisiones.index'    : roles.elements['TiendaComisiones.index'      ].checked,
+                'TiendaComisiones.create'   : roles.elements['TiendaComisiones.create'     ].checked,
+                'TiendaComisiones.update'   : roles.elements['TiendaComisiones.update'     ].checked,
+
                 'SeccionFotoVideo.index'      : roles.elements['SeccionFotoVideo.index'        ].checked,
 
                 'FotoVideoVentas.index'       : roles.elements['FotoVideoVentas.index'         ].checked,
@@ -664,6 +668,30 @@
                                 <div class="checkbox checkbox-primary">
                                     <input name="TiendaProductosValidacion.update" type="checkbox" >
                                     <label for="TiendaProductosValidacion.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-2">
+                                <strong>Comisiones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaComisiones.index" type="checkbox" >
+                                    <label for="TiendaComisiones.index">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                <input name="TiendaComisiones.create" type="checkbox" >
+                                <label for="TiendaComisiones.create">
+                                    Crear 
+                                </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaComisiones.update" type="checkbox" >
+                                    <label for="TiendaComisiones.update">
                                         Modificar 
                                     </label>
                                 </div>

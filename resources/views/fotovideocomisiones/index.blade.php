@@ -88,8 +88,10 @@
                                 // }
                             //}
                             if(row.estatus == 1){
-                                estatusRow = `<a href="fotovideocomisiones/${row.id}/edit">Editar</a>`;
-                                recalcular = `| <a href="#!" class="recalcular-comisiones" ventaFolio="${row.venta}" ventaId="${row.ventaId}">Recalcular</a>`;
+                                if(row.tipo === 'comisionista'){
+                                    estatusRow = `<a href="fotovideocomisiones/${row.id}/edit">Editar</a> | `;
+                                }
+                                recalcular = `<a href="#!" class="recalcular-comisiones" ventaFolio="${row.venta}" ventaId="${row.ventaId}">Recalcular</a>`;
                                 //comisiones/recalculateComisiones
                             }
  

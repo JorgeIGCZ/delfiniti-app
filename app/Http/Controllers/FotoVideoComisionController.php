@@ -41,6 +41,7 @@ class FotoVideoComisionController extends Controller
             }
 
             FotoVideoComision::where('venta_id',$request->ventaId)->delete(); 
+            DirectivoComisionFotoVideo::where('venta_id',$request->ventaId)->delete(); 
 
             $pagos = FotoVideoVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
@@ -279,7 +280,8 @@ class FotoVideoComisionController extends Controller
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
-                    'estatus'           => $comision->estatus
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'comisionista'
                 ];
             }
 
@@ -301,7 +303,8 @@ class FotoVideoComisionController extends Controller
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
-                    'estatus'           => $comision->estatus
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'directivo'
                 ];
             }
 
@@ -356,3 +359,4 @@ class FotoVideoComisionController extends Controller
         //
     }
 }
+ 

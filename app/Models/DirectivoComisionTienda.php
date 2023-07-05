@@ -21,4 +21,14 @@ class DirectivoComisionTienda extends Model
     ];
     protected $primaryKey = 'id';
     protected $table = 'directivo_comisiones_tienda';
+
+    public function venta()
+    {
+        return $this->belongsTo(TiendaVenta::class,'venta_id');
+    }
+
+    public function directivo()
+    {
+        return $this->belongsTo(Directivo::class,'directivo_id');
+    }
 }

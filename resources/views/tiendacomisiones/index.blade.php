@@ -14,12 +14,12 @@
             const descuentocodigosTable = new DataTable('#comisiones', {
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
-                    const reservaciones = document.getElementById('reservaciones-form');
-                    axios.post('/comisiones/show',{
+                    const ventas = document.getElementById('ventas-form');
+                    axios.post('/tiendacomisiones/show',{
                         '_token'  : '{{ csrf_token() }}',
-                        "fecha"   : reservaciones.elements['fecha'].value,
-                        "fechaInicio"  : reservaciones.elements['start_date'].value,
-                        "fechaFinal"  : reservaciones.elements['end_date'].value
+                        "fecha"   : ventas.elements['fecha'].value,
+                        "fechaInicio"  : ventas.elements['start_date'].value,
+                        "fechaFinal"  : ventas.elements['end_date'].value
                     })
                     .then(function (response) {
                         $('.loader').hide();
@@ -33,8 +33,7 @@
                 columns: [
                     { data: 'id' },
                     { data: 'comisionista' },
-                    { data: 'tipo' },
-                    { data: 'reservacion' },
+                    { data: 'venta' },
                     { defaultContent: 'total', 'render': function ( data, type, row ) 
                         {
                             
@@ -69,7 +68,7 @@
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus == 1){
-                                return 'Cobrado (pendiente pago)';
+                                return 'Cobrado';
                             }else if(row.estatus == 2){
                                 return 'Pagado';
                             }
@@ -89,16 +88,12 @@
                                 // }
                             //}
                             if(row.estatus == 1){
-                                if(row.tipo === 'comisionista'){
-                                    estatusRow = `<a href="comisiones/${row.id}/edit">Editar</a> | `;
-                                }
-                                recalcular = `<a href="#!" class="recalcular-comisiones" reservacionFolio="${row.reservacion}" reservacionId="${row.reservacionId}">Recalcular</a>`;
+                                recalcular = `<a href="#!" class="recalcular-comisiones" ventaFolio="${row.venta}" ventaId="${row.ventaId}">Recalcular</a>`;
                                 //comisiones/recalculateComisiones
                             }
  
                             @can('Comisiones.update')
                                 view    =   `<small> 
-                                        ${estatusRow}
                                         ${recalcular}
                                     </small>`;
                             @endcan
@@ -107,7 +102,7 @@
                     }
                 ]
             } );
-            document.getElementById('fecha_reservacion').addEventListener('change', (event) =>{
+            document.getElementById('fecha_venta').addEventListener('change', (event) =>{
                 const seleccion = event.target.value;
                 const rangoFecha = document.getElementById('rango-fecha');
 
@@ -132,11 +127,11 @@
             });
 
             on("click", ".recalcular-comisiones", function(event) {
-                const reservacionFolio = this.getAttribute("reservacionFolio");
-                const reservacionId = this.getAttribute("reservacionId");
+                const ventaFolio = this.getAttribute("ventaFolio");
+                const ventaId = this.getAttribute("ventaId");
                 Swal.fire({
                     title: '¿Recalcular comisiones?',
-                    text: `Todas las comisiones serán recalculadas para la reservacion ${reservacionFolio}, ¿desea proceder?`,
+                    text: `Todas las comisiones serán recalculadas para la venta ${ventaFolio}, ¿desea proceder?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#17a2b8',
@@ -144,16 +139,16 @@
                     confirmButtonText: 'Sí, recalcular!'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        recalculateComisiones(reservacionId)
+                        recalculateComisiones(ventaId)
                     }
                 })
             });
 
-            function recalculateComisiones(reservacionId){
+            function recalculateComisiones(ventaId){
                 $('.loader').show();
-                axios.post('/comisiones/recalculateComisiones', {
+                axios.post('/tiendacomisiones/recalculateComisiones', {
                     '_token': token(),
-                    'reservacionId': reservacionId
+                    'ventaId': ventaId
                 })
                 .then(function (response) {
                     $('.loader').hide();
@@ -205,10 +200,10 @@
 
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
-             <form class="row g-3 align-items-center f-auto" id="reservaciones-form" method="GET">
+             <form class="row g-3 align-items-center f-auto" id="ventas-form" method="GET">
                 <div class="form-group col-md-2">
                     <label for="fecha">Fecha</label>
-                    <select class="form-control fecha" name="fecha" id="fecha_reservacion">
+                    <select class="form-control fecha" name="fecha" id="fecha_venta">
                         <option value="dia" selected="selected">Día Actual</option>
                         <option value="mes">Mes Actual</option>
                         <option value="custom">Rango</option>
@@ -232,7 +227,6 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Comisionista</th>
-                                        <th>Canal</th>
                                         <th>Reservación</th>
                                         <th>Total</th>
                                         <th>Iva</th>

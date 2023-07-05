@@ -16,7 +16,8 @@ class TiendaVentaPago extends Model
         'tipo_pago_id',
         'tipo_cambio_usd',
         'valor',
-        'tipo_valor'
+        'tipo_valor',
+        'comision_creada'
     ];
     protected $primaryKey = 'id'; 
 

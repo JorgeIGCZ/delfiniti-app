@@ -196,9 +196,9 @@ class TiendaVentaController extends Controller
 
             $this->setEstatusPago($venta['id']);
 
-            // $checkin->setCheckin($venta);
-            // $comisiones     = new ComisionController();
-            // $comisiones->setComisiones($venta['id']);
+            $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+            $comisiones     = new TiendaComisionController();
+            $comisiones->setComisiones($venta['id'], $fechaComisiones);
 
             return json_encode(
                 [
@@ -534,9 +534,9 @@ class TiendaVentaController extends Controller
 
             $this->setEstatusPago($venta['id']);
 
-            // $checkin->setCheckin($venta);
-            // $comisiones     = new ComisionController();
-            // $comisiones->setComisiones($venta['id']);
+            $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+            $comisiones     = new TiendaComisionController();
+            $comisiones->setComisiones($venta['id'], $fechaComisiones);
 
             return json_encode(
                 [

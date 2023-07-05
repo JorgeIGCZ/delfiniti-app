@@ -478,7 +478,8 @@ class ComisionController extends Controller
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
-                    'estatus'           => $comision->estatus
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'comisionista'
                 ];
             }
             
@@ -502,7 +503,8 @@ class ComisionController extends Controller
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
-                    'estatus'           => $comision->estatus
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'directivo'
                 ];
             }
             return json_encode(['data' => $comisionesArray]);
