@@ -24,16 +24,20 @@ class DisponibilidadApiController extends Controller
         //    })->get()->groupBy('horario_inicial');
 
         $actividades = Actividad::with(['horarios' => function ($query) {
-            $query->where('estatus',1);
+            $query->where('estatus',1)
+            ->orderBy('horario_inicial', 'ASC');
         }])->whereRaw('NOW() >= fecha_inicial')
             ->whereRaw('NOW() <= fecha_final')
             ->orWhere('duracion','indefinido')
-            ->whereRaw('estatus = 1')->get(); 
+            ->whereRaw('estatus = 1')
+            ->orderBy('nombre', 'ASC')
+            ->get(); 
         
         $actividadesHorarios = [];
         foreach ($actividades as $key => $value) {
             $actividadesHorarios[] = ['actividad'=>$value,'horarios'=>$value->horarios];
         }
+        
         return response()->json([
             'status' => true,
             'message' => "Success",
