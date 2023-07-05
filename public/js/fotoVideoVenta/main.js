@@ -258,6 +258,19 @@ function cantidadProductosIsValid() {
     return true;
 }
 
+function fotografoIsValid() {
+    const fotografo = document.getElementById('fotografo');
+    if(fotografo.value === '0'){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Es necesario agregar fotografo!`
+        });
+        fotografo.focus()
+        return false;
+    }
+    return true;
+}
+
 function cambioValidoIsValid(){
     if(getCambio() > 0){
         Swal.fire({

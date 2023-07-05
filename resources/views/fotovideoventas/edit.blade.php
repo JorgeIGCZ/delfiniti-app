@@ -348,7 +348,7 @@
 
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="fotografo" class="col-form-label">Fotógrafo</label>
-                                                <select name="fotografo" id="fotografo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                <select name="fotografo" id="fotografo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12" required="required">
                                                     <option value='0' selected="true">Seleccionar fotógrafo</option>
                                                     @foreach($fotografos as $fotografo)
                                                         <option value="{{$fotografo->id}}" {{$venta->comisionista_id === $fotografo->id ? 'selected="selected"' : ""}}>{{$fotografo->nombre}}</option>

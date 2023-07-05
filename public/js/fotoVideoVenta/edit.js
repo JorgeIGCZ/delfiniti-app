@@ -24,7 +24,7 @@ if(actualizarEstatusVenta !== null){
 if(actualizar !== null){
     actualizar.addEventListener('click', (event) => {
         event.preventDefault();
-        if (formValidity('venta-form')) {
+        if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid() && fotografoIsValid()) {
             updateVenta('actualizar');
         }
     });

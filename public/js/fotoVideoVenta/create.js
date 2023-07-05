@@ -2,7 +2,7 @@ let productosArray = [];
 
 document.getElementById('pagar').addEventListener('click', (event) => {
     validateFecha();
-    if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid()) {
+    if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid() && fotografoIsValid()) {
         createVenta('pagar');
     }
 });
@@ -33,7 +33,7 @@ function createVenta(estatus) {
         'total': venta.elements['total'].getAttribute('value'),
         'fecha': venta.elements['fecha'].value,
         'pagos': pagos, 
-        'comisionista': venta.elements['comisionista'].value,
+        'fotografo': venta.elements['fotografo'].value,
         'usuario': venta.elements['usuario'].value,
         'descuentoPersonalizado': {
             'cantidad': calculatePagoPersonalizado(descuentoPersonalizadoCantidad),

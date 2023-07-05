@@ -49,12 +49,12 @@ class FotoVideoVentaController extends Controller
     {
         $productos     = FotoVideoProducto::where('estatus',1)->get()->toArray();
         $estados       = Estado::all();
-        $comisionistas = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
+        $fotografos = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
 
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
-        return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados, 'comisionistas' => $comisionistas,'dolarPrecio' => $dolarPrecio]);
+        return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados, 'fotografos' => $fotografos,'dolarPrecio' => $dolarPrecio]);
     }
 
     public function getDescuentoPersonalizadoValidacion(Request $request){
@@ -100,7 +100,7 @@ class FotoVideoVentaController extends Controller
                 'fecha'          => $request->fecha,
                 'fecha_creacion' => date('Y-m-d'),
                 'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0,
-                'comisionista_id'=> is_numeric($request->comisionista) ? $request->comisionista : 0,
+                'comisionista_id'=> is_numeric($request->fotografo) ? $request->fotografo : 0,
                 'comentarios'    => mb_strtoupper($request->comentarios)
             ]);
 
