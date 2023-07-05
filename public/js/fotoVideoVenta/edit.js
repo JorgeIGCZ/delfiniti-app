@@ -187,7 +187,7 @@ function updateVenta(estatus) {
         'total': venta.elements['total'].getAttribute('value'),
         'fecha': venta.elements['fecha'].value,
         'pagos': estatus === 'pagar' ? pagos : {},
-        'comisionista': venta.elements['comisionista'].value,
+        'fotografo': venta.elements['fotografo'].value,
         'usuario': venta.elements['usuario'].value,
         'comentarios': venta.elements['comentarios'].value,
         'estatus': estatus,

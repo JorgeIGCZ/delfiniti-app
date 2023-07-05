@@ -341,7 +341,7 @@ class FotoVideoVentaController extends Controller
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
-        $comisionistas = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
+        $fotografos = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
         // $tickets           = VentaTicket::where('venta_id',$venta->id)->get();
         // return view('ventas.edit');
         return view('fotovideoventas.edit',[
@@ -349,7 +349,7 @@ class FotoVideoVentaController extends Controller
             'productos' => $productos,
             'estados' => $estados,
             'dolarPrecio' => $dolarPrecio,
-            'comisionistas' => $comisionistas,
+            'fotografos' => $fotografos,
             'tickets' => []//$tickets
         ]);
     }
@@ -449,7 +449,7 @@ class FotoVideoVentaController extends Controller
             $venta->origen          = mb_strtoupper($request->origen);
             $venta->RFC             = mb_strtoupper($request->rfc);
             $venta->fecha           = $request->fecha;
-            $venta->comisionista_id = is_numeric($request->comisionista) ? $request->comisionista : 0;
+            $venta->comisionista_id = is_numeric($request->fotografo) ? $request->fotografo : 0;
             $venta->comentarios     = mb_strtoupper($request->comentarios);
             if($pagar){
                 $venta->estatus_pago = 1;
