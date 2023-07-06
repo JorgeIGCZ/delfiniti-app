@@ -30,4 +30,8 @@ class TiendaProducto extends Model
     {
         return $this->hasMany(TiendaProductoImpuesto::class,'producto_id');
     }
+    public function proveedor()
+    {
+        return $this->hasOne(TiendaProveedor::class,'id','proveedor_id');
+    }
 }

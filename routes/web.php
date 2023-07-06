@@ -232,7 +232,7 @@ Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(fun
 });
 
 Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(function () {
-    Route::get('productos/show/{producto?}', 'show');
+    Route::post('productos/get/{producto?}', 'get');
     // Route::get('productos/inventario/{producto?}', 'editInventario');
     // Route::patch('productos/inventario/{producto?}', 'updateInventario')->name('productos.inventario');
     Route::patch('productos/estatus/{producto}', 'updateEstatus');
@@ -245,6 +245,7 @@ Route::controller(TiendaProductoController::class)->middleware(['auth'])->group(
 });
 
 Route::controller(TiendaInventarioController::class)->middleware(['auth'])->group(function () {
+    Route::post('inventario/getMovimientosInventario/{producto?}', 'getMovimientosInventario');
     Route::resource('inventario',TiendaInventarioController::class, [
         'parameters' => [
             'productos' => 'producto'

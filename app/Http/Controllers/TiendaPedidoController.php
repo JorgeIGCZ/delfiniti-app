@@ -54,8 +54,8 @@ class TiendaPedidoController extends Controller
             $pedido = TiendaPedido::create([
                 'proveedor_id'  => mb_strtoupper($request->proveedor),
                 'comentarios'   => mb_strtoupper($request->comentarios),
-                'fecha'           => $request->fecha,
-                'fecha_creacion'  => date('Y-m-d') 
+                'fecha_pedido'  => $request->fecha,
+                'fecha_autorizacion' => null
             ]);
 
             foreach($request->pedidoProductos as $pedidoProducto){
@@ -86,7 +86,7 @@ class TiendaPedidoController extends Controller
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
     }
-
+ 
 	public function validatePedido(){
         return view('pedidos.validate');
 	}
@@ -96,10 +96,19 @@ class TiendaPedidoController extends Controller
             DB::beginTransaction();
 
             $Productos = new TiendaProductoController();
+            $Inventario = new TiendaInventarioController();
             $pedido = TiendaPedido::find($id);
 
             foreach($pedido->pedidoDetalle as $pedidoDetalle){
                 $Productos->updateFechaMovimientoStock($pedidoDetalle->producto_id, 'ultima_entrada');
+
+                $Inventario->setMovimientoInventario([
+                    'producto_id' => $pedidoDetalle->producto_id,
+                    'movimiento' => "Pedido",
+                    'cantidad' => $pedidoDetalle->cantidad,
+                    'usuario_id' => auth()->user()->id,
+                    'comentarios' => "PedidoId: {$id}"
+                ]);
 
                 $producto          = TiendaProducto::find($pedidoDetalle->producto_id);
                 $producto->stock   = $producto->stock + $pedidoDetalle->cantidad;
@@ -107,6 +116,7 @@ class TiendaPedidoController extends Controller
             }
 
             $pedido->estatus_proceso = 1;
+            $pedido->fecha_autorizacion = Carbon::now()->format('Y-m-d H:i:m');
             $pedido->save();   
 
             DB::commit();
@@ -160,7 +170,7 @@ class TiendaPedidoController extends Controller
        if($request->view === "validate"){
             $pedidos = $pedidos->where("estatus_proceso", 0);
        }else{
-            $pedidos = $pedidos->whereBetween("fecha", [$fechaInicio, $fechaFinal]);
+            $pedidos = $pedidos->whereBetween("fecha_pedido", [$fechaInicio, $fechaFinal]);
        }
 	   $pedidos = $pedidos->get();
        //dd(DB::getQueryLog());
@@ -177,8 +187,8 @@ class TiendaPedidoController extends Controller
            $pedidoDetalleArray[] = [
                'id'           => @$pedido->id,
                'productos'    => $productos, 
-               'fechaCreacion' => @Carbon::parse($pedido->fecha_creacion)->format('d/m/Y'),
-               'fecha'        => @Carbon::parse($pedido->fecha)->format('d/m/Y'),
+               'fechaPedido' => @Carbon::parse($pedido->fecha_pedido)->format('d/m/Y'),
+               'fechaAutorizacion' => isset($pedido->fecha_autorizacion) ? @Carbon::parse($pedido->fecha_autorizacion)->format('d/m/Y') : "",
                'proveedor'    => @$pedido->proveedor->razon_social,
                'cantidad'     => $cantidad,
                'comentarios'  => @$pedido->comentarios,

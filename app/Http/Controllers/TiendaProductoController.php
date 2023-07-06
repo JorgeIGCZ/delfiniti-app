@@ -104,7 +104,7 @@ class TiendaProductoController extends Controller
      * @param  \App\Models\Localizacion  $localizacion
      * @return \Illuminate\Http\Response
      */
-    public function show(TiendaProducto  $producto = null)
+    public function get(TiendaProducto $producto = null)
     {
         if(is_null($producto)){
             $producto = TiendaProducto::all();
@@ -112,6 +112,13 @@ class TiendaProductoController extends Controller
         }
     }
 
+    public function show(TiendaProducto $producto)
+    {
+        $impuestos = TiendaImpuesto::get();
+        $productoImpuestos = TiendaProductoImpuesto::where('producto_id',$producto->id)->get();
+
+        return view('productos.view',['producto' => $producto, 'impuestos' => $impuestos, 'productoImpuestos' => $productoImpuestos]);
+    }
     /**
      * Show the form for editing the specified resource.
      *

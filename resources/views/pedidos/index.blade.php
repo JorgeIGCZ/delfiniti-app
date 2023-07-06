@@ -61,7 +61,7 @@
         const pedidosTable = new DataTable('#pedidos', {
             order: [[0, 'desc']],
             ajax: function (d,cb,settings) {
-                $('.loader').show();
+                $('.loader').show(); 
                 const pedidos = document.getElementById('pedidos-form');
                 axios.post('/pedidos/get',{
                     "_token"  : '{{ csrf_token() }}',
@@ -87,7 +87,8 @@
                 { data: 'id' },
                 { data: 'proveedor' },
                 { data: 'cantidad' },
-                { data: 'fechaCreacion' },
+                { data: 'fechaPedido' },
+                { data: 'fechaAutorizacion' },
                 { data: 'comentarios' },
                 { defaultContent: 'estatus_proceso', 'render': function ( data, type, row ) 
                     {
@@ -192,7 +193,7 @@
             <form class="row g-3 align-items-center f-auto" id="pedidos-form" method="GET">
                 
                 <div class="form-group col-md-2">
-                    <label for="fecha">Fecha</label>
+                    <label for="fecha">Fecha Creación</label>
                     <select class="form-control fecha" name="fecha" id="fecha_pedido">
                         <option value="dia" selected="selected">Día Actual</option>
                         <option value="mes">Mes Actual</option>
@@ -219,9 +220,10 @@
                                         <th>Id</th>
                                         <th>Proveedor</th>
                                         <th># Productos</th>
-                                        <th>Fecha creación</th>
+                                        <th>Fecha Creación</th>
+                                        <th>Fecha Autorización</th>
                                         <th>Comentarios</th>
-                                        <th>Estatus autorización</th>
+                                        <th>Estatus Autorización</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

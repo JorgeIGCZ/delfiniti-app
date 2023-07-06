@@ -105,12 +105,12 @@
 
         function validacion(id){
             Swal.fire({
-                title: `¿Desea validar el pedido con ID ${id}?`,
+                title: `¿Desea autorizar el pedido con ID ${id}?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: '¡Si, validar!'
+                confirmButtonText: '¡Si, autorizar!'
             }).then((result) => {
                 if (result.isConfirmed) {
                     validar(id,);

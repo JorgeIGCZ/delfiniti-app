@@ -19,7 +19,12 @@
     <div class="az-dashboard-one-title">
         <div>
             <h2 class="az-dashboard-title">Movimientos de inventario</h2>
+            @if (Session('errors'))
+                <p class="text-danger">ERROR: {{ session('errors') }}</p>
+            @endif
         </div>
+
+
         <div class="az-content-header-right">
             <div class="media">
                 <div class="media-body">

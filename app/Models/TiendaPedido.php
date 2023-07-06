@@ -11,8 +11,8 @@ class TiendaPedido extends Model
 
     protected $fillable = [
         'proveedor_id',
-        'fecha',
-        'fecha_creacion',
+        'fecha_pedido',
+        'fecha_autorizacion',
         'comentarios',
         'estatus_proceso',
         'estatus'

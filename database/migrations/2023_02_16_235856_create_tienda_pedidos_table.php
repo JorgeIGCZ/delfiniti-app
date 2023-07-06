@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('tienda_pedidos', function (Blueprint $table) {
             $table->id();
             $table->integer('proveedor_id');
-            $table->date('fecha');
-            $table->date('fecha_creacion');
+            $table->date('fecha_pedido');
+            $table->date('fecha_autorizacion')->nullable();
             $table->longText('comentarios')->nullable();
             $table->boolean('estatus')->default(1);
             $table->boolean('estatus_proceso')->default(0)->comment('0 es pedido pendiente de aprovacion 1 es pedido aprovado');;

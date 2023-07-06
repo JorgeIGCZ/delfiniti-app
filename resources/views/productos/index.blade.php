@@ -119,7 +119,7 @@
             productosTable = new DataTable('#productos', {
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
-                    axios.get('/productos/show')
+                    axios.get('/productos/get')
                     .then(function (response) {
                         $('.loader').hide();
                         cb(response.data)
@@ -165,6 +165,7 @@
                             //}
                             // can('Productos.update')
                             view    =   `<small> 
+                                            <a href="productos/${row.id}">Ver</a> | 
                                             <a href="productos/${row.id}/edit">Editar</a>
                                             ${estatusRow}
                                         </small>`;
