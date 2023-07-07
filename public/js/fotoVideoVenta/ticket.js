@@ -1,7 +1,7 @@
 let actividades = '';
 const format    = (venta) => {
 
-    const descuentos = '';//getDescuentos(venta);
+    const descuentos = getDescuentos(venta);
     return `
         <!DOCTYPE html>
         <html>
@@ -232,55 +232,55 @@ function getTicketPagos(){
     return pagos;
 }
 
-// function getDescuentos(venta){
+function getDescuentos(venta){
 
-//     let descuentosHTML  = "";
-//     const ventaForm   = document.getElementById('venta-form');
-//     const descuento     = ventaForm.elements['descuento-personalizado'];
-//     const codigo        = ventaForm.elements['descuento-codigo'];
-//     const codigoOpcion  = ventaForm.elements['codigo-descuento'];
-//     const cupon         = ventaForm.elements['cupon'];
+    let descuentosHTML  = "";
+    const ventaForm   = document.getElementById('venta-form');
+    const descuento     = ventaForm.elements['descuento-personalizado'];
+    // const codigo        = ventaForm.elements['descuento-codigo'];
+    // const codigoOpcion  = ventaForm.elements['codigo-descuento'];
+    // const cupon         = ventaForm.elements['cupon'];
 
-//     const descuentos = new Map([
-//         ["descuento", descuento.getAttribute('value')],
-//         ["codigo", codigo.getAttribute('value')],
-//         ["cupon", cupon.getAttribute('value')]
-//     ]);
+    const descuentos = new Map([
+        ["descuento", descuento.getAttribute('value')],
+        // ["codigo", codigo.getAttribute('value')],
+        // ["cupon", cupon.getAttribute('value')]
+    ]);
 
-//     for(let [key, descuento] of descuentos){
-//         if(parseFloat(descuento) !== 0){
-//             switch (key) {
-//                 //case 'cupon':
-//                 //    descuentosHTML = descuentosHTML.concat(`
-//                 //        <tr class="centrado">
-//                 //            <td class="vacio"></td>
-//                 //            <td class="etiqueta">CUPÓN</td>
-//                 //            <td class="importe">-$${descuento}</td>
-//                 //        </tr>`);
-//                 //    break;
-//                 case 'descuento':
-//                     descuentosHTML = descuentosHTML.concat(`
-//                         <p class="centrado">
-//                             ${descuento}% OFF
-//                         </p>
-//                     `);
-//                     break;
-//                 //case 'codigo':
-//                 //    descuentosHTML = descuentosHTML.concat(`
-//                 //        <tr class="centrado">
-//                 //            <td class="vacio"></td>
-//                 //            <td class="etiqueta">${codigoOpcion.options[codigoOpcion.selectedIndex].text}</td>
-//                 //            <td class="importe">-${descuento}%</td>
-//                 //        </tr>`);
-//                 //    break;
-//                 default:
-//                     break;
-//             }
-//         }
-//     }
+    for(let [key, descuento] of descuentos){
+        if(parseFloat(descuento) !== 0){
+            switch (key) {
+                //case 'cupon':
+                //    descuentosHTML = descuentosHTML.concat(`
+                //        <tr class="centrado">
+                //            <td class="vacio"></td>
+                //            <td class="etiqueta">CUPÓN</td>
+                //            <td class="importe">-$${descuento}</td>
+                //        </tr>`);
+                //    break;
+                case 'descuento':
+                    descuentosHTML = descuentosHTML.concat(`
+                        <p class="centrado">
+                            ${descuento}% OFF
+                        </p>
+                    `);
+                    break;
+                //case 'codigo':
+                //    descuentosHTML = descuentosHTML.concat(`
+                //        <tr class="centrado">
+                //            <td class="vacio"></td>
+                //            <td class="etiqueta">${codigoOpcion.options[codigoOpcion.selectedIndex].text}</td>
+                //            <td class="importe">-${descuento}%</td>
+                //        </tr>`);
+                //    break;
+                default:
+                    break;
+            }
+        }
+    }
 
-//     return descuentosHTML;
-// }
+    return descuentosHTML;
+}
 
 function getTicket(venta){
     let result = true;
