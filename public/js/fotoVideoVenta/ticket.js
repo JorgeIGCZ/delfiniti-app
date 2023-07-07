@@ -1,4 +1,120 @@
 let actividades = '';
+const formatMini = (venta) => {
+
+    const descuentos = getDescuentos(venta);
+    return `
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <style>
+                    * {
+                        font-size: 13px;
+                        font-family: monospace;
+                    }
+
+                    .f-16{
+                        font-size: 16px;
+                    }
+
+                    .f-11{
+                        font-size: 11px;
+                        margin: 0;
+                    }
+
+                    .vacio{
+                        width:40%;
+                    }
+
+                    table{
+                        width:100%;
+                    }
+
+                    .border{
+                        border-top: 1px solid black;
+                    }
+
+                    td,
+                    th,
+                    tr,
+                    table {
+                        border-collapse: collapse;
+                    }
+
+                    td.producto,
+                    th.producto {
+                        width: 75px;
+                        max-width: 75px;
+                    }
+
+                    td.cantidad,
+                    th.cantidad {
+                        word-break: break-all;
+                    }
+
+                    td.precio,
+                    th.precio {
+                        word-break: break-all;
+                    }
+
+                    .centrado {
+                        text-align: center;
+                        align-content: center;
+                    }
+
+                    .derecha{
+                        text-align: right;
+                    }
+
+                    .ticket {
+                        width: 320px;
+                        max-width: 320px;
+                    }
+
+                    img {
+                        max-width: inherit;
+                        width: inherit;
+                        filter: invert(1);
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="ticket">
+                    <p class="centrado">
+                        <p class="f-16 centrado ">FOLIO: ${venta.folio}</p>
+                        <br/>
+                        <p class="f-11">
+                        FECHA DE EXPEDICIÓN: ${moment().format('YYYY-MM-DD hh:mm a')}
+                        </p>
+                        <br/>
+                        FOTOGRAFO: ${detalleVenta().fotografo}
+                        <br/>
+                        CLIENTE: ${detalleVenta().cliente}
+                    </p>
+                    <table>
+                        <thead class="border">
+                            <tr>
+                                <th class="clave">CLAVE</th>
+                                <th class="cantidad">CANT</th>
+                                <th class="descripcion">DESC.</th>
+                                <th class="precio">PRECIO</th>
+                                <th class="importe">IMPORTE</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border">
+                            ${getTicketProductos()}
+                        </tbody>
+                    </table>
+                    <br/>
+                    ${descuentos}
+                    <p class="centrado">
+                        <strong>DELFINITI</strong>
+                    </p>
+                </div>
+            </body>
+        </html>
+    `;
+}
+
 const format    = (venta) => {
 
     const descuentos = getDescuentos(venta);
@@ -300,6 +416,27 @@ function getTicket(venta){
         result = false;
     }
     saveTicket(venta.id,format(venta));
+    return result;
+}
+
+function getMiniTicket(venta){
+    let result = true;
+    try{
+        let w = window.open();
+        w.document.write(formatMini(venta));
+        w.window.print();
+        w.document.close();
+        result = true;    
+    }catch(err) {
+        Swal.fire({
+            icon: 'warning',
+            title: `Pago guardado, error en impresión de ticket`,
+            text: err,
+            showConfirmButton: true
+        });
+        result = false;
+    }
+    saveTicket(venta.id,formatMini(venta));
     return result;
 }
 

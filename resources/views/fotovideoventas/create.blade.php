@@ -23,6 +23,7 @@
         const detalleVenta = () =>{
             const venta   = document.getElementById('venta-form');
             const nombreCliente = venta.elements['nombre'].value;
+            const fotografo     = venta.elements['fotografo'].options[venta.elements['fotografo'].selectedIndex].text;
             const direccion     = venta.elements['direccion'].value;
             const ciudad        = venta.elements['origen'].value;
 
@@ -30,7 +31,8 @@
                 'cajero'    : '{{Auth::user()->username}}',
                 'cliente'   : nombreCliente,
                 'dirección' : direccion,
-                'ciudad'    : ciudad
+                'ciudad'    : ciudad,
+                'fotografo' : fotografo
             };
         }
     </script>

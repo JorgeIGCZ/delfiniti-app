@@ -54,7 +54,7 @@ function createVenta(estatus) {
                 footer: `<a href="/ventas/${response.data.id}/edit">Ver venta</a>`,
                 timer: 1500
             }).then(function() {
-                if(getTicket(response.data.venta)){
+                if(getTicket(response.data.venta) && getMiniTicket(response.data.venta)){ 
                     location.reload();
                 }
             });

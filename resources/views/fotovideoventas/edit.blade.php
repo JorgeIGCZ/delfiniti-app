@@ -211,22 +211,6 @@
                     @endif
                 </div><!-- media-body -->
             </div><!-- media -->
-            <div class="media">
-                <div class="media-body">
-                    @if(count($tickets)>0)
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Reimprimir
-                            </button>
-                            <div class="dropdown-menu tx-13" id="lista-tickets" aria-labelledby="dropdownMenuButton" style="">
-                                @foreach($tickets as $ticket)
-                                    <a href="#!" class="dropdown-item" onclick="imprimirTicket({{$ticket->id}})" ticket-id="{{$ticket->id}}">{{$ticket->created_at}}</a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-                </div><!-- media-body -->
-            </div><!-- media -->
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
