@@ -299,12 +299,12 @@ function getTicket(venta){
         });
         result = false;
     }
-    // saveTicket(venta.id,format(venta));
+    saveTicket(venta.id,format(venta));
     return result;
 }
 
 function imprimirTicket(id){
-    axios.get(`/ventaticket/${id}`)
+    axios.get(`/fotovideoventaticket/${id}`)
     .then(function (response) {
         let w = window.open();
         w.document.write(response.data.ticket);
@@ -319,7 +319,7 @@ function imprimirTicket(id){
 
 function saveTicket(ventaId,ticket){
     $('.loader').show();
-    axios.post('/ventaticket', {
+    axios.post('/fotovideoventaticket', {
         '_token': token(),
         'ticket': ticket,
         'ventaId': ventaId

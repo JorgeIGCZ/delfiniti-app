@@ -11,6 +11,7 @@ use App\Models\FotoVideoVenta;
 use App\Models\FotoVideoVentaDetalle;
 use App\Models\FotoVideoVentaFactura;
 use App\Models\FotoVideoVentaPago;
+use App\Models\FotoVideoVentaTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
@@ -342,7 +343,7 @@ class FotoVideoVentaController extends Controller
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
 
         $fotografos = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
-        // $tickets           = VentaTicket::where('venta_id',$venta->id)->get();
+        $tickets    = FotoVideoVentaTicket::where('venta_id',$fotoVideoVenta->id)->get();
         // return view('ventas.edit');
         return view('fotovideoventas.edit',[
             'venta' => $fotoVideoVenta,
@@ -350,7 +351,7 @@ class FotoVideoVentaController extends Controller
             'estados' => $estados,
             'dolarPrecio' => $dolarPrecio,
             'fotografos' => $fotografos,
-            'tickets' => []//$tickets
+            'tickets' => $tickets
         ]);
     }
 

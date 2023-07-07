@@ -194,6 +194,7 @@
                     </div>
                 @endif
             @endcan
+
             <div class="media">
                 <div class="media-body">
                     @if(count($tickets)>0)

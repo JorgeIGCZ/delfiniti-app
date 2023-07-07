@@ -16,6 +16,7 @@ use App\Models\TiendaVenta;
 use App\Models\TiendaVentaDetalle;
 use App\Models\TiendaVentaFactura;
 use App\Models\TiendaVentaPago;
+use App\Models\TiendaVentaTicket;
 use App\Models\VentaTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
@@ -376,14 +377,14 @@ class TiendaVentaController extends Controller
         $estados = Estado::all();
 
         $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
-        // $tickets           = VentaTicket::where('venta_id',$venta->id)->get();
+        $tickets     = TiendaVentaTicket::where('venta_id',$venta->id)->get();
         // return view('ventas.edit');
         return view('ventas.edit',[
             'venta' => $venta,
             'productos' => $productos,
             'estados' => $estados,
             'dolarPrecio' => $dolarPrecio,
-            'tickets' => []//$tickets
+            'tickets' => $tickets
         ]);
     }
 

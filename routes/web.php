@@ -22,6 +22,7 @@ use App\Http\Controllers\FotoVideoComisionController;
 use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
+use App\Http\Controllers\FotoVideoVentaTicketController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\TiendaComisionController;
 use App\Http\Controllers\TiendaImpuestoController;
@@ -30,6 +31,8 @@ use App\Http\Controllers\TiendaPedidoController;
 use App\Http\Controllers\TiendaProductoController;
 use App\Http\Controllers\TiendaProveedorController;
 use App\Http\Controllers\TiendaVentaController;
+use App\Http\Controllers\TiendaVentaTicketController;
+use App\Models\FotoVideoVentaTicket;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,7 +161,7 @@ Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name(
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');
 Route::get('/roles/{rol}',[RolController::class,'show'])->middleware(['auth'])->name('rolesupdate');
 
-Route::get('/imprimir/{actividad?}',[ImprimirController::class,'imprimirTicket'])->middleware(['auth'])->name('imprimirticket');
+// Route::get('/imprimir/{actividad?}',[ImprimirController::class,'imprimirTicket'])->middleware(['auth'])->name('imprimirticket');
 
 // Route::controller(CerradorController::class)->middleware(['auth'])->group(function () {
 //     Route::get('cerradores/show/{cerrador?}', 'show');
@@ -298,7 +301,15 @@ Route::controller(TiendaComisionController::class)->middleware(['auth'])->group(
     ]);
 });
 
-
+Route::controller(TiendaVentaTicketController::class)->middleware(['auth'])->group(function () {
+    Route::get('tiendaventaticket/show/{tiendaventaticket?}', 'show');
+    Route::patch('tiendaventaticket/estatus/{tiendaventaticket}', 'updateEstatus');
+    Route::resource('tiendaventaticket',TiendaVentaTicketController::class, [
+        'parameters' => [
+            'tiendaventatickets' => 'tiendaventaticket'
+        ]
+    ]);
+});
 
 // FOTO Y VIDEO
 Route::controller(FotoVideoVentaController::class)->middleware(['auth'])->group(function () {
@@ -350,4 +361,15 @@ Route::controller(FotoVideoComisionController::class)->middleware(['auth'])->gro
         ]
     ]);
 });
+
+Route::controller(FotoVideoVentaTicketController::class)->middleware(['auth'])->group(function () {
+    Route::get('fotovideoventaticket/show/{fotovideoventaticket?}', 'show');
+    Route::patch('fotovideoventaticket/estatus/{fotovideoventaticket}', 'updateEstatus');
+    Route::resource('fotovideoventaticket',FotoVideoVentaTicketController::class, [
+        'parameters' => [
+            'fotovideoventatickets' => 'fotovideoventaticket'
+        ]
+    ]);
+});
+
 require __DIR__.'/auth.php';
