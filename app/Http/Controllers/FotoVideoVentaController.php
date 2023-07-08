@@ -58,6 +58,20 @@ class FotoVideoVentaController extends Controller
         return view('fotovideoventas.create',['venta' => $fotoVideoVenta,'productos' => $productos,'estados' => $estados, 'fotografos' => $fotografos,'dolarPrecio' => $dolarPrecio]);
     }
 
+    public function updateEstatusVenta(Request $request){
+        try{ 
+            $venta          = FotoVideoVenta::find($request->ventaId);
+            $venta->estatus = ($request->accion == 'cancelar' ? 0 : 1);
+            $venta->save();
+            
+            return json_encode(['result' => "Success"]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        } 
+    }
+
     public function getDescuentoPersonalizadoValidacion(Request $request){
         try{
             $limite = $this->getLimitesDescuentoPersonalizado($request);

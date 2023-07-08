@@ -61,18 +61,18 @@ class TiendaVentaController extends Controller
         return view('ventas.create',['venta' => $venta,'productos' => $productos,'estados' => $estados,'dolarPrecio' => $dolarPrecio]);
     }
 
-    public function updateEstatus(Request $request){
-        // try{
-        //     $venta          = Venta::find($request->ventaId);
-        //     $venta->estatus = ($request->accion == 'cancelar' ? 0 : 1);
-        //     $venta->save();
+    public function updateEstatusVenta(Request $request){
+        try{ 
+            $venta          = TiendaVenta::find($request->ventaId);
+            $venta->estatus = ($request->accion == 'cancelar' ? 0 : 1);
+            $venta->save();
             
-        //     return json_encode(['result' => "Success"]);
-        // } catch (\Exception $e){
-        //     $CustomErrorHandler = new CustomErrorHandler();
-        //     $CustomErrorHandler->saveError($e->getMessage(),$request);
-        //     return json_encode(['result' => "Error"]);
-        // } 
+            return json_encode(['result' => "Success"]);
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => "Error"]);
+        } 
     }
 
     public function getDescuentoPersonalizadoValidacion(Request $request){

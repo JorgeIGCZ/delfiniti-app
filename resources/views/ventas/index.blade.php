@@ -65,7 +65,7 @@
                             let payRow = '';
                             let editRow = '';
                             let options = [];
-                            @can('FotoVideoVentas.update')
+                            @can('TiendaVentas.update') 
                                 @role('Administrador')
                                     editRow = `<a href="ventas/${row.id}/edit?accion=edit">Editar</a>`;
                                 @endrole

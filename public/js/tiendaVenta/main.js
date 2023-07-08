@@ -580,6 +580,10 @@ async function validarVerificacion(){
         if(await validateUsuario(document.getElementById('password').value)){
             if(action === 'add-descuento-personalizado'){
                 validateDescuentoPersonalizado();
+            }else if(action === 'cancelar-venta'){
+                updateEstatusReservacion('cancelar');
+            }else if(action === 'activar-venta'){
+                updateEstatusReservacion('activar');
             }
         }else{
             Swal.fire({
@@ -590,6 +594,42 @@ async function validarVerificacion(){
             })
         }
     }
+}
+
+function updateEstatusReservacion(accion){
+    const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
+    $('.loader').show();
+    axios.post('/ventas/updateestatusreservacion', {
+        '_token': token(),
+        'ventaId': ventaId(),
+        'accion': accion,
+    })
+    .then(function (response) {
+        $('.loader').hide();
+        if (response.data.result == 'Success') {
+            Swal.fire({
+                icon: 'success',
+                title: `Venta ${title}`,
+                showConfirmButton: false,
+                timer: 1500
+            })
+            location.reload();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: `Petición fallida`,
+                showConfirmButton: true
+            })
+        }
+    })
+    .catch(function (error) {
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'error',
+            title: `Autorización fallida E:${error.message}`,
+            showConfirmButton: true
+        })
+    });
 }
 
 function validateDescuentoPersonalizado() {

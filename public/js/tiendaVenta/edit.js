@@ -120,7 +120,7 @@ async function editarPagoVenta(row){
 function validateCancelarVenta(){
     Swal.fire({
         title: '¿Cancelar?',
-        text: "La reservación será cancelada, ¿desea proceder?",
+        text: "La venta será cancelada, ¿desea proceder?",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#17a2b8',
@@ -129,6 +129,23 @@ function validateCancelarVenta(){
     }).then((result) => {
         if (result.isConfirmed) {
             document.getElementById('validar-verificacion').setAttribute('action','cancelar-venta');
+            $('#verificacion-modal').modal('show');
+        }
+    });
+}
+
+function validateActivarVenta(){
+    Swal.fire({
+        title: '¿Activar?',
+        text: "La venta será activada, ¿desea proceder?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#17a2b8',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, activar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('validar-verificacion').setAttribute('action','activar-venta');
             $('#verificacion-modal').modal('show');
         }
     });
