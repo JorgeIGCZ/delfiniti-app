@@ -15,8 +15,7 @@ if(actualizarEstatusReservacion !== null){
 if(agregarProducto !== null){
     agregarProducto.addEventListener('click', (event) =>{
         event.preventDefault();
-        if(productoIsValid()){
-            validateProductos();
+        if(productoIsValid() && validateProductos()){
             addProducto();
             resetProductoMeta();
             validateBotonGuardar();
@@ -339,6 +338,7 @@ function validateProductos() {
     //     return false;
     // }
     // enableBtn('reservar', productosArray.length > 0);
+    return true
 }
 
 function validateBotonGuardar(){
@@ -427,8 +427,7 @@ $('body').on('keydown', 'input, select, button', function(e) {
     if (e.key === "Enter") {
 
         if($(this).attr("id") == "cantidad"){
-            if(productoIsValid()){
-                validateProductos();
+            if(productoIsValid() && validateProductos()){
                 addProducto();
                 resetProductoMeta();
                 validateBotonGuardar();
