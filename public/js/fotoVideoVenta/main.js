@@ -622,7 +622,7 @@ async function validarVerificacion(){
 function updateEstatusReservacion(accion){
     const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
     $('.loader').show();
-    axios.post('/fotovideoventas/updateestatusreservacion', {
+    axios.post('/fotovideoventas/updateestatusventa', {
         '_token': token(),
         'ventaId': ventaId(),
         'accion': accion,

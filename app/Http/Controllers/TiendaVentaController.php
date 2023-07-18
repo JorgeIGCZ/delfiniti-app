@@ -63,9 +63,26 @@ class TiendaVentaController extends Controller
 
     public function updateEstatusVenta(Request $request){
         try{ 
+            $Productos = new TiendaProductoController();
+            
+            if($request->accion == 'cancelar'){
+                $estatus = 0;
+                $accion = 'alta';
+                $movimiento = 'ultima_entrada';
+            }else{
+                $estatus = 1;
+                $accion = 'baja';
+                $movimiento = 'ultima_salida';
+            }
+
             $venta          = TiendaVenta::find($request->ventaId);
-            $venta->estatus = ($request->accion == 'cancelar' ? 0 : 1);
+            $venta->estatus = $estatus;
             $venta->save();
+
+            foreach($venta->ventaDetalle as $ventaDetalle){
+                $Productos->updateFechaMovimientoStock($ventaDetalle->producto_id, $movimiento);
+                $Productos->updateStock($ventaDetalle->producto_id, $accion, $ventaDetalle->numero_productos);
+            }
             
             return json_encode(['result' => "Success"]);
         } catch (\Exception $e){
@@ -464,6 +481,7 @@ class TiendaVentaController extends Controller
         $email    = Auth::user()->email;
         // $password = "";
         // $checkin   = new CheckinController();
+        $Productos = new TiendaProductoController();
 
         DB::beginTransaction();
 
@@ -498,6 +516,8 @@ class TiendaVentaController extends Controller
             TiendaVentaDetalle::where('venta_id', $venta['id'])->delete();
 
             foreach($request->ventaProductos as $ventaProducto){
+                $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
+                $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
                 TiendaVentaDetalle::create([
                     'venta_id'            =>  $venta['id'],
                     'factura_id'          =>  $factura['id'],

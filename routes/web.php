@@ -220,7 +220,7 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 // TIENDA
 Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(function () {
     // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
-    Route::post('ventas/updateestatusreservacion', 'updateEstatusVenta');
+    Route::post('ventas/updateestatusventa', 'updateEstatusVenta');
     Route::post('ventas/removeProducto', 'removeProducto');
     Route::post('ventas/editPago','editPago');
     Route::post('ventas/removePago', 'removePago');
@@ -314,7 +314,7 @@ Route::controller(TiendaVentaTicketController::class)->middleware(['auth'])->gro
 // FOTO Y VIDEO
 Route::controller(FotoVideoVentaController::class)->middleware(['auth'])->group(function () {
     // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
-    Route::post('fotovideoventas/updateestatusreservacion', 'updateEstatusReservacion');
+    Route::post('fotovideoventas/updateestatusventa', 'updateEstatusReservacion');
     Route::post('fotovideoventas/updateestatus', 'updateEstatus');
     Route::post('fotovideoventas/removeProducto', 'removeProducto');
     Route::post('fotovideoventas/editPago','editPago');
