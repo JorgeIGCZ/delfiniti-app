@@ -9,6 +9,9 @@ const anticipoContainer = document.getElementById('anticipo-container');
 
 setReservacionesTipoAccion();
 getProductos();
+processImpuestosProductos();
+fillPedidoDetallesTabla();
+calculateAndDisplaySubTotalTotal();
 // changeCuponDetalle();
 
 if(actualizar !== null){
@@ -69,9 +72,24 @@ $('#pagos').on( 'change', '.fecha-pago', function (event) {
 //     info: false
 // });
 
-fillPedidoDetallesTabla();
-setSubTotal();
 // fillPagosTabla();
+
+function setimpuestosPU(){
+    productosArray.forEach(producto => { 
+        const productoImpuestos = getProductoImpuestosId(producto.productoId);
+        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
+        producto.impuestosPU = impuestosPorUnidad;
+    })
+}
+
+function processImpuestosProductos(){
+    setimpuestosPU();
+    productosArray.forEach(producto => { 
+        const productoImpuestos = getProductoImpuestosId(producto.productoId);
+        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
+        updateImpuestosProducto(producto.claveProducto, impuestosPorUnidad, producto.cantidad);
+    });
+}
 
 async function editarPagoReservacion(row){
     const pagoId = row.parents('tr')[0].firstChild.innerText;
@@ -226,7 +244,7 @@ function setCantidadPagada(cantidadPagada) {
 //     pagosTabla.rows.add(pagosTablaArray).draw(false);
 
 //     setCantidadPagada(cantidadPagada);
-//     setTotal();
+//     displayTotal();
 // }
 
 function getCantiodadPago(pago){
@@ -252,37 +270,6 @@ function blockDescuentos(nombre) {
     }
 }
 
-function setSubTotal() {
-    let subTotal = 0;
-    productosArray.forEach(producto => {
-        subTotal += (producto.cantidad * producto.costo);
-    });
-    subTotal = parseFloat(subTotal).toFixed(2)
-    document.getElementById('subtotal').setAttribute('value', subTotal);
-    document.getElementById('subtotal').value = formatter.format(subTotal);
-    setTotal();
-}
-
-function setTotal() {
-    // let total = 0;
-    // productosArray.forEach(producto => {
-    //     total += (producto.cantidad * producto.costo);
-    // });
-    // total = parseFloat(total).toFixed(2)
-    // document.getElementById('total').setAttribute('value', total);
-    // document.getElementById('total').value = formatter.format(total);
-    let total = 0;
-    const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
-    const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
-    const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
-
-    total = parseFloat((subTotal + iva + ieps)).toFixed(2);
-
-    document.getElementById('total').setAttribute('value', total);
-    document.getElementById('total').value = formatter.format(total);
-
-    setOperacionResultados();
-}
 
 function setOperacionResultados() {
     // const total = document.getElementById('total').getAttribute('value');

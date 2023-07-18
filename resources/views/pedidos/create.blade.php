@@ -4,6 +4,8 @@
         const modulo = 'pedidos';
         const env = 'create';
         const allProductos = @php echo(json_encode($productos)) @endphp;
+        const productosImpuestos = @php echo(json_encode($productosImpuestos)) @endphp;
+        const impuestos = @php echo(json_encode($impuestos)) @endphp;
         const logo = () =>{
             return '{{asset("assets/img/logo.png")}}';
         }
@@ -21,10 +23,10 @@
         }
     </script>
 
-    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/main.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/create.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/ticket.js') }}"></script>
+    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
 @endsection
 @section('content')
     <div class="az-dashboard-one-title">
@@ -87,6 +89,7 @@
                                     <input type="hidden" name="costo" id="costo" value="0">
                                     <input type="hidden" name="clave" id="clave" value="0">
                                     <input type="hidden" name="producto-id" id="producto-id" value="0">
+                                    <input type="hidden" name="producto-impuestos" id="producto-impuestos" value="">
                                 </div>
                             </div>
                             
@@ -100,7 +103,8 @@
                                                     <th>Producto</th>
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
-                                                    <th>Subtotal</th>
+                                                    <th>Impuestos P/P</th>
+                                                    <th>Total</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -130,21 +134,16 @@
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="iva" class="col-form-label"><strong>I.V.A.:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="iva" id="iva" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="ieps" class="col-form-label"><strong>IEPS:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="ieps" id="ieps" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
+                                                    </div>  
+                                                    
+                                                    @foreach($impuestos as $key => $impuesto)
+                                                        <div class="form-group col-7 mt-0 mb-0">
+                                                            <label for="ieps" class="col-form-label"><strong>{{$impuesto['nombre']}}:</strong></label>
+                                                        </div>
+                                                        <div class="form-group col-5 mt-0 mb-0">
+                                                            <input type="text" name="{{$impuesto['nombre']}}" id="impuesto_{{$impuesto['id']}}" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
+                                                        </div>
+                                                    @endforeach
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="total" class="col-form-label"><strong>Total:</strong></label>

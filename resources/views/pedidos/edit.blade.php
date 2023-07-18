@@ -4,6 +4,8 @@
         const modulo = 'pedidos';
         const env = 'edit';
         const accion = '{{ (@$_GET["accion"] === "pago" ? "pago" : "edit"); }}';
+        const impuestos = @php echo(json_encode($impuestos)) @endphp;
+        const productosImpuestos = @php echo(json_encode($productosImpuestos)) @endphp;
 
         const pedidoId = () => {
             return {{$pedido->id}};
@@ -30,27 +32,29 @@
                 '{{$detalle->producto->clave}}',
                 '{{$detalle->producto->nombre}}',
                 '{{$detalle->cantidad}}',
-                formatter.format('{{$detalle->PPU}}'),
-                formatter.format('{{$detalle->PPU}}'*'{{$detalle->cantidad}}'),
+                formatter.format('{{$detalle->CPU}}'),
+                formatter.format('{{$detalle->IPU_total}}'),
+                formatter.format('{{$detalle->CPU + $detalle->IPU_total}}'*'{{$detalle->cantidad}}'),
                 (canEdit() || isAdmin() 
                     ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
-                    : '')
+                    : ''
+                )
             ]];
             productosArray = [...productosArray,{
-                'codigoProducto'  : '{{$detalle->producto->codigo}}',
-                'claveProducto'   : '{{$detalle->producto->clave}}',
-                'productoDetalle' : '{{$detalle->producto->nombre}}',
-                'productoId'      : '{{$detalle->producto_id}}',
-                'cantidad'        : '{{$detalle->cantidad}}',
-                'costo'           : '{{$detalle->PPU}}'
+                'codigoProducto'    : '{{$detalle->producto->codigo}}',
+                'productoId'        : '{{$detalle->producto_id}}',
+                'claveProducto'     : '{{$detalle->producto->clave}}',
+                'cantidad'          : '{{$detalle->cantidad}}',
+                'impuestosPU'       : '[]',
+                'costo'             : '{{$detalle->CPU}}'
             }];
         @endforeach
 
     </script>
-    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/main.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/edit.js') }}"></script>
     <script src="{{ asset('js/tiendaPedido/ticket.js') }}"></script>
+    <script src="{{ asset('js/tiendaSeleccionProducto/select.js') }}"></script>
 @endsection
 @section('content')
     <div class="modal fade" id="verificacion-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -109,7 +113,7 @@
                                         <label for="proveedor" class="col-form-label">Proveedor</label>
                                         <select name="proveedor" id="proveedor" class="form-control" tabindex="1">
                                             @foreach($proveedores as $proveedor)
-                                                <option value="{{$proveedor->id}}" {{$pedido->proveedor_id == $proveedor->id ? 'selected="selected"' : ""}}>{{$proveedor->razon_social}}</option>
+                                                <option value="{{$proveedor->id}}" {{$pedido->proveedor_id === $proveedor->id ? 'selected="selected"' : ""}}>{{$proveedor->razon_social}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -151,6 +155,7 @@
                                     <input type="hidden" name="costo" id="costo" value="0">
                                     <input type="hidden" name="clave" id="clave" value="0">
                                     <input type="hidden" name="producto-id" id="producto-id" value="0">
+                                    <input type="hidden" name="producto-impuestos" id="producto-impuestos" value="">
                                 </div>
                             </div>
                             
@@ -163,8 +168,9 @@
                                                     <th>Clave</th>
                                                     <th>Producto</th>
                                                     <th>Cantidad</th>
-                                                    <th>Costo P/P</th>
-                                                    <th>Subtotal</th>
+                                                    <th>Costo P/U</th>
+                                                    <th>Impuestos P/U</th>
+                                                    <th>Total</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -195,20 +201,15 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="iva" class="col-form-label"><strong>I.V.A.:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="iva" id="iva" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="ieps" class="col-form-label"><strong>IEPS:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="ieps" id="ieps" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
-                                                    </div>
+                                                    
+                                                    @foreach($impuestos as $key => $impuesto)
+                                                        <div class="form-group col-7 mt-0 mb-0">
+                                                            <label for="ieps" class="col-form-label"><strong>{{$impuesto->nombre}}:</strong></label>
+                                                        </div>
+                                                        <div class="form-group col-5 mt-0 mb-0">
+                                                            <input type="text" name="{{$impuesto->nombre}}" id="impuesto_{{$impuesto->id}}" class="form-control amount not-editable height-auto" disabled="disabled" value="{{@$impuesto->tiendaPedidoImpuesto->total}}">
+                                                        </div>
+                                                    @endforeach
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="total" class="col-form-label"><strong>Total:</strong></label>

@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tienda_pedido_detalles', function (Blueprint $table) {
+        Schema::create('tienda_pedido_impuestos', function (Blueprint $table) {
             $table->id();
             $table->integer('pedido_id');
-            $table->integer('producto_id');
-            $table->integer('cantidad');
-            $table->float('CPU')->comment('Costo por unidad');
-            $table->float('IPU_total')->comment('Impuesto total por unidad');
-            $table->float('subtotal');
+            $table->integer('impuesto_id');
+            $table->float('total');
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tienda_pedido_detalles');
+        Schema::dropIfExists('tienda_pedido_impuestos');
     }
 };

@@ -13,7 +13,8 @@ class TiendaPedidoDetalle extends Model
         'pedido_id',
         'producto_id',
         'cantidad',
-        'PPU',
+        'CPU',
+        'IPU_total',
         'subtotal'
     ];
     protected $primaryKey = 'id';

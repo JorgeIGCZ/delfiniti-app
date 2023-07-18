@@ -1,6 +1,99 @@
 const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-pedido');
 const agregarProducto = document.getElementById('add-producto');
+let impuestosProductosGeneralesArray = [];
+let impuestosTotales = [];
+let productosTable = new DataTable('#productosTable', {
+    searching: false,
+    paging: false,
+    info: false
+} );
  
+window.onload = function() {
+    // getDisponibilidad()
+    const pedidoForm = document.getElementById('pedido-form').elements['proveedor'];
+ 
+    if(pedidoForm !== undefined){
+        pedidoForm.focus();
+    } 
+
+    // document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
+    //     validarVerificacion();
+    // });
+
+    constructorImpuestosTotales();
+};
+
+//jQuery
+$('body').on('keydown', 'input, select, button', function(e) {
+    if (e.key === "Enter") {
+
+        if($(this).attr("id") == "cantidad"){
+            if(productoIsValid() && validateProductos()){
+                addProducto();
+                resetProductoMeta();
+                validateBotonGuardar();
+                $('#codigo').focus();
+                return false;
+            }
+        }
+
+        if($(this).attr("id") == "codigo"){
+            $('#cantidad').focus();
+            return false;
+        }
+
+        var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
+        focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
+        next = focusable.eq(focusable.index(this)+1);
+        if (next.length) {
+            next.focus();
+        } else {
+            form.submit();
+        }
+        return false;
+    }
+});
+
+$('#productosTable').on( 'click', '.eliminar-celda', function (event) {
+    event.preventDefault(); 
+    // if(env == 'edit'){
+    //     Swal.fire({
+    //         title: '¿Eliminiar?',
+    //         text: "El producto será eliminada de la reservación, ¿desea proceder?",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#17a2b8',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Sí, eliminar!'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             eliminarProductoPedido(this,$(this).parents('tr')[0].firstChild.innerText)
+    //         }
+    //     });
+    // }else{
+        removeProducto(this);
+        displayImpuestos();
+        calculateAndDisplaySubTotalTotal();
+    // }
+} );
+
+$('#codigo').on('change', function (e) {
+    changeProducto();
+});
+
+$('#productos').on('change', function (e) {
+    changeCodigoProducto();
+});
+
+$('#proveedor').on('change', function (e) {
+    // console.log(e.target.value);
+    getProductos();
+    resetProductoTabla();
+    resetEstadoProducto();
+    resetProductoMeta();
+    calculateAndDisplaySubTotalTotal();
+});
+
 if(actualizarEstatusReservacion !== null){
     actualizarEstatusReservacion.addEventListener('click', (event) =>{
         event.preventDefault();
@@ -106,7 +199,7 @@ async function eliminarProductoPedido(row,clave){
         $('.loader').hide();
         removeProducto(row);
         changeProducto();
-        setSubTotal();
+        calculateAndDisplaySubTotalTotal();
     }else{
         $('.loader').hide();
         Swal.fire({
@@ -127,14 +220,36 @@ function removeProducto(row){
 
     //remove clave from the array
     const clave   = $(row).parents('tr')[0].firstChild.innerText;
-    const horario = $(row).parents('tr')[0].childNodes[2].innerText;
+    // const horario = $(row).parents('tr')[0].childNodes[2].innerText;
     let updated   = 0;
+
     productosArray = productosArray.filter(function (productos) {
-        let result = (productos.claveProducto !== clave && productos.horario !== horario && updated == 0);
+        let result = (productos.claveProducto !== clave && updated == 0);
         updated > 0 ? result = true : '';
         !result ? updated++ : '';
         return result;
     });
+
+    removeImpuesto(clave);
+}
+
+function removeImpuesto(clave){
+    let updated   = 0;
+    //Remueve impuestos de ese producto eliminado
+    impuestosProductosGeneralesArray = impuestosProductosGeneralesArray.filter(function (impuestos) {
+        let result = (impuestos.claveProducto !== clave && updated == 0);
+        updated > 0 ? result = true : '';
+        !result ? updated++ : '';
+        return result;
+    });
+    recalculateImpuestosTotales();
+}
+
+function resetEstadoProducto(){
+    //remove clave from the array
+    productosArray = [];
+    impuestosProductosGeneralesArray = [];
+    constructorImpuestosTotales();
 }
 
 function resetProductoTabla(){
@@ -142,12 +257,9 @@ function resetProductoTabla(){
         .rows()
         .remove()
         .draw();
-
-    //remove clave from the array
-    productosArray = [];
 }
 
-function addProducto(){
+function addProducto(){ 
     // debugger;
     const productoDetalle = document.getElementById('productos').value;
     const productoId = document.getElementById('producto-id').value;
@@ -156,32 +268,115 @@ function addProducto(){
     const producto = document.getElementById('productos').value;
     const cantidad = document.getElementById('cantidad').value;
     const costo = document.getElementById('costo').value;
+    const productoImpuestos = document.getElementById('producto-impuestos').value;
     const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
-    const totalCosto = costo * cantidad;
+    const impuestosPorUnidad = getImpuestosProducto(costo, productoImpuestos);
+    const impuestosTotalesPorUnidad = getImpuestosTotalesProducto(impuestosPorUnidad);
+    const totalCosto = (parseFloat(costo) + impuestosTotalesPorUnidad) * parseFloat(cantidad);
 
     productosTable.row.add([
         claveProducto,
         productoDetalle,
         cantidad,
         costo,
+        impuestosTotalesPorUnidad.toFixed(2),
         totalCosto.toFixed(2),
         acciones
-    ])
-        .draw(false);
+    ]).draw(false);
+
     productosArray = [...productosArray, {
         'codigoProducto': codigoProducto,
         'productoId': productoId,
-        'producto': producto,
         'claveProducto': claveProducto,
         'cantidad': cantidad,
+        'impuestosPU': impuestosPorUnidad,
         'costo': costo
     }];
-    setSubTotal();
+
+    updateImpuestosProducto(claveProducto, impuestosPorUnidad, cantidad);
+    displayImpuestos();
+    calculateAndDisplaySubTotalTotal();
 }
 
-// function resetVentas() {
-//     location.reload();
-// }
+function displayImpuestos(){
+    let impuestoTotal = 0;
+    
+    if(impuestosTotales.length > 0){
+        impuestosTotales.forEach(impuesto => {
+            impuestoTotal = parseFloat(impuesto.impuesto).toFixed(2);
+            const impuestoElement = document.getElementById(`impuesto_${impuesto.impuestoId}`);
+            impuestoElement.setAttribute('value', impuestoTotal);
+            impuestoElement.value = formatter.format(impuestoTotal);
+        })
+        return;
+    }
+
+    impuestos.forEach( function (impuesto) {
+        const impuestoElement = document.getElementById(`impuesto_${impuesto.impuestoId}`);
+        impuestoElement.setAttribute('value', impuestoTotal);
+        impuestoElement.value = formatter.format(impuestoTotal);
+    });
+}
+
+function updateImpuestosProducto(claveProducto, impuestosPorUnidad, cantidad){
+    setImpuestosProductoGenerales(claveProducto, impuestosPorUnidad, cantidad);
+    recalculateImpuestosTotales();
+}
+
+function recalculateImpuestosTotales(){
+    constructorImpuestosTotales();
+
+    if(impuestosProductosGeneralesArray.length > 0){
+        impuestosProductosGeneralesArray.forEach(impuestoGeneral => {
+            impuestoGeneral.impuesto.forEach(impuestoGeneralImpuesto => {
+                const impuestoIndex = impuestosTotales.findIndex((impuestoTotal) => impuestoTotal.impuestoId === impuestoGeneralImpuesto.impuestoId);
+
+                if(impuestoIndex >= 0){
+                    impuestosTotales[impuestoIndex].impuesto = (parseFloat(impuestosTotales[impuestoIndex].impuesto) + parseFloat(impuestoGeneralImpuesto.impuesto)).toFixed(2);
+                }
+            })
+        });
+    }
+}
+
+function setImpuestosProductoGenerales(claveProducto, impuestosPorUnidad, cantidad){
+    let impuestosTotalProducto = impuestosPorUnidad.map(function(impuestoProducto){
+        return {
+            'impuestoId' : impuestoProducto.impuestoId,
+            'impuesto' : (parseFloat(impuestoProducto.impuesto) * parseFloat(cantidad)).toFixed(2)
+        };
+    });
+
+    impuestosProductosGeneralesArray.push({
+        'claveProducto': claveProducto,   
+        'impuesto': impuestosTotalProducto
+    });
+}
+
+function getImpuestosTotalesProducto(impuestosPorUnidad){
+    let impuestosTotalesProducto = 0;
+
+    impuestosPorUnidad.forEach( function (impuesto) {
+        impuestosTotalesProducto += parseFloat(impuesto.impuesto);
+    });
+
+    return impuestosTotalesProducto;
+}
+
+function getImpuestosProducto(costo, productoImpuestos){
+    const productoImpuestosArray = productoImpuestos.split(',');
+    let impuestosP = []; 
+    impuestos.forEach( function (impuesto) {
+        if(productoImpuestosArray.includes(String(impuesto.id))){
+            impuestosP.push({
+                'impuestoId': impuesto.id,   
+                'impuesto': (costo * (impuesto.impuesto/100)).toFixed(2)             
+            });
+        }
+    });
+
+    return impuestosP;
+}
 
 function isProductoDuplicado(nuevoProducto){ 
     let duplicado = 0;
@@ -192,6 +387,7 @@ function isProductoDuplicado(nuevoProducto){
     });
     return duplicado;
 }
+
 function productoIsValid() {
     const cantidad = document.getElementById('cantidad');
     const clave = document.getElementById('clave');
@@ -216,6 +412,7 @@ function productoIsValid() {
     }
     return true;
 }
+
 function cantidadProductosIsValid() {
     if(productosArray.length < 1){
         Swal.fire({
@@ -229,69 +426,15 @@ function cantidadProductosIsValid() {
     return true;
 }
 
-let productosTable = new DataTable('#productosTable', {
-    searching: false,
-    paging: false,
-    info: false
-} );
-
-window.onload = function() {
-    // getDisponibilidad()
-    const pedidoForm = document.getElementById('pedido-form').elements['proveedor'];
- 
-    if(pedidoForm !== undefined){
-        pedidoForm.focus();
-    } 
-
-    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-        validarVerificacion();
+function constructorImpuestosTotales(){
+    impuestosTotales = [];
+    impuestos.forEach( function (impuesto) {
+        impuestosTotales.push({
+            'impuestoId' : impuesto.id,
+            'impuesto' : 0
+        });
     });
-};
-
-//jQuery
-$('#productosTable').on( 'click', '.eliminar-celda', function (event) {
-    event.preventDefault(); 
-    // if(env == 'edit'){
-    //     Swal.fire({
-    //         title: '¿Eliminiar?',
-    //         text: "El producto será eliminada de la reservación, ¿desea proceder?",
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#17a2b8',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Sí, eliminar!'
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             eliminarProductoPedido(this,$(this).parents('tr')[0].firstChild.innerText)
-    //         }
-    //     });
-    // }else{
-        removeProducto(this);
-        setSubTotal();
-    // }
-} );
-
-
-// $('#codigo').on('keydown', function (e) {
-//     changeProducto();
-// });
-// $('#producto').on('keydown', function (e) {
-//     changeCodigoProducto();
-// });
-
-$('#codigo').on('change', function (e) {
-    changeProducto();
-});
-$('#productos').on('change', function (e) {
-    changeCodigoProducto();
-});
-
-$('#proveedor').on('change', function (e) {
-    // console.log(e.target.value);
-    getProductos();
-    resetProductoTabla();
-    resetProductoMeta();
-});
+}
 
 async function validarVerificacion(){
     const action      = document.getElementById('validar-verificacion').getAttribute('action');
@@ -408,47 +551,65 @@ function showCodigoProductos(productos){
     }
 }
 
-
 function fillPedidoDetallesTabla() {
     productosTable.rows.add(productosTableArray).draw(false);
 }
-
-
 
 function enableBtn(btnId,status){
     let reservar = document.getElementById(btnId);
     (status) ? reservar.removeAttribute('disabled') : reservar.setAttribute('disabled','disabled');
 }
+  
+function calculateAndDisplaySubTotalTotal() {
+    const subTotal = calculateSubTotal();
+    const impuestoTotal = calculateImpuestosTotal();
+    const total = calculateTotal(subTotal, impuestoTotal);
+    updateDisplay(subTotal, total);
+}
 
+function calculateSubTotal() {
+    let subTotal = 0;
+    productosArray.forEach(venta => {
+      subTotal += parseFloat(venta.cantidad) * parseFloat(venta.costo);
+    });
 
+    return subTotal.toFixed(2);
+}
 
+function calculateImpuestosTotal(){
+    let impuestoTotal = 0;
+    
+    impuestosTotales.forEach(impuesto => {
+        impuestoTotal = (parseFloat(impuestoTotal) + parseFloat(impuesto.impuesto));
+    })
 
-$('body').on('keydown', 'input, select, button', function(e) {
-    if (e.key === "Enter") {
+    return impuestoTotal.toFixed(2);
+}
+  
+function calculateTotal(subTotal, impuestoTotal) {
+    const total = parseFloat(subTotal) + parseFloat(impuestoTotal);
 
-        if($(this).attr("id") == "cantidad"){
-            if(productoIsValid() && validateProductos()){
-                addProducto();
-                resetProductoMeta();
-                validateBotonGuardar();
-                $('#codigo').focus();
-                return false;
-            }
+    return total.toFixed(2);;
+}
+
+function updateDisplay(subTotal, total) {
+    subTotal = parseFloat(subTotal).toFixed(2)
+    document.getElementById('subtotal').setAttribute('value', subTotal);
+    document.getElementById('subtotal').value = formatter.format(subTotal);
+
+    total = parseFloat(total).toFixed(2);
+    document.getElementById('total').setAttribute('value', total);
+    document.getElementById('total').value = formatter.format(total);
+}
+
+function getProductoImpuestosId(productoId){
+    let productoImpuestos = [];
+    
+    for (var i = 0; i < productosImpuestos.length; i++) {
+        if (productoId == productosImpuestos[i].producto_id) {
+            productoImpuestos.push(productosImpuestos[i].impuesto_id);
         }
-
-        if($(this).attr("id") == "codigo"){
-            $('#cantidad').focus();
-            return false;
-        }
-
-        var self = $(this), form = self.parents('form:eq(0)'), focusable, next;
-        focusable = form.find('input[tabindex],a[tabindex],select[tabindex],button[tabindex],textarea[tabindex]').filter(':visible');
-        next = focusable.eq(focusable.index(this)+1);
-        if (next.length) {
-            next.focus();
-        } else {
-            form.submit();
-        }
-        return false;
     }
-});
+
+    return productoImpuestos.join(',');
+}

@@ -15,5 +15,11 @@ class TiendaImpuesto extends Model
         'estatus'
     ];
     
+
+    public function tiendaPedidoImpuesto()
+    {
+        return $this->belongsTo(TiendaPedidoImpuesto::class,'id','impuesto_id');
+    }
+    
     protected $primaryKey = 'id';
 }

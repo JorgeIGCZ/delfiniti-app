@@ -6,7 +6,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Impuestos</h2>
+            <h2 class="az-dashboard-title">Impuestos a productos</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">

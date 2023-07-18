@@ -24,7 +24,8 @@ function createPedido(estatus) {
         'fecha': pedido.elements['fecha'].value,
         'comentarios': pedido.elements['comentarios'].value,
         'estatus': estatus,
-        'pedidoProductos': productosArray
+        'pedidoProductos': productosArray,
+        'impuestosTotales': impuestosTotales
     }).then(function (response) {
         $('.loader').hide();
         if (response.data.result == 'Success') {
@@ -55,27 +56,4 @@ function createPedido(estatus) {
             showConfirmButton: true
         })
     });
-}
-
-function setSubTotal() {
-    let subTotal = 0;
-    productosArray.forEach(venta => {
-        subTotal += (venta.cantidad * venta.costo);
-    });
-    subTotal = parseFloat(subTotal).toFixed(2)
-    document.getElementById('subtotal').setAttribute('value', subTotal);
-    document.getElementById('subtotal').value = formatter.format(subTotal);
-    setTotal();
-}
-
-function setTotal(){
-    let total = 0;
-    const subTotal = parseFloat(document.getElementById('subtotal').getAttribute('value'));
-    const iva = parseFloat(document.getElementById('iva').getAttribute('value'));
-    const ieps = parseFloat(document.getElementById('ieps').getAttribute('value'));
-
-    total = parseFloat((subTotal + iva + ieps)).toFixed(2);
-
-    document.getElementById('total').setAttribute('value', total);
-    document.getElementById('total').value = formatter.format(total);
 }

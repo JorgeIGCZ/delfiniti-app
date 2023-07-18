@@ -24,6 +24,11 @@ class TiendaPedido extends Model
         return $this->hasMany(TiendaPedidoDetalle::class,'pedido_id');
     }
 
+    public function pedidoImpuesto()
+    {
+        return $this->hasMany(TiendaPedidoImpuesto::class,'sail php artisan migrate');
+    }
+
     // public function producto()
     // {
     //     return $this->hasManyThrough(

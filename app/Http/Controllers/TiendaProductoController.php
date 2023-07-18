@@ -155,8 +155,8 @@ class TiendaProductoController extends Controller
             $producto->comentarios     = mb_strtoupper($request->comentarios);
             $producto->save();
 
+            TiendaProductoImpuesto::where('producto_id', $producto->id)->delete();
             if(isset($request->impuestos)){
-                TiendaProductoImpuesto::where('producto_id', $producto->id)->delete();
                 foreach($request->impuestos as $impuesto){
                     TiendaProductoImpuesto::create([
                         'producto_id' => $producto->id,

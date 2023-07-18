@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CustomErrorHandler;
+use App\Models\TiendaImpuesto;
 use App\Models\TiendaPedido;
 use App\Models\TiendaPedidoDetalle;
+use App\Models\TiendaPedidoImpuesto;
 use App\Models\TiendaProducto;
+use App\Models\TiendaProductoImpuesto;
 use App\Models\TiendaProveedor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -37,8 +40,16 @@ class TiendaPedidoController extends Controller
     {
         $proveedores = TiendaProveedor::where('estatus',1)->orderBy('razon_social','asc')->get();
         $productos = TiendaProducto::where('estatus',1)->get()->toArray();
+        $productosImpuestos = TiendaProductoImpuesto::get()->toArray();
+        $impuestos = TiendaImpuesto::where('estatus',1)->get()->toArray();
 
-        return view('pedidos.create',['pedido' => $pedido,'proveedores' => $proveedores,'productos' => $productos]);
+        return view('pedidos.create',[
+            'pedido' => $pedido,
+            'proveedores' => $proveedores,
+            'productos' => $productos,
+            'productosImpuestos' => $productosImpuestos,
+            'impuestos' => $impuestos
+        ]);
     }
 
     /**
@@ -63,8 +74,17 @@ class TiendaPedidoController extends Controller
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
                     'cantidad'    =>  $pedidoProducto['cantidad'],
-                    'PPU'         =>  $pedidoProducto['costo'],
+                    'CPU'         =>  $pedidoProducto['costo'],
+                    'IPU_total'   =>  $this->getTotalImpuestosPorUnidad($pedidoProducto['impuestosPU']),
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
+                ]);
+            }
+
+            foreach($request->impuestosTotales as $impuestoTotal){
+                TiendaPedidoImpuesto::create([
+                    'pedido_id'   =>  $pedido['id'],
+                    'impuesto_id' =>  $impuestoTotal['impuestoId'],
+                    'total'       =>  (float)$impuestoTotal['impuesto'],
                 ]);
             }
 
@@ -207,12 +227,24 @@ class TiendaPedidoController extends Controller
      */
     public function show(TiendaPedido $pedido)
     {
+        $impuestos = TiendaPedidoImpuesto::where('pedido_id',$pedido->id)->get();
+        $impuestosTotales = 0;
         $subtotal = 0;
         foreach($pedido->pedidoDetalle as $pedidoDetalle){
             $subtotal += $pedidoDetalle->subtotal;
         }
-        $total = $subtotal;
-        return view('pedidos.view',['pedido' => $pedido, 'subtotal' => $subtotal, 'total' => $total]);
+
+        foreach($impuestos as $impuesto){
+            $impuestosTotales += $impuesto->total;
+        }
+
+        $total = ($subtotal + $impuestosTotales);
+        return view('pedidos.view',[
+            'pedido' => $pedido,
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'impuestos' => $impuestos
+        ]);
     }
 
     /**
@@ -252,6 +284,16 @@ class TiendaPedidoController extends Controller
      */
     public function edit(TiendaPedido $pedido)
     {
+        // $impuestos = TiendaPedidoImpuesto::where('pedido_id',$pedido->id)->get();
+        $productosImpuestos = TiendaProductoImpuesto::get()->toArray();
+
+        $impuestos = TiendaImpuesto::with(['tiendaPedidoImpuesto' => function ($query) use($pedido) {
+            $query->where('pedido_id',$pedido->id);
+        }])->where('estatus',1)
+            ->get();
+
+        // dd($impuestos[0]->tiendaPedidoImpuesto->total);
+
         if($pedido->estatus_proceso){
             return view('pedidos.index');
         }
@@ -259,7 +301,15 @@ class TiendaPedidoController extends Controller
         $proveedores = TiendaProveedor::where('estatus',1)->get();
         $productos   = TiendaProducto::where('estatus',1)->get()->toArray();
 
-        return view('pedidos.edit',['pedido' => $pedido,'proveedores' => $proveedores,'productos' => $productos]);
+        // dd($pedido->proveedor_id);
+
+        return view('pedidos.edit',[
+            'pedido' => $pedido,
+            'proveedores' => $proveedores,
+            'productos' => $productos,
+            'impuestos' => $impuestos,
+            'productosImpuestos' => $productosImpuestos
+        ]);
     }
 
     /**
@@ -278,7 +328,7 @@ class TiendaPedidoController extends Controller
             $pedido = TiendaPedido::find($id);
             $pedido->proveedor_id    = mb_strtoupper($request->proveedor);
             $pedido->comentarios     = mb_strtoupper($request->comentarios);
-            $pedido->fecha           = $request->fecha;
+            $pedido->fecha_pedido    = $request->fecha;
             $pedido->save();
 
             TiendaPedidoDetalle::where('pedido_id', $pedido['id'])->delete();
@@ -289,7 +339,8 @@ class TiendaPedidoController extends Controller
                     'pedido_id'   =>  $pedido['id'],
                     'producto_id' =>  $pedidoProducto['productoId'],
                     'cantidad'    =>  $pedidoProducto['cantidad'],
-                    'PPU'         =>  $pedidoProducto['costo'],
+                    'CPU'         =>  $pedidoProducto['costo'],
+                    'IPU_total'   =>  $this->getTotalImpuestosPorUnidad($pedidoProducto['impuestosPU']),
                     'subtotal'    =>  (float)$pedidoProducto['cantidad']*$pedidoProducto['costo'],
                 ]);
                 
@@ -315,6 +366,14 @@ class TiendaPedidoController extends Controller
             $CustomErrorHandler->saveError($e->getMessage(),$request);
             return json_encode(['result' => 'Error','message' => $e->getMessage()]);
         }
+    }
+
+    public function getTotalImpuestosPorUnidad($impuestosPU){
+        $impuestosTotales = 0;
+        foreach($impuestosPU as $impuestoPU){
+            $impuestosTotales = $impuestoPU['impuesto'];
+        }
+        return $impuestosTotales;
     }
 
     // private function removeProductoStock($pedidoId){

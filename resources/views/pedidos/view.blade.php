@@ -3,6 +3,7 @@
     <script>
         let productosArray = [];
         let productosTableArray = [];
+        const impuestos = @php echo(json_encode($impuestos)) @endphp;
         const pedidoId = () => {
             return {{$pedido->id}};
         }
@@ -15,15 +16,16 @@
                 '{{$detalle->producto->clave}}',
                 '{{$detalle->producto->nombre}}',
                 '{{$detalle->cantidad}}',
-                formatter.format('{{$detalle->PPU}}'),
-                formatter.format('{{$detalle->PPU}}'*'{{$detalle->cantidad}}')
+                formatter.format('{{$detalle->CPU}}'),
+                formatter.format('{{$detalle->IPU_total}}'),
+                formatter.format('{{$detalle->CPU}}'*'{{$detalle->cantidad}}')
             ]];
             productosArray = [...productosArray,{
                 'claveProducto'   : '{{$detalle->producto->clave}}',
                 'productoDetalle' : '{{$detalle->producto->nombre}}',
                 'productoId'      : '{{$detalle->producto_id}}',
                 'cantidad'        : '{{$detalle->cantidad}}',
-                'costo'           : '{{$detalle->PPU}}'
+                'costo'           : '{{$detalle->CPU}}'
             }];
         @endforeach
     </script>
@@ -108,7 +110,8 @@
                                                     <th>Clave</th>
                                                     <th>Producto</th>
                                                     <th>Cantidad</th>
-                                                    <th>Costo P/P</th>
+                                                    <th>Costo P/U</th>
+                                                    <th>Impuesto P/U</th>
                                                     <th>Subtotal</th>
                                                 </tr>
                                             </thead>
@@ -139,35 +142,23 @@
                                                         <label for="subtotal" class="col-form-label"><strong>Subtotal:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="{{$subtotal}}">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="iva" class="col-form-label"><strong>I.V.A.:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="iva" id="iva" class="form-control amount not-editable height-auto" disabled="disabled" value="?">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="descuento" class="col-form-label"><strong>Descuento:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="descuento" id="descuento" class="form-control amount not-editable height-auto" disabled="disabled" value="?">
-                                                    </div>
-
-                                                    <div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="ieps" class="col-form-label"><strong>IEPS:</strong></label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="ieps" id="ieps" class="form-control amount not-editable height-auto" disabled="disabled" value="?">
-                                                    </div>
+                                                        <input type="text" name="subtotal" id="subtotal" class="form-control not-editable height-auto" disabled="disabled" value="${{$subtotal}}">
+                                                    </div>  
+                                                    
+                                                    @foreach($impuestos as $impuesto)
+                                                        <div class="form-group col-7 mt-0 mb-0">
+                                                            <label for="ieps" class="col-form-label"><strong>{{$impuesto->impuesto->nombre}}:</strong></label>
+                                                        </div>
+                                                        <div class="form-group col-5 mt-0 mb-0">
+                                                            <input type="text" id="impuesto_{{$impuesto->impuesto->id}}" class="form-control not-editable height-auto" disabled="disabled" value="${{$impuesto->total}}">
+                                                        </div>
+                                                    @endforeach
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="total" class="col-form-label"><strong>Total:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="{{$total}}">
+                                                        <input type="text" name="total" id="total" class="form-control not-editable height-auto" disabled="disabled" value="${{$total}}">
                                                     </div>
                                                 </div>
                                             </div>

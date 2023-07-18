@@ -7,7 +7,10 @@ function changeProducto() {
         // document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
         //$('#productos').trigger('change.select2');
         // getProductoDisponibilidad();
-        getProductoMeta();
+        // getProductoMeta();
+
+        displayProductoMeta(modulo);
+
         return;
     }
 
@@ -22,7 +25,7 @@ function changeCodigoProducto() {
         document.getElementById('codigo').value = productos.getAttribute('data-codigo');
         document.getElementById('codigo').setAttribute('nombreProducto',productos.value);
 
-        getProductoMeta();
+        displayProductoMeta(modulo);
         return;
     }
 
@@ -43,23 +46,19 @@ function resetProductoMeta() {
 
     document.getElementById('clave').value = "";
     document.getElementById('producto-id').value = "";
+    displayImpuestos();
 }
 
-function getProductoMeta() {
-    const codigo = document.getElementById('codigo').value;
-
-	if(modulo === 'ventas'){
-		let precio = document.getElementById('precio'); 
-	}else{
-		let costo = document.getElementById('costo'); 
-	}
-
-    
-    let clave = document.getElementById('clave');
-    let productoId = document.getElementById('producto-id');
+function displayProductoMeta(modulo){
+    const codigoElement = document.getElementById('codigo').value;
+    const claveElement = document.getElementById('clave');
+    const productoIdElement = document.getElementById('producto-id');
+    const productoImpuestosElement = document.getElementById('producto-impuestos');
+    const precio = (document.getElementById('precio') !== null ? document.getElementById('precio') : 0); 
+    const costo = (document.getElementById('costo') !== null ? document.getElementById('costo') : 0); 
 
     for (var i = 0; i < allProductos.length; i++) {
-        if (codigo == allProductos[i].codigo) {
+        if (codigoElement == allProductos[i].codigo) {
 
 			if(modulo === 'ventas'){
 				precio.value = allProductos[i].precio_venta;
@@ -67,8 +66,52 @@ function getProductoMeta() {
 				costo.value = allProductos[i].costo;
 			}
 
-            clave.value = allProductos[i].clave;
-            productoId.value = allProductos[i].id;
+            claveElement.value = allProductos[i].clave;
+            productoIdElement.value = allProductos[i].id;
         }
     }
+
+    if(modulo === 'pedidos'){
+        const productoImpuestosId = getProductoImpuestosId(productoIdElement.value);
+        productoImpuestosElement.value = productoImpuestosId;
+    }
 }
+
+// function getProductoMeta(codigo, clave, productoId) {
+//     const codigo = document.getElementById('codigo').value;
+//     const clave = document.getElementById('clave');
+//     const productoId = document.getElementById('producto-id');
+//     const productoImpuestos = document.getElementById('producto-impuestos');
+
+//     const precio = 0; 
+//     const costo = 0;
+// 	if(modulo === 'ventas'){
+// 		precio = document.getElementById('precio'); 
+// 	}else{
+// 		costo = document.getElementById('costo'); 
+// 	}
+
+
+//     for (var i = 0; i < allProductos.length; i++) {
+//         if (codigo == allProductos[i].codigo) {
+
+// 			if(modulo === 'ventas'){
+// 				precio.value = allProductos[i].precio_venta;
+// 			}else{
+// 				costo.value = allProductos[i].costo;
+// 			}
+
+//             clave.value = allProductos[i].clave;
+//             productoId.value = allProductos[i].id;
+//         }
+//     }
+
+    
+//     if(modulo === 'pedidos'){
+//         for (var i = 0; i < productosImpuestos.length; i++) {
+//             if (productoId.value == productosImpuestos[i].producto_id) {
+//                 productoImpuestos.value += productosImpuestos[i].impuesto_id+',';
+//             }
+//         }
+//     }
+// }

@@ -187,7 +187,7 @@
                 
                 @if(session('modulo') == 'tienda')
                   {{-- @can('TipoCambio.index') --}}
-                    <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos</a>
+                    <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos productos</a>
                   {{-- @endcans --}}
                 @endif
               </nav>
