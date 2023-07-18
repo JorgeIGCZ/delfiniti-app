@@ -27,7 +27,7 @@
                 { data: 'id' },
                 { data: 'proveedor' },
                 { data: 'cantidad' },
-                { data: 'fechaCreacion' },
+                { data: 'fechaPedido' },
                 { data: 'comentarios' },
                 { defaultContent: 'Acciones', className: 'dt-center', 'render': function ( data, type, row )
                     {
@@ -124,7 +124,7 @@
 @section('content')
     <div class="az-dashboard-one-title">
         <div>
-            <h2 class="az-dashboard-title">Autorización Pedidos</h2>
+            <h2 class="az-dashboard-title">Autorización pedidos</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
     <div class="row row-sm mg-b-20">
@@ -139,7 +139,7 @@
                                         <th>Id</th>
                                         <th>Proveedor</th>
                                         <th># Productos</th>
-                                        <th>Fecha creación</th>
+                                        <th>Fecha pedido</th>
                                         <th>Comentarios</th>
                                         <th>Acciones</th>
                                         <th>Autorización</th>
