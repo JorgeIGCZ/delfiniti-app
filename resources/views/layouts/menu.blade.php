@@ -164,80 +164,82 @@
           </li>
         @endcan
       @endif
-
-      <li class="nav-item">
-        <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
-        <div class="az-menu-sub az-menu-sub-mega">
-          <div class="container">
-            <div>
-              <nav class="nav">
-                <span>General</span>
-                @can('Usuarios.index')
-                  <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
-                @endcan
-                @can('Usuarios.Roles.index')
-                  <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
-                @endcan
-                @can('TipoCambio.index')
-                  <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
-                @endcan
-                @can('Directivos.index')
-                  <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
-                @endcan
-                
-                @if(session('modulo') == 'tienda')
-                  {{-- @can('TipoCambio.index') --}}
-                    <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos productos</a>
-                  {{-- @endcans --}}
-                @endif
-              </nav>
-            </div>
-            <div>
-              <nav class="nav">
-                <span>Catálogos</span>
-                  @if(session('modulo') == 'reservaciones')
-                    @can('Actividades.index')
-                      <a href="{{ url('/actividades') }}" class="nav-link {{url()->current() == url('actividades') ? 'active' : ''}}">Actividades</a>
-                    @endcan
-                    @can('Alojamientos.index')
-                      <a href="{{ url('/alojamientos') }}" class="nav-link {{url()->current() == url('alojamientos') ? 'active' : ''}}">Alojamientos</a>
-                    @endcan
-                    @can('Cerradores.index')
-                      <!--a href="{{ url('/cerradores') }}" class="nav-link {{url()->current() == url('cerradores') ? 'active' : ''}}">Cerradores</a-->
-                    @endcan
-                    @can('Comisionista.index')
-                      <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
-                    @endcan
-                    @can('CanalesVenta.index')
-                      <a href="{{ url('/canalesventa') }}" class="nav-link {{url()->current() == url('canalesventa') ? 'active' : ''}}">Canales de venta</a>
-                    @endcan
-                    @can('CodigosDescuento.index')
-                      <a href="{{ url('/descuentocodigos') }}" class="nav-link {{url()->current() == url('descuentocodigos') ? 'active' : ''}}">Códigos descuento</a>
-                    @endcan
-                  @endif
-
+      
+      @can('Configuracion')
+        <li class="nav-item">
+          <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
+          <div class="az-menu-sub az-menu-sub-mega">
+            <div class="container">
+              <div>
+                <nav class="nav">
+                  <span>General</span>
+                  @can('Usuarios.index')
+                    <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
+                  @endcan
+                  @can('Usuarios.Roles.index')
+                    <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles</a>
+                  @endcan
+                  @can('TipoCambio.index')
+                    <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
+                  @endcan
+                  @can('Directivos.index')
+                    <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
+                  @endcan
+                  
                   @if(session('modulo') == 'tienda')
-                    @can('TiendaProductos.index')
-                      <a href="{{ url('/productos') }}" class="nav-link {{url()->current() == url('productos') ? 'active' : ''}}">Productos</a>
-                    @endcan
-
-                    @can('TiendaProveedores.index')
-                      <a href="{{ url('/proveedores') }}" class="nav-link {{url()->current() == url('proveedores') ? 'active' : ''}}">Proveedores</a>
-                    @endcan
+                    {{-- @can('TipoCambio.index') --}}
+                      <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos productos</a>
+                    {{-- @endcans --}}
                   @endif
+                </nav>
+              </div>
+              <div>
+                <nav class="nav">
+                  <span>Catálogos</span>
+                    @if(session('modulo') == 'reservaciones')
+                      @can('Actividades.index')
+                        <a href="{{ url('/actividades') }}" class="nav-link {{url()->current() == url('actividades') ? 'active' : ''}}">Actividades</a>
+                      @endcan
+                      @can('Alojamientos.index')
+                        <a href="{{ url('/alojamientos') }}" class="nav-link {{url()->current() == url('alojamientos') ? 'active' : ''}}">Alojamientos</a>
+                      @endcan
+                      @can('Cerradores.index')
+                        <!--a href="{{ url('/cerradores') }}" class="nav-link {{url()->current() == url('cerradores') ? 'active' : ''}}">Cerradores</a-->
+                      @endcan
+                      @can('Comisionista.index')
+                        <a href="{{ url('/comisionistas') }}" class="nav-link {{url()->current() == url('comisionistas') ? 'active' : ''}}">Comisionistas</a>
+                      @endcan
+                      @can('CanalesVenta.index')
+                        <a href="{{ url('/canalesventa') }}" class="nav-link {{url()->current() == url('canalesventa') ? 'active' : ''}}">Canales de venta</a>
+                      @endcan
+                      @can('CodigosDescuento.index')
+                        <a href="{{ url('/descuentocodigos') }}" class="nav-link {{url()->current() == url('descuentocodigos') ? 'active' : ''}}">Códigos descuento</a>
+                      @endcan
+                    @endif
 
-                  @if(session('modulo') == 'fotovideo')
-                    @can('FotoVideoProductos.index')
-                      <a href="{{ url('/fotovideoproductos') }}" class="nav-link {{url()->current() == url('fotovideoproductos') ? 'active' : ''}}">Productos</a>
-                    @endcan
-                    @can('FotoVideoComisionistas.index')
-                      <a href="{{ url('/fotovideocomisionistas') }}" class="nav-link {{url()->current() == url('fotovideocomisionistas') ? 'active' : ''}}">Fotógrafos</a>
-                    @endcan
-                  @endif
-              </nav>
-            </div>
-          </div><!-- container -->
-        </div>
-      </li>
+                    @if(session('modulo') == 'tienda')
+                      @can('TiendaProductos.index')
+                        <a href="{{ url('/productos') }}" class="nav-link {{url()->current() == url('productos') ? 'active' : ''}}">Productos</a>
+                      @endcan
+
+                      @can('TiendaProveedores.index')
+                        <a href="{{ url('/proveedores') }}" class="nav-link {{url()->current() == url('proveedores') ? 'active' : ''}}">Proveedores</a>
+                      @endcan
+                    @endif
+
+                    @if(session('modulo') == 'fotovideo')
+                      @can('FotoVideoProductos.index')
+                        <a href="{{ url('/fotovideoproductos') }}" class="nav-link {{url()->current() == url('fotovideoproductos') ? 'active' : ''}}">Productos</a>
+                      @endcan
+                      @can('FotoVideoComisionistas.index')
+                        <a href="{{ url('/fotovideocomisionistas') }}" class="nav-link {{url()->current() == url('fotovideocomisionistas') ? 'active' : ''}}">Fotógrafos</a>
+                      @endcan
+                    @endif
+                </nav>
+              </div>
+            </div><!-- container -->
+          </div>
+        </li>
+      @endcan
     </ul>
 @endif

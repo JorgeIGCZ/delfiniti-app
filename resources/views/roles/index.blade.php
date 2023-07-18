@@ -145,6 +145,8 @@
                 'Directivos.index'    : roles.elements['Directivos.index'      ].checked,
                 'Directivos.create'   : roles.elements['Directivos.create'     ].checked,
                 'Directivos.update'   : roles.elements['Directivos.update'     ].checked,
+
+                'Configuracion' : roles.elements['Configuracion'     ].checked,
             }
         })
         .then(function (response) {
@@ -202,7 +204,14 @@
                     <div class="col-md-12 col-xl-12 mt-5 mb-3">
                         <div class="row">
                             <div class="col-md-2">
-                                <strong>Sección general</strong>
+                                <strong>Sección configuración</strong>
+
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Configuracion" type="checkbox">
+                                    <label for="Configuracion">
+                                        Ver
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
