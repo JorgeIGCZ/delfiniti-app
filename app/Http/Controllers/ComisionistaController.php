@@ -59,7 +59,7 @@ class ComisionistaController extends Controller
             ]);
             
             if($request->tipoComisionista == 'comisionistaCanal'){
-                $this->createComisionistaCanalDetalle($comisionista['id'],$request);
+                // $this->createComisionistaCanalDetalle($comisionista['id'],$request);
             }else if($request->tipoComisionista == 'comisionistaActividad'){
                 $this->createComisionistaActividadDetalle($comisionista['id'],$request);
             }
@@ -72,17 +72,17 @@ class ComisionistaController extends Controller
         return json_encode(['result' => is_numeric($comisionista['id']) ? 'Success' : 'Error']);
     }
 
-    private function createComisionistaCanalDetalle($comisionistaId,$request){
-        foreach($request->comisionesSobreCanales as $key => $comisionSobreCanales){
-            ComisionistaCanalDetalle::create([
-                'comisionista_id'       => $comisionistaId,
-                'canal_venta_id'        => $key,
-                'comision'              => $comisionSobreCanales['comision'],
-                'iva'                   => $comisionSobreCanales['iva'],
-                'descuento_impuesto'    => $comisionSobreCanales['descuentoImpuesto']
-            ]);
-        }
-    }
+    // private function createComisionistaCanalDetalle($comisionistaId,$request){
+    //     foreach($request->comisionesSobreCanales as $key => $comisionSobreCanales){
+    //         ComisionistaCanalDetalle::create([
+    //             'comisionista_id'       => $comisionistaId,
+    //             'canal_venta_id'        => $key,
+    //             'comision'              => $comisionSobreCanales['comision'],
+    //             'iva'                   => $comisionSobreCanales['iva'],
+    //             'descuento_impuesto'    => $comisionSobreCanales['descuentoImpuesto']
+    //         ]);
+    //     }
+    // }
 
     private function createComisionistaActividadDetalle($comisionistaId,$request){
         foreach($request->comisionesSobreActividades as $key => $comisionSobreActividades){
@@ -187,22 +187,22 @@ class ComisionistaController extends Controller
 
             $comisionistaCanalVenta = Comisionista::find($id)->tipo;
 
-            ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
+            // ComisionistaCanalDetalle::where('comisionista_id',$id)->delete();
             ComisionistaActividadDetalle::where('comisionista_id',$id)->delete();
 
             if($comisionistaCanalVenta->comisionista_canal == 1){
 
-                foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
-                    foreach($comisionistaCanalDetalle as $key => $detalle){
-                        ComisionistaCanalDetalle::create([
-                            'comisionista_id'       => $id,
-                            'canal_venta_id'        => $key,
-                            'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
-                            'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
-                            'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
-                        ]);
-                    }
-                }
+                // foreach($request->comisionista_canal_detalles as $comisionistaCanalDetalle){
+                //     foreach($comisionistaCanalDetalle as $key => $detalle){
+                //         ComisionistaCanalDetalle::create([
+                //             'comisionista_id'       => $id,
+                //             'canal_venta_id'        => $key,
+                //             'comision'              => is_null($detalle['comision']) ? 0 : $detalle['comision'],
+                //             'iva'                   => is_null($detalle['iva']) ? 0 : $detalle['iva'],
+                //             'descuento_impuesto'    => is_null($detalle['descuento_impuesto']) ? 0 : $detalle['descuento_impuesto']
+                //         ]);
+                //     }
+                // }
             }else if($comisionistaCanalVenta->comisionista_actividad == 1){
                 foreach($request->comisionista_actividad_detalles as $comisionistaActividadDetalle){
                     foreach($comisionistaActividadDetalle as $key => $detalle){

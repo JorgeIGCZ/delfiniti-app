@@ -84,18 +84,20 @@
         </div>
         <div class="az-content-header-right">
             @can('TiendaPedidos.cancel')
-                @if($pedido->estatus)
-                    <div class="media">
-                        <div class="media-body">
-                            <button class="btn btn-danger" id="actualizar-estatus-pedido" accion='cancelar'>Cancelar</button>
+                @if(!$pedido->estatus_proceso)
+                    @if($pedido->estatus)
+                        <div class="media">
+                            <div class="media-body">
+                                <button class="btn btn-danger" id="actualizar-estatus-pedido" accion='cancelar'>Cancelar</button>
+                            </div>
                         </div>
-                    </div>
-                @else
-                    <div class="media">
-                        <div class="media-body">
-                            <button class="btn btn-success" id="actualizar-estatus-pedido" accion='reactivar'>Activar pedido</button>
+                    @else
+                        <div class="media">
+                            <div class="media-body">
+                                <button class="btn btn-success" id="actualizar-estatus-pedido" accion='reactivar'>Activar pedido</button>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 @endif
             @endcan  
         </div>

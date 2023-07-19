@@ -254,7 +254,7 @@ class TiendaPedidoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateEstatus(Request $request, $id){
+    public function updateEstatus(Request $request, $id){ 
         try{
             $pedido          = TiendaPedido::find($id);
             $pedido->estatus = $request->estatus;
@@ -284,6 +284,9 @@ class TiendaPedidoController extends Controller
      */
     public function edit(TiendaPedido $pedido)
     {
+        if($pedido->estatus_proceso){
+            return back()->withErrors("Pedido ya fue procesado");
+        }
         // $impuestos = TiendaPedidoImpuesto::where('pedido_id',$pedido->id)->get();
         $productosImpuestos = TiendaProductoImpuesto::get()->toArray();
 
@@ -291,13 +294,7 @@ class TiendaPedidoController extends Controller
             $query->where('pedido_id',$pedido->id);
         }])->where('estatus',1)
             ->get();
-
-        // dd($impuestos[0]->tiendaPedidoImpuesto->total);
-
-        if($pedido->estatus_proceso){
-            return view('pedidos.index');
-        }
-        
+            
         $proveedores = TiendaProveedor::where('estatus',1)->get();
         $productos   = TiendaProducto::where('estatus',1)->get()->toArray();
 
@@ -317,7 +314,7 @@ class TiendaPedidoController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response 
      */
     public function update(Request $request, $id)
     {
