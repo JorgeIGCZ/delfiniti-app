@@ -314,6 +314,7 @@ Route::controller(TiendaVentaTicketController::class)->middleware(['auth'])->gro
 
 // FOTO Y VIDEO
 Route::controller(FotoVideoVentaController::class)->middleware(['auth'])->group(function () {
+    Route::post('fotovideoventas/get/{venta?}', 'get');
     // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
     Route::post('fotovideoventas/updateestatusventa', 'updateEstatusVenta');
     Route::post('fotovideoventas/updateestatus', 'updateEstatus');

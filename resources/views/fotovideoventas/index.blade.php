@@ -14,7 +14,7 @@
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
                     const ventas = document.getElementById('ventas-form');
-                    axios.post('/fotovideoventas/show',{
+                    axios.post('/fotovideoventas/get',{
                         "_token"  : '{{ csrf_token() }}',
                         "estatus" : ventas.elements['estatus'].value,
                         "fecha"   : ventas.elements['fecha'].value,
@@ -63,8 +63,14 @@
                         {
                             let cloneRow = '';
                             let payRow = '';
+                            let viewRow = '';
                             let editRow = '';
                             let options = [];
+
+                            @can('FotoVideoVentas.index')
+                            viewRow = `<a href="fotovideoventas/${row.id}">Ver</a>`;
+                            @endcan
+
                             @can('FotoVideoVentas.update') 
                                 @role('Administrador')
                                     editRow = `<a href="fotovideoventas/${row.id}/edit?accion=edit">Editar</a>`;
@@ -75,7 +81,7 @@
                                 }
                             @endcan
 
-                            options = [editRow];
+                            options = [viewRow, editRow];
                             options = options.filter(option => option != ""); 
 
                             let view    =   `<small>

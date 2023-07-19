@@ -262,6 +262,26 @@ class FotoVideoVentaController extends Controller
         }
         return $result;
     }
+    
+    public function show(FotoVideoVenta $fotoVideoVenta)
+    {
+        $productos = FotoVideoProducto::where('estatus',1)->get();
+        $estados = Estado::all();
+
+        $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
+
+        $fotografos = FotoVideoComisionista::where('estatus',1)->orderBy('nombre', 'asc')->get();
+        $tickets    = FotoVideoVentaTicket::where('venta_id',$fotoVideoVenta->id)->get();
+        
+        return view('fotovideoventas.view',[
+            'venta' => $fotoVideoVenta,
+            'productos' => $productos,
+            'estados' => $estados,
+            'dolarPrecio' => $dolarPrecio,
+            'fotografos' => $fotografos,
+            'tickets' => $tickets
+        ]);
+    }
 
     /**
      * Display the specified resource.
@@ -269,7 +289,7 @@ class FotoVideoVentaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function get(Request $request)
     {
         if(!is_null($request->fecha)){
             switch (@$request->fecha) {
