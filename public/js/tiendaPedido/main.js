@@ -16,9 +16,9 @@ window.onload = function() {
         pedidoForm.focus();
     } 
 
-    // document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-    //     validarVerificacion();
-    // });
+    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
+        validarVerificacion();
+    });
 
     constructorImpuestosTotales();
 };
