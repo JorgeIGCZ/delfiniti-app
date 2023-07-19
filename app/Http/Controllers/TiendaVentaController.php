@@ -305,13 +305,25 @@ class TiendaVentaController extends Controller
         $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
         return $tipoPagoId;
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request)
+    
+    public function show(TiendaVenta $venta)
+    {
+        $productos = TiendaProducto::where('estatus',1)->get();
+        $estados = Estado::all();
+
+        $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
+        $tickets     = TiendaVentaTicket::where('venta_id',$venta->id)->get();
+        
+        return view('ventas.view',[
+            'venta' => $venta,
+            'productos' => $productos,
+            'estados' => $estados,
+            'dolarPrecio' => $dolarPrecio,
+            'tickets' => $tickets
+        ]);
+    }
+
+    public function get(Request $request)
     {
 
         if(!is_null($request->fecha)){
@@ -623,7 +635,7 @@ class TiendaVentaController extends Controller
                 }
             //}
         }
-        return false;
+        return false; 
     }
     /**
      * Remove the specified resource from storage.

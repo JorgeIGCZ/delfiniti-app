@@ -219,14 +219,15 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 
 // TIENDA
 Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(function () {
-    // Route::get('/ventas/create/{reservacion?}', 'create')->name('reservacionesCreate');
+    Route::post('ventas/get/{venta?}', 'get');
+    // Route::get('/ventas/create/{venta?}', 'create')->name('reservacionesCreate');
     Route::post('ventas/updateestatusventa', 'updateEstatusVenta');
     Route::post('ventas/removeProducto', 'removeProducto');
     Route::post('ventas/editPago','editPago');
     Route::post('ventas/removePago', 'removePago');
     // Route::post('ventas/getCodigoDescuento', 'getCodigoDescuento');
     Route::post('ventas/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
-    Route::post('ventas/show/{reservacion?}', 'show');
+    Route::post('ventas/show/{venta?}', 'show');
     Route::resource('ventas',TiendaVentaController::class, [
         'parameters' => [
             'ventas' => 'venta'

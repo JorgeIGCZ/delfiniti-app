@@ -326,22 +326,74 @@ let ventasTable = new DataTable('#ventas', {
 
 window.onload = function() {
     // getDisponibilidad()
-    document.getElementById('venta-form').elements['codigo'].focus();
+    const codigoElement = document.getElementById('venta-form').elements['codigo'];
+    const addProductoElement = document.getElementById('add-producto');
+    const fechaElement = document.getElementById('fecha');
+    const descuentoPersonalizadoElement = document.getElementById('descuento-personalizado');
+    const addDescuentoPersonalizadoElement = document.getElementById('add-descuento-personalizado');
+    const validarVerificacionElement = document.getElementById('validar-verificacion');
+
+    if(codigoElement !== undefined){
+        codigoElement.focus();
+    }
 
     //$('.to-uppercase').keyup(function() {
     //    this.value = this.value.toUpperCase();
     //});s
 
 
-
-    document.getElementById('add-producto').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(productoIsValid()){
-            validateFecha();
-            addProductos();
-            document.getElementById('venta-form').elements['codigo'].focus();
-        }
-    });
+    if(addProductoElement !== null){
+        addProductoElement.addEventListener('click', (event) =>{
+            event.preventDefault();
+            if(productoIsValid()){
+                validateFecha();
+                addProductos();
+                document.getElementById('venta-form').elements['codigo'].focus();
+            }
+        });
+    }
+    if(fechaElement !== null){
+        fechaElement.addEventListener('focusout', (event) =>{
+            // getProductoDisponibilidad();
+            setTimeout(validateFecha(),500);
+        });
+    }
+    if(descuentoPersonalizadoElement !== null){
+        descuentoPersonalizadoElement.addEventListener('keyup', (event) =>{
+            if(getResta() < 0){
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+            }
+            if(!isLimite()){
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+            }
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
+    if(addDescuentoPersonalizadoElement !== null){
+        addDescuentoPersonalizadoElement.addEventListener('click', (event) =>{
+            //resetDescuentos();
+            if(addDescuentoPersonalizadoElement.checked){
+                $('#verificacion-modal').modal('show');
+                addDescuentoPersonalizadoElement.checked = false;
+                document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
+                document.getElementById('password').focus();
+            }else{
+                descuentoPersonalizadoElement.setAttribute('disabled','disabled');
+                descuentoPersonalizadoElement.setAttribute('limite','0');
+                document.getElementById('descuento-personalizado-container').classList.add("hidden");
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+                setOperacionResultados();
+            }
+        });
+    }
+    if(validarVerificacionElement !== null){
+        validarVerificacionElement.addEventListener('click', (event) =>{
+            validarVerificacion();
+        });
+    }
 
     document.getElementById('efectivo').addEventListener('keyup', (event) =>{
         //if(getResta() < 0){
@@ -351,7 +403,6 @@ window.onload = function() {
         
         setTimeout(setOperacionResultados(),500);
     });
-
     document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
         //if(getResta() < 0){
         //    document.getElementById('efectivo-usd').value = '$0.00';
@@ -373,12 +424,10 @@ window.onload = function() {
         //}
         setTimeout(setOperacionResultados(),500);
     });
-
     document.getElementById('efectivo').addEventListener('focusout', (event) =>{
         setTimeout(applyValorSinCambio(event.target),300);
         setTimeout(setOperacionResultados(),600);
     });
-
     document.getElementById('efectivo-usd').addEventListener('focusout', (event) =>{
         setTimeout(applyValorSinCambio(event.target,true),300);
         setTimeout(setOperacionResultados(),600);
@@ -415,44 +464,6 @@ window.onload = function() {
     function getCambio(){
         return document.getElementById('cambio').getAttribute('value');
     }
-
-    document.getElementById('fecha').addEventListener('focusout', (event) =>{
-        // getProductoDisponibilidad();
-        setTimeout(validateFecha(),500);
-    });
-
-    document.getElementById('descuento-personalizado').addEventListener('keyup', (event) =>{
-        if(getResta() < 0){
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-        }
-        if(!isLimite()){
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-        }
-        setTimeout(setOperacionResultados(),500);
-    });
-
-    document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
-        //resetDescuentos();
-        if(document.getElementById('add-descuento-personalizado').checked){
-            $('#verificacion-modal').modal('show');
-            document.getElementById('add-descuento-personalizado').checked = false;
-            document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
-            document.getElementById('password').focus();
-        }else{
-            document.getElementById('descuento-personalizado').setAttribute('disabled','disabled');
-            document.getElementById('descuento-personalizado').setAttribute('limite','0');
-            document.getElementById('descuento-personalizado-container').classList.add("hidden");
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-            setOperacionResultados();
-        }
-    });
-
-    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-        validarVerificacion();
-    });
 };
 
 //jQuery
