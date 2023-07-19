@@ -49,7 +49,7 @@
                 { defaultContent: 'Validacion', className: 'dt-center', 'render': function ( data, type, row )
                     {
                         let validate = "";
-                        @can('TiendaProductosValidacion.update')
+                        @can('TiendaAutorizacionPedidos.update')
                             if(row.estatus && !row.estatus_proceso){
                                 validate = `<button class="btn btn-outline-success btn-block form-control mt-1 mb-1" onclick="validacion(${row.id})" >Autorizar</button>`;
                             }

@@ -116,8 +116,8 @@
                 'TiendaProductos.create'      : roles.elements['TiendaProductos.create'        ].checked,
                 'TiendaProductos.update'      : roles.elements['TiendaProductos.update'        ].checked,
 
-                'TiendaProductosValidacion.index'  : roles.elements['TiendaProductosValidacion.index' ].checked,
-                'TiendaProductosValidacion.update' : roles.elements['TiendaProductosValidacion.update'].checked,
+                'TiendaAutorizacionPedidos.index'  : roles.elements['TiendaAutorizacionPedidos.index' ].checked,
+                'TiendaAutorizacionPedidos.update' : roles.elements['TiendaAutorizacionPedidos.update'].checked,
 
                 'TiendaComisiones.index'    : roles.elements['TiendaComisiones.index'      ].checked,
                 'TiendaComisiones.create'   : roles.elements['TiendaComisiones.create'     ].checked,
@@ -667,16 +667,16 @@
                             </div>
 
                             <div class="col-md-2">
-                                <strong>Validación productos</strong>
+                                <strong>Autorización pedidos</strong>
                                 <div class="checkbox checkbox-primary">
-                                    <input name="TiendaProductosValidacion.index" type="checkbox" >
-                                    <label for="TiendaProductosValidacion.index">
+                                    <input name="TiendaAutorizacionPedidos.index" type="checkbox" >
+                                    <label for="TiendaAutorizacionPedidos.index">
                                         ver
                                     </label>
                                 </div>
                                 <div class="checkbox checkbox-primary">
-                                    <input name="TiendaProductosValidacion.update" type="checkbox" >
-                                    <label for="TiendaProductosValidacion.update">
+                                    <input name="TiendaAutorizacionPedidos.update" type="checkbox" >
+                                    <label for="TiendaAutorizacionPedidos.update">
                                         Modificar 
                                     </label>
                                 </div>
