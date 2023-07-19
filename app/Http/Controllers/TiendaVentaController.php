@@ -373,22 +373,50 @@ class TiendaVentaController extends Controller
 
         $ventaDetalleArray = [];
         foreach($ventas as $venta){ 
+            $pagosReales = [
+                "efectivo",
+                "efectivoUsd",
+                "tarjeta",
+                "deposito"
+            ];
             $numeroProductos = 0;
             $horario        = "";
             $productos    = "";
+            $total = 0;
+            $tipoPagoNombre = "";
+            $tiposPago = [];
+
             foreach($venta->ventaDetalle as $ventaDetalle){
                 $numeroProductos += $ventaDetalle->numero_productos;
                 $horario         = ($horario != "" ? $horario.", " : "").@$ventaDetalle->horario->horario_inicial;
                 $productos     = ($productos != "" ? $productos.", " : "").@$ventaDetalle->producto->nombre;
             }
+
+            foreach($venta->pagos as $pago){
+                $tipoPagoNombre = TipoPago::find($pago->tipo_pago_id)->nombre;
+                if(!in_array($tipoPagoNombre, $pagosReales)){
+                    continue;
+                }
+
+                $tiposPago[] = $tipoPagoNombre;
+
+                if($pago->tipo_pago_id == 2){
+                    $total += ($pago->cantidad * $pago->tipo_cambio_usd);
+                    continue;
+                }
+                $total += $pago->cantidad;
+            }
+
+            
+
             $ventaDetalleArray[] = [
                 'id'           => @$venta->id,
                 'folio'        => @$venta->folio,
-                'productos'    => $productos, 
+                'cliente'      => @$venta->nombre_cliente,
+                'tiposPago'    => implode(', ',$tiposPago), 
+                'total'        => $total,
                 'fechaCreacion' => @Carbon::parse($venta->fecha_creacion)->format('d/m/Y'),//date_format(date_create($venta->fecha_creacion),"d/m/Y"),
                 'fecha'        => @Carbon::parse($venta->fecha)->format('d/m/Y'),//date_format(date_create($venta->fecha),"d-m-Y"),
-                'cliente'      => @$venta->nombre_cliente,
-                'numeroProductos' => $numeroProductos,
                 'notas'        => @$venta->comentarios,
                 'estatus'      => @$venta->estatus
             ];

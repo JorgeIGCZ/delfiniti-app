@@ -38,8 +38,13 @@
                     { data: 'id' },
                     { data: 'folio' },
                     { data: 'cliente' },
-                    { data: 'productos' },
-                    { data: 'numeroProductos' },
+                    { data: 'tiposPago' },
+                    { defaultContent: 'total', 'render': function ( data, type, row ) 
+                        {
+                            
+                            return formatter.format(row.total);
+                        }
+                    },
                     { defaultContent: 'Estatus', 'render': function ( data, type, row )
                         {
                             let estatus = '';
@@ -189,8 +194,8 @@
                                         <th>Id</th>
                                         <th>Folio</th>
                                         <th>Cliente</th>
-                                        <th>Productos</th>
-                                        <th># Productos</th>
+                                        <th>Tipo pago</th>
+                                        <th>Total</th>
                                         <th>Estatus</th>
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
