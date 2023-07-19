@@ -164,38 +164,14 @@
           </li>
         @endcan
       @endif
-      
-      @can('Configuracion')
+
+      {{-- @can('Configuracion') --}}
         <li class="nav-item">
-          <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
-          <div class="az-menu-sub az-menu-sub-mega">
+          <a href="#" class="nav-link with-sub"><i class="typcn typcn-folder"></i> Catálogos</a>
+          <div class="az-menu-sub">
             <div class="container">
               <div>
                 <nav class="nav">
-                  <span>General</span>
-                  @can('Usuarios.index')
-                    <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
-                  @endcan
-                  @can('Usuarios.Roles.index')
-                    <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles permisos</a>
-                  @endcan
-                  @can('TipoCambio.index')
-                    <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
-                  @endcan
-                  @can('Directivos.index')
-                    <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
-                  @endcan
-                  
-                  @if(session('modulo') == 'tienda')
-                    {{-- @can('TipoCambio.index') --}}
-                      <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos productos</a>
-                    {{-- @endcans --}}
-                  @endif
-                </nav>
-              </div>
-              <div>
-                <nav class="nav">
-                  <span>Catálogos</span>
                     @if(session('modulo') == 'reservaciones')
                       @can('Actividades.index')
                         <a href="{{ url('/actividades') }}" class="nav-link {{url()->current() == url('actividades') ? 'active' : ''}}">Actividades</a>
@@ -235,6 +211,38 @@
                         <a href="{{ url('/fotovideocomisionistas') }}" class="nav-link {{url()->current() == url('fotovideocomisionistas') ? 'active' : ''}}">Fotógrafos</a>
                       @endcan
                     @endif
+                </nav>
+              </div>
+            </div><!-- container -->
+          </div>
+        </li>
+      {{-- @endcan --}}
+      
+      @can('Configuracion')
+        <li class="nav-item">
+          <a href="#" class="nav-link with-sub"><i class="typcn typcn-cog"></i> Configuración</a>
+          <div class="az-menu-sub">
+            <div class="container">
+              <div>
+                <nav class="nav">
+                  @can('Usuarios.index')
+                    <a href="{{ url('/usuarios') }}" class="nav-link {{url()->current() == url('usuarios') ? 'active' : ''}}">Usuarios</a>
+                  @endcan
+                  @can('Usuarios.Roles.index')
+                    <a href="{{ url('/roles') }}" class="nav-link {{url()->current() == url('roles') ? 'active' : ''}}">Roles permisos</a>
+                  @endcan
+                  @can('TipoCambio.index')
+                    <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
+                  @endcan
+                  @can('Directivos.index')
+                    <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
+                  @endcan
+                  
+                  @if(session('modulo') == 'tienda')
+                    {{-- @can('TipoCambio.index') --}}
+                      <a href="{{ url('/impuestos') }}" class="nav-link {{url()->current() == url('impuestos') ? 'active' : ''}}">Impuestos productos</a>
+                    {{-- @endcans --}}
+                  @endif
                 </nav>
               </div>
             </div><!-- container -->
