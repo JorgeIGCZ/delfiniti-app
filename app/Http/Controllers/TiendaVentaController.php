@@ -80,7 +80,9 @@ class TiendaVentaController extends Controller
             $venta->save();
 
             foreach($venta->ventaDetalle as $ventaDetalle){
-                $Productos->updateFechaMovimientoStock($ventaDetalle->producto_id, $movimiento);
+                if($movimiento === 'ultima_salida'){
+                    $Productos->updateFechaMovimientoStock($ventaDetalle->producto_id, $movimiento);
+                }
                 $Productos->updateStock($ventaDetalle->producto_id, $accion, $ventaDetalle->numero_productos);
             }
             
