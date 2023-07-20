@@ -11,6 +11,7 @@ setReservacionesTipoAccion();
 getProductos();
 processImpuestosProductos();
 fillPedidoDetallesTabla();
+displayImpuestos();
 calculateAndDisplaySubTotalTotal();
 // changeCuponDetalle();
 
@@ -73,23 +74,6 @@ $('#pagos').on( 'change', '.fecha-pago', function (event) {
 // });
 
 // fillPagosTabla();
-
-function setimpuestosPU(){
-    productosArray.forEach(producto => { 
-        const productoImpuestos = getProductoImpuestosId(producto.productoId);
-        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
-        producto.impuestosPU = impuestosPorUnidad;
-    })
-}
-
-function processImpuestosProductos(){
-    setimpuestosPU();
-    productosArray.forEach(producto => { 
-        const productoImpuestos = getProductoImpuestosId(producto.productoId);
-        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
-        updateImpuestosProducto(producto.claveProducto, impuestosPorUnidad, producto.cantidad);
-    });
-}
 
 async function editarPagoReservacion(row){
     const pagoId = row.parents('tr')[0].firstChild.innerText;

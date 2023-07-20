@@ -19,8 +19,6 @@ window.onload = function() {
     document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
         validarVerificacion();
     });
-
-    constructorImpuestosTotales();
 };
 
 //jQuery
@@ -114,6 +112,23 @@ if(agregarProducto !== null){
             validateBotonGuardar();
         }
     });
+}
+
+function processImpuestosProductos(){
+    setimpuestosPU();
+    productosArray.forEach(producto => { 
+        const productoImpuestos = getProductoImpuestosId(producto.productoId);
+        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
+        updateImpuestosProducto(producto.claveProducto, impuestosPorUnidad, producto.cantidad);
+    });
+}
+
+function setimpuestosPU(){
+    productosArray.forEach(producto => { 
+        const productoImpuestos = getProductoImpuestosId(producto.productoId);
+        const impuestosPorUnidad = getImpuestosProducto(producto.costo, productoImpuestos);
+        producto.impuestosPU = impuestosPorUnidad;
+    })
 }
 
 function validateCancelarPedido(){
@@ -496,25 +511,29 @@ function getProductos(){
     $('.loader').show(); 
     
     let proveedor   = document.getElementById('proveedor');
-    let proveedorId = proveedor.options[proveedor.selectedIndex].value;
+    if(proveedor !== null){
+        const proveedorId = proveedor.options[proveedor.selectedIndex].value;
 
-    axios.post('/productos/getproductobyproveedor', {
-        '_token': token(),
-        'proveedorId': proveedorId
-    })
-    .then(function (response) {
-        $('.loader').hide();
-        showProductos(response.data.result);
-        showCodigoProductos(response.data.result);
-    })
-    .catch(function (error) {
-        Swal.fire({
-            icon: 'error',
-            title: `Autorización fallida E:${error.message}`,
-            showConfirmButton: true
+        axios.post('/productos/getproductobyproveedor', {
+            '_token': token(),
+            'proveedorId': proveedorId
         })
-        
-    });
+        .then(function (response) {
+            $('.loader').hide();
+            showProductos(response.data.result);
+            showCodigoProductos(response.data.result);
+        })
+        .catch(function (error) {
+            Swal.fire({
+                icon: 'error',
+                title: `Autorización fallida E:${error.message}`,
+                showConfirmButton: true
+            })
+            
+        });
+    }else{
+        $('.loader').hide();
+    }
 }
 
 function showProductos(productos){

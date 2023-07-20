@@ -227,23 +227,32 @@ class TiendaPedidoController extends Controller
      */
     public function show(TiendaPedido $pedido)
     {
-        $impuestos = TiendaPedidoImpuesto::where('pedido_id',$pedido->id)->get();
+
+        $impuestos = TiendaImpuesto::with(['tiendaPedidoImpuesto' => function ($query) use($pedido) {
+            $query->where('pedido_id',$pedido->id);
+        }])->get();
+
+        $productosImpuestos = TiendaProductoImpuesto::get()->toArray();
+
+        $impuestosPedido = TiendaPedidoImpuesto::where('pedido_id',$pedido->id)->get();
         $impuestosTotales = 0;
         $subtotal = 0;
         foreach($pedido->pedidoDetalle as $pedidoDetalle){
             $subtotal += $pedidoDetalle->subtotal;
         }
 
-        foreach($impuestos as $impuesto){
-            $impuestosTotales += $impuesto->total;
+        foreach($impuestosPedido as $impuestoPedido){
+            $impuestosTotales += $impuestoPedido->total;
         }
 
         $total = ($subtotal + $impuestosTotales);
+        // dd($productosImpuestos);
         return view('pedidos.view',[
             'pedido' => $pedido,
             'subtotal' => $subtotal,
             'total' => $total,
-            'impuestos' => $impuestos
+            'impuestos' => $impuestos,
+            'productosImpuestos' => $productosImpuestos
         ]);
     }
 

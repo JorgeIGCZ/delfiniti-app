@@ -209,7 +209,7 @@
                                                             <label for="ieps" class="col-form-label"><strong>{{$impuesto->nombre}}:</strong></label>
                                                         </div>
                                                         <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" name="{{$impuesto->nombre}}" id="impuesto_{{$impuesto->id}}" class="form-control amount not-editable height-auto" disabled="disabled" value="{{@$impuesto->tiendaPedidoImpuesto->total}}">
+                                                            <input type="text" name="{{$impuesto->nombre}}" id="impuesto_{{$impuesto->id}}" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                         </div>
                                                     @endforeach
 

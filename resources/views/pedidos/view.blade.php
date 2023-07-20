@@ -4,6 +4,7 @@
         let productosArray = [];
         let productosTableArray = [];
         const impuestos = @php echo(json_encode($impuestos)) @endphp;
+        const productosImpuestos = @php echo(json_encode($productosImpuestos)) @endphp;
         const pedidoId = () => {
             return {{$pedido->id}};
         }
@@ -144,15 +145,15 @@
                                                         <label for="subtotal" class="col-form-label"><strong>Subtotal:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="subtotal" id="subtotal" class="form-control not-editable height-auto" disabled="disabled" value="${{$subtotal}}">
+                                                        <input type="text" name="subtotal" id="subtotal" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>  
                                                     
-                                                    @foreach($impuestos as $impuesto)
+                                                    @foreach($impuestos as $key => $impuesto)
                                                         <div class="form-group col-7 mt-0 mb-0">
-                                                            <label for="ieps" class="col-form-label"><strong>{{$impuesto->impuesto->nombre}}:</strong></label>
+                                                            <label for="ieps" class="col-form-label"><strong>{{$impuesto->nombre}}:</strong></label>
                                                         </div>
                                                         <div class="form-group col-5 mt-0 mb-0">
-                                                            <input type="text" id="impuesto_{{$impuesto->impuesto->id}}" class="form-control not-editable height-auto" disabled="disabled" value="${{$impuesto->total}}">
+                                                            <input type="text" name="{{$impuesto->nombre}}" id="impuesto_{{$impuesto->id}}" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                         </div>
                                                     @endforeach
 
@@ -160,7 +161,7 @@
                                                         <label for="total" class="col-form-label"><strong>Total:</strong></label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="total" id="total" class="form-control not-editable height-auto" disabled="disabled" value="${{$total}}">
+                                                        <input type="text" name="total" id="total" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
                                                 </div>
                                             </div>
