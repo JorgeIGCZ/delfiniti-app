@@ -1,6 +1,9 @@
 $(function () {
-    const selectorMultipleCanalesVenta = $('#comisiones-canales-venta').filterMultiSelect({
+    const selectorMultipleCanalesVenta = $('#filtro-comisiones-canales-venta').filterMultiSelect({
         selectAllText:"SELECCIONAR TODAS"
+    })
+    const selectorMultipleModulo = $('#filtro-modulo').filterMultiSelect({
+        selectAllText:"SELECCIONAR TODOS"
     })
     const reporteCorteCaja = document.getElementById('reporte-corte-caja');
     const reporteReservaciones = document.getElementById('reporte-reservaciones');
@@ -15,10 +18,12 @@ $(function () {
         filtrosCorteCaja.style.display = "none";
         filtrosComisiones.style.display = "none";
         selectorMultipleCanalesVenta.selectAll();
+        selectorMultipleModulo.selectAll();
         document.getElementById('report_fecha_inicio').value = moment().format('YYYY-MM-DD');
         document.getElementById('report_fecha_final').value = moment().format('YYYY-MM-DD');
     }
     selectorMultipleCanalesVenta.selectAll()
+    selectorMultipleModulo.selectAll()
 
 
     if(reporteCorteCaja !== null){
@@ -70,7 +75,8 @@ $(function () {
                     documentPath = `/Reportes/corte_de_caja/corte-de-caja.xlsx`;
                     data         = {
                         'cajero'  : cajero,
-                        'cupones' : cupones
+                        'cupones' : cupones,
+                        'modulo'  : selectorMultipleModulo.getSelectedOptionsAsJson()
                     }
     
                     break;
@@ -82,7 +88,8 @@ $(function () {
                     url          = '/reportes/totalcomisiones';
                     documentPath = `/Reportes/comisiones/comisiones.xlsx`;
                     data         = {
-                        'canalesVenta'  : selectorMultipleCanalesVenta.getSelectedOptionsAsJson()
+                        'canalesVenta'  : selectorMultipleCanalesVenta.getSelectedOptionsAsJson(),
+                        'modulo'  : selectorMultipleModulo.getSelectedOptionsAsJson()
                     }
     
                     break;

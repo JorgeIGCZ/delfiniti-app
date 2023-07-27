@@ -10,6 +10,7 @@ class TiendaVenta extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'folio',
         'nombre_cliente',
         'email',
@@ -37,14 +38,8 @@ class TiendaVenta extends Model
 
     public function tipoPago()
     {
-        return $this->hasOneThrough(
-            TipoPago::class,
-            TiendaVentaPago::class,
-            'venta_id', // FK Pago como comunica a Ventas
-            'id', // FK Pago como comunica a TipoPago
-            'id', //local key TipoPago
-            'tipo_pago_id' //local key Pago
-        );
+        return $this->belongsToMany(TipoPago::class, 'foto_video_venta_pagos', 'venta_id', 'tipo_pago_id')
+                    ->withPivot('factura_id','venta_id','cantidad','tipo_pago_id','tipo_cambio_usd','valor','tipo_valor','comision_creada');
     }
 
     public function usuario()

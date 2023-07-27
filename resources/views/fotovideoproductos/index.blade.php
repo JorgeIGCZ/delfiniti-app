@@ -57,13 +57,15 @@
             });
         }
         function createProducto(productos){
+            let tipo   = productos.elements['tipo'];
+            tipo       = tipo.options[tipo.selectedIndex].value;
             $('.loader').show();
-
             axios.post('/fotovideoproductos', {
-                '_token'   : '{{ csrf_token() }}',
-                "clave"   : productos.elements['clave'].value,
-                "nombre"   : productos.elements['nombre'].value,
+                '_token'      : '{{ csrf_token() }}',
+                "clave"       : productos.elements['clave'].value,
+                "nombre"      : productos.elements['nombre'].value,
                 "precioVenta" : productos.elements['precioVenta'].getAttribute('value'),
+                "tipo"        : tipo,
                 "comentarios" : productos.elements['comentarios'].value
             })
             .then(function (response) {
@@ -178,6 +180,14 @@
                                 <div class="form-group col-2 mt-2">
                                     <label for="precioVenta" class="col-form-label">Precio venta</label>
                                     <input type="text" name="precioVenta" id="precioVenta" class="form-control amount"  autocomplete="off" tabindex="5">
+                                </div>
+
+                                <div class="form-group col-2 mt-3">
+                                    <label for="tipo" class="col-form-label">Tipo</label>
+                                    <select name="tipo" class="form-control">
+                                        <option value="foto">Foto</option>
+                                        <option value="video">Video</option>
+                                    </select>
                                 </div>
 
                                 <div class="form-group col-6 mt-2">

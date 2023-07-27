@@ -45196,3 +45196,11 @@ tr.Pagado{
 .contentWrapper .content.active {
   display: block;
 }
+
+.filter-multi-select > .viewbar{
+  padding: 10px;
+}
+.filter-multi-select.dropup, .filter-multi-select.dropdown{
+  border: none;
+  padding: 0;
+}

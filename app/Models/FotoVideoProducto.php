@@ -13,6 +13,7 @@ class FotoVideoProducto extends Model
         'clave',
         'nombre',
         'precio_venta',
+        'tipo',
         'comentarios',
         'estatus'
     ];

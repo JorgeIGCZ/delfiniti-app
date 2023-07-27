@@ -89,7 +89,14 @@
                           @php
                             use App\Models\User;
                             use App\Models\CanalVenta;
-                            $usuarios = User::role('Recepcion')->get();
+                            if(Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Supervisor') || Auth::user()->hasRole('Mercadotecnia') || Auth::user()->hasRole('Contabilidad')){
+                              $usuarios = User::get();
+                            }else{
+                              $role = Auth::user()->roles->pluck('name');
+                              $usuarios = User::role($role)->get();
+                            }
+                            // $usuarios = User::role('Recepcion')->get();
+                            
                             $canales = CanalVenta::get();
                           @endphp
                           
@@ -117,11 +124,25 @@
                           <div id="filtros-comisiones" class="form-group col-12 mt-0 mb-0" style="display: none">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
-                                    <label for="cajero" class="col-form-label">Categorias.</label>
-                                    <select multiple id="comisiones-canales-venta" name="comisiones_canales_venta"  class="form-control filter-multi-select" >
+                                    <label for="cajero" class="col-form-label">Categorias</label>
+                                    <select multiple id="filtro-comisiones-canales-venta" name="comisiones_canales_venta"  class="form-control filter-multi-select" >
                                         @foreach($canales as $canal)
                                           <option value="{{$canal->id}}" >{{$canal->nombre}}</option>
                                         @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div id="filtros-modulo" class="form-group col-12 mt-0 mb-0">
+                            <div class="row">
+                                <div class="form-group col-12 mt-0 mb-0">
+                                    <label for="filtro-modulo" class="col-form-label">Módulo</label>
+                                    <select multiple id="filtro-modulo" name="filtro_modulo"  class="form-control filter-multi-select" >
+                                      <option value="Reservaciones" >RESERVACIONES</option>
+                                      <option value="Tienda" >TIENDA</option>
+                                      <option value="Fotos" >FOTO</option>
+                                      <option value="Videos" >VIDEO</option>
                                     </select>
                                 </div>
                             </div>

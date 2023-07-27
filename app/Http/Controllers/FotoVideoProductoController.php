@@ -56,10 +56,11 @@ class FotoVideoProductoController extends Controller
             }
 
             $producto = FotoVideoProducto::create([
-                'clave'    => $request->clave,
-                'nombre'   => mb_strtoupper($request->nombre),
-                'precio_venta'    => $request->precioVenta,
-                'comentarios'     => mb_strtoupper($request->comentarios)
+                'clave'        => $request->clave,
+                'nombre'       => mb_strtoupper($request->nombre),
+                'precio_venta' => $request->precioVenta,
+                'tipo'         => $request->tipo,
+                'comentarios'  => mb_strtoupper($request->comentarios)
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -110,6 +111,7 @@ class FotoVideoProductoController extends Controller
         try {
             $fotoVideoProducto->nombre          = mb_strtoupper($request->nombre);
             $fotoVideoProducto->precio_venta    = floatval(str_replace(str_split('$,'), '', $request->precioVenta));
+            $fotoVideoProducto->tipo            = $request->tipo;
             $fotoVideoProducto->comentarios     = mb_strtoupper($request->comentarios);
             $fotoVideoProducto->save();
 

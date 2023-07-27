@@ -31,6 +31,12 @@ class FotoVideoVenta extends Model
         return $this->hasMany(FotoVideoVentaDetalle::class,'venta_id');
     }
 
+    public function productos()
+    {
+        return $this->belongsToMany(FotoVideoProducto::class, 'foto_video_venta_detalles', 'venta_id', 'producto_id')
+                    ->withPivot('id', 'factura_id', 'numero_productos', 'PPU');
+    }
+
     public function pagos()
     {
         return $this->hasMany(FotoVideoVentaPago::class,'venta_id');
@@ -38,14 +44,8 @@ class FotoVideoVenta extends Model
 
     public function tipoPago()
     {
-        return $this->hasOneThrough(
-            TipoPago::class,
-            FotoVideoVentaPago::class,
-            'venta_id', // FK Pago como comunica a Ventas
-            'id', // FK Pago como comunica a TipoPago
-            'id', //local key TipoPago
-            'tipo_pago_id' //local key Pago
-        );
+        return $this->belongsToMany(TipoPago::class, 'foto_video_venta_pagos', 'venta_id', 'tipo_pago_id')
+                    ->withPivot('factura_id','venta_id','cantidad','tipo_pago_id','tipo_cambio_usd','valor','tipo_valor','comision_creada');
     }
 
     public function usuario()

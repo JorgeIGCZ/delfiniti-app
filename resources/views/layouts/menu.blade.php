@@ -1,26 +1,27 @@
 @if(auth()->user()->can('SeccionReservaciones.index') || auth()->user()->can('SeccionTienda.index') || auth()->user()->can('SeccionFotoVideo.index'))
   
     <ul class="nav">
-      @if(session('modulo') == 'reservaciones')
-        @can('Reportes.index')
-          <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
-            <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
-            <div class="az-menu-sub">
-              <nav class="nav">
-                @can('Reportes.CorteCaja.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
-                @endcan
+      @can('Reportes.index')
+        <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
+          <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
+          <div class="az-menu-sub">
+            <nav class="nav">
+              @can('Reportes.CorteCaja.index')
+              <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
+              @endcan
+              @if(session('modulo') == 'reservaciones')
                 @can('Reportes.Reservaciones.index')
                 <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-reservaciones" data-bs-target="#reportes-modal">Reservaciones</a>
                 @endcan
-                @can('Reportes.Comisiones.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
-                @endcan
-              </nav>
-            </div>
-          </li>
-        @endcan
-
+              @endif
+              @can('Reportes.Comisiones.index')
+              <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
+              @endcan
+            </nav>
+          </div>
+        </li>
+      @endcan
+      @if(session('modulo') == 'reservaciones')
         @can('Checkin.index')
           <li class="nav-item {{url()->current() == url('checkin') ? 'active' : ''}}">
             <a href="{{ url('checkin') }}" class="nav-link"><i class="typcn typcn-tick-outline"></i> Check-in</a>
@@ -61,25 +62,6 @@
       @endif
 
       @if(session('modulo') == 'tienda')
-        @can('Reportes.index')
-          <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
-            <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
-            {{-- <div class="az-menu-sub">
-              <nav class="nav">
-                @can('Reportes.CorteCaja.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
-                @endcan
-                @can('Reportes.Reservaciones.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-reservaciones" data-bs-target="#reportes-modal">Reservaciones</a>
-                @endcan
-                @can('Reportes.Comisiones.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
-                @endcan
-              </nav>
-            </div> --}}
-          </li>
-        @endcan
-      
         @can('TiendaVentas.create')
           <li class="nav-item {{url()->current() == url('ventas/create') ? 'active' : ''}}">
             <a href="{{ url('ventas/create') }}" class="nav-link {{url()->current() == url('ventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>
@@ -127,25 +109,6 @@
       @endif
 
       @if(session('modulo') == 'fotovideo')
-       @can('Reportes.index')
-          <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
-            <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
-            {{-- <div class="az-menu-sub">
-              <nav class="nav">
-                @can('Reportes.CorteCaja.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
-                @endcan
-                @can('Reportes.Reservaciones.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-reservaciones" data-bs-target="#reportes-modal">Reservaciones</a>
-                @endcan
-                @can('Reportes.Comisiones.index')
-                <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
-                @endcan
-              </nav>
-            </div> --}}
-          </li>
-        @endcan
-      
         @can('FotoVideoVentas.create')
           <li class="nav-item {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}">
             <a href="{{ url('fotovideoventas/create') }}" class="nav-link {{url()->current() == url('fotovideoventas/create') ? 'active' : ''}}"><i class="typcn typcn-credit-card"></i> Nueva venta</a>

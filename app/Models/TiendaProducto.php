@@ -23,7 +23,7 @@ class TiendaProducto extends Model
         'ultima_salida',
         'comentarios',
         'estatus'
-    ];
+    ]; 
     protected $primaryKey = 'id';
 
     public function productoImpuesto()
@@ -33,5 +33,30 @@ class TiendaProducto extends Model
     public function proveedor()
     {
         return $this->hasOne(TiendaProveedor::class,'id','proveedor_id');
+    }
+
+
+    public function pagos()
+    {
+        return $this->hasManyThrough(
+            TiendaVentaPago::class,
+            TiendaVentaDetalle::class,
+            'producto_id', // FK TiendaVentaDetalle como comunica a TiendaProducto
+            'venta_id', // FK pago como comunica a TiendaVentaDetalle
+            'id', //local key Actividad
+            'venta_id' //TiendaVentaDetalle como comunica a pagp
+        );
+    }
+
+    public function ventas()
+    {
+        return $this->hasManyThrough(
+            TiendaVenta::class,
+            TiendaVentaDetalle::class,
+            'producto_id', // FK TiendaVentaDetalle como comunica a Actividad
+            'id', // FK Reservacion como comunica a TiendaVentaDetalle
+            'id', //local key TiendaVentaDetalle
+            'venta_id' //TiendaVentaDetalle como comunica a ventas
+        );
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('clave')->unique();
             $table->string('nombre');
             $table->double('precio_venta');
+            $table->string('tipo')->comment('opciones: foto o video');;
             $table->text('comentarios');
             $table->boolean('estatus')->default(1);
             $table->timestamps();

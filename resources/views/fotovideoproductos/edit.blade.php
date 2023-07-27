@@ -52,6 +52,14 @@
                                 <input type="text" name="precioVenta" id="precioVenta" class="form-control amount" autocomplete="off" tabindex="3" value="{{$producto->precio_venta}}" required="required">  
                             </div>
 
+                            <div class="form-group col-2 mt-3">
+                                <label for="tipo" class="col-form-label">Tipo</label>
+                                <select name="tipo" class="form-control">
+                                    <option value="foto" {{$producto->tipo === "foto" ? 'selected="selected"' : ""}}>Foto</option>
+                                    <option value="video" {{$producto->tipo === "video" ? 'selected="selected"' : ""}}>Video</option>
+                                </select>
+                            </div>
+
                             <div class="form-group col-6 mt-2">
                                 <label for="stockMaximo" class="col-form-label">Comentarios</label>
                                 <textarea name="comentarios" class="to-uppercase" rows="5" style="width:100%;" spellcheck="false">{{@$producto->comentarios}}</textarea>

@@ -10,6 +10,7 @@ class TiendaVentaPago extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'factura_id',
         'venta_id',
         'cantidad',
@@ -17,7 +18,8 @@ class TiendaVentaPago extends Model
         'tipo_cambio_usd',
         'valor',
         'tipo_valor',
-        'comision_creada'
+        'comision_creada',
+        'created_at'
     ];
     protected $primaryKey = 'id'; 
 
