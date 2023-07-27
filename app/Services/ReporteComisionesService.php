@@ -207,9 +207,9 @@ class ReporteComisionesService
         $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTAL');
             
         //Evita comisionistas especiales sumen al total ya que es la misma reservacion ya contada
-        if(!$comisionAgrupadaTipoPorcentajeGeneral[0]['comisionistaEspecial']){
-            $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
-        }
+        // if(!$comisionAgrupadaTipoPorcentajeGeneral[0]['comisionistaEspecial']){
+        //     $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=SUM(' . 'C' . $initialRowNumber . ':C' . $rowNumber-1 . ')');
+        // }
         $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
         $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
