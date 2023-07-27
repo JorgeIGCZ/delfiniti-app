@@ -88,7 +88,7 @@ const formatMini = (venta) => {
                         <br/>
                         FOTOGRAFO: ${detalleVenta().fotografo}
                         <br/>
-                        CLIENTE: ${detalleVenta().cliente}
+                        CLIENTE: ${detalleVenta().cliente === "" ? "CLIENTE EN MOSTRADOR" : detalleVenta().cliente}
                     </p>
                     <table>
                         <thead class="border">
