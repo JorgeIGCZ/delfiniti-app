@@ -118,14 +118,18 @@ class FotoVideoComisionController extends Controller
             $comision = DirectivoComisionFotoVideoDetalle::where('directivo_id',$directivoId)->first();
             
             if(isset($comision)){
-                $this->setComisionesReservacionDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones);   
+                $validacionComision = ($comision['iva'] + $comision['comision'] + $comision['descuento_impuesto']);
+                if($validacionComision > 0){
+                    $this->setComisionesVentaDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones);   
+                }
             }
+
         }
 
         return true;
     }
 
-    private function setComisionesReservacionDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones){
+    private function setComisionesVentaDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones){
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
             //verifica si el tipo de pago es en USD

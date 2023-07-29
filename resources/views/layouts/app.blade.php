@@ -134,15 +134,28 @@
                             </div>
                           </div>
 
-                          <div id="filtros-modulo" class="form-group col-12 mt-0 mb-0">
+                          <div id="filtros-modulo-corte-caja" class="form-group col-12 mt-0 mb-0">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
-                                    <label for="filtro-modulo" class="col-form-label">Módulo</label>
-                                    <select multiple id="filtro-modulo" name="filtro_modulo"  class="form-control filter-multi-select" >
+                                    <label for="filtro-modulo-corte-caja" class="col-form-label">Módulo</label>
+                                    <select multiple id="filtro-modulo-corte-caja" name="filtro_modulo_corte_caja"  class="form-control filter-multi-select" >
                                       <option value="Reservaciones" >RESERVACIONES</option>
                                       <option value="Tienda" >TIENDA</option>
                                       <option value="Fotos" >FOTO</option>
                                       <option value="Videos" >VIDEO</option>
+                                    </select>
+                                </div>
+                            </div>
+                          </div>
+
+                          <div id="filtros-modulo-comisiones" class="form-group col-12 mt-0 mb-0">
+                            <div class="row">
+                                <div class="form-group col-12 mt-0 mb-0">
+                                    <label for="filtro-modulo" class="col-form-label">Módulo</label>
+                                    <select multiple id="filtro-modulo-comisiones" name="filtro_modulo_comisiones"  class="form-control filter-multi-select" >
+                                      <option value="Reservaciones" >RESERVACIONES</option>
+                                      <option value="Tienda" >TIENDA</option>
+                                      <option value="FotoVideo" >FOTO Y VIDEO</option>
                                     </select>
                                 </div>
                             </div>

@@ -6,6 +6,8 @@ use App\Classes\CustomErrorHandler;
 use App\Models\Directivo;
 use App\Models\DirectivoComisionTienda;
 use App\Models\DirectivoComisionTiendaDetalle;
+use App\Models\TiendaComision;
+use App\Models\TiendaComisionista;
 use App\Models\TiendaVenta;
 use App\Models\TiendaVentaPago;
 use Carbon\Carbon;
@@ -38,7 +40,8 @@ class TiendaComisionController extends Controller
                 $oldFechaComisiones = $oldComision[0]->created_at;
             }
 
-            DirectivoComisionTienda::where('venta_id',$request->ventaId)->delete(); 
+            DirectivoComisionTienda::where('venta_id',$request->ventaId)->delete();
+            TiendaComision::where('venta_id',$request->ventaId)->delete();
 
             $pagos = TiendaVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
@@ -85,7 +88,7 @@ class TiendaComisionController extends Controller
         DB::beginTransaction();
         try{
             $this->processComisionDirectivo($venta,$pagos,$fechaComisiones);
-            // $this->setComisionCerrador($venta,$pagos,$fechaComisiones);
+            $this->setComisionVentaMostrador($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaCanal($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaActividad($venta,$pagos,$fechaComisiones);
             
@@ -103,6 +106,58 @@ class TiendaComisionController extends Controller
         }
     }
 
+    private function setComisionVentaMostrador($venta,$pagos,$fechaComisiones){
+        if($venta['usuario_id'] == 0){
+            return true;
+        }
+
+        $comisionista = TiendaComisionista::where('usuario_id', $venta['usuario_id'])->first();
+
+        return $this->setAllComisiones($pagos, $venta, $venta['usuario_id'], $comisionista, $fechaComisiones);
+    }
+
+    
+    private function setAllComisiones($pagos, $venta, $comisionistaId, $comisionista, $fechaComisiones){
+        $totalPagoReservacion = 0;
+        foreach($pagos as $pago){
+            //verifica si el tipo de pago es en USD
+            if($pago['tipo_pago_id'] == 2){
+                $totalPagoReservacion += ($pago['cantidad'] * $pago['tipo_cambio_usd']);
+                continue;
+            }
+            $totalPagoReservacion += $pago['cantidad'];
+        }
+
+        $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comisionista['iva']/100))),2);
+        $ivaCantidad               = round(($totalVentaSinIva * ($comisionista['iva']/100)),2);
+        $cantidadComisionBruta     = round((($totalVentaSinIva * $comisionista['comision']) / 100),2);
+        $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comisionista['descuento_impuesto']) / 100),2);
+        $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
+
+        $isComisionDuplicada = TiendaComision::where('comisionista_id',$comisionistaId)
+                                        ->where('venta_id',$venta['id'])->get()->count();
+        
+        if($isComisionDuplicada){
+            return false;
+        }
+
+        $comsion = TiendaComision::create([   
+            'comisionista_id'         =>  $comisionistaId,
+            'venta_id'                =>  $venta['id'],
+            'pago_total'              =>  $totalPagoReservacion,
+            'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
+            'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+            'iva'                     =>  (float)$ivaCantidad,
+            'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+            'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'created_at'              =>  $fechaComisiones,
+            'estatus'                 =>  1
+        ]);
+
+        return is_numeric($comsion['id']);
+    }
+
+
     private function processComisionDirectivo($venta,$pagos,$fechaComisiones)
     {
         $directivos = Directivo::where('estatus',1)->get();
@@ -116,14 +171,17 @@ class TiendaComisionController extends Controller
             $comision = DirectivoComisionTiendaDetalle::where('directivo_id',$directivoId)->first();
             
             if(isset($comision)){
-                $this->setComisionesReservacionDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones);   
+                $validacionComision = ($comision['iva'] + $comision['comision'] + $comision['descuento_impuesto']);
+                if($validacionComision > 0){
+                    $this->setComisionesVentaDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones);   
+                }
             }
         }
 
         return true;
     }
 
-    private function setComisionesReservacionDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones)
+    private function setComisionesVentaDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones)
     {
         $totalPagoReservacion = 0;
         foreach($pagos as $pago){
@@ -209,6 +267,34 @@ class TiendaComisionController extends Controller
                     break;
             }   
         }
+
+        $comisiones      = TiendaComision::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('venta',function ($query){
+            $query
+                ->where("estatus", 1);
+        })->orderBy('id','desc')->get();
+
+        $comisionesArray = [];
+
+        foreach ($comisiones as $comision) {
+            // if($comision->venta->folio == "0000011-D"){
+            //     dd($comision->usuario);
+            // }
+            $comisionesArray[] = [
+                'id'                => $comision->id,
+                'comisionista'      => $comision->usuario->name,
+                'venta'             => $comision->venta->folio,
+                'ventaId'           => $comision->venta->id,
+                'total'             => $comision->pago_total,
+                'comisionBruta'     => $comision->cantidad_comision_bruta,
+                'iva'               => $comision->iva,
+                'descuentoImpuesto' => $comision->descuento_impuesto,
+                'comisionNeta'      => $comision->cantidad_comision_neta,
+                'fecha'             => date_format($comision->created_at,'d-m-Y'),
+                'estatus'           => $comision->estatus,
+                'tipo'              => 'comisionista'
+            ];
+        }
+
         // if(is_null($comision)){
             //Agrega comisiones directivo
             $comisiones      = DirectivoComisionTienda::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('venta',function ($query){
@@ -228,7 +314,8 @@ class TiendaComisionController extends Controller
                     'descuentoImpuesto' => $comision->descuento_impuesto,
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
-                    'estatus'           => $comision->estatus
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'directivo'
                 ];
             }
 

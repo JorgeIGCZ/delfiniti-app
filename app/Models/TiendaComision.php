@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DirectivoComisionTienda extends Model
+class TiendaComision extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'directivo_id',
+        'comisionista_id',
         'venta_id',
         'pago_total',
         'pago_total_sin_iva',
@@ -21,15 +22,20 @@ class DirectivoComisionTienda extends Model
         'created_at'
     ];
     protected $primaryKey = 'id';
-    protected $table = 'directivo_comisiones_tienda';
+    protected $table = 'tienda_comisiones';
 
     public function venta()
     {
         return $this->belongsTo(TiendaVenta::class,'venta_id');
     }
 
-    public function directivo()
+    public function comisionista()
     {
-        return $this->belongsTo(Directivo::class,'directivo_id');
+        return $this->belongsTo(TiendaComisionista::class,'comisionista_id' ,'usuario_id');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'comisionista_id', 'id');
     }
 }

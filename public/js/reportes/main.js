@@ -2,9 +2,14 @@ $(function () {
     const selectorMultipleCanalesVenta = $('#filtro-comisiones-canales-venta').filterMultiSelect({
         selectAllText:"SELECCIONAR TODAS"
     })
-    const selectorMultipleModulo = $('#filtro-modulo').filterMultiSelect({
+    const selectorMultipleModuloCorteCaja = $('#filtro-modulo-corte-caja').filterMultiSelect({
         selectAllText:"SELECCIONAR TODOS"
     })
+
+    const selectorMultipleModuloComisiones = $('#filtro-modulo-comisiones').filterMultiSelect({
+        selectAllText:"SELECCIONAR TODOS"
+    })
+
     const reporteCorteCaja = document.getElementById('reporte-corte-caja');
     const reporteReservaciones = document.getElementById('reporte-reservaciones');
     const reporteComisiones = document.getElementById('reporte-comisiones');
@@ -14,16 +19,25 @@ $(function () {
     const filtrosCorteCaja = document.getElementById('filtros-corte-caja');
     const filtrosComisiones = document.getElementById('filtros-comisiones');
 
+    const filtrosModuloCorteCaja = document.getElementById('filtros-modulo-corte-caja');
+    const filtrosModuloComisiones = document.getElementById('filtros-modulo-comisiones');
+
     function clearFiltros(){
         filtrosCorteCaja.style.display = "none";
         filtrosComisiones.style.display = "none";
+
+        filtrosModuloCorteCaja.style.display = "none";
+        filtrosModuloComisiones.style.display = "none";
+
         selectorMultipleCanalesVenta.selectAll();
-        selectorMultipleModulo.selectAll();
+        selectorMultipleModuloCorteCaja.selectAll();
+        selectorMultipleModuloComisiones.selectAll();
         document.getElementById('report_fecha_inicio').value = moment().format('YYYY-MM-DD');
         document.getElementById('report_fecha_final').value = moment().format('YYYY-MM-DD');
     }
     selectorMultipleCanalesVenta.selectAll()
-    selectorMultipleModulo.selectAll()
+    selectorMultipleModuloCorteCaja.selectAll()
+    selectorMultipleModuloComisiones.selectAll();
 
 
     if(reporteCorteCaja !== null){
@@ -31,6 +45,7 @@ $(function () {
             event.preventDefault();
             clearFiltros();
             filtrosCorteCaja.style.display = "block";
+            filtrosModuloCorteCaja.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','corte-caja');
         });
     }
@@ -38,6 +53,7 @@ $(function () {
         reporteReservaciones.addEventListener('click', (event) => {
             event.preventDefault();
             clearFiltros();
+            filtrosComisiones.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','reservaciones');
         });
     }
@@ -46,6 +62,7 @@ $(function () {
             event.preventDefault();
             clearFiltros();
             filtrosComisiones.style.display = "block";
+            filtrosModuloComisiones.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','comisiones');
         });
     }
@@ -76,7 +93,7 @@ $(function () {
                     data         = {
                         'cajero'  : cajero,
                         'cupones' : cupones,
-                        'modulo'  : selectorMultipleModulo.getSelectedOptionsAsJson()
+                        'modulo'  : selectorMultipleModuloCorteCaja.getSelectedOptionsAsJson()
                     }
     
                     break;
@@ -89,7 +106,7 @@ $(function () {
                     documentPath = `/Reportes/comisiones/comisiones.xlsx`;
                     data         = {
                         'canalesVenta'  : selectorMultipleCanalesVenta.getSelectedOptionsAsJson(),
-                        'modulo'  : selectorMultipleModulo.getSelectedOptionsAsJson()
+                        'modulo'  : selectorMultipleModuloComisiones.getSelectedOptionsAsJson()
                     }
     
                     break;

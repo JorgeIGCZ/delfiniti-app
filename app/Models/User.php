@@ -46,6 +46,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function comisiones()
+    {
+        return $this->hasOne(TiendaComisionista::class,'usuario_id','id');
+    }
+
     protected $primaryKey = 'id';
     
 }

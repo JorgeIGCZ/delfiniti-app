@@ -164,6 +164,10 @@
                       @can('TiendaProveedores.index')
                         <a href="{{ url('/proveedores') }}" class="nav-link {{url()->current() == url('proveedores') ? 'active' : ''}}">Proveedores</a>
                       @endcan
+
+                      @can('TiendaComisionista.index')
+                        <a href="{{ url('/tiendacomisionistas') }}" class="nav-link {{url()->current() == url('tiendacomisionistas') ? 'active' : ''}}">Comisionistas</a>
+                      @endcan
                     @endif
 
                     @if(session('modulo') == 'fotovideo')

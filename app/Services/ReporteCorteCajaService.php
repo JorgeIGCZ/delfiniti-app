@@ -30,7 +30,7 @@ class ReporteCorteCajaService
 
         $moduloRequest = $request->data['modulo'];
         $moduloRequest = json_decode($moduloRequest);
-        $moduloRequest = $moduloRequest->filtro_modulo;
+        $moduloRequest = $moduloRequest->filtro_modulo_corte_caja;
 
         $usuarios    = [$request->data['cajero']];
         $showCupones = ($request->data['cupones'] === "1");

@@ -112,6 +112,9 @@
                 'TiendaProveedores.create'    : roles.elements['TiendaProveedores.create'      ].checked,
                 'TiendaProveedores.update'    : roles.elements['TiendaProveedores.update'      ].checked,
 
+                'TiendaComisionista.index'     : roles.elements['TiendaComisionista.index'       ].checked,
+                'TiendaComisionista.update'    : roles.elements['TiendaComisionista.update'      ].checked,
+
                 'TiendaProductos.index'       : roles.elements['TiendaProductos.index'         ].checked,
                 'TiendaProductos.create'      : roles.elements['TiendaProductos.create'        ].checked,
                 'TiendaProductos.update'      : roles.elements['TiendaProductos.update'        ].checked,
@@ -639,6 +642,22 @@
                                 <div class="checkbox checkbox-primary">
                                     <input name="TiendaProveedores.update" type="checkbox" >
                                     <label for="TiendaProveedores.update">
+                                        Modificar 
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <strong>Comisionistas</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaComisionista.index" type="checkbox" >
+                                    <label for="ver">
+                                        ver
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="TiendaComisionista.update" type="checkbox" >
+                                    <label for="TiendaComisionista.update">
                                         Modificar 
                                     </label>
                                 </div>

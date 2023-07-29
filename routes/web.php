@@ -25,6 +25,7 @@ use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\FotoVideoVentaTicketController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\TiendaComisionController;
+use App\Http\Controllers\TiendaComisionistaController;
 use App\Http\Controllers\TiendaImpuestoController;
 use App\Http\Controllers\TiendaInventarioController;
 use App\Http\Controllers\TiendaPedidoController;
@@ -218,6 +219,16 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
 
 
 // TIENDA
+Route::controller(TiendaComisionistaController::class)->middleware(['auth'])->group(function () {
+    Route::get('tiendacomisionistas/show/{comisionista?}', 'show');
+    Route::resource('tiendacomisionistas',TiendaComisionistaController::class, [
+        'parameters' => [
+            'TiendaComisionista' => 'tiendaComisionista'
+        ]
+    ]);
+    
+});
+
 Route::controller(TiendaVentaController::class)->middleware(['auth'])->group(function () {
     Route::post('ventas/get/{venta?}', 'get');
     // Route::get('/ventas/create/{venta?}', 'create')->name('reservacionesCreate');
