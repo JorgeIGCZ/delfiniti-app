@@ -119,7 +119,7 @@ class ReporteCorteCajaService
                     $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cupón');
                 }
                 // $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", 'Cambio');
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado para');
 
                 $rowNumber += 1;
 
@@ -229,7 +229,7 @@ class ReporteCorteCajaService
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares'); 
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Depósito / transferencia');
-            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado para');
             $rowNumber += 1;
 
             //Data
@@ -330,7 +330,7 @@ class ReporteCorteCajaService
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares'); 
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Depósito / transferencia');
-            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado para');
             $rowNumber += 1;
 
             //Data
@@ -430,7 +430,7 @@ class ReporteCorteCajaService
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'Dolares'); 
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'Tarjeta');
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", 'Depósito / transferencia');
-            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado por');
+            $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", 'Reservado para');
             $rowNumber += 1;
 
             //Data
