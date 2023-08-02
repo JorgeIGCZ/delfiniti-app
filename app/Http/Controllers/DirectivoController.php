@@ -19,8 +19,8 @@ class DirectivoController extends Controller
 {
     public function __construct() 
     {
-        // $this->middleware('permission:Directivo.index')->only('index');
-        // $this->middleware('permission:Directivo.update')->only('edit'); 
+        $this->middleware('permission:Directivos.index')->only('index');
+        $this->middleware('permission:Directivos.update')->only('edit'); 
     }
     /**
      * Display a listing of the resource.
