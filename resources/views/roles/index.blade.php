@@ -149,6 +149,10 @@
                 'Directivos.create'   : roles.elements['Directivos.create'     ].checked,
                 'Directivos.update'   : roles.elements['Directivos.update'     ].checked,
 
+                'Supervisores.index'    : roles.elements['Supervisores.index'      ].checked,
+                'Supervisores.create'   : roles.elements['Supervisores.create'     ].checked,
+                'Supervisores.update'   : roles.elements['Supervisores.update'     ].checked,
+
                 'Configuracion' : roles.elements['Configuracion'     ].checked,
             }
         })
@@ -288,6 +292,27 @@
                         <div class="checkbox checkbox-primary">
                             <input name="Directivos.update" type="checkbox" >
                             <label for="Directivos.update">
+                                Modificar 
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <strong>Supervisores</strong>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Supervisores.index" type="checkbox" >
+                            <label for="Supervisores.index">
+                                Ver 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Supervisores.create" type="checkbox" >
+                            <label for="Supervisores.create">
+                                Crear 
+                            </label>
+                        </div>
+                        <div class="checkbox checkbox-primary">
+                            <input name="Supervisores.update" type="checkbox" >
+                            <label for="Supervisores.update">
                                 Modificar 
                             </label>
                         </div>

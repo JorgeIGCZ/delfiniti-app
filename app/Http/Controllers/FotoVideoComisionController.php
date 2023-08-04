@@ -10,6 +10,9 @@ use App\Models\FotoVideoComision;
 use App\Models\FotoVideoComisionista;
 use App\Models\FotoVideoVenta;
 use App\Models\FotoVideoVentaPago;
+use App\Models\Supervisor;
+use App\Models\SupervisorComisionFotoVideo;
+use App\Models\SupervisorComisionFotoVideoDetalle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -85,8 +88,9 @@ class FotoVideoComisionController extends Controller
 
         DB::beginTransaction();
         try{
-            $this->setComisionComisionista($venta,$pagos,$fechaComisiones);
             $this->processComisionDirectivo($venta,$pagos,$fechaComisiones);
+            $this->processComisionSupervisor($venta,$pagos,$fechaComisiones);
+            $this->setComisionComisionista($venta,$pagos,$fechaComisiones);
             // $this->setComisionCerrador($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaCanal($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaActividad($venta,$pagos,$fechaComisiones);
@@ -105,6 +109,69 @@ class FotoVideoComisionController extends Controller
         }
     }
 
+    private function processComisionSupervisor($venta,$pagos,$fechaComisiones)
+    {
+        $supervisores = Supervisor::where('estatus',1)->get();
+
+        if(count($supervisores) < 1){
+            return true;
+        }
+
+        foreach($supervisores as $supervisor){
+            $supervisorId = $supervisor['id'];
+            $comision = SupervisorComisionFotoVideoDetalle::where('supervisor_id',$supervisorId)->first();
+            
+            if(isset($comision)){
+                $validacionComision = ($comision['iva'] + $comision['comision'] + $comision['descuento_impuesto']);
+                if($validacionComision > 0){
+                    $this->setComisionesVentaSupervisor($pagos,$venta,$supervisorId,$comision,$fechaComisiones);   
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private function setComisionesVentaSupervisor($pagos,$venta,$supervisorId,$comision,$fechaComisiones)
+    {
+        $totalPagoReservacion = 0;
+        foreach($pagos as $pago){
+            //verifica si el tipo de pago es en USD
+            if($pago['tipo_pago_id'] == 2){
+                $totalPagoReservacion += ($pago['cantidad'] * $pago['tipo_cambio_usd']);
+                continue;
+            }
+            $totalPagoReservacion += $pago['cantidad'];
+        }
+
+        $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comision['iva']/100))),2);
+        $ivaCantidad               = round(($totalVentaSinIva * ($comision['iva']/100)),2);
+        $cantidadComisionBruta     = round((($totalVentaSinIva * $comision['comision']) / 100),2);
+        $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comision['descuento_impuesto']) / 100),2);
+        $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
+
+        $isComisionDuplicada = SupervisorComisionFotoVideo::where('supervisor_id',$supervisorId)
+                                        ->where('venta_id',$venta['id'])->get()->count();
+        
+        if($isComisionDuplicada){
+            return false;
+        }
+
+        $comsion = SupervisorComisionFotoVideo::create([   
+            'supervisor_id'            =>  $supervisorId,
+            'venta_id'                =>  $venta['id'],
+            'pago_total'              =>  $totalPagoReservacion,
+            'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
+            'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+            'iva'                     =>  (float)$ivaCantidad,
+            'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+            'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'created_at'              =>  $fechaComisiones,
+            'estatus'                 =>  1
+        ]);
+
+        return is_numeric($comsion['id']);
+    }
 
     private function processComisionDirectivo($venta,$pagos,$fechaComisiones){
         $directivos = Directivo::where('estatus',1)->get();
@@ -299,6 +366,28 @@ class FotoVideoComisionController extends Controller
                 $comisionesArray[] = [
                     'id'                => $comision->id,
                     'comisionista'      => $comision->directivo->nombre,
+                    'venta'             => $comision->venta->folio,
+                    'ventaId'           => $comision->venta->id,
+                    'total'             => $comision->pago_total,
+                    'comisionBruta'     => $comision->cantidad_comision_bruta,
+                    'iva'               => $comision->iva,
+                    'descuentoImpuesto' => $comision->descuento_impuesto,
+                    'comisionNeta'      => $comision->cantidad_comision_neta,
+                    'fecha'             => date_format($comision->created_at,'d-m-Y'),
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'directivo'
+                ];
+            }
+            
+            $comisiones      = SupervisorComisionFotoVideo::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('venta',function ($query){
+                $query
+                    ->where("estatus", 1);
+            })->orderBy('id','desc')->get();
+
+            foreach ($comisiones as $comision) {
+                $comisionesArray[] = [
+                    'id'                => $comision->id,
+                    'comisionista'      => $comision->supervisor->nombre,
                     'venta'             => $comision->venta->folio,
                     'ventaId'           => $comision->venta->id,
                     'total'             => $comision->pago_total,

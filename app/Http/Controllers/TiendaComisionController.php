@@ -6,6 +6,9 @@ use App\Classes\CustomErrorHandler;
 use App\Models\Directivo;
 use App\Models\DirectivoComisionTienda;
 use App\Models\DirectivoComisionTiendaDetalle;
+use App\Models\Supervisor;
+use App\Models\SupervisorComisionTienda;
+use App\Models\SupervisorComisionTiendaDetalle;
 use App\Models\TiendaComision;
 use App\Models\TiendaComisionista;
 use App\Models\TiendaVenta;
@@ -88,6 +91,7 @@ class TiendaComisionController extends Controller
         DB::beginTransaction();
         try{
             $this->processComisionDirectivo($venta,$pagos,$fechaComisiones);
+            $this->processComisionSupervisor($venta,$pagos,$fechaComisiones);
             $this->setComisionVentaMostrador($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaCanal($venta,$pagos,$fechaComisiones);
             // $this->setComisionComisionistaActividad($venta,$pagos,$fechaComisiones);
@@ -113,6 +117,9 @@ class TiendaComisionController extends Controller
 
         $comisionista = TiendaComisionista::where('usuario_id', $venta['usuario_id'])->first();
 
+        if(!isset($comisionista)){
+            return;
+        }
         return $this->setAllComisiones($pagos, $venta, $venta['usuario_id'], $comisionista, $fechaComisiones);
     }
 
@@ -181,6 +188,29 @@ class TiendaComisionController extends Controller
         return true;
     }
 
+    private function processComisionSupervisor($venta,$pagos,$fechaComisiones)
+    {
+        $supervisores = Supervisor::where('estatus',1)->get();
+
+        if(count($supervisores) < 1){
+            return true;
+        }
+
+        foreach($supervisores as $supervisor){
+            $supervisorId = $supervisor['id'];
+            $comision = SupervisorComisionTiendaDetalle::where('supervisor_id',$supervisorId)->first();
+            
+            if(isset($comision)){
+                $validacionComision = ($comision['iva'] + $comision['comision'] + $comision['descuento_impuesto']);
+                if($validacionComision > 0){
+                    $this->setComisionesVentaSupervisor($pagos,$venta,$supervisorId,$comision,$fechaComisiones);   
+                }
+            }
+        }
+
+        return true;
+    }
+
     private function setComisionesVentaDirectivo($pagos,$venta,$directivoId,$comision,$fechaComisiones)
     {
         $totalPagoReservacion = 0;
@@ -208,6 +238,47 @@ class TiendaComisionController extends Controller
 
         $comsion = DirectivoComisionTienda::create([   
             'directivo_id'            =>  $directivoId,
+            'venta_id'                =>  $venta['id'],
+            'pago_total'              =>  $totalPagoReservacion,
+            'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
+            'cantidad_comision_bruta' =>  (float)$cantidadComisionBruta,
+            'iva'                     =>  (float)$ivaCantidad,
+            'descuento_impuesto'      =>  (float)$descuentoImpuestoCantidad,
+            'cantidad_comision_neta'  =>  (float)$cantidadComisionNeta,
+            'created_at'              =>  $fechaComisiones,
+            'estatus'                 =>  1
+        ]);
+
+        return is_numeric($comsion['id']);
+    }
+
+    private function setComisionesVentaSupervisor($pagos,$venta,$supervisorId,$comision,$fechaComisiones)
+    {
+        $totalPagoReservacion = 0;
+        foreach($pagos as $pago){
+            //verifica si el tipo de pago es en USD
+            if($pago['tipo_pago_id'] == 2){
+                $totalPagoReservacion += ($pago['cantidad'] * $pago['tipo_cambio_usd']);
+                continue;
+            }
+            $totalPagoReservacion += $pago['cantidad'];
+        }
+
+        $totalVentaSinIva          = round(($totalPagoReservacion / (1+($comision['iva']/100))),2);
+        $ivaCantidad               = round(($totalVentaSinIva * ($comision['iva']/100)),2);
+        $cantidadComisionBruta     = round((($totalVentaSinIva * $comision['comision']) / 100),2);
+        $descuentoImpuestoCantidad = round((($cantidadComisionBruta * $comision['descuento_impuesto']) / 100),2);
+        $cantidadComisionNeta      = round(($cantidadComisionBruta - $descuentoImpuestoCantidad),2);
+
+        $isComisionDuplicada = SupervisorComisionTienda::where('supervisor_id',$supervisorId)
+                                        ->where('venta_id',$venta['id'])->get()->count();
+        
+        if($isComisionDuplicada){
+            return false;
+        }
+
+        $comsion = SupervisorComisionTienda::create([   
+            'supervisor_id'            =>  $supervisorId,
             'venta_id'                =>  $venta['id'],
             'pago_total'              =>  $totalPagoReservacion,
             'pago_total_sin_iva'      =>  (float)$totalVentaSinIva,
@@ -306,6 +377,28 @@ class TiendaComisionController extends Controller
                 $comisionesArray[] = [
                     'id'                => $comision->id,
                     'comisionista'      => $comision->directivo->nombre,
+                    'venta'             => $comision->venta->folio,
+                    'ventaId'           => $comision->venta->id,
+                    'total'             => $comision->pago_total,
+                    'comisionBruta'     => $comision->cantidad_comision_bruta,
+                    'iva'               => $comision->iva,
+                    'descuentoImpuesto' => $comision->descuento_impuesto,
+                    'comisionNeta'      => $comision->cantidad_comision_neta,
+                    'fecha'             => date_format($comision->created_at,'d-m-Y'),
+                    'estatus'           => $comision->estatus,
+                    'tipo'              => 'directivo'
+                ];
+            }
+
+            $comisiones      = SupervisorComisionTienda::whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereHas('venta',function ($query){
+                $query
+                    ->where("estatus", 1);
+            })->orderBy('id','desc')->get();
+
+            foreach ($comisiones as $comision) {
+                $comisionesArray[] = [
+                    'id'                => $comision->id,
+                    'comisionista'      => $comision->supervisor->nombre,
                     'venta'             => $comision->venta->folio,
                     'ventaId'           => $comision->venta->id,
                     'total'             => $comision->pago_total,

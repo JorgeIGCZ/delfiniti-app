@@ -201,6 +201,9 @@
                   @can('TipoCambio.index')
                     <a href="{{ url('/tiposcambio') }}" class="nav-link {{url()->current() == url('tiposcambio') ? 'active' : ''}}">Tipos de cambio</a>
                   @endcan
+                  @can('Supervisores.index')
+                    <a href="{{ url('/supervisores') }}" class="nav-link {{url()->current() == url('supervisores') ? 'active' : ''}}">Supervisores</a>
+                  @endcan
                   @can('Directivos.index')
                     <a href="{{ url('/directivos') }}" class="nav-link {{url()->current() == url('directivos') ? 'active' : ''}}">Directivos</a>
                   @endcan

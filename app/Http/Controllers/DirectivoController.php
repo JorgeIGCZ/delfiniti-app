@@ -68,7 +68,8 @@ class DirectivoController extends Controller
         return json_encode(['result' => is_numeric($directivo['id']) ? 'Success' : 'Error']);
     }
 
-    private function createComisionCanalDetalle($directivoId,$request){
+    private function createComisionCanalDetalle($directivoId,$request)
+    {
         foreach($request->comisionesSobreReservaciones as $key => $comisionesSobreReservaciones){
             DirectivoComisionReservacionCanalDetalle::create([
                 'directivo_id'       => $directivoId,
@@ -80,7 +81,8 @@ class DirectivoController extends Controller
         }
     }
 
-    private function createComisionTiendaDetalle($directivoId,$request){
+    private function createComisionTiendaDetalle($directivoId,$request)
+    {
         DirectivoComisionTiendaDetalle::create([
             'directivo_id'          => $directivoId,
             'comision'              => $request->comisionesSobreTienda['comision'],
@@ -89,7 +91,8 @@ class DirectivoController extends Controller
         ]);
     }
 
-    private function createComisionFotoVideoDetalle($directivoId,$request){
+    private function createComisionFotoVideoDetalle($directivoId,$request)
+    {
         DirectivoComisionFotoVideoDetalle::create([
             'directivo_id'          => $directivoId,
             'comision'              => $request->comisionesSobreFotoVideo['comision'],
@@ -122,7 +125,6 @@ class DirectivoController extends Controller
             return json_encode(['data' => $directivosArray]);
         }
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -213,7 +215,6 @@ class DirectivoController extends Controller
         return redirect()->route("directivos.index")->with(["result" => "Directivo actualizado"]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      *
@@ -222,7 +223,6 @@ class DirectivoController extends Controller
     public function create(Request $request)
     {
     }
-
 
     /**
      * Remove the specified resource from storage.

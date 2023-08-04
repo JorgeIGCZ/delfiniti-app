@@ -24,6 +24,7 @@ use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\FotoVideoVentaTicketController;
 use App\Http\Controllers\ReservacionTicketController;
+use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\TiendaComisionController;
 use App\Http\Controllers\TiendaComisionistaController;
 use App\Http\Controllers\TiendaImpuestoController;
@@ -149,6 +150,16 @@ Route::controller(DirectivoController::class)->middleware(['auth'])->group(funct
     Route::resource('directivos',DirectivoController::class, [
         'parameters' => [
             'directivos' => 'directivo'
+        ]
+    ]);
+});
+
+Route::controller(SupervisorController::class)->middleware(['auth'])->group(function () {
+    Route::get('supervisores/show/{supervisor?}', 'show');
+    Route::patch('supervisores/estatus/{supervisor}', 'updateEstatus');
+    Route::resource('supervisores',SupervisorController::class, [
+        'parameters' => [
+            'supervisores' => 'supervisor'
         ]
     ]);
 });
