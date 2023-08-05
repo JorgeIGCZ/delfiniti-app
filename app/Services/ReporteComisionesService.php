@@ -975,7 +975,7 @@ class ReporteComisionesService
                 ->where('comisionista_cerrador',0)
                 ->get();
 
-            $directivos = Directivo::get();
+            $directivos = Directivo::where('estatus',1)->get();
             
             $initialRowNumber = $rowNumber;
             foreach($canalesVenta as $key => $canalVenta){
