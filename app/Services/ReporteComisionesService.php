@@ -45,29 +45,31 @@ class ReporteComisionesService
         // $comisionesCerradores = $this->getComisionesCerradores($fechaInicio,$fechaFinal);
 
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $spreadsheet->getActiveSheet()->setTitle("REPORTE DE RESERVACIONES");
 
-        $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE COMISIONES");
-        $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
-
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(20);
-        
-        $rowNumber = 5;
-
-        $sumaC = [];
-        $sumaD = [];
-        $sumaE = [];
-        $sumaF = [];
-        $sumaG = [];
-
+        $sheetNumber = 1;
         // HOJA RESERVACIONES
         if(in_array("Reservaciones", $moduloRequest)){
+            $spreadsheet->getActiveSheet()->setTitle("REPORTE DE RESERVACIONES");
+
+            $spreadsheet->getActiveSheet()->setCellValue("A2", "REPORTE DE COMISIONES");
+            $spreadsheet->getActiveSheet()->setCellValue("A3", "Del {$formatoFechaInicio} al {$formatoFechaFinal}");	
+
+            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+            $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+            
+            $rowNumber = 5;
+
+            $sumaC = [];
+            $sumaD = [];
+            $sumaE = [];
+            $sumaF = [];
+            $sumaG = [];
+
             $comisionesAgrupadasTipoPorcentaje = $this->getComisionesAgrupadasTipoPorcentaje($comisionesTipo,$canalesVentaRequest);
 
             foreach($comisionesAgrupadasTipoPorcentaje as $key => $comisionAgrupadaTipoPorcentajeGeneral){
@@ -256,353 +258,354 @@ class ReporteComisionesService
             $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, "PORCENTAJE: ");
             $spreadsheet->getActiveSheet()->setCellValue('G' . $rowNumber, '=IF(ISERROR(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
             $rowNumber += 2;
-        }
-
-        //Calculo totales
-        $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
-                    ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
         
-        $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
-                    ->getFont()->setBold(true);
 
-        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
+            //Calculo totales
+            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
+                        ->getNumberFormat()
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+            
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
+                        ->getFont()->setBold(true);
 
-        $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
 
-        $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
-        $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=' . implode('+',$sumaE));
-        $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=' . implode('+',$sumaF));
-        $spreadsheet->getActiveSheet()->setCellValue('G' . $rowNumber, '=' . implode('+',$sumaG));
+            $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
 
-        //VISITAS
-        if(in_array("Reservaciones", $moduloRequest)){
-            $rowNumber += 4;
-            $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}")
-                ->getFont()->setBold(true)->setSize(12);
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'VISITAS');
+            $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
+            $spreadsheet->getActiveSheet()->setCellValue('E' . $rowNumber, '=' . implode('+',$sumaE));
+            $spreadsheet->getActiveSheet()->setCellValue('F' . $rowNumber, '=' . implode('+',$sumaF));
+            $spreadsheet->getActiveSheet()->setCellValue('G' . $rowNumber, '=' . implode('+',$sumaG));
 
-            $rowNumber += 1;
+            //VISITAS
+            if(in_array("Reservaciones", $moduloRequest)){
+                $rowNumber += 4;
+                $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}")
+                    ->getFont()->setBold(true)->setSize(12);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'VISITAS');
 
-            $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
-                $query
-                    ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
-                    ->where('estatus',1); 
-            })->whereHas('comisionesDirectivos', function (Builder $query) use ($fechaInicio,$fechaFinal) {
-                $query
-                    ->whereBetween("directivo_comisiones_reservacion.created_at", [$fechaInicio,$fechaFinal])
-                    ->where('estatus',1); 
-            })
-            ->where('estatus',1)
-            ->where("comisionable", 1)
-            ->where("comisiones_especiales", 1)
-            ->get();
+                $rowNumber += 1;
 
-            $comisionesEspecialesDetalle = [];
-            $comisionistasId = [];
-            foreach($reservaciones as $reservacion){
+                $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
+                    $query
+                        ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
+                        ->where('estatus',1); 
+                })->whereHas('comisionesDirectivos', function (Builder $query) use ($fechaInicio,$fechaFinal) {
+                    $query
+                        ->whereBetween("directivo_comisiones_reservacion.created_at", [$fechaInicio,$fechaFinal])
+                        ->where('estatus',1); 
+                })
+                ->where('estatus',1)
+                ->where("comisionable", 1)
+                ->where("comisiones_especiales", 1)
+                ->get();
 
-                $reservacionId = $reservacion->id;
-                $comisionistaId = $reservacion->comisionista->id;
+                $comisionesEspecialesDetalle = [];
+                $comisionistasId = [];
+                foreach($reservaciones as $reservacion){
 
-                $comision = Comision::where('reservacion_id',$reservacionId)->get();
+                    $reservacionId = $reservacion->id;
+                    $comisionistaId = $reservacion->comisionista->id;
 
-                $cerradoresCanal = CanalVenta::where('comisionista_cerrador',1)->get();
-                $directivos = Directivo::where('estatus',1)->get();
+                    $comision = Comision::where('reservacion_id',$reservacionId)->get();
 
-                // $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
+                    $cerradoresCanal = CanalVenta::where('comisionista_cerrador',1)->get();
+                    $directivos = Directivo::where('estatus',1)->get();
 
-                // Inicializar comisionista
-                if(!in_array($comisionistaId,$comisionistasId)){
-                    $comisionistasId[] = $comisionistaId;
-                    // $comisionista = $reservacion->comisionista
+                    // $comisionPromotor = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$reservacion->comisionista_id)->get();
 
-                    $comisionesEspecialesDetalle[$comisionistaId] = [
-                        'NOMBRE'   => $reservacion->comisionista->nombre,
-                        'VISITAS'  => 0,
-                        'COMISION' => 0
-                    ];
-                }
+                    // Inicializar comisionista
+                    if(!in_array($comisionistaId,$comisionistasId)){
+                        $comisionistasId[] = $comisionistaId;
+                        // $comisionista = $reservacion->comisionista
 
-                $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($reservacion->ReservacionDetalle[0]->numero_personas) ? $reservacion->ReservacionDetalle[0]->numero_personas : 0;
-                $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->get();
-                if(count($comisiones) > 0){
-                    $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones[0]->cantidad_comision_neta;
-                }
+                        $comisionesEspecialesDetalle[$comisionistaId] = [
+                            'NOMBRE'   => $reservacion->comisionista->nombre,
+                            'VISITAS'  => 0,
+                            'COMISION' => 0
+                        ];
+                    }
 
-                foreach($cerradoresCanal as $cerradorCanal){
-                    foreach($cerradorCanal->comisionistas as $comisionistas){
-                        $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->first();
+                    $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($reservacion->ReservacionDetalle[0]->numero_personas) ? $reservacion->ReservacionDetalle[0]->numero_personas : 0;
+                    $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->get();
+                    if(count($comisiones) > 0){
+                        $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones[0]->cantidad_comision_neta;
+                    }
+
+                    foreach($cerradoresCanal as $cerradorCanal){
+                        foreach($cerradorCanal->comisionistas as $comisionistas){
+                            $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->first();
+                            if(isset($comisiones->cantidad_comision_neta)){
+                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['id'] = $comisionistas->id;
+                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['comision'] = $comisiones->cantidad_comision_neta;
+                            }
+                        }
+                    }
+
+                    foreach($directivos as $key => $directivo){
+                        $comisiones = DirectivoComisionReservacion::where('reservacion_id',$reservacionId)->where('directivo_id',$directivo->id)->first();
                         if(isset($comisiones->cantidad_comision_neta)){
-                            $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['id'] = $comisionistas->id;
-                            $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['comision'] = $comisiones->cantidad_comision_neta;
+                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['id'] = $directivo->id;
+                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['comision'] = $comisiones->cantidad_comision_neta;
                         }
                     }
                 }
 
-                foreach($directivos as $key => $directivo){
-                    $comisiones = DirectivoComisionReservacion::where('reservacion_id',$reservacionId)->where('directivo_id',$directivo->id)->first();
-                    if(isset($comisiones->cantidad_comision_neta)){
-                        $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['id'] = $directivo->id;
-                        $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['comision'] = $comisiones->cantidad_comision_neta;
+                // dd($comisionesEspecialesDetalle);
+
+                //Titulos comisiones Especiales Detalle
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
+                    ->getFont()->setBold(true)->setSize(12);
+            
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('F2F2F2');
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
+                    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                //Titulos estaticos
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISION');
+                
+                //Titulos dinamicos
+                $column = 2;
+                $index = 0;
+                $titulosCreados = [];
+                foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
+                    foreach($comisionEspecialDetalle as $titulo => $value){
+                        // if($index < 3){
+                        //     $index++;
+                        //     continue;
+                        // }
+
+                        if(!in_array($titulo,$titulosCreados)){
+                            $titulosCreados[] = $titulo;
+
+                            if($titulo == 'CERRADOR'){
+                                $comisionista = Comisionista::find($value['id']);
+                                $titulo = $comisionista->nombre;
+                            }
+
+                            if($titulo == 'DIRECTIVOS'){
+                                foreach($value as $key => $value){
+                                    $directivo = Directivo::find($value['id']);
+                                    $titulo = $directivo->nombre;
+
+                                    $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
+                                    $column++;
+                                }
+                                continue;
+                            }
+
+                            $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
+                            $column++;
+                        }
                     }
                 }
-            }
+                $rowNumber += 1;
 
-            // dd($comisionesEspecialesDetalle);
-
-            //Titulos comisiones Especiales Detalle
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
-                ->getFont()->setBold(true)->setSize(12);
-        
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F2F2F2');
-
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:K{$rowNumber}")
-                ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-            //Titulos estaticos
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISION');
-            
-            //Titulos dinamicos
-            $column = 2;
-            $index = 0;
-            $titulosCreados = [];
-            foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
-                foreach($comisionEspecialDetalle as $titulo => $value){
-                    // if($index < 3){
-                    //     $index++;
-                    //     continue;
-                    // }
-
-                    if(!in_array($titulo,$titulosCreados)){
-                        $titulosCreados[] = $titulo;
-
+                //Valores dinamicos
+                foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
+                    $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
+                        ->getNumberFormat()
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    $column = 2;
+                    $index = 0;
+                    foreach($comisionEspecialDetalle as $titulo => $value){
+                        
                         if($titulo == 'CERRADOR'){
-                            $comisionista = Comisionista::find($value['id']);
-                            $titulo = $comisionista->nombre;
+                            $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
+                            $index++;
+                            $column++;
+                            continue;
                         }
 
                         if($titulo == 'DIRECTIVOS'){
                             foreach($value as $key => $value){
-                                $directivo = Directivo::find($value['id']);
-                                $titulo = $directivo->nombre;
-
-                                $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
+                                $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
+                                $index++;
                                 $column++;
                             }
                             continue;
                         }
 
-                        $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
-                        $column++;
-                    }
-                }
-            }
-            $rowNumber += 1;
+                        $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value);
 
-            //Valores dinamicos
-            foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
-                $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
-                    ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
-                $column = 2;
-                $index = 0;
-                foreach($comisionEspecialDetalle as $titulo => $value){
-                    
-                    if($titulo == 'CERRADOR'){
-                        $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
                         $index++;
                         $column++;
-                        continue;
                     }
-
-                    if($titulo == 'DIRECTIVOS'){
-                        foreach($value as $key => $value){
-                            $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
-                            $index++;
-                            $column++;
-                        }
-                        continue;
-                    }
-
-                    $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value);
-
-                    $index++;
-                    $column++;
+                    $rowNumber++;          
                 }
-                $rowNumber++;          
-            }
 
-            $rowNumber += 3;
+                $rowNumber += 3;
 
-            
-
-
-            //Titulos comisiones Especiales 
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-                ->getFont()->setBold(true)->setSize(12);
-            
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-                ->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F2F2F2');
-
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-                ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISIÓN');
-
-            $rowNumber += 1;
-
-            $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
-                $query
-                    ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
-                    ->where('estatus',1); 
-            })->whereHas('comisionesDirectivos', function (Builder $query) use ($fechaInicio,$fechaFinal) {
-                $query
-                    ->whereBetween("directivo_comisiones_reservacion.created_at", [$fechaInicio,$fechaFinal])
-                    ->where('estatus',1); 
-            })
-            ->where('estatus',1)
-            ->where("comisionable", 1)
-            ->where("comisiones_especiales", 1)
-            ->get();
-            
-            $comisionesEspeciales = [];
-
-            $comisionistasId =[];
-            $directivosId =[];
-            foreach($reservaciones as $reservacion){
-
-                $comisiones = $reservacion->comisiones;
-                foreach($comisiones as $comision){
                 
-                    $comisionistaId = $comision->comisionista->id;
 
-                    if(!in_array($comisionistaId,$comisionistasId)){
-                        $comisionistasId[] = $comisionistaId;
-                        
-                        $comisionesEspeciales['COMISIONISTAS'][$comisionistaId] = [
-                            'nombre'   => $comision->comisionista->nombre,
-                            'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
-                            'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
-                            'directivo' => 0,
-                            'cerrador' => $comision->comisionista->tipo->comisionista_cerrador
-                        ];
-                        continue;
+
+                //Titulos comisiones Especiales 
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                    ->getFont()->setBold(true)->setSize(12);
+                
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                    ->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->getStartColor()->setARGB('F2F2F2');
+
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                    ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'NOMBRE');
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", 'VISITAS');
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", 'COMISIÓN');
+
+                $rowNumber += 1;
+
+                $reservaciones = Reservacion::whereHas('comisiones', function (Builder $query) use ($fechaInicio,$fechaFinal) {
+                    $query
+                        ->whereBetween("comisiones.created_at", [$fechaInicio,$fechaFinal])
+                        ->where('estatus',1); 
+                })->whereHas('comisionesDirectivos', function (Builder $query) use ($fechaInicio,$fechaFinal) {
+                    $query
+                        ->whereBetween("directivo_comisiones_reservacion.created_at", [$fechaInicio,$fechaFinal])
+                        ->where('estatus',1); 
+                })
+                ->where('estatus',1)
+                ->where("comisionable", 1)
+                ->where("comisiones_especiales", 1)
+                ->get();
+                
+                $comisionesEspeciales = [];
+
+                $comisionistasId =[];
+                $directivosId =[];
+                foreach($reservaciones as $reservacion){
+
+                    $comisiones = $reservacion->comisiones;
+                    foreach($comisiones as $comision){
+                    
+                        $comisionistaId = $comision->comisionista->id;
+
+                        if(!in_array($comisionistaId,$comisionistasId)){
+                            $comisionistasId[] = $comisionistaId;
+                            
+                            $comisionesEspeciales['COMISIONISTAS'][$comisionistaId] = [
+                                'nombre'   => $comision->comisionista->nombre,
+                                'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
+                                'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
+                                'directivo' => 0,
+                                'cerrador' => $comision->comisionista->tipo->comisionista_cerrador
+                            ];
+                            continue;
+                        }
+
+                        $comisionesEspeciales['COMISIONISTAS'][$comisionistaId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+                        $comisionesEspeciales['COMISIONISTAS'][$comisionistaId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+
                     }
 
-                    $comisionesEspeciales['COMISIONISTAS'][$comisionistaId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-                    $comisionesEspeciales['COMISIONISTAS'][$comisionistaId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
+                    $comisionesDirectivos = $reservacion->comisionesDirectivos;
+                    foreach($comisionesDirectivos as $comision){
 
-                }
+                        $directivoId = $comision->directivo->id;
 
-                $comisionesDirectivos = $reservacion->comisionesDirectivos;
-                foreach($comisionesDirectivos as $comision){
+                        if(!in_array($directivoId,$directivosId)){
+                            $directivosId[] = $directivoId;
+                            
+                            $comisionesEspeciales['DIRECTIVOS'][$directivoId] = [
+                                'nombre'   => $comision->directivo->nombre,
+                                'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
+                                'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
+                                'directivo' => 1,
+                                'cerrador' => 0
+                            ];
+                            continue;
+                        }
 
-                    $directivoId = $comision->directivo->id;
-
-                    if(!in_array($directivoId,$directivosId)){
-                        $directivosId[] = $directivoId;
-                        
-                        $comisionesEspeciales['DIRECTIVOS'][$directivoId] = [
-                            'nombre'   => $comision->directivo->nombre,
-                            'visitas'  => isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0,
-                            'comision' => isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0,
-                            'directivo' => 1,
-                            'cerrador' => 0
-                        ];
-                        continue;
+                        $comisionesEspeciales['DIRECTIVOS'][$directivoId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
+                        $comisionesEspeciales['DIRECTIVOS'][$directivoId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
                     }
-
-                    $comisionesEspeciales['DIRECTIVOS'][$directivoId]['visitas']  += isset($comision->reservacion->ReservacionDetalle[0]->numero_personas) ? $comision->reservacion->ReservacionDetalle[0]->numero_personas : 0;
-                    $comisionesEspeciales['DIRECTIVOS'][$directivoId]['comision'] += isset($comision->cantidad_comision_neta) ? $comision->cantidad_comision_neta : 0;
                 }
-            }
 
-            $index = 1;
-            $sumaC = [];
-            $sumaD = [];
+                $index = 1;
+                $sumaC = [];
+                $sumaD = [];
 
-            $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}")
-            ->getNumberFormat()
-            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            foreach($comisionesEspeciales as $key => $comisionEspecialTipo){
-                foreach($comisionEspecialTipo as $comisionEspecial){
-                    $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
-                    $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comisionEspecial['nombre']);
-                    $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comisionEspecial['visitas']);
-                    $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comisionEspecial['comision']);
-        
-                    if($comisionEspecial['cerrador'] == 0 && $key !== 'DIRECTIVOS'){
-                        $sumaC[] = 'C' . $rowNumber;
-                    }
-                    $sumaD[] = 'D' . $rowNumber;
-        
-                    $rowNumber += 1;      
-                    $index++;      
-                }
-            }
-
-            //Calculo totales
-            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
-                        ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
-
-            $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
-                        ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                foreach($comisionesEspeciales as $key => $comisionEspecialTipo){
+                    foreach($comisionEspecialTipo as $comisionEspecial){
+                        $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
+                        $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comisionEspecial['nombre']);
+                        $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comisionEspecial['visitas']);
+                        $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $comisionEspecial['comision']);
             
-            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
-                        ->getFont()->setBold(true);
+                        if($comisionEspecial['cerrador'] == 0 && $key !== 'DIRECTIVOS'){
+                            $sumaC[] = 'C' . $rowNumber;
+                        }
+                        $sumaD[] = 'D' . $rowNumber;
+            
+                        $rowNumber += 1;      
+                        $index++;      
+                    }
+                }
 
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
-            $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
-            $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
+                //Calculo totales
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:D{$rowNumber}")
+                            ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
+
+                $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
+                            ->getNumberFormat()
+                            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                
+                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
+                            ->getFont()->setBold(true);
+
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", 'TOTALES');
+                $spreadsheet->getActiveSheet()->setCellValue('C' . $rowNumber, '=' . implode('+',$sumaC));
+                $spreadsheet->getActiveSheet()->setCellValue('D' . $rowNumber, '=' . implode('+',$sumaD));
+            }
         }
 
         //HOJA FOTO Y VIDEO
         if(in_array("FotoVideo", $moduloRequest)){
             $FotoVideoSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'REPORTE DE FOTO Y VIDEO');
-            $spreadsheet->addSheet($FotoVideoSheet, 1);
+            $spreadsheet->addSheet($FotoVideoSheet, $sheetNumber);
 
-            $spreadsheet->getSheet(1)->mergeCells("A1:H1");
-            $spreadsheet->getSheet(1)->mergeCells("A2:H2");
-            $spreadsheet->getSheet(1)->getRowDimension(1)->setRowHeight(35);
-            $spreadsheet->getSheet(1)->getRowDimension(2)->setRowHeight(25);
-            $spreadsheet->getSheet(1)->getStyle("A1")
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A1:H1");
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A2:H2");
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(1)->setRowHeight(35);
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(2)->setRowHeight(25);
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1")
                 ->getFont()->setSize(20);
-            $spreadsheet->getSheet(1)->getStyle("A2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A2")
                 ->getFont()->setSize(12);
-            $spreadsheet->getSheet(1)->getStyle('A1:B2')
+            $spreadsheet->getSheet($sheetNumber)->getStyle('A1:B2')
                 ->getFont()
                 ->getColor()
                 ->setRGB ('17365D');
-            $spreadsheet->getSheet(1)->getStyle("A1:H2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1:H2")
                 ->getAlignment()
                 ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
                 ->setWrapText(true);
 
-            $spreadsheet->getSheet(1)->getColumnDimension('A')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('B')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('C')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('D')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('E')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('F')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('G')->setAutoSize(true);
-            $spreadsheet->getSheet(1)->getColumnDimension('H')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('A')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('B')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('C')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('D')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('E')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('F')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('G')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('H')->setAutoSize(true);
 
-            $spreadsheet->getSheet(1)->setCellValue("A1", "REPORTE DE FOTO Y VIDEO");
-            $spreadsheet->getSheet(1)->setCellValue("A2", "INGRESOS FOTO Y VIDEO DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A1", "REPORTE DE FOTO Y VIDEO");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A2", "INGRESOS FOTO Y VIDEO DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
 
             $rowNumber = 5;
             
@@ -611,25 +614,25 @@ class ReporteComisionesService
             $comisionesFotoVideoSupervisor = $this->getComisionesFotoVideoSupervisores($fechaInicio,$fechaFinal);
 
             //Titulos
-            $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFont()->setBold(true)->setSize(12);
                 
-            $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getSheet(1)->getStyle("C{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                 ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-            $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", '#');
-            $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", 'FOTO Y VIDEO');
-            $spreadsheet->getSheet(1)->setCellValue("C{$rowNumber}", 'TOTAL');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", '#');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", 'FOTO Y VIDEO');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", 'TOTAL');
 
-            $spreadsheet->getSheet(1)->setCellValue("E{$rowNumber}", 'COM. BRUTA S/IVA');
-            $spreadsheet->getSheet(1)->setCellValue("F{$rowNumber}", 'DESC. IMPUESTO');
-            $spreadsheet->getSheet(1)->setCellValue("G{$rowNumber}", 'A PAGAR');
-            $spreadsheet->getSheet(1)->setCellValue("H{$rowNumber}", 'FIRMA');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", 'COM. BRUTA S/IVA');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", 'DESC. IMPUESTO');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", 'A PAGAR');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("H{$rowNumber}", 'FIRMA');
 
             $rowNumber += 1;
             $index = 1;
@@ -638,18 +641,18 @@ class ReporteComisionesService
             //Comisiones mostrador
             $comisionesAgrupadasTiendaMostrador = $this->getComisionesAgrupadasFotoVideoComisionista($comisionesFotoVideoComisionista);
             foreach($comisionesAgrupadasTiendaMostrador as $comision){
-                $spreadsheet->getSheet(1)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(1)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(1)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(1)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(1)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(1)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
                 
                 $sumaC[] = 'C' . $rowNumber;
 
@@ -660,18 +663,18 @@ class ReporteComisionesService
             //Comisiones directivos
             $comisionesAgrupadasTiendaDirectivos = $this->getComisionesAgrupadasFotoVideoDirectivos($comisionesFotoVideoDirectivo);
             foreach($comisionesAgrupadasTiendaDirectivos as $comision){
-                $spreadsheet->getSheet(1)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(1)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(1)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(1)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(1)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(1)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
 
                 $rowNumber += 1;
                 $index++;
@@ -680,18 +683,18 @@ class ReporteComisionesService
             //Comisiones supervisores
             $comisionesAgrupadasTiendaSupervisores = $this->getComisionesAgrupadasFotoVideoSupervisores($comisionesFotoVideoSupervisor);
             foreach($comisionesAgrupadasTiendaSupervisores as $comision){
-                $spreadsheet->getSheet(1)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(1)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(1)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(1)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(1)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(1)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(1)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
 
                 $rowNumber += 1;
                 $index++;
@@ -699,22 +702,22 @@ class ReporteComisionesService
 
             
             //Calculo total
-            $spreadsheet->getSheet(1)->getStyle("C{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:G{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getSheet(1)->getStyle("B{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("B{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
                 
-            $spreadsheet->getSheet(1)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                     ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
-            $spreadsheet->getSheet(1)->setCellValue("B{$rowNumber}", 'TOTAL');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", 'TOTAL');
                 
-            // $spreadsheet->getSheet(1)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(1)->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(1)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(1)->setCellValue('G' . $rowNumber, '=SUM(' . 'G' . $initialRowNumber . ':G' . $rowNumber-1 . ')');
+            // $spreadsheet->getSheet($sheetNumber)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('G' . $rowNumber, '=SUM(' . 'G' . $initialRowNumber . ':G' . $rowNumber-1 . ')');
 
 
             $sumaD[] = 'D' . $rowNumber;
@@ -724,52 +727,54 @@ class ReporteComisionesService
 
             $rowNumber += 1;
 
-            $spreadsheet->getSheet(1)->getStyle("G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("G{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
 
-            $spreadsheet->getSheet(1)->getStyle("F{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("F{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
 
-            $spreadsheet->getSheet(1)->setCellValue('F' . $rowNumber, "PORCENTAJE: ");
-            $spreadsheet->getSheet(1)->setCellValue('G' . $rowNumber, '=IF(ISERROR(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('F' . $rowNumber, "PORCENTAJE: ");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('G' . $rowNumber, '=IF(ISERROR(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
             $rowNumber += 2;
+
+            $sheetNumber++;
         }
         
         //HOJA TIENDA
         if(in_array("Tienda", $moduloRequest)){
             $TiendaSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'REPORTE DE TIENDA');
-            $spreadsheet->addSheet($TiendaSheet, 2);
+            $spreadsheet->addSheet($TiendaSheet, $sheetNumber);
 
-            $spreadsheet->getSheet(2)->mergeCells("A1:H1");
-            $spreadsheet->getSheet(2)->mergeCells("A2:H2");
-            $spreadsheet->getSheet(2)->getRowDimension(1)->setRowHeight(35);
-            $spreadsheet->getSheet(2)->getRowDimension(2)->setRowHeight(25);
-            $spreadsheet->getSheet(2)->getStyle("A1")
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A1:H1");
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A2:H2");
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(1)->setRowHeight(35);
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(2)->setRowHeight(25);
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1")
                 ->getFont()->setSize(20);
-            $spreadsheet->getSheet(2)->getStyle("A2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A2")
                 ->getFont()->setSize(12);
-            $spreadsheet->getSheet(2)->getStyle('A1:B2')
+            $spreadsheet->getSheet($sheetNumber)->getStyle('A1:B2')
                 ->getFont()
                 ->getColor()
                 ->setRGB ('17365D');
-            $spreadsheet->getSheet(2)->getStyle("A1:H2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1:H2")
                 ->getAlignment()
                 ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
                 ->setWrapText(true);
 
-            $spreadsheet->getSheet(2)->getColumnDimension('A')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('B')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('C')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('D')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('E')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('F')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('G')->setAutoSize(true);
-            $spreadsheet->getSheet(2)->getColumnDimension('H')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('A')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('B')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('C')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('D')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('E')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('F')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('G')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('H')->setAutoSize(true);
 
-            $spreadsheet->getSheet(2)->setCellValue("A1", "REPORTE DE TIENDA");
-            $spreadsheet->getSheet(2)->setCellValue("A2", "INGRESOS TIENDA DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A1", "REPORTE DE TIENDA");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A2", "INGRESOS TIENDA DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
 
             $rowNumber = 5;
             
@@ -778,25 +783,25 @@ class ReporteComisionesService
             $comisionesTiendaSupervisor = $this->getComisionesTiendaSupervisores($fechaInicio,$fechaFinal); 
 
             //Titulos
-            $spreadsheet->getSheet(2)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFont()->setBold(true)->setSize(12);
                 
-            $spreadsheet->getSheet(2)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getFill()
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getSheet(2)->getStyle("C{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                 ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-            $spreadsheet->getSheet(2)->setCellValue("A{$rowNumber}", '#');
-            $spreadsheet->getSheet(2)->setCellValue("B{$rowNumber}", 'TIENDA');
-            $spreadsheet->getSheet(2)->setCellValue("C{$rowNumber}", 'TOTAL');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", '#');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", 'TIENDA');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", 'TOTAL');
 
-            $spreadsheet->getSheet(2)->setCellValue("E{$rowNumber}", 'COM. BRUTA S/IVA');
-            $spreadsheet->getSheet(2)->setCellValue("F{$rowNumber}", 'DESC. IMPUESTO');
-            $spreadsheet->getSheet(2)->setCellValue("G{$rowNumber}", 'A PAGAR');
-            $spreadsheet->getSheet(2)->setCellValue("H{$rowNumber}", 'FIRMA');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", 'COM. BRUTA S/IVA');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", 'DESC. IMPUESTO');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", 'A PAGAR');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("H{$rowNumber}", 'FIRMA');
 
             $rowNumber += 1;
             $index = 1;
@@ -805,18 +810,18 @@ class ReporteComisionesService
             //Comisiones mostrador
             $comisionesAgrupadasTiendaMostrador = $this->getComisionesAgrupadasTiendaMostrador($comisionesTiendaMostrador);
             foreach($comisionesAgrupadasTiendaMostrador as $comision){
-                $spreadsheet->getSheet(2)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(2)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(2)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(2)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(2)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(2)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(2)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(2)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
                 
                 $sumaC[] = 'C' . $rowNumber;
 
@@ -827,18 +832,18 @@ class ReporteComisionesService
             //Comisiones directivos
             $comisionesAgrupadasTiendaDirectivos = $this->getComisionesAgrupadasTiendaDirectivos($comisionesTiendaDirectivo);
             foreach($comisionesAgrupadasTiendaDirectivos as $comision){
-                $spreadsheet->getSheet(2)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(2)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(2)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(2)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(2)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(2)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(2)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(2)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
 
                 $rowNumber += 1;
                 $index++;
@@ -847,40 +852,40 @@ class ReporteComisionesService
             //Comisiones supervisores
             $comisionesAgrupadasTiendaSupervisores = $this->getComisionesAgrupadasTiendaSupervisores($comisionesTiendaSupervisor);
             foreach($comisionesAgrupadasTiendaSupervisores as $comision){
-                $spreadsheet->getSheet(2)->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-                $spreadsheet->getSheet(2)->getRowDimension($rowNumber)->setRowHeight(40);
-                $spreadsheet->getSheet(2)->setCellValue("A{$rowNumber}", $index);
-                $spreadsheet->getSheet(2)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
-                $spreadsheet->getSheet(2)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
+                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
 
-                $spreadsheet->getSheet(2)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
-                $spreadsheet->getSheet(2)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
-                $spreadsheet->getSheet(2)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("E{$rowNumber}", $comision['comisionBruta']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("F{$rowNumber}", $comision['descuentoImpuesto']);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("G{$rowNumber}", $comision['cantidadNeta']);
 
                 $rowNumber += 1;
                 $index++;
             }
 
             //Calculo total
-            $spreadsheet->getSheet(2)->getStyle("C{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:G{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getSheet(2)->getStyle("B{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("B{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
                 
-            $spreadsheet->getSheet(2)->getStyle("A{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                     ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
-            $spreadsheet->getSheet(2)->setCellValue("B{$rowNumber}", 'TOTAL');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", 'TOTAL');
                 
-            // $spreadsheet->getSheet(2)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(2)->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(2)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(2)->setCellValue('G' . $rowNumber, '=SUM(' . 'G' . $initialRowNumber . ':G' . $rowNumber-1 . ')');
+            // $spreadsheet->getSheet($sheetNumber)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('E' . $rowNumber, '=SUM(' . 'E' . $initialRowNumber . ':E' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('G' . $rowNumber, '=SUM(' . 'G' . $initialRowNumber . ':G' . $rowNumber-1 . ')');
 
 
             $sumaD[] = 'D' . $rowNumber;
@@ -890,69 +895,71 @@ class ReporteComisionesService
 
             $rowNumber += 1;
 
-            $spreadsheet->getSheet(2)->getStyle("G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("G{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
 
-            $spreadsheet->getSheet(2)->getStyle("F{$rowNumber}:G{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("F{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
 
-            $spreadsheet->getSheet(2)->setCellValue('F' . $rowNumber, "PORCENTAJE: ");
-            $spreadsheet->getSheet(2)->setCellValue('G' . $rowNumber, '=IF(ISERROR(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('F' . $rowNumber, "PORCENTAJE: ");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('G' . $rowNumber, '=IF(ISERROR(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '),0,(' . 'G' . $rowNumber-1 . '/C' . $rowNumber-1 . '))');
             $rowNumber += 2;
+
+            $sheetNumber++;
         }
         
         //HOJA V&O
         if(in_array("Reservaciones", $moduloRequest)){
             $VOSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'V&O');
-            $spreadsheet->addSheet($VOSheet, 3);
+            $spreadsheet->addSheet($VOSheet, $sheetNumber);
 
-            $spreadsheet->getSheet(3)->mergeCells("A1:H1");
-            $spreadsheet->getSheet(3)->mergeCells("A2:H2");
-            $spreadsheet->getSheet(3)->getRowDimension(1)->setRowHeight(35);
-            $spreadsheet->getSheet(3)->getRowDimension(2)->setRowHeight(25);
-            $spreadsheet->getSheet(3)->getStyle("A1")
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A1:H1");
+            $spreadsheet->getSheet($sheetNumber)->mergeCells("A2:H2");
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(1)->setRowHeight(35);
+            $spreadsheet->getSheet($sheetNumber)->getRowDimension(2)->setRowHeight(25);
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1")
                 ->getFont()->setSize(20);
-            $spreadsheet->getSheet(3)->getStyle("A2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A2")
                 ->getFont()->setSize(12);
-            $spreadsheet->getSheet(3)->getStyle('A1:B2')
+            $spreadsheet->getSheet($sheetNumber)->getStyle('A1:B2')
                 ->getFont()
                 ->getColor()
                 ->setRGB ('17365D');
-            $spreadsheet->getSheet(3)->getStyle("A1:H2")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A1:H2")
                 ->getAlignment()
                 ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER) //Set vertical center
                 ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER) //Set horizontal center
                 ->setWrapText(true);
 
-            $spreadsheet->getSheet(3)->getColumnDimension('A')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('B')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('C')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('D')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('E')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('F')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('G')->setAutoSize(true);
-            $spreadsheet->getSheet(3)->getColumnDimension('H')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('A')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('B')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('C')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('D')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('E')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('F')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('G')->setAutoSize(true);
+            $spreadsheet->getSheet($sheetNumber)->getColumnDimension('H')->setAutoSize(true);
 
-            $spreadsheet->getSheet(3)->setCellValue("A1", "REPORTE V&O");
-            $spreadsheet->getSheet(3)->setCellValue("A2", "INGRESOS POR CANALES DE VENTAS DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A1", "REPORTE V&O");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A2", "INGRESOS POR CANALES DE VENTAS DEL {$formatoFechaInicio} AL {$formatoFechaFinal}");
 
             $rowNumber = 5;
             
             //Titulos
-            $spreadsheet->getSheet(3)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:Z{$rowNumber}")
                         ->getFont()->setBold(true);
                     
-            $spreadsheet->getSheet(3)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:Z{$rowNumber}")
                         ->getFont()->setSize(12);
 
-            $spreadsheet->getSheet(3)->getStyle("A{$rowNumber}:Z{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:Z{$rowNumber}")
                         ->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getSheet(3)->setCellValue("A{$rowNumber}", "CANAL DE VENTA");
-            $spreadsheet->getSheet(3)->setCellValue("B{$rowNumber}", "INGRESO S/IVA");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", "CANAL DE VENTA");
+            $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", "INGRESO S/IVA");
             
             $headerRowNumber = $rowNumber;
             $rowNumber += 1;
@@ -985,7 +992,7 @@ class ReporteComisionesService
                 }
                 
                 //Canal de venta
-                $spreadsheet->getSheet(3)->setCellValue("A{$rowNumber}", $canalVenta->nombre);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $canalVenta->nombre);
                 
                 $reservacionesId = [];
                 $pagoTotalSinIva = 0;
@@ -997,7 +1004,7 @@ class ReporteComisionesService
 
                 //echo("<br>Pago Totoal SIN IVA: ".$pagoTotalSinIva);
 
-                $spreadsheet->getSheet(3)->setCellValue("B{$rowNumber}", $pagoTotalSinIva);
+                $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $pagoTotalSinIva);
                 
                 
                     $column = 3;
@@ -1012,9 +1019,9 @@ class ReporteComisionesService
         
                         // titulos dinamicos
                         $header = "% {$nombreDirectivo}";
-                        $spreadsheet->getSheet(3)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
+                        $spreadsheet->getSheet($sheetNumber)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
         
-                        $spreadsheet->getSheet(3)->setCellValueByColumnAndRow($column, $rowNumber, @$directivoComisionReservacionCanalDetalle[$canalVenta->id][0]->comision);
+                        $spreadsheet->getSheet($sheetNumber)->setCellValueByColumnAndRow($column, $rowNumber, @$directivoComisionReservacionCanalDetalle[$canalVenta->id][0]->comision);
                         $column += 1;
         
                         // $canalVentaId       = $canalVenta->id;
@@ -1035,9 +1042,9 @@ class ReporteComisionesService
                         
                         // titulos dinamicos
                         $header = "TOTAL {$nombreDirectivo}";
-                        $spreadsheet->getSheet(3)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
+                        $spreadsheet->getSheet($sheetNumber)->setCellValueByColumnAndRow($column, $headerRowNumber, $header);
                         
-                        $spreadsheet->getSheet(3)->setCellValueByColumnAndRow($column, $rowNumber, @$comisionComisionistasSobreTiposBrutaSinIva);
+                        $spreadsheet->getSheet($sheetNumber)->setCellValueByColumnAndRow($column, $rowNumber, @$comisionComisionistasSobreTiposBrutaSinIva);
                         $column += 1;
                     }
                 
@@ -1046,28 +1053,28 @@ class ReporteComisionesService
             
 
             //Calculo totales
-            $spreadsheet->getSheet(3)->getStyle("B{$initialRowNumber}:B{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("B{$initialRowNumber}:B{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getSheet(3)->getStyle("D{$initialRowNumber}:D{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("D{$initialRowNumber}:D{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getSheet(3)->getStyle("F{$initialRowNumber}:F{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("F{$initialRowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
 
-            $spreadsheet->getSheet(3)->getStyle("A{$rowNumber}:F{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:F{$rowNumber}")
                     ->getFont()->setBold(true);
                 
-            $spreadsheet->getSheet(3)->getStyle("A{$rowNumber}:F{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:F{$rowNumber}")
                     ->getBorders()->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM);
 
-            $spreadsheet->getSheet(3)->setCellValue('A' . $rowNumber, 'TOTALES');
-            $spreadsheet->getSheet(3)->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(3)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
-            $spreadsheet->getSheet(3)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('A' . $rowNumber, 'TOTALES');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('B' . $rowNumber, '=SUM(' . 'B' . $initialRowNumber . ':B' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('D' . $rowNumber, '=SUM(' . 'D' . $initialRowNumber . ':D' . $rowNumber-1 . ')');
+            $spreadsheet->getSheet($sheetNumber)->setCellValue('F' . $rowNumber, '=SUM(' . 'F' . $initialRowNumber . ':F' . $rowNumber-1 . ')');
             
         }
         
