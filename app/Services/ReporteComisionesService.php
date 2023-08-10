@@ -302,6 +302,8 @@ class ReporteComisionesService
 
                 $comisionesEspecialesDetalle = [];
                 $comisionistasId = [];
+                $cerradoresId = [];
+                $directivosId = [];
                 foreach($reservaciones as $reservacion){
 
                     $reservacionId = $reservacion->id;
@@ -327,26 +329,49 @@ class ReporteComisionesService
                     }
 
                     $comisionesEspecialesDetalle[$comisionistaId]['VISITAS']  += isset($reservacion->ReservacionDetalle[0]->numero_personas) ? $reservacion->ReservacionDetalle[0]->numero_personas : 0;
-                    $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->get();
-                    if(count($comisiones) > 0){
-                        $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones[0]->cantidad_comision_neta;
+                    $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistaId)->first();
+                    if(isset($comisiones->cantidad_comision_neta)){
+                        $comisionesEspecialesDetalle[$comisionistaId]['COMISION'] += $comisiones->cantidad_comision_neta;
                     }
+                    
+                    $cerradoresId[$comisionistaId] = [];
 
                     foreach($cerradoresCanal as $cerradorCanal){
                         foreach($cerradorCanal->comisionistas as $comisionistas){
+
+                            // Inicializar cerradores
+                            if(!in_array($comisionistas->id,$cerradoresId[$comisionistaId])){
+                                $cerradoresId[$comisionistaId][] = $comisionistas->id;
+                                
+                                if(isset($comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'])){
+                                    $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'] = 0;
+                                }
+                            }
+                            
                             $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->first();
-                            if(isset($comisiones->cantidad_comision_neta)){
-                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['id'] = $comisionistas->id;
-                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['comision'] = $comisiones->cantidad_comision_neta;
+                            if(!isset($comisiones->cantidad_comision_neta)){
+                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['Id'] = $comisionistas->id;
+                                $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'] += $comisiones->cantidad_comision_neta;
                             }
                         }
                     }
 
+                    $directivosId[$comisionistaId] = [];
+
                     foreach($directivos as $key => $directivo){
+                        // Inicializar directivos
+                        if(!in_array($directivo->id,$directivosId[$comisionistaId])){
+                            $directivosId[$comisionistaId][] = $directivo->id;
+                            
+                            if(!isset($comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['COMISION'])){
+                                $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['COMISION'] = 0;
+                            }
+                        }
+                        
                         $comisiones = DirectivoComisionReservacion::where('reservacion_id',$reservacionId)->where('directivo_id',$directivo->id)->first();
                         if(isset($comisiones->cantidad_comision_neta)){
-                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['id'] = $directivo->id;
-                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['comision'] = $comisiones->cantidad_comision_neta;
+                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['Id'] = $directivo->id;
+                            $comisionesEspecialesDetalle[$comisionistaId]['DIRECTIVOS'][$key]['COMISION'] += $comisiones->cantidad_comision_neta;
                         }
                     }
                 }
@@ -385,13 +410,13 @@ class ReporteComisionesService
                             $titulosCreados[] = $titulo;
 
                             if($titulo == 'CERRADOR'){
-                                $comisionista = Comisionista::find($value['id']);
+                                $comisionista = Comisionista::find($value['Id']);
                                 $titulo = $comisionista->nombre;
                             }
 
                             if($titulo == 'DIRECTIVOS'){
                                 foreach($value as $key => $value){
-                                    $directivo = Directivo::find($value['id']);
+                                    $directivo = Directivo::find($value['Id']);
                                     $titulo = $directivo->nombre;
 
                                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
@@ -417,7 +442,7 @@ class ReporteComisionesService
                     foreach($comisionEspecialDetalle as $titulo => $value){
                         
                         if($titulo == 'CERRADOR'){
-                            $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
+                            $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['COMISION']);
                             $index++;
                             $column++;
                             continue;
@@ -425,7 +450,7 @@ class ReporteComisionesService
 
                         if($titulo == 'DIRECTIVOS'){
                             foreach($value as $key => $value){
-                                $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['comision']);
+                                $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $value['COMISION']);
                                 $index++;
                                 $column++;
                             }
