@@ -415,7 +415,7 @@ class ReporteComisionesService
 
                             if($titulo == 'DIRECTIVOS'){
                                 foreach($value as $key => $value){
-                                    $directivo = Directivo::where('estatus',1)->find($value['Id']);
+                                    $directivo = Directivo::find($value['Id']);
                                     $titulo = $directivo->nombre;
 
                                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
