@@ -319,8 +319,7 @@ class ReporteComisionesService
                     // Inicializar comisionista
                     if(!in_array($comisionistaId,$comisionistasId)){
                         $comisionistasId[] = $comisionistaId;
-                        // $comisionista = $reservacion->comisionista
-
+                        
                         $comisionesEspecialesDetalle[$comisionistaId] = [
                             'NOMBRE'   => $reservacion->comisionista->nombre,
                             'VISITAS'  => 0,
@@ -416,7 +415,7 @@ class ReporteComisionesService
 
                             if($titulo == 'DIRECTIVOS'){
                                 foreach($value as $key => $value){
-                                    $directivo = Directivo::find($value['Id']);
+                                    $directivo = Directivo::where('estatus',1)->find($value['Id']);
                                     $titulo = $directivo->nombre;
 
                                     $spreadsheet->getSheet(0)->setCellValueByColumnAndRow($column, $rowNumber, $titulo);
