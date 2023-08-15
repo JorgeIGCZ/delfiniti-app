@@ -342,13 +342,13 @@ class ReporteComisionesService
                             if(!in_array($comisionistas->id,$cerradoresId[$comisionistaId])){
                                 $cerradoresId[$comisionistaId][] = $comisionistas->id;
                                 
-                                if(isset($comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'])){
+                                if(!isset($comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'])){
                                     $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'] = 0;
                                 }
                             }
                             
                             $comisiones = Comision::where('reservacion_id',$reservacionId)->where('comisionista_id',$comisionistas->id)->first();
-                            if(!isset($comisiones->cantidad_comision_neta)){
+                            if(isset($comisiones->cantidad_comision_neta)){
                                 $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['Id'] = $comisionistas->id;
                                 $comisionesEspecialesDetalle[$comisionistaId]['CERRADOR']['COMISION'] += $comisiones->cantidad_comision_neta;
                             }
