@@ -131,6 +131,10 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'Supervisores.create'])->assignRole($administrador);
         Permission::create(['name' => 'Supervisores.update'])->assignRole($administrador);
 
+        Permission::create(['name' => 'TiendaComisiones.index'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaComisiones.create'])->assignRole($administrador);
+        Permission::create(['name' => 'TiendaComisiones.update'])->assignRole($administrador);
+
         Permission::create(['name' => 'Configuracion'])->assignRole($administrador);
     }
 }
