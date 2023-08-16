@@ -38,7 +38,7 @@ class TiendaVenta extends Model
 
     public function tipoPago()
     {
-        return $this->belongsToMany(TipoPago::class, 'foto_video_venta_pagos', 'venta_id', 'tipo_pago_id')
+        return $this->belongsToMany(TipoPago::class, 'tienda_venta_pagos', 'venta_id', 'tipo_pago_id')
                     ->withPivot('factura_id','venta_id','cantidad','tipo_pago_id','tipo_cambio_usd','valor','tipo_valor','comision_creada');
     }
 
