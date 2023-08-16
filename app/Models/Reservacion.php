@@ -115,13 +115,6 @@ class Reservacion extends Model
     }
     public function tipoPago()
     {
-        return $this->hasOneThrough(
-            TipoPago::class,
-            Pago::class,
-            'reservacion_id', // FK Pago como comunica a Reservacion
-            'id', // FK Pago como comunica a TipoPago
-            'id', //local key TipoPago
-            'tipo_pago_id' //local key Pago
-        );
+        return $this->belongsToMany(TipoPago::class, 'pagos', 'reservacion_id', 'tipo_pago_id');
     }
 }

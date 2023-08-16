@@ -36,14 +36,6 @@ class Comision extends Model
 
     public function canalVenta()
     {
-        return $this->hasOneThrough(
-            CanalVenta::class,
-            Comisionista::class,
-            'id', // Foreign key on the cars table...
-            'id', // Foreign key on the owners table...
-            'id', // Local key on the mechanics table...
-            'canal_venta_id' // Local key on the cars table...
-        );
-
+        return $this->comisionista->tipo;
     }
 }
