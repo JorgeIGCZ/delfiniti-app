@@ -155,7 +155,7 @@ class ReporteCorteCajaService
 
                 $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                     
                 $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                     ->getFont()->setBold(true);
@@ -257,7 +257,7 @@ class ReporteCorteCajaService
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                     
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                 ->getFont()->setBold(true);
@@ -358,7 +358,7 @@ class ReporteCorteCajaService
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                     
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                 ->getFont()->setBold(true);
@@ -458,7 +458,7 @@ class ReporteCorteCajaService
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                     
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
                 ->getFont()->setBold(true);
@@ -497,7 +497,7 @@ class ReporteCorteCajaService
 
         $spreadsheet->getActiveSheet()->getStyle("H{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
         $tipoCambioRowNumber = $rowNumber;
 
@@ -624,7 +624,7 @@ class ReporteCorteCajaService
 
         $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:G{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_INTEGER);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
         $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                 ->getFont()->setBold(true);
