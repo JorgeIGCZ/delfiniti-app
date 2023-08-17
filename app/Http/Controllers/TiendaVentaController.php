@@ -293,7 +293,8 @@ class TiendaVentaController extends Controller
                 'tipo_pago_id'   =>  $tipoPagoId,
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
                 'valor'          =>  $request[$tipoPago]['valor'] ?? '',
-                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
+                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
+                'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0
             ]);
             $result = is_numeric($pago['id']);
 

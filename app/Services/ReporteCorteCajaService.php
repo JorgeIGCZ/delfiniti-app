@@ -67,7 +67,7 @@ class ReporteCorteCajaService
                 } 
 
                 $reservacionesPago = $actividad->pagos->pluck('reservacion.id');
-                $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("usuario_id", $usuarios)->get();
+                $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->get();
                 
                 //Estilo de encabezado
                 $spreadsheet->getActiveSheet()->mergeCells("A{$rowNumber}:G{$rowNumber}");
@@ -128,20 +128,20 @@ class ReporteCorteCajaService
                 foreach($reservaciones as $reservacion){
                     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $reservacion->folio);
 
-                    $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivo',$fechaInicio,$fechaFinal,false,0);
+                    $pagosEfectivoResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividad, 'efectivo', $fechaInicio, $fechaFinal, false, 0);
                     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
 
-                    $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividad,'efectivoUsd',$fechaInicio,$fechaFinal,$pagosEfectivoResult['pendiente']);
+                    $pagosEfectivoUsdResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividad, 'efectivoUsd', $fechaInicio, $fechaFinal, $pagosEfectivoResult['pendiente']);
                     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
 
-                    $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividad,'tarjeta',$fechaInicio,$fechaFinal,$pagosEfectivoUsdResult['pendiente']);
+                    $pagosTarjetaResult = $this->getPagosTotalesByType($usuarios, $reservacion,$actividad,'tarjeta', $fechaInicio, $fechaFinal, $pagosEfectivoUsdResult['pendiente']);
                     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
                     
-                    $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividad,'deposito',$fechaInicio,$fechaFinal,$pagosTarjetaResult['pendiente']);
+                    $pagosDepositoResult = $this->getPagosTotalesByType($usuarios, $reservacion,$actividad,'deposito', $fechaInicio, $fechaFinal, $pagosTarjetaResult['pendiente']);
                     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
 
                     if($showCupones){
-                        $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividad,'cupon',$fechaInicio,$fechaFinal,$pagosDepositoResult['pendiente']);
+                        $pagosCuponResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividad, 'cupon', $fechaInicio, $fechaFinal, $pagosDepositoResult['pendiente']);
                         $spreadsheet->getActiveSheet()->setCellValue("F{$rowNumber}", $pagosCuponResult['pago']);
                     }
 
@@ -238,16 +238,16 @@ class ReporteCorteCajaService
             foreach($tiendaVentas as $tiendaVenta){
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $tiendaVenta->folio);
 
-                $pagosEfectivoResult = $this->getTiendaVentaPagosTotalesByType($tiendaVenta, 'efectivo', $fechaInicio, $fechaFinal);
+                $pagosEfectivoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivo', $fechaInicio, $fechaFinal);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
 
-                $pagosEfectivoUsdResult = $this->getTiendaVentaPagosTotalesByType($tiendaVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
+                $pagosEfectivoUsdResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
                 $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
 
-                $pagosTarjetaResult = $this->getTiendaVentaPagosTotalesByType($tiendaVenta, 'tarjeta', $fechaInicio, $fechaFinal);
+                $pagosTarjetaResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'tarjeta', $fechaInicio, $fechaFinal);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
                     
-                $pagosDepositoResult = $this->getTiendaVentaPagosTotalesByType($tiendaVenta, 'deposito', $fechaInicio, $fechaFinal);
+                $pagosDepositoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'deposito', $fechaInicio, $fechaFinal);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
 
                 $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$tiendaVenta->nombre_cliente);
@@ -539,7 +539,7 @@ class ReporteCorteCajaService
             foreach($actividadesPagos as $actividadPagos){
 
                 $reservacionesPago = $actividadPagos->pagos->pluck('reservacion.id');
-                $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->whereIn("usuario_id", $usuarios)->get();
+                $reservaciones = Reservacion::whereIn('id',$reservacionesPago)->where('estatus',1)->get();
                 
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $actividadPagos->nombre);
                 $totalEfectivo = 0;
@@ -550,20 +550,20 @@ class ReporteCorteCajaService
 
                 foreach($reservaciones as $reservacion){
                     
-                    $pagosEfectivoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivo',$fechaInicio,$fechaFinal,0);
+                    $pagosEfectivoResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividadPagos, 'efectivo', $fechaInicio, $fechaFinal, 0);
                     $totalEfectivo    += $pagosEfectivoResult['pago'];
 
-                    $pagosEfectivoUsdResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'efectivoUsd',$fechaInicio,$fechaFinal,$pagosEfectivoResult['pendiente']);
+                    $pagosEfectivoUsdResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividadPagos, 'efectivoUsd', $fechaInicio, $fechaFinal, $pagosEfectivoResult['pendiente']);
                     $totalEfectivoUSD += $pagosEfectivoUsdResult['pago'];
 
-                    $pagosTarjetaResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'tarjeta',$fechaInicio,$fechaFinal,$pagosEfectivoUsdResult['pendiente']);
+                    $pagosTarjetaResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividadPagos, 'tarjeta', $fechaInicio, $fechaFinal,$pagosEfectivoUsdResult['pendiente']);
                     $totalTarjeta     += $pagosTarjetaResult['pago'];
 
-                    $pagosDepositoResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'deposito',$fechaInicio,$fechaFinal,$pagosTarjetaResult['pendiente']);
+                    $pagosDepositoResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividadPagos, 'deposito', $fechaInicio, $fechaFinal, $pagosTarjetaResult['pendiente']);
                     $totalDeposito     += $pagosDepositoResult['pago'];
 
                     if($showCupones){
-                        $pagosCuponResult = $this->getPagosTotalesByType($reservacion,$actividadPagos,'cupon',$fechaInicio,$fechaFinal,$pagosDepositoResult['pendiente']);//remove
+                        $pagosCuponResult = $this->getPagosTotalesByType($usuarios, $reservacion, $actividadPagos, 'cupon', $fechaInicio, $fechaFinal, $pagosDepositoResult['pendiente']);//remove
                         $totalCupon       += $pagosCuponResult['pago'];
                     }
                 }
@@ -585,7 +585,7 @@ class ReporteCorteCajaService
         
         //Acumulado Tienda
         if(in_array("Tienda", $moduloRequest)){
-            $acumuladoTiendaVentas = $this->getAcumuladoTiendaVentas($tiendaVentas, $fechaInicio, $fechaFinal);
+            $acumuladoTiendaVentas = $this->getAcumuladoTiendaVentas($usuarios, $tiendaVentas, $fechaInicio, $fechaFinal);
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "TIENDA");
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
@@ -598,7 +598,7 @@ class ReporteCorteCajaService
 
         //Acumulado Fotos
         if(in_array("Fotos", $moduloRequest)){
-            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($fotoVentas, $fechaInicio, $fechaFinal);
+            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($usuarios, $fotoVentas, $fechaInicio, $fechaFinal);
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "FOTOS");
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
@@ -611,7 +611,7 @@ class ReporteCorteCajaService
 
         //Acumulado Videos
         if(in_array("Videos", $moduloRequest)){
-            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($videoVentas, $fechaInicio, $fechaFinal);
+            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($usuarios, $videoVentas, $fechaInicio, $fechaFinal);
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "VIDEOS");
             $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
@@ -712,14 +712,12 @@ class ReporteCorteCajaService
 	{
         ($showCupones ?  array_push($this->tiposPago,4) : '');
 
-        $actividades = Actividad::with(['pagos' => function ($query) use ($fechaInicio, $fechaFinal) {
+        $actividades = Actividad::with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
-                ->whereIn('tipo_pago_id',$this->tiposPago)->count();
-        }])
-        ->with(['reservaciones' => function ($query) use ($usuarios) {
-            $query
-                ->whereIn('usuario_id',$usuarios);
+                ->whereIn('tipo_pago_id',$this->tiposPago)
+                ->whereIn('usuario_id',$usuarios)
+                ->count();
         }])
         ->orderBy('actividades.reporte_orden','asc')->get();
          
@@ -728,10 +726,11 @@ class ReporteCorteCajaService
 
     private function getTiendaVentas($fechaInicio, $fechaFinal, $usuarios)
 	{
-        $ventas = TiendaVenta::whereIn('usuario_id',$usuarios)->whereHas('pagos', function (Builder $query) use ($fechaInicio, $fechaFinal) {
+        $ventas = TiendaVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
-                ->whereIn('tipo_pago_id',$this->tiposPago);
+                ->whereIn('tipo_pago_id',$this->tiposPago)
+                ->whereIn('usuario_id',$usuarios);
         })->get();
 
         return $ventas;
@@ -739,24 +738,25 @@ class ReporteCorteCajaService
 
     private function getFotoVideoVentas($fechaInicio, $fechaFinal, $usuarios, $tipo)
 	{
-        $ventas = FotoVideoVenta::whereIn('usuario_id',$usuarios)->whereHas('pagos', function (Builder $query) use ($fechaInicio, $fechaFinal) {
+        $ventas = FotoVideoVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
-                ->whereIn('tipo_pago_id',$this->tiposPago);
+                ->whereIn('tipo_pago_id', $this->tiposPago)
+                ->whereIn('usuario_id', $usuarios);
         })->whereHas('productos', function (Builder $query) use ($tipo) {
-            $query->where('tipo',$tipo);
+            $query->where('tipo', $tipo);
         })->get();
 
         return $ventas;
     }
 
-    private function getAcumuladoTiendaVentas($tiendaVentas, $fechaInicio, $fechaFinal)
+    private function getAcumuladoTiendaVentas($usuarios, $tiendaVentas, $fechaInicio, $fechaFinal)
     {
         $pagosArray = [];
         $acumuladoVentas = [];
         foreach($tiendaVentas as $tiendaVenta){
             $pagosId = $tiendaVenta->pagos->pluck('id');
-            $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->get();
+            $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->whereIn('usuario_id', $usuarios)->get();
     
             $pagosArray[] = $pagos;
         }
@@ -772,13 +772,13 @@ class ReporteCorteCajaService
         return $acumuladoVentas;
     }
 
-    private function getAcumuladoFotoVideoVentas($ventas, $fechaInicio, $fechaFinal)
+    private function getAcumuladoFotoVideoVentas($usuarios, $ventas, $fechaInicio, $fechaFinal)
     {
         $pagosArray = [];
         $acumuladoVentas = [];
         foreach($ventas as $venta){
             $pagosId = $venta->pagos->pluck('id');
-            $pagos   = FotoVideoVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->get();
+            $pagos   = FotoVideoVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->whereIn('usuario_id', $usuarios)->get();
     
             $pagosArray[] = $pagos;
         }
@@ -797,20 +797,23 @@ class ReporteCorteCajaService
 	private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios)
 	{
 
-        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$usuarios) {
+        $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
-                ->whereIn("usuario_id", $usuarios)
                 ->where('estatus',1);
+        }])->with(['pagos' => function ($query) use ($usuarios) {
+            $query
+                ->whereIn('usuario_id',$usuarios)
+                ->count();
         }]);
 
         return $actividades;
     }
 
-	private function getPagosTotalesByType($reservacion,$actividad,$pagoTipoNombre,$fechaInicio,$fechaFinal,$pendiente = 0)
+	private function getPagosTotalesByType($usuarios, $reservacion, $actividad, $pagoTipoNombre, $fechaInicio, $fechaFinal,$pendiente = 0)
 	{
         $pagosId = $reservacion->pagos->pluck('id');
-        $pagos   = Pago::whereIn("id",$pagosId)->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])->get();
+        $pagos   = Pago::whereIn("id",$pagosId)->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])->whereIn('usuario_id', $usuarios)->get();
 
         $reservaciones = new ReservacionController();
         $pagoTipoId    = $reservaciones->getTipoPagoId($pagoTipoNombre);
@@ -833,10 +836,10 @@ class ReporteCorteCajaService
         return isset($venta[$pagoTipoId]) ? $venta[$pagoTipoId] : 0;
     }
 
-    private function getTiendaVentaPagosTotalesByType($venta,$pagoTipoNombre,$fechaInicio,$fechaFinal,$pendiente = 0)
+    private function getTiendaVentaPagosTotalesByType($usuarios, $venta, $pagoTipoNombre, $fechaInicio, $fechaFinal, $pendiente = 0)
 	{
         $pagosId = $venta->pagos->pluck('id');
-        $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
+        $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereIn('usuario_id', $usuarios)->get();
 
         $ventas = new TiendaVentaController();
         $pagoTipoId    = $ventas->getTipoPagoId($pagoTipoNombre);

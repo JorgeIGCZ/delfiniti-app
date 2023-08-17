@@ -192,22 +192,22 @@ class ReservacionController extends Controller
             }
 
             if($isPago){
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
 
                 if($this->isValidDescuentoCupon($request)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "cupon", $request->usuario);
                 }
 
                 if($this->isValidDescuentoCodigo($request,$email)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $request->usuario);
                 }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
                 }
 
             }
@@ -302,7 +302,7 @@ class ReservacionController extends Controller
         return (round($total,2) >= round($maximoDescuento,2));
     }
 
-    private function setFaturaPago($reservacionId,$facturaId,$request,$tipoPago){
+    private function setFaturaPago($reservacionId, $facturaId, $request, $tipoPago, $usuario){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
@@ -316,7 +316,8 @@ class ReservacionController extends Controller
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
                 'valor'          =>  $request[$tipoPago]['valor'] ?? '',
                 'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
-                'descuento_codigo_id' => $request[$tipoPago]['descuentoCodigoId'] ?? ''
+                'descuento_codigo_id' => $request[$tipoPago]['descuentoCodigoId'] ?? '',
+                'usuario_id'     => is_numeric($usuario) ? $usuario : 0
             ]);
             $result = is_numeric($pago['id']);
 
@@ -591,22 +592,22 @@ class ReservacionController extends Controller
 
             if($pagar){
 
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($reservacion['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
 
                 if($this->isValidDescuentoCupon($request)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,'cupon');
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request,'cupon', $request->usuario);
                 }
 
                 if($this->isValidDescuentoCodigo($request,$email)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoCodigo");
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $request->usuario);
                 }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($reservacion['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
                 }
             }
 

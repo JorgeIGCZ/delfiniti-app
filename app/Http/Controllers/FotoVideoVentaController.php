@@ -139,11 +139,11 @@ class FotoVideoVentaController extends Controller
             }
 
             if($isPago){
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
 
                 // if($this->isValidDescuentoCupon($request)){
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
@@ -154,7 +154,7 @@ class FotoVideoVentaController extends Controller
                 // }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($venta['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
                 }
             }
 
@@ -242,7 +242,7 @@ class FotoVideoVentaController extends Controller
         return (round($total,2) >= round($maximoDescuento,2));
     }
 
-    private function setFaturaPago($ventaId,$facturaId,$request,$tipoPago){
+    private function setFaturaPago($ventaId, $facturaId, $request, $tipoPago, $usuario){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
@@ -255,7 +255,8 @@ class FotoVideoVentaController extends Controller
                 'tipo_pago_id'   =>  $tipoPagoId,
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
                 'valor'          =>  $request[$tipoPago]['valor'] ?? '',
-                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? ''
+                'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
+                'usuario_id'     => is_numeric($usuario) ? $usuario : 0
             ]);
             $result = is_numeric($pago['id']);
 
@@ -538,11 +539,11 @@ class FotoVideoVentaController extends Controller
 
             if($pagar){
 
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
 
                 // if($this->isValidDescuentoCupon($request)){
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
@@ -553,7 +554,7 @@ class FotoVideoVentaController extends Controller
                 // }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($venta['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
                 }
 
             }

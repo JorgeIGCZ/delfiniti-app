@@ -19,7 +19,8 @@ class TiendaVentaPago extends Model
         'valor',
         'tipo_valor',
         'comision_creada',
-        'created_at'
+        'created_at',
+        'usuario_id'
     ];
     protected $primaryKey = 'id'; 
 

@@ -17,7 +17,8 @@ class FotoVideoVentaPago extends Model
         'tipo_cambio_usd',
         'valor',
         'tipo_valor',
-        'comision_creada'
+        'comision_creada',
+        'usuario_id'
     ];
     protected $primaryKey = 'id'; 
 

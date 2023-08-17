@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('valor')->nullable();
             $table->string('tipo_valor')->nullable();
             $table->boolean('comision_creada')->default(0);
+            $table->integer('usuario_id');
             $table->timestamps();
         });
     }
