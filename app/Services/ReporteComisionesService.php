@@ -103,7 +103,7 @@ class ReporteComisionesService
                 foreach($comisionesAgrupadasComisionistas as $comision){
                     $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:H{$rowNumber}")
                         ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                     $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
 
@@ -121,7 +121,7 @@ class ReporteComisionesService
                 //Calculo total
                 $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
                         ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:G{$rowNumber}")
                         ->getFont()->setBold(true);
@@ -198,7 +198,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasDirectivos as $comision){
                 $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
@@ -215,7 +215,7 @@ class ReporteComisionesService
             //Calculo total
             $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getActiveSheet()->getStyle("B{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
@@ -263,7 +263,7 @@ class ReporteComisionesService
             //Calculo totales
             $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:G{$rowNumber}")
                         ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
             
             $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:G{$rowNumber}")
                         ->getFont()->setBold(true);
@@ -435,7 +435,7 @@ class ReporteComisionesService
                 foreach($comisionesEspecialesDetalle as $comisionEspecialDetalle){
                     $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
                         ->getNumberFormat()
-                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                        ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                     $column = 2;
                     $index = 0;
                     foreach($comisionEspecialDetalle as $titulo => $value){
@@ -560,7 +560,7 @@ class ReporteComisionesService
 
                 $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}")
                 ->getNumberFormat()
-                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 foreach($comisionesEspeciales as $key => $comisionEspecialTipo){
                     foreach($comisionEspecialTipo as $comisionEspecial){
@@ -585,7 +585,7 @@ class ReporteComisionesService
 
                 $spreadsheet->getActiveSheet()->getStyle("D{$rowNumber}:K{$rowNumber}")
                             ->getNumberFormat()
-                            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                            ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
                 
                 $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:K{$rowNumber}")
                             ->getFont()->setBold(true);
@@ -667,7 +667,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaMostrador as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -689,7 +689,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaDirectivos as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -709,7 +709,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaSupervisores as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -728,7 +728,7 @@ class ReporteComisionesService
             //Calculo total
             $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:G{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getSheet($sheetNumber)->getStyle("B{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
@@ -836,7 +836,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaMostrador as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -858,7 +858,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaDirectivos as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -878,7 +878,7 @@ class ReporteComisionesService
             foreach($comisionesAgrupadasTiendaSupervisores as $comision){
                 $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
                 $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
@@ -896,7 +896,7 @@ class ReporteComisionesService
             //Calculo total
             $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:G{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getSheet($sheetNumber)->getStyle("B{$rowNumber}:G{$rowNumber}")
                     ->getFont()->setBold(true);
@@ -1079,15 +1079,15 @@ class ReporteComisionesService
             //Calculo totales
             $spreadsheet->getSheet($sheetNumber)->getStyle("B{$initialRowNumber}:B{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getSheet($sheetNumber)->getStyle("D{$initialRowNumber}:D{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getSheet($sheetNumber)->getStyle("F{$initialRowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
-                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD_SIMPLE);
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
             $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:F{$rowNumber}")
                     ->getFont()->setBold(true);
