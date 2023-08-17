@@ -82,7 +82,7 @@ class ReporteComisionesService
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('F2F2F2');
 
-                $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:H{$rowNumber}")
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                     ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
@@ -176,7 +176,7 @@ class ReporteComisionesService
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getActiveSheet()->getStyle("C{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", '#');
@@ -646,7 +646,7 @@ class ReporteComisionesService
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
             $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", '#');
@@ -815,7 +815,7 @@ class ReporteComisionesService
                 ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                 ->getStartColor()->setARGB('F2F2F2');
 
-            $spreadsheet->getSheet($sheetNumber)->getStyle("C{$rowNumber}:H{$rowNumber}")
+            $spreadsheet->getSheet($sheetNumber)->getStyle("A{$rowNumber}:H{$rowNumber}")
                 ->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
             $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", '#');
