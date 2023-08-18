@@ -105,7 +105,7 @@ class ReporteComisionesService
                         ->getNumberFormat()
                         ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                    $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
+                    // $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
 
                     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
                     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
@@ -200,7 +200,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getActiveSheet()->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -669,7 +669,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -691,7 +691,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -711,7 +711,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -838,7 +838,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -860,7 +860,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
@@ -880,7 +880,7 @@ class ReporteComisionesService
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
 
-                $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
+                // $spreadsheet->getSheet($sheetNumber)->getRowDimension($rowNumber)->setRowHeight(40);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("A{$rowNumber}", $index);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("B{$rowNumber}", $comision['comisionistaNombre']);
                 $spreadsheet->getSheet($sheetNumber)->setCellValue("C{$rowNumber}", $comision['pagoTotal']);
