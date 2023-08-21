@@ -154,6 +154,8 @@ class ReservacionController extends Controller
         $isPago  = ($request->estatus == "pagar-reservar");
         $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
+        $usuario = Auth::user()->id;
+
         DB::beginTransaction();
         try{
             $reservacion = Reservacion::create([
@@ -161,7 +163,7 @@ class ReservacionController extends Controller
                 'email'           => mb_strtoupper($request->email),
                 'alojamiento'     => mb_strtoupper($request->alojamiento),
                 'origen'          => mb_strtoupper($request->origen),
-                'usuario_id'       => is_numeric($request->usuario) ? $request->usuario : 0,
+                'usuario_id'       => is_numeric($usuario) ? $usuario : 0,
                 'comisionista_id' => is_numeric($request->comisionista) ? $request->comisionista : 0,
                 'comisionista_actividad_id' => is_numeric($request->comisionistaActividad) ? $request->comisionistaActividad : 0,
                 'cerrador_id'     => is_numeric($request->cerrador) ? $request->cerrador : 0,
@@ -192,22 +194,22 @@ class ReservacionController extends Controller
             }
 
             if($isPago){
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $usuario);
 
                 if($this->isValidDescuentoCupon($request)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "cupon", $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "cupon", $usuario);
                 }
 
                 if($this->isValidDescuentoCodigo($request,$email)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $usuario);
                 }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $usuario);
                 }
 
             }
@@ -541,7 +543,8 @@ class ReservacionController extends Controller
         $email    = Auth::user()->email;
         $password = "";
         $checkin   = new CheckinController();
-
+        $usuario = Auth::user()->id;
+        
         DB::beginTransaction();
 
         try{
@@ -592,22 +595,22 @@ class ReservacionController extends Controller
 
             if($pagar){
 
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
-                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivo", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "efectivoUsd", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "tarjeta", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "deposito", $usuario);
+                $this->setFaturaPago($reservacion['id'], $factura['id'], $request['pagos'], "cambio", $usuario);
 
                 if($this->isValidDescuentoCupon($request)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request,'cupon', $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request,'cupon', $usuario);
                 }
 
                 if($this->isValidDescuentoCodigo($request,$email)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoCodigo", $usuario);
                 }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
+                    $this->setFaturaPago($reservacion['id'], $factura['id'], $request, "descuentoPersonalizado", $usuario);
                 }
             }
 
