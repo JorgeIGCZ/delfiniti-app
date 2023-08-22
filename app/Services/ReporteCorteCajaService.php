@@ -53,6 +53,8 @@ class ReporteCorteCajaService
         if(in_array(0,$usuarios)){
             // $usuarios = User::role(['Administrador','Recepcion'])->get()->pluck('id');
             $usuarios = User::get()->pluck('id');
+        }else{
+            $usuarios = User::whereIn('id',$usuarios)->pluck('id');
         }
         
         // $fechaInicio = '2022-08-15 00:00:00';
@@ -82,7 +84,7 @@ class ReporteCorteCajaService
 
             $reservaciones = $this->getReservacionesFecha($fechaInicio,$fechaFinal,$usuarios,$showCupones);
             foreach($reservaciones as $reservacion){
-                $reservacionesArray[] = $this->setReservacion($reservacion);
+                $reservacionesArray[] = $this->setReservacion($reservacion, $usuarios);
             }
 
             foreach($reservacionesArray as $reservacion){
@@ -563,7 +565,7 @@ class ReporteCorteCajaService
         $initialRowNumber = $rowNumber;
         
         //Acumulado Reservaciones
-        $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones);
+        // $actividadesPagos = $this->getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones);
         if(in_array("Reservaciones", $moduloRequest)){
             $actividades = Actividad::where('estatus',1)->get();
             foreach($actividades as $actividad){
@@ -695,7 +697,7 @@ class ReporteCorteCajaService
             $initialRowNumber = $rowNumber;
 
             //Excluye visitas
-            $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios)->whereRaw('exclusion_especial = 0')->get();
+            $actividadesFechaReservaciones = $this->getActividadesFechaReservaciones($fechaInicio, $fechaFinal)->whereRaw('exclusion_especial = 0')->get();
 
             foreach($actividadesFechaReservaciones as $actividad){
                     if(!count($actividad->reservaciones) ){
@@ -747,7 +749,7 @@ class ReporteCorteCajaService
         return $reservaciones;
     }
 
-    private function getReservacionPagos($reservacion){
+    private function getReservacionPagos($reservacion, $usuarios){
         $reservacionTipoPagos = [];
 
         $tipoPagos = TipoPago::get();
@@ -756,18 +758,21 @@ class ReporteCorteCajaService
         }
 
         foreach($reservacion->pagos as $pago){
+            if(!in_array($pago->usuario_id, $usuarios->toArray())){
+                continue;
+            }
             $reservacionTipoPagos[$pago->tipoPago->nombre] = $pago->cantidad;
         }
         return $reservacionTipoPagos;
     }
 
-    private function setReservacion($reservacion){
+    private function setReservacion($reservacion, $usuarios){
 
         $actividades = $this->setActividad($reservacion);
 
         $reservacionService = app(ReservacionService::class);
 
-        $reservacionTipoPagos = $this->getReservacionPagos($reservacion);
+        $reservacionTipoPagos = $this->getReservacionPagos($reservacion, $usuarios);
         $reservacionService->setFolio($reservacion->folio);
         $reservacionService->setActividades($actividades);
         $reservacionService->setNombreCliente($reservacion->nombre_cliente);
@@ -823,21 +828,6 @@ class ReporteCorteCajaService
         $actividad->setCantidadPagada($cantidadPagada + $pago);
 
         return $pago;
-    }
-
-    private function getActividadesFechaPagos($fechaInicio,$fechaFinal,$usuarios,$showCupones)
-	{
-        ($showCupones ?  array_push($this->tiposPago,4) : '');
-        $actividades = Actividad::with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
-            $query
-            ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
-            ->whereIn('tipo_pago_id',$this->tiposPago)
-            ->whereIn('usuario_id',$usuarios)
-            ->count();
-        }])
-        ->orderBy('actividades.reporte_orden','asc')->get();
-
-        return $actividades;
     }
         
 	private function getActividades()
@@ -916,17 +906,13 @@ class ReporteCorteCajaService
         return $acumuladoVentas;
     }
 
-	private function getActividadesFechaReservaciones($fechaInicio,$fechaFinal,$usuarios)
+	private function getActividadesFechaReservaciones($fechaInicio, $fechaFinal)
 	{
 
         $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
                 ->where('estatus',1);
-        }])->with(['pagos' => function ($query) use ($usuarios) {
-            $query
-                ->whereIn('usuario_id',$usuarios)
-                ->count();
         }]);
 
         return $actividades;
