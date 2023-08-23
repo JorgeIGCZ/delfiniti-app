@@ -91,11 +91,28 @@
                             use App\Models\CanalVenta;
                             if(Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Supervisor') || Auth::user()->hasRole('Mercadotecnia') || Auth::user()->hasRole('Contabilidad')){
                               $usuarios = User::get();
+                            }elseif(Auth::user()->hasRole('Recepcion')){
+                              $usuarios = User::role(['Recepcion', 'Tienda'])->get();
                             }else{
                               $role = Auth::user()->roles->pluck('name');
                               $usuarios = User::role($role)->get();
                             }
-                            // $usuarios = User::role('Recepcion')->get();
+                            
+                            $modulosCorteCaja = [];
+                            if(Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Supervisor') || Auth::user()->hasRole('Mercadotecnia') || Auth::user()->hasRole('Contabilidad')){
+                              $modulosCorteCaja = [
+                                "Reservaciones" => "RESERVACIONES",
+                                "Tienda" => "TIENDA",
+                                "Fotos" => "FOTO",
+                                "Videos" => "VIDEO",
+                              ];
+                            }elseif(Auth::user()->hasRole('Recepcion')){
+                              $modulosCorteCaja = [
+                                "Reservaciones" => "RESERVACIONES",
+                                "Fotos" => "FOTO",
+                                "Videos" => "VIDEO",
+                              ];
+                            }
                             
                             $canales = CanalVenta::get();
                           @endphp
@@ -139,10 +156,9 @@
                                 <div class="form-group col-12 mt-0 mb-0">
                                     <label for="filtro-modulo-corte-caja" class="col-form-label">Módulo</label>
                                     <select multiple id="filtro-modulo-corte-caja" name="filtro_modulo_corte_caja"  class="form-control filter-multi-select" >
-                                      <option value="Reservaciones" >RESERVACIONES</option>
-                                      <option value="Tienda" >TIENDA</option>
-                                      <option value="Fotos" >FOTO</option>
-                                      <option value="Videos" >VIDEO</option>
+                                      @foreach($modulosCorteCaja as $key => $modulo)
+                                        <option value="{{$key}}">{{$modulo}}</option>
+                                      @endforeach
                                     </select>
                                 </div>
                             </div>
