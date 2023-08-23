@@ -2,23 +2,25 @@
 
 namespace App\Services;
 
-class ActividadService
+class ProductoService
 {
     private $id;
     private $clave;
     private $precio;
-    private $numeroPersonas;
+    private $numeroProductos;
     private $nombre;
     private $cantidadPagada;
+    private $tipo;
  
-    public function __construct($id = 0, $clave = "", $precio = 0, $numeroPersonas = 0, $nombre = "", $cantidadPagada = 0)
+    public function __construct($id = 0, $clave = "", $precio = 0, $numeroProductos = 0, $nombre = "", $cantidadPagada = 0, $tipo = "")
     {
         $this->id = $id;
         $this->clave = $clave;
         $this->precio = $precio;
-        $this->numeroPersonas = $numeroPersonas;
+        $this->numeroProductos = $numeroProductos;
         $this->nombre = $nombre;
         $this->cantidadPagada = $cantidadPagada;
+        $this->tipo = $tipo;
     
     }
     
@@ -37,9 +39,9 @@ class ActividadService
         return $this->precio;
     }
 
-    public function getNumeroPersonas()
+    public function getNumeroProductos()
     {
-        return $this->numeroPersonas;
+        return $this->numeroProductos;
     }
 
     public function getNombre()
@@ -50,6 +52,11 @@ class ActividadService
     public function getCantidadPagada()
     {
         return $this->cantidadPagada;
+    }
+
+    public function getTipo()
+    {
+        return $this->tipo;
     }
 
     public function setId($id)
@@ -67,9 +74,9 @@ class ActividadService
         $this->precio = $precio;
     }
 
-    public function setNumeroPersonas($numeroPersonas)
+    public function setNumeroProductos($numeroProductos)
     {
-        $this->numeroPersonas = $numeroPersonas;
+        $this->numeroProductos = $numeroProductos;
     }
 
     public function setNombre($nombre)
@@ -80,5 +87,10 @@ class ActividadService
     public function setCantidadPagada($cantidadPagada)
     {
         $this->cantidadPagada = $cantidadPagada;
+    }
+
+    public function setTipo($tipo)
+    {
+        $this->tipo = $tipo;
     }
 }

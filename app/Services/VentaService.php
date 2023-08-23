@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-class ReservacionService
+class VentaService
 {
     private $folio;
-    private $actividades;
+    private $productos;
     private $nombreCliente;
     private $pagoEfectivo;
     private $pagoEfectivoUsd;
@@ -13,10 +13,10 @@ class ReservacionService
     private $pagoDeposito;
     private $pagoCupon;
  
-    public function __construct($folio = "", $actividades = [], $nombreCliente = '', $pagoEfectivo = 0, $pagoEfectivoUsd = 0, $pagoTarjeta = 0, $pagoDeposito = 0, $pagoCupon = 0)
+    public function __construct($folio = "", $productos = [], $nombreCliente = '', $pagoEfectivo = 0, $pagoEfectivoUsd = 0, $pagoTarjeta = 0, $pagoDeposito = 0, $pagoCupon = 0)
     {
         $this->folio = $folio;
-        $this->actividades = $actividades;
+        $this->productos = $productos;
         $this->nombreCliente = $nombreCliente;
         $this->pagoEfectivo = $pagoEfectivo;
         $this->pagoEfectivoUsd = $pagoEfectivoUsd;
@@ -31,9 +31,9 @@ class ReservacionService
         return $this->folio;
     }
     
-    public function getActividades()
+    public function getProductos()
     {
-        return $this->actividades;
+        return $this->productos;
     }
 
     public function getNombreCliente()
@@ -71,9 +71,9 @@ class ReservacionService
         $this->folio = $folio;
     }
 
-    public function setActividades($actividades)
+    public function setProductos($productos)
     {
-        $this->actividades = $actividades;
+        $this->productos = $productos;
     }
 
     public function setNombreCliente($nombreCliente)

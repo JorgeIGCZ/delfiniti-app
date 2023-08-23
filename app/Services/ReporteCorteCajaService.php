@@ -2,12 +2,13 @@
 
 namespace App\Services;
 
-use App\Services\ReservacionService;
-use App\Services\ActividadService;
+use App\Services\VentaService;
+use App\Services\ProductoService;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\TiendaVentaController;
 use App\Models\Actividad;
+use App\Models\FotoVideoProducto;
 use App\Models\FotoVideoVenta;
 use App\Models\FotoVideoVentaPago;
 use App\Models\Pago;
@@ -24,17 +25,21 @@ use Illuminate\Support\Facades\DB;
 
 class ReporteCorteCajaService
 {
-    protected $reservacionService;
-    protected $actividadService;
+    protected $ventaService;
+    protected $productoService;
 
     protected $tiposPago = [1,2,3,5,8];
+    protected $tipoCambio = 0;
+    protected $ventasVideoArray = [];
+    protected $ventasFotoArray = [];
 
     public function __construct(
-        ReservacionService $reservacionService,
-        ActividadService $actividadService,
+        VentaService $ventaService,
+        ProductoService $productoService,
     ) {
-        $this->reservacionService = $reservacionService;
-        $this->actividadService = $actividadService;
+        $this->ventaService = $ventaService;
+        $this->productoService = $productoService;
+        $this->tipoCambio = TipoCambio::where("seccion_uso","reportes")->get()[0]["precio_compra"];
     }
 
 	public function getReporte($request)
@@ -88,22 +93,22 @@ class ReporteCorteCajaService
             }
 
             foreach($reservacionesArray as $reservacion){
-                foreach($reservacion->getActividades() as $actividad){
+                foreach($reservacion->getProductos() as $actividad){
                     $actividadesIdArray[] = $actividad->getId();
                     $informacionActividadesArray[] = [
                         "id" => $actividad->getId(),
                         "folio" => $reservacion->getFolio(),
-                        "efectivo" => $this->getPagoActividadPorTipo($reservacion, $actividad, 'PagoEfectivo'),
-                        "efectivoUsd" => $this->getPagoActividadPorTipo($reservacion, $actividad, 'PagoEfectivoUsd'),
-                        "tarjeta" => $this->getPagoActividadPorTipo($reservacion, $actividad, 'PagoTarjeta'),
-                        "deposito" => $this->getPagoActividadPorTipo($reservacion, $actividad, 'PagoDeposito'),
-                        "cupon" => $this->getPagoActividadPorTipo($reservacion, $actividad, 'PagoCupon'),
+                        "efectivo" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivo'),
+                        "efectivoUsd" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivoUsd'),
+                        "tarjeta" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoTarjeta'),
+                        "deposito" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoDeposito'),
+                        "cupon" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoCupon'),
                         "nombreCliente" => $reservacion->getNombreCliente(),
                     ];
                 }
             }
 
-            $actividades = $this->getActividades();
+            $actividades = $this->getReservacionActividades();
             foreach($actividades as $actividad){
                 if(!in_array($actividad->id, $actividadesIdArray)){
                     continue;
@@ -365,23 +370,57 @@ class ReporteCorteCajaService
 
             //Data
             $initialRowNumber = $rowNumber;
-            $fotoVentas = $this->getFotoVideoVentas($fechaInicio, $fechaFinal, $usuarios, "foto");
-            foreach($fotoVentas as $fotoVenta){
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $fotoVenta->folio);
 
-                $pagosEfectivoResult = $this->getFotoVideoVentaPagosTotalesByType($fotoVenta, 'efectivo', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
+            $ventasArray = [];
+            $this->ventasFotoArray = [];
 
-                $pagosEfectivoUsdResult = $this->getFotoVideoVentaPagosTotalesByType($fotoVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
+            $tipo = "foto";
+            $fotoVentas = $this->getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo);
+            foreach($fotoVentas as $venta){
+                $ventasArray[] = $this->setVenta($venta, $usuarios);
+            }
 
-                $pagosTarjetaResult = $this->getFotoVideoVentaPagosTotalesByType($fotoVenta, 'tarjeta', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
-                    
-                $pagosDepositoResult = $this->getFotoVideoVentaPagosTotalesByType($fotoVenta, 'deposito', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
+            foreach($ventasArray as $venta){
+                $efectivo = 0;
+                $efectivoUsd = 0;
+                $tarjeta = 0;
+                $deposito = 0;
+                $cupon = 0;
 
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$fotoVenta->nombre_cliente);
+                foreach($venta->getProductos() as $producto){
+                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
+                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd');
+                    $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
+                    $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
+                    $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
+
+                    if($producto->getTipo() == $tipo){
+                        $efectivo += $tempEfectivo;
+                        $efectivoUsd += $tempEfectivoUsd;
+                        $tarjeta += $tempTarjeta;
+                        $deposito += $tempDeposito;
+                        $cupon += $tempCupon;
+                    }
+                }
+
+                $this->ventasFotoArray[] = [
+                    "folio" => $venta->getFolio(),
+                    "efectivo" => $efectivo,
+                    "efectivoUsd" => $efectivoUsd,
+                    "tarjeta" => $tarjeta,
+                    "deposito" => $deposito,
+                    "cupon" => $cupon,
+                    "nombreCliente" => $venta->getNombreCliente(),
+                ];
+            }
+
+            foreach($this->ventasFotoArray as $venta){
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $venta['folio']);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $venta['efectivo']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $venta['efectivoUsd']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $venta['tarjeta']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombre_cliente']);
 
                 $rowNumber += 1;
             }
@@ -465,23 +504,57 @@ class ReporteCorteCajaService
 
             //Data
             $initialRowNumber = $rowNumber;
-            $videoVentas = $this->getFotoVideoVentas($fechaInicio, $fechaFinal, $usuarios, "video");
-            foreach($videoVentas as $videoVenta){
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $videoVenta->folio);
 
-                $pagosEfectivoResult = $this->getFotoVideoVentaPagosTotalesByType($videoVenta, 'efectivo', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
+            $ventasArray = [];
+            $this->ventasVideoArray = [];
 
-                $pagosEfectivoUsdResult = $this->getFotoVideoVentaPagosTotalesByType($videoVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
+            $tipo = "video";
+            $videoVentas = $this->getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo);
+            foreach($videoVentas as $venta){
+                $ventasArray[] = $this->setVenta($venta, $usuarios);
+            }
 
-                $pagosTarjetaResult = $this->getFotoVideoVentaPagosTotalesByType($videoVenta, 'tarjeta', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
-                    
-                $pagosDepositoResult = $this->getFotoVideoVentaPagosTotalesByType($videoVenta, 'deposito', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
+            foreach($ventasArray as $venta){
+                $efectivo = 0;
+                $efectivoUsd = 0;
+                $tarjeta = 0;
+                $deposito = 0;
+                $cupon = 0;
 
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$videoVenta->nombre_cliente);
+                foreach($venta->getProductos() as $producto){
+                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
+                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd');
+                    $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
+                    $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
+                    $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
+
+                    if($producto->getTipo() == $tipo){
+                        $efectivo += $tempEfectivo;
+                        $efectivoUsd += $tempEfectivoUsd;
+                        $tarjeta += $tempTarjeta;
+                        $deposito += $tempDeposito;
+                        $cupon += $tempCupon;
+                    }
+                }
+
+                $this->ventasVideoArray[] = [
+                    "folio" => $venta->getFolio(),
+                    "efectivo" => $efectivo,
+                    "efectivoUsd" => $efectivoUsd,
+                    "tarjeta" => $tarjeta,
+                    "deposito" => $deposito,
+                    "cupon" => $cupon,
+                    "nombreCliente" => $venta->getNombreCliente(),
+                ];
+            }
+
+            foreach($this->ventasVideoArray as $venta){
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $venta['folio']);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $venta['efectivo']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $venta['efectivoUsd']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $venta['tarjeta']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombre_cliente']);
 
                 $rowNumber += 1;
             }
@@ -624,12 +697,11 @@ class ReporteCorteCajaService
 
         //Acumulado Fotos
         if(in_array("Fotos", $moduloRequest)){
-            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($usuarios, $fotoVentas, $fechaInicio, $fechaFinal);
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "FOTOS");
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'tarjeta'));
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'deposito'));
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosTotalesByType($this->ventasFotoArray, 'efectivo'));
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosTotalesByType($this->ventasFotoArray, 'efectivoUsd'));
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getPagosTotalesByType($this->ventasFotoArray, 'tarjeta'));
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getPagosTotalesByType($this->ventasFotoArray, 'deposito'));
             //Calculo totales
             $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * H'. $tipoCambioRowNumber .' ) ,D' . $rowNumber . ' ,E' . $rowNumber .  ' ,F' . $rowNumber . ')');
             $rowNumber += 1;
@@ -637,12 +709,11 @@ class ReporteCorteCajaService
 
         //Acumulado Videos
         if(in_array("Videos", $moduloRequest)){
-            $acumuladoTiendaVentas = $this->getAcumuladoFotoVideoVentas($usuarios, $videoVentas, $fechaInicio, $fechaFinal);
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "VIDEOS");
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
-            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
-            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'tarjeta'));
-            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'deposito'));
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosTotalesByType($this->ventasVideoArray, 'efectivo'));
+            $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosTotalesByType($this->ventasVideoArray, 'efectivoUsd'));
+            $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getPagosTotalesByType($this->ventasVideoArray, 'tarjeta'));
+            $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getPagosTotalesByType($this->ventasVideoArray, 'deposito'));
             //Calculo totales
             $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", '=SUM( B' . $rowNumber . ', (C' . $rowNumber . ' * H'. $tipoCambioRowNumber .' ) ,D' . $rowNumber . ' ,E' . $rowNumber .  ' ,F' . $rowNumber . ')');
             $rowNumber += 1;
@@ -768,72 +839,161 @@ class ReporteCorteCajaService
 
     private function setReservacion($reservacion, $usuarios){
 
-        $actividades = $this->setActividad($reservacion);
+        $actividades = $this->setReservacionActividad($reservacion);
 
-        $reservacionService = app(ReservacionService::class);
+        $ventaService = app(VentaService::class);
 
         $reservacionTipoPagos = $this->getReservacionPagos($reservacion, $usuarios);
-        $reservacionService->setFolio($reservacion->folio);
-        $reservacionService->setActividades($actividades);
-        $reservacionService->setNombreCliente($reservacion->nombre_cliente);
-        $reservacionService->setPagoEfectivo($reservacionTipoPagos['efectivo']);
-        $reservacionService->setPagoEfectivoUsd($reservacionTipoPagos['efectivoUsd']);
-        $reservacionService->setPagoTarjeta($reservacionTipoPagos['tarjeta']);
-        $reservacionService->setPagoDeposito($reservacionTipoPagos['deposito']);
-        $reservacionService->setPagoCupon($reservacionTipoPagos['cupon']);
+        $ventaService->setFolio($reservacion->folio);
+        $ventaService->setProductos($actividades);
+        $ventaService->setNombreCliente($reservacion->nombre_cliente);
+        $ventaService->setPagoEfectivo($reservacionTipoPagos['efectivo']);
+        $ventaService->setPagoEfectivoUsd($reservacionTipoPagos['efectivoUsd']);
+        $ventaService->setPagoTarjeta($reservacionTipoPagos['tarjeta']);
+        $ventaService->setPagoDeposito($reservacionTipoPagos['deposito']);
+        $ventaService->setPagoCupon($reservacionTipoPagos['cupon']);
 
-        return $reservacionService;
+        return $ventaService;
     }
 
-    private function setActividad($reservacion){
+    private function setReservacionActividad($reservacion){
         $actividadesArray = [];
         $reservacionDetalles = $reservacion->reservacionDetalle;
         foreach($reservacionDetalles as $reservacionDetalle){
             $actividad = $reservacionDetalle->actividad;
             $numeroPersonas = $reservacionDetalle->numero_personas;
 
-            $actividadService = app(ActividadService::class);
-            $actividadService->setId($actividad->id);
-            $actividadService->setClave($actividad->clave);
-            $actividadService->setPrecio($actividad->precio);
-            $actividadService->setNumeroPersonas($numeroPersonas);
-            $actividadService->setNombre($actividad->nombre);
-            $actividadService->setCantidadPagada(0);
-            $actividadesArray[] = $actividadService;
+            $productoService = app(ProductoService::class);
+            $productoService->setId($actividad->id);
+            $productoService->setClave($actividad->clave);
+            $productoService->setPrecio($actividad->precio);
+            $productoService->setNumeroProductos($numeroPersonas);
+            $productoService->setNombre($actividad->nombre);
+            $productoService->setCantidadPagada(0);
+            $actividadesArray[] = $productoService;
         }
 
         return $actividadesArray;
-    }
+    }   
 
-    private function getPagoActividadPorTipo($reservacion, $actividad, $tipoPago){
-        $nombreMetodoGet = \sprintf('get%s',$tipoPago);
-        $nombreMetodoSet = \sprintf('set%s',$tipoPago);
-        $precioActividad = ($actividad->getPrecio() * $actividad->getNumeroPersonas());
-        $cantidadPagada = $actividad->getCantidadPagada();
-        $pendientePagoActividad = ($precioActividad - $cantidadPagada);
-        $pago = $reservacion->{$nombreMetodoGet}();
-
-        if($pago <= 0 || $pendientePagoActividad == 0){
-            return 0;
-        }
-
-        if($pago > $pendientePagoActividad){
-            $resta = $pago - $pendientePagoActividad;
-            $reservacion->{$nombreMetodoSet}($resta);
-            $actividad->setCantidadPagada($precioActividad);
-
-            return $pendientePagoActividad;
-        }
-        $reservacion->{$nombreMetodoSet}(0);
-        $actividad->setCantidadPagada($cantidadPagada + $pago);
-
-        return $pago;
-    }
-        
-	private function getActividades()
+	private function getReservacionActividades()
 	{
         $actividades = Actividad::orderBy('actividades.reporte_orden','asc')->get();
         return $actividades;
+    }
+
+    private function getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo)
+	{
+        $ventas = FotoVideoVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('tipo_pago_id', $this->tiposPago)
+                ->whereIn('usuario_id', $usuarios);
+        })->whereHas('productos', function (Builder $query) use ($tipo) {
+            $query->where('tipo', $tipo);
+        })->get();
+
+        return $ventas;
+    }
+
+    private function getVentaPagos($venta, $usuarios)
+    {
+        $ventaTipoPagos = [];
+
+        $tipoPagos = TipoPago::get();
+        foreach($tipoPagos as $tipoPago){
+            $ventaTipoPagos[$tipoPago->nombre] = 0;
+        }
+
+        foreach($venta->pagos as $pago){
+            if(!in_array($pago->usuario_id, $usuarios->toArray())){
+                continue;
+            }
+            $ventaTipoPagos[$pago->tipoPago->nombre] = $pago->cantidad;
+        }
+        return $ventaTipoPagos;
+    }
+
+    private function setVenta($venta, $usuarios)
+    {
+
+        $productos = $this->setProducto($venta);
+
+        $ventaService = app(VentaService::class);
+
+        $ventaTipoPagos = $this->getVentaPagos($venta, $usuarios);
+        $ventaService->setFolio($venta->folio);
+        $ventaService->setProductos($productos);
+        $ventaService->setNombreCliente($venta->nombre_cliente);
+        $ventaService->setPagoEfectivo($ventaTipoPagos['efectivo']);
+        $ventaService->setPagoEfectivoUsd($ventaTipoPagos['efectivoUsd']);
+        $ventaService->setPagoTarjeta($ventaTipoPagos['tarjeta']);
+        $ventaService->setPagoDeposito($ventaTipoPagos['deposito']);
+        $ventaService->setPagoCupon($ventaTipoPagos['cupon']);
+
+        return $ventaService;
+    }
+
+    private function setProducto($venta)
+    {
+        $productosArray = [];
+        $ventaDetalles = $venta->ventaDetalle;
+        foreach($ventaDetalles as $ventaDetalle){
+            $producto = $ventaDetalle->producto;
+
+            $numeroProductos = $ventaDetalle->numero_productos;
+
+            $productoService = app(ProductoService::class);
+            $productoService->setId($producto->id);
+            $productoService->setClave($producto->clave);
+            $productoService->setPrecio($producto->precio_venta);
+            $productoService->setTipo($producto->tipo);
+            $productoService->setNumeroProductos($numeroProductos);
+            $productoService->setNombre($producto->nombre);
+            $productoService->setCantidadPagada(0);
+            $productosArray[] = $productoService;
+        }
+
+        return $productosArray;
+    }
+        
+	private function getFotoVideoProductos()
+	{
+        $productos = FotoVideoProducto::get();
+        return $productos;
+    }
+
+    private function getPagoPorTipo($venta, $producto, $tipoPago)
+    {
+        $nombreMetodoGet = \sprintf('get%s',$tipoPago);
+        $nombreMetodoSet = \sprintf('set%s',$tipoPago);
+        $precioProducto = ($producto->getPrecio() * $producto->getNumeroProductos());
+        $cantidadPagada = $producto->getCantidadPagada();
+        $pendientePago = ($precioProducto - $cantidadPagada);
+        $pago = $venta->{$nombreMetodoGet}();
+        
+        if($tipoPago == 'PagoEfectivoUsd'){
+            $pago = ($pago * $this->tipoCambio);
+        }
+
+        if($pago <= 0 || $pendientePago == 0){
+            return 0;
+        }
+
+        if($pago > $pendientePago){
+            $resta = $pago - $pendientePago;
+            $venta->{$nombreMetodoSet}($resta);
+            $producto->setCantidadPagada($precioProducto);
+
+            return $pendientePago;
+        }
+        $venta->{$nombreMetodoSet}(0);
+        $producto->setCantidadPagada($cantidadPagada + $pago);
+        
+        if($tipoPago == 'PagoEfectivoUsd'){
+            $pago = ($pago / $this->tipoCambio);
+        }
+        return $pago;
     }
 
     private function getTiendaVentas($fechaInicio, $fechaFinal, $usuarios)
@@ -924,6 +1084,18 @@ class ReporteCorteCajaService
         $pagoTipoId    = $reservaciones->getTipoPagoId($pagoTipoNombre);
 
         return isset($venta[$pagoTipoId]) ? $venta[$pagoTipoId] : 0;
+
+
+    }
+
+    private function getPagosTotalesByType($ventas, $pagoTipoNombre)
+    {
+        $total = 0;
+        foreach($ventas as $venta){
+            $total += (float)$venta[$pagoTipoNombre];
+        }
+
+        return $total;        
     }
 
     private function getTiendaVentaPagosTotalesByType($usuarios, $venta, $pagoTipoNombre, $fechaInicio, $fechaFinal, $pendiente = 0)
