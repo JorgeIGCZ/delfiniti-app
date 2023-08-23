@@ -4,14 +4,10 @@ namespace App\Services;
 
 use App\Services\VentaService;
 use App\Services\ProductoService;
-use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\ReservacionController;
 use App\Http\Controllers\TiendaVentaController;
 use App\Models\Actividad;
-use App\Models\FotoVideoProducto;
 use App\Models\FotoVideoVenta;
-use App\Models\FotoVideoVentaPago;
-use App\Models\Pago;
 use App\Models\Reservacion;
 use App\Models\TiendaVenta;
 use App\Models\TiendaVentaPago;
@@ -21,7 +17,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class ReporteCorteCajaService
 {
@@ -39,7 +34,7 @@ class ReporteCorteCajaService
     ) {
         $this->ventaService = $ventaService;
         $this->productoService = $productoService;
-        $this->tipoCambio = TipoCambio::where("seccion_uso","reportes")->get()[0]["precio_compra"];
+        $this->tipoCambio = TipoCambio::where("seccion_uso","reportes")->first()["precio_compra"];
     }
 
 	public function getReporte($request)
@@ -956,12 +951,6 @@ class ReporteCorteCajaService
 
         return $productosArray;
     }
-        
-	private function getFotoVideoProductos()
-	{
-        $productos = FotoVideoProducto::get();
-        return $productos;
-    }
 
     private function getPagoPorTipo($venta, $producto, $tipoPago)
     {
@@ -1008,20 +997,6 @@ class ReporteCorteCajaService
         return $ventas;
     }
 
-    private function getFotoVideoVentas($fechaInicio, $fechaFinal, $usuarios, $tipo)
-	{
-        $ventas = FotoVideoVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
-            $query
-                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
-                ->whereIn('tipo_pago_id', $this->tiposPago)
-                ->whereIn('usuario_id', $usuarios);
-        })->whereHas('productos', function (Builder $query) use ($tipo) {
-            $query->where('tipo', $tipo);
-        })->get();
-
-        return $ventas;
-    }
-
     private function getAcumuladoTiendaVentas($usuarios, $tiendaVentas, $fechaInicio, $fechaFinal)
     {
         $pagosArray = [];
@@ -1029,28 +1004,6 @@ class ReporteCorteCajaService
         foreach($tiendaVentas as $tiendaVenta){
             $pagosId = $tiendaVenta->pagos->pluck('id');
             $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->whereIn('usuario_id', $usuarios)->get();
-    
-            $pagosArray[] = $pagos;
-        }
-
-        foreach($pagosArray as $pagos){
-            foreach($pagos as $pago){
-                $acumuladoVentas[$pago->tipo_pago_id] = isset($acumuladoVentas[$pago->tipo_pago_id]) 
-                    ? ($acumuladoVentas[$pago->tipo_pago_id] + $pago->cantidad) 
-                    : $pago->cantidad;
-            }
-        }
-
-        return $acumuladoVentas;
-    }
-
-    private function getAcumuladoFotoVideoVentas($usuarios, $ventas, $fechaInicio, $fechaFinal)
-    {
-        $pagosArray = [];
-        $acumuladoVentas = [];
-        foreach($ventas as $venta){
-            $pagosId = $venta->pagos->pluck('id');
-            $pagos   = FotoVideoVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio, $fechaFinal])->whereIn('usuario_id', $usuarios)->get();
     
             $pagosArray[] = $pagos;
         }
@@ -1104,24 +1057,6 @@ class ReporteCorteCajaService
         $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereIn('usuario_id', $usuarios)->get();
 
         $ventas = new TiendaVentaController();
-        $pagoTipoId    = $ventas->getTipoPagoId($pagoTipoNombre);
-        //total pagado en tipo de pago actual
-        $totalPagado   = 0;
-        foreach($pagos as $pago){
-            if($pago->tipo_pago_id == $pagoTipoId){
-                $totalPagado += $pago->cantidad;
-            }
-        }
-
-        return ['pago' => $totalPagado];
-    }
-
-    private function getFotoVideoVentaPagosTotalesByType($venta, $pagoTipoNombre, $fechaInicio, $fechaFinal)
-	{
-        $pagosId = $venta->pagos->pluck('id');
-        $pagos   = FotoVideoVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio,$fechaFinal])->get();
-
-        $ventas = new FotoVideoVentaController();
         $pagoTipoId    = $ventas->getTipoPagoId($pagoTipoNombre);
         //total pagado en tipo de pago actual
         $totalPagado   = 0;
