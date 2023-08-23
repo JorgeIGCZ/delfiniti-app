@@ -187,12 +187,12 @@ class TiendaVentaController extends Controller
             }
 
             if($isPago){
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
-
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "efectivo");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "efectivoUsd");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "tarjeta");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "deposito");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "cambio");
+ 
                 // if($this->isValidDescuentoCupon($request)){
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
                 // }
@@ -202,7 +202,7 @@ class TiendaVentaController extends Controller
                 // }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($venta['id'], $factura['id'], $request, $request['usuario'], "descuentoPersonalizado");
                 }
             }
 
@@ -280,7 +280,7 @@ class TiendaVentaController extends Controller
         return (round($total,2) >= round($maximoDescuento,2));
     }
 
-    private function setFaturaPago($ventaId,$facturaId,$request,$tipoPago){
+    private function setFaturaPago($ventaId, $facturaId, $request, $usuario, $tipoPago){
         $dolarPrecioCompra   = TipoCambio::where('seccion_uso', 'general')->first();
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
@@ -294,7 +294,7 @@ class TiendaVentaController extends Controller
                 'tipo_cambio_usd'=>  $dolarPrecioCompra->precio_compra,
                 'valor'          =>  $request[$tipoPago]['valor'] ?? '',
                 'tipo_valor'     =>  $request[$tipoPago]['tipoValor'] ?? '',
-                'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0
+                'usuario_id'     => is_numeric($usuario) ? $usuario : 0
             ]);
             $result = is_numeric($pago['id']);
 
@@ -572,11 +572,11 @@ class TiendaVentaController extends Controller
 
             if($pagar){
 
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivo");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"efectivoUsd");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"tarjeta");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"deposito");
-                $this->setFaturaPago($venta['id'],$factura['id'],$request['pagos'],"cambio");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "efectivo");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "efectivoUsd");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "tarjeta");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "deposito");
+                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], $request['usuario'], "cambio");
 
                 // if($this->isValidDescuentoCupon($request)){
                 //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
@@ -587,7 +587,7 @@ class TiendaVentaController extends Controller
                 // }
 
                 if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoPersonalizado");
+                    $this->setFaturaPago($venta['id'], $factura['id'], $request, $request['usuario'],"descuentoPersonalizado");
                 }
 
             }

@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Services\VentaService;
 use App\Services\ProductoService;
-use App\Http\Controllers\ReservacionController;
-use App\Http\Controllers\TiendaVentaController;
 use App\Models\Actividad;
 use App\Models\FotoVideoVenta;
 use App\Models\Reservacion;
@@ -1033,12 +1031,9 @@ class ReporteCorteCajaService
 
     private function getPagosAcumuladosTotalesByType($venta, $pagoTipoNombre)
     {
-        $reservaciones = new ReservacionController();
-        $pagoTipoId    = $reservaciones->getTipoPagoId($pagoTipoNombre);
+        $pagoTipoId    = $this->getTipoPagoIdByName($pagoTipoNombre);
 
         return isset($venta[$pagoTipoId]) ? $venta[$pagoTipoId] : 0;
-
-
     }
 
     private function getPagosTotalesByType($ventas, $pagoTipoNombre)
@@ -1056,8 +1051,7 @@ class ReporteCorteCajaService
         $pagosId = $venta->pagos->pluck('id');
         $pagos   = TiendaVentaPago::whereIn("id",$pagosId)->whereBetween("created_at", [$fechaInicio,$fechaFinal])->whereIn('usuario_id', $usuarios)->get();
 
-        $ventas = new TiendaVentaController();
-        $pagoTipoId    = $ventas->getTipoPagoId($pagoTipoNombre);
+        $pagoTipoId    = $this->getTipoPagoIdByName($pagoTipoNombre);
         //total pagado en tipo de pago actual
         $totalPagado   = 0;
         foreach($pagos as $pago){
@@ -1067,6 +1061,11 @@ class ReporteCorteCajaService
         }
 
         return ['pago' => $totalPagado];
+    }
+
+    private function getTipoPagoIdByName($tipoPago){
+        $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
+        return $tipoPagoId;
     }
 
 	private function getReservacionesTotalesGeneral($actividad,$reservaciones)
