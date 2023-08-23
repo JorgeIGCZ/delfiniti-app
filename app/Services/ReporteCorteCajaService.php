@@ -413,7 +413,7 @@ class ReporteCorteCajaService
                 $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $venta['efectivoUsd']);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $venta['tarjeta']);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombre_cliente']);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombreCliente']);
 
                 $rowNumber += 1;
             }
@@ -547,7 +547,7 @@ class ReporteCorteCajaService
                 $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $venta['efectivoUsd']);
                 $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $venta['tarjeta']);
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombre_cliente']);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombreCliente']);
 
                 $rowNumber += 1;
             }
