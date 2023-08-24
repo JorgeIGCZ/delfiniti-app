@@ -126,6 +126,11 @@ class TiendaComisionController extends Controller
     
     private function setAllComisiones($pagos, $venta, $comisionistaId, $comisionista, $fechaComisiones){
         $totalPagoReservacion = 0;
+
+        if($comisionista['comision'] == 0){
+            return false;
+        }
+
         foreach($pagos as $pago){
             //verifica si el tipo de pago es en USD
             if($pago['tipo_pago_id'] == 2){
