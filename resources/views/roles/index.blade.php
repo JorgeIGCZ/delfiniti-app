@@ -572,28 +572,6 @@
                     <div class="col-md-12 col-xl-12 ml-5">
                         <div class="row">
                             <div class="col-md-2">
-                                <strong>Reportes</strong>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="TiendaReportes.index" type="checkbox" >
-                                    <label for="TiendaReportes.index">
-                                        Ver
-                                    </label>
-                                </div>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="TiendaReportes.CorteCaja.index" type="checkbox" >
-                                    <label for="TiendaReportes.CorteCaja.index">
-                                    Corte caja
-                                    </label>
-                                </div>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="TiendaReportes.Reservaciones.index" type="checkbox" >
-                                    <label for="TiendaReportes.Reservaciones.index">
-                                    Ventas
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
                                 <strong>Ventas</strong>
                                 <div class="checkbox checkbox-primary">
                                     <input name="TiendaVentas.index" type="checkbox" >
@@ -770,28 +748,6 @@
                     </div>
                     <div class="col-md-12 col-xl-12 ml-5">
                         <div class="row">
-                            <div class="col-md-2">
-                                <strong>Reportes</strong>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="FotoVideoReportes.index" type="checkbox" >
-                                    <label for="FotoVideoReportes.index">
-                                        Ver
-                                    </label>
-                                </div>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="FotoVideoReportes.CorteCaja.index" type="checkbox" >
-                                    <label for="FotoVideoReportes.CorteCaja.index">
-                                    Corte caja
-                                    </label>
-                                </div>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="FotoVideoReportes.Reservaciones.index" type="checkbox" >
-                                    <label for="FotoVideoReportes.Reservaciones.index">
-                                    Ventas
-                                    </label>
-                                </div>
-                            </div>
-
                             <div class="col-md-2">
                                 <strong>Ventas</strong>
                                 <div class="checkbox checkbox-primary">
