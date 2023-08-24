@@ -120,6 +120,18 @@
         }
         $(function(){
             proveedoresTable = new DataTable('#proveedores', {
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'excelHtml5', 
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL',
+                    footer: true,
+                    text: 'Exportar Excel',
+                    title: 'DELFINITI IXTAPA S.A. DE C.V. - REPORTE PROVEEDORES',
+                    exportOptions: {
+                        columns: [0, 1, 3, 5, 7]
+                    }
+                }],
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
                     axios.get('/proveedores/show')
@@ -137,6 +149,7 @@
                     { data: 'RFC' },
                     { data: 'nombre_contacto' },
                     { data: 'cargo_contacto' },
+                    { data: 'direccion' },
                     { data: 'estado' },
                     { data: 'telefono' },
                     { data: 'email' },
@@ -286,6 +299,7 @@
                                         <th>RFC</th>
                                         <th>Contacto</th>
                                         <th>Cargo</th>
+                                        <th>Dirección</th>
                                         <th>Estado</th>
                                         <th>Teléfono</th>
                                         <th>Email</th>

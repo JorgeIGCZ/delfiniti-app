@@ -45204,3 +45204,16 @@ tr.Pagado{
   border: none;
   padding: 0;
 }
+.dt-buttons{
+  height: 60px;
+}
+.buttons-html5{
+  border: 1px solid transparent!important;
+  padding: 0.375rem 0.75rem!important;
+  font-size: 0.8rem!important;
+  line-height: 1.5!important;
+  border-radius: 0.25rem!important;
+  background-color: #2aa2b8!important;
+  border-color: #2aa2b8!important;
+  color: white!important;
+}
