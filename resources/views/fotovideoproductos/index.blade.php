@@ -160,7 +160,7 @@
             <h2 class="az-dashboard-title">Productos</h2>
         </div>
     </div><!-- az-dashboard-one-title -->
-    {{-- @can('Productos.create') --}}
+    @can('FotoVideoProductos.create')
         <div class="row row-sm mg-b-20">
             <div class="col-lg-12 ht-lg-100p">
                 <div class="card">
@@ -204,7 +204,7 @@
                 </div>
             </div>
         </div>
-    {{-- @endcan --}}
+    @endcan
      <div class="row row-sm mg-b-20">
         <div class="col-lg-12 ht-lg-100p">
             <div class="card">

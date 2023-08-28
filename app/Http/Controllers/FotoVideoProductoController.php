@@ -7,7 +7,12 @@ use App\Models\FotoVideoProducto;
 use Illuminate\Http\Request;
 
 class FotoVideoProductoController extends Controller
-{
+{ 
+    public function __construct() {
+        $this->middleware('permission:FotoVideoProductos.index')->only('index');
+        //$this->middleware('permission:Comisiones.create')->only('create'); 
+        $this->middleware('permission:FotoVideoProductos.update')->only('edit'); 
+    }
     /**
      * Display a listing of the resource.
      *
