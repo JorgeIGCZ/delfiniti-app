@@ -246,14 +246,11 @@
                         {
                             let view       = '';
                             let estatusRow = '';
-                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
-                                if(row.estatus){
-                                    estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
-                                }else{
-                                    estatusRow = `| <a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
-                                }
-                                
-                            //}
+                            if(row.estatus){
+                                estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
+                            }else{
+                                estatusRow = `| <a href="#!" onclick="updateActividadEstatus(${row.id},1)" >Reactivar</a>`;
+                            }
                             @can('Actividades.update')
                             view    =   `<small> 
                                             <a href="actividades/${row.id}/edit/">Editar</a>

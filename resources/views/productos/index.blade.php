@@ -175,13 +175,13 @@
                                     estatusRow = `| <a href="#!" onclick="updateProductoEstatus(${row.id},1)" >Reactivar</a>`;
                                 }
                             //}
-                            // can('Productos.update')
+                            @can('TiendaProductos.update')
                             view    =   `<small> 
                                             <a href="productos/${row.id}">Ver</a> | 
                                             <a href="productos/${row.id}/edit">Editar</a>
                                             ${estatusRow}
                                         </small>`;
-                            // endcan
+                            @endcan
                             return  view;
                         }
                     }
