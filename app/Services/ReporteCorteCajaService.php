@@ -802,7 +802,7 @@ class ReporteCorteCajaService
         ($showCupones ?  array_push($this->tiposPago,4) : '');
         // DB::enableQueryLog();
 
-        $reservaciones = Reservacion::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
+        $reservaciones = Reservacion::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('pagos.tipo_pago_id',$this->tiposPago)
@@ -877,7 +877,7 @@ class ReporteCorteCajaService
 
     private function getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo)
 	{
-        $ventas = FotoVideoVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
+        $ventas = FotoVideoVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id', $this->tiposPago)
@@ -985,7 +985,7 @@ class ReporteCorteCajaService
 
     private function getTiendaVentas($fechaInicio, $fechaFinal, $usuarios)
 	{
-        $ventas = TiendaVenta::whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
+        $ventas = TiendaVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id',$this->tiposPago)
