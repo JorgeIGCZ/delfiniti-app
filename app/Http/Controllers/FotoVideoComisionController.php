@@ -37,15 +37,18 @@ class FotoVideoComisionController extends Controller
 
     public function recalculateComisiones(Request $request){
         try {
-            $oldComision = FotoVideoComision::where('venta_id',$request->ventaId)->get(); 
-            $oldFechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
-            if(count($oldComision) > 0){
-                $oldFechaComisiones = $oldComision[0]->created_at;
+            $oldComision = FotoVideoComision::where('venta_id',$request->ventaId)->first(); 
+            if(isset($oldComision->created_at)){
+                $oldFechaComisiones = $oldComision->created_at;
+            }else{
+                $venta = FotoVideoVenta::find($request->ventaId);
+                $oldFechaComisiones = $venta->created_at;
             }
 
             FotoVideoComision::where('venta_id',$request->ventaId)->delete(); 
             DirectivoComisionFotoVideo::where('venta_id',$request->ventaId)->delete(); 
-
+            SupervisorComisionFotoVideo::where('venta_id',$request->ventaId)->delete(); 
+            
             $pagos = FotoVideoVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
                     ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");

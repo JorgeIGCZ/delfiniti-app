@@ -37,14 +37,17 @@ class TiendaComisionController extends Controller
     public function recalculateComisiones(Request $request)
     {
         try {
-            $oldComision = DirectivoComisionTienda::where('venta_id',$request->ventaId)->get(); 
-            $oldFechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
-            if(count($oldComision) > 0){
-                $oldFechaComisiones = $oldComision[0]->created_at;
+            $oldComision = DirectivoComisionTienda::where('venta_id',$request->ventaId)->first(); 
+            if(isset($oldComision->created_at)){
+                $oldFechaComisiones = $oldComision->created_at;
+            }else{
+                $venta = TiendaVenta::find($request->ventaId);
+                $oldFechaComisiones = $venta->created_at;
             }
 
             DirectivoComisionTienda::where('venta_id',$request->ventaId)->delete();
             TiendaComision::where('venta_id',$request->ventaId)->delete();
+            SupervisorComisionTienda::where('venta_id',$request->ventaId)->delete();
 
             $pagos = TiendaVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
