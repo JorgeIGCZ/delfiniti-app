@@ -77,10 +77,12 @@ $('#productosTable').on( 'click', '.eliminar-celda', function (event) {
 
 $('#codigo').on('change', function (e) {
     changeProducto();
+    displayImpuestos();
 });
 
 $('#productos').on('change', function (e) {
     changeCodigoProducto();
+    displayImpuestos();
 });
 
 $('#proveedor').on('change', function (e) {

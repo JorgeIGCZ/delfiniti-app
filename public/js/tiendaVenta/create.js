@@ -113,7 +113,7 @@ function setOperacionResultados() {
     setResta();
     setCambio();
 
-    enablePagar((getResta() < total) ? true : false);
+    enablePagar((total > 0 && (getResta() <= 0)));
 }
 
 function getPagos(tipoUsd = 'compra') {

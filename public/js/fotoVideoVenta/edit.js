@@ -365,7 +365,7 @@ function setOperacionResultados() {
     setCambio();
     //document.getElementById('venta-form').elements['descuento-general'].focus();
 
-    enableFinalizar((getResta() < total) ? true : false);
+    enableFinalizar((total > 0 && (getResta() <= 0)));
 }
 
 function getPagos(tipoUsd = 'compra') {

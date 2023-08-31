@@ -46,7 +46,6 @@ function resetProductoMeta() {
 
     document.getElementById('clave').value = "";
     document.getElementById('producto-id').value = "";
-    displayImpuestos();
 }
 
 function displayProductoMeta(modulo){
