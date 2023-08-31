@@ -89,6 +89,9 @@
                           @php
                             use App\Models\User;
                             use App\Models\CanalVenta;
+
+                            $canales = CanalVenta::get();
+
                             if(Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Supervisor') || Auth::user()->hasRole('Mercadotecnia') || Auth::user()->hasRole('Contabilidad')){
                               $usuarios = User::get();
                             }elseif(Auth::user()->hasRole('Recepcion')){
@@ -113,8 +116,31 @@
                                 "Videos" => "VIDEO",
                               ];
                             }
-                            
-                            $canales = CanalVenta::get();
+
+
+                            $modulosComisiones = [];
+                            if(Auth::user()->hasRole('Administrador') || Auth::user()->hasRole('Supervisor') || Auth::user()->hasRole('Mercadotecnia') || Auth::user()->hasRole('Contabilidad')){
+                              $modulosComisiones = [
+                                "Reservaciones" => "RESERVACIONES",
+                                "Tienda" => "TIENDA",
+                                "FotoVideo" => "FOTO Y VIDEO",
+                              ];
+                            }elseif(Auth::user()->hasRole('Recepcion')){
+                              $modulosComisiones = [
+                                "Reservaciones" => "RESERVACIONES",
+                                "FotoVideo" => "FOTO Y VIDEO",
+                              ];
+                            }elseif(Auth::user()->hasRole('Tienda')){
+                              $modulosComisiones = [
+                                "Tienda" => "TIENDA",
+                              ];
+                              $canales = [];
+                            }elseif(Auth::user()->hasRole('FotoVideo')){
+                              $modulosComisiones = [
+                                "FotoVideo" => "FOTO Y VIDEO",
+                              ];
+                              $canales = [];
+                            }
                           @endphp
                           
                           <div id="filtros-corte-caja" class="form-group col-12 mt-0 mb-0" style="display: none">
@@ -138,6 +164,7 @@
                             </div>
                           </div>
 
+                          @if(count($canales) > 0)
                           <div id="filtros-comisiones" class="form-group col-12 mt-0 mb-0" style="display: none">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
@@ -150,7 +177,9 @@
                                 </div>
                             </div>
                           </div>
+                          @endif
 
+                          @if(count($modulosCorteCaja) > 0)
                           <div id="filtros-modulo-corte-caja" class="form-group col-12 mt-0 mb-0">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
@@ -163,15 +192,16 @@
                                 </div>
                             </div>
                           </div>
+                          @endif
 
                           <div id="filtros-modulo-comisiones" class="form-group col-12 mt-0 mb-0">
                             <div class="row">
                                 <div class="form-group col-12 mt-0 mb-0">
                                     <label for="filtro-modulo" class="col-form-label">Módulo</label>
                                     <select multiple id="filtro-modulo-comisiones" name="filtro_modulo_comisiones"  class="form-control filter-multi-select" >
-                                      <option value="Reservaciones" >RESERVACIONES</option>
-                                      <option value="Tienda" >TIENDA</option>
-                                      <option value="FotoVideo" >FOTO Y VIDEO</option>
+                                      @foreach($modulosComisiones as $key => $modulo)
+                                        <option value="{{$key}}">{{$modulo}}</option>
+                                      @endforeach
                                     </select>
                                 </div>
                             </div>
