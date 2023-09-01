@@ -45,7 +45,11 @@ $(function () {
             event.preventDefault();
             clearFiltros();
             filtrosCorteCaja.style.display = "block";
-            filtrosModuloCorteCaja.style.display = "block";
+
+            if(JSON.parse(selectorMultipleModuloCorteCaja.getSelectedOptionsAsJson()).filtro_modulo_corte_caja.length > 0){
+                filtrosModuloCorteCaja.style.display = "block";
+            }
+            
             document.getElementById('crear-reporte').setAttribute('action','corte-caja');
         });
     }
@@ -59,9 +63,14 @@ $(function () {
     }
     if(reporteComisiones !== null){
         reporteComisiones.addEventListener('click', (event) => {
+            debugger;
             event.preventDefault();
             clearFiltros();
-            filtrosComisiones.style.display = "block";
+
+            if(JSON.parse(selectorMultipleCanalesVenta.getSelectedOptionsAsJson()).comisiones_canales_venta.length > 0){
+                filtrosComisiones.style.display = "block";
+            }
+
             filtrosModuloComisiones.style.display = "block";
             document.getElementById('crear-reporte').setAttribute('action','comisiones');
         });
