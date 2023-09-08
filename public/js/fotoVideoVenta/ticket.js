@@ -412,7 +412,7 @@ function getTicket(venta){
             text: err,
             showConfirmButton: true
         });
-
+    }
     saveTicket(venta.id,format(venta));
     return result;
 }
