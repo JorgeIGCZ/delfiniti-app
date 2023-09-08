@@ -354,9 +354,11 @@ window.onload = function() {
     const addDescuentoPersonalizadoElement = document.getElementById('add-descuento-personalizado');
     const validarVerificacionElement = document.getElementById('validar-verificacion');
 
-    if(claveElement !== undefined){
-        claveElement.focus();
-    }
+    // if(claveElement !== undefined){
+        // claveElement.focus();
+    // }
+
+    document.getElementById('venta-form').elements['nombre'].focus();
 
     if(addProductoElement !== null){
         addProductoElement.addEventListener('click', (event) =>{

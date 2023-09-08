@@ -285,10 +285,9 @@ function getDescuentos(reservacion){
 function getTicket(reservacion){
     let result = true;
     try{
-        let w = window.open();
-        w.document.write(format(reservacion));
-        w.window.print();
-        w.document.close();
+        openWindowWithPost("/ticket", {
+            venta: JSON.stringify(format(reservacion))
+        });
         result = true;    
     }catch(err) {
         Swal.fire({
@@ -303,17 +302,40 @@ function getTicket(reservacion){
     return result;
 }
 
+function openWindowWithPost(url, data) {
+    var form = document.createElement("form");
+    form.target = "_blank";
+    form.method = "POST";
+    form.action = url;
+    form.style.display = "none";
+
+    for (var key in data) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = data[key];
+        form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+
 function imprimirTicket(id){
     axios.get(`/reservacionticket/${id}`)
     .then(function (response) {
-        let w = window.open();
-        w.document.write(response.data.ticket);
-        w.window.print();
-        w.document.close();
+        openWindowWithPost("/ticket", {
+            venta: JSON.stringify(response.data.ticket)
+        });
         result = true;    
     })
     .catch(function (error) {
-
+        Swal.fire({
+            icon: 'warning',
+            title: `Error en impresión de ticket`,
+            text: err,
+            showConfirmButton: true
+        });
     });
 }
 

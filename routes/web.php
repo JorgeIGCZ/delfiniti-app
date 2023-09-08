@@ -25,6 +25,7 @@ use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\FotoVideoVentaTicketController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TiendaComisionController;
 use App\Http\Controllers\TiendaComisionistaController;
 use App\Http\Controllers\TiendaImpuestoController;
@@ -46,6 +47,8 @@ use App\Models\FotoVideoVentaTicket;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::post('ticket', [TicketController::class, 'display']);
 
 Route::get('switchModule/{modulo}', [UsuarioController::class, 'switchModule']);
 
@@ -388,7 +391,6 @@ Route::controller(FotoVideoComisionController::class)->middleware(['auth'])->gro
 });
 
 Route::controller(FotoVideoVentaTicketController::class)->middleware(['auth'])->group(function () {
-    Route::get('fotovideoventaticket/show/{fotovideoventaticket?}', 'show');
     Route::patch('fotovideoventaticket/estatus/{fotovideoventaticket}', 'updateEstatus');
     Route::resource('fotovideoventaticket',FotoVideoVentaTicketController::class, [
         'parameters' => [
