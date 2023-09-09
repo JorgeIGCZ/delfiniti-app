@@ -959,28 +959,52 @@ class ReporteCorteCajaService
         $pendientePago = ($precioProducto - $cantidadPagada);
         $pago = $venta->{$nombreMetodoGet}();
         
+        //Se realiza una conversion de moneda para los calculos
         if($tipoPago == 'PagoEfectivoUsd'){
-            $pago = ($pago * $this->tipoCambio);
+            $pago = $this->convertMxnToUsd($pago);
         }
 
         if($pago <= 0 || $pendientePago == 0){
             return 0;
         }
 
+        //Si el pago es mayor al costo del producto actual,
+        //se descuenta el costo del producto actual y se modifica el monto con el residuo 
+        //para el calculo en el siguiente producto
         if($pago > $pendientePago){
             $resta = $pago - $pendientePago;
             $venta->{$nombreMetodoSet}($resta);
             $producto->setCantidadPagada($precioProducto);
+            
+            //Una vez finalizado el calculo regresamos a la moneda original para el reporte
+            if($tipoPago == 'PagoEfectivoUsd'){
+                $pendientePago = $this->convertUsdToMxn($pago);
+            }
 
             return $pendientePago;
         }
+
+        //Si el pago es menor o igual al costo del producto actual,
+        //se toma el monto total y se modifica el monto a 0
+        //para el calculo en el siguiente producto
         $venta->{$nombreMetodoSet}(0);
         $producto->setCantidadPagada($cantidadPagada + $pago);
         
+        //Una vez finalizado el calculo regresamos a la moneda original para el reporte
         if($tipoPago == 'PagoEfectivoUsd'){
-            $pago = ($pago / $this->tipoCambio);
+            $pago = $this->convertUsdToMxn($pago);
         }
         return $pago;
+    }
+
+    private function convertMxnToUsd($pago)
+    {
+        return ($pago * $this->tipoCambio);
+    }
+
+    private function convertUsdToMxn($pago)
+    {
+        return ($pago / $this->tipoCambio);
     }
 
     private function getTiendaVentas($fechaInicio, $fechaFinal, $usuarios)
