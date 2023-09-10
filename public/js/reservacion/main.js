@@ -562,7 +562,8 @@ function addAlojamiento(id,nombre){
 let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,
     paging: false,
-    info: false
+    info: false,
+    ordering: false
 } );
 
 window.onload = function() {
