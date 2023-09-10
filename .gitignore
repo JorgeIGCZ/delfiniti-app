@@ -3,6 +3,9 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# LIgnorar todos los reportes 
+public/Reportes/*
+
 # Laravel 4 specific
 bootstrap/compiled.php
 app/storage/
@@ -22,8 +25,6 @@ Homestead.json
 /.vagrant
 .phpunit.result.cache
 
-public/Reportes/*
-
 .vscode
 docker
 composer.lock
@@ -35,7 +36,3 @@ composer.lock
 .idea/phpunit.xml
 .idea/sqldialects.xml
 .idea/vcs.xml
-public/Reportes/comisiones/comisiones.xlsx
-public/Reportes/corte_de_caja/corte-de-caja.xlsx
-public/Reportes/corte_de_caja/~$corte-de-caja.xlsx
-public/Reportes/reservaciones/reservaciones.xlsx
