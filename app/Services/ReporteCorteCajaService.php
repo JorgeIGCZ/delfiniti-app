@@ -974,7 +974,7 @@ class ReporteCorteCajaService
         if($pago > $pendientePago){
             $resta = $pago - $pendientePago;
 
-            //Una vez finalizado el calculo regresamos a la moneda original para el reporte
+            //Una vez finalizado el calculo regresamos el sobrante a la moneda original para que se siga descontando en el siguiente producto
             if($tipoPago == 'PagoEfectivoUsd'){
                 $resta = $this->convertMxnToUsd($resta);
             }
