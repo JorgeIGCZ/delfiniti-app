@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class ReporteReservacionesService
 {
@@ -209,10 +210,9 @@ class ReporteReservacionesService
         $actividades = Actividad::with(['reservaciones' => function ($query) use ($fechaInicio,$fechaFinal,$usuarios) {
             $query
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
-                ->whereIn("usuario_id", $usuarios)
                 ->where('estatus',1);
         }]);
-
+        
         return $actividades;
     }
 
@@ -229,7 +229,7 @@ class ReporteReservacionesService
     }
 
     private function getReservacionesTotalesGeneral($actividad,$reservaciones)
-	{
+	{   
         $reservacionesArray = $reservaciones->pluck('id');
         //CORTESIA ID = 6
         $cortesiasPersonas = 0;
