@@ -78,36 +78,6 @@ function removeProducto(row){
     });
 }
 
-function addProducto(){
-    // debugger;
-    const productoDetalle = document.getElementById('productos').value;
-    const productoId = document.getElementById('producto-id').value;
-    const claveProducto = document.getElementById('clave').value;
-    const producto = document.getElementById('productos').value;
-    const cantidad = document.getElementById('cantidad').value;
-    const precio = document.getElementById('precio').value;
-    const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
-    const totalPrecio = precio * cantidad;
-
-    ventasTable.row.add([
-        claveProducto,
-        productoDetalle,
-        cantidad,
-        precio,
-        totalPrecio.toFixed(2),
-        acciones
-    ])
-        .draw(false);
-    productosArray = [...productosArray, {
-        'claveProducto': claveProducto,
-        'productoId': productoId,
-        'producto': producto,
-        'cantidad': cantidad,
-        'precio': precio
-    }];
-    setTotal();
-}
-
 function resetVentas() {
     location.reload();
 }
@@ -363,7 +333,7 @@ window.onload = function() {
     if(addProductoElement !== null){
         addProductoElement.addEventListener('click', (event) =>{
             event.preventDefault();
-            if(productoIsValid()){
+            if(productoIsValid() && fotografoIsValid()){
                 validateFecha();
                 addProductos();
                 document.getElementById('venta-form').elements['codigo'].focus();

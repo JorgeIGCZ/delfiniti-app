@@ -22,10 +22,15 @@ use Illuminate\Support\Facades\DB;
 
 class FotoVideoVentaController extends Controller
 {
+
+    protected $tipoCambio = 0;
+
     public function __construct() {
         $this->middleware('permission:FotoVideoVentas.index')->only('index'); 
         $this->middleware('permission:FotoVideoVentas.create')->only('create'); 
         $this->middleware('permission:FotoVideoVentas.update')->only('edit'); 
+
+        $this->tipoCambio = TipoCambio::where("seccion_uso","reportes")->first()["precio_compra"];
     }
 
     public $folioSufijo   = "-A";
@@ -101,77 +106,81 @@ class FotoVideoVentaController extends Controller
         $pagado   = ($isPago ? (count($request->pagos) > 0 ? $this->getCantidadPagada($request,$email) : 0) : 0);
         $adeudo   = ((float)$request->total - (float)$pagado);
 
+        $ordenes = $this->definirOrdenes($request);
+
         // $Productos = new FotoVideoProductoController();
         DB::beginTransaction();
         try{
-            $venta = FotoVideoVenta::create([
-                'folio'          => mb_strtoupper($request->folio),
-                'nombre_cliente' => mb_strtoupper(isset($request->nombre) ? $request->nombre : "cliente en mostrador"),
-                'email'          => mb_strtoupper($request->email),
-                'direccion'      => mb_strtoupper($request->direccion),
-                'origen'         => mb_strtoupper($request->origen),
-                'RFC'            => mb_strtoupper($request->rfc),
-                'estatus_pago'   => $isPago,
-                'fecha'          => $request->fecha,
-                'fecha_creacion' => date('Y-m-d'),
-                'usuario_id'     => is_numeric($request->usuario) ? $request->usuario : 0,
-                'comisionista_id'=> is_numeric($request->fotografo) ? $request->fotografo : 0,
-                'comentarios'    => mb_strtoupper($request->comentarios)
-            ]);
-
-            $factura = FotoVideoVentaFactura::create([
-                'venta_id' =>  $venta['id'],
-                'total'    =>  (float)$request->total,
-                'pagado'   =>  $pagado,
-                'adeudo'   =>  $adeudo
-            ]);
-
-            foreach($request->ventaProductos as $ventaProducto){
-                // $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
-                // $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
-                FotoVideoVentaDetalle::create([
-                    'venta_id'            =>  $venta['id'],
-                    'factura_id'          =>  $factura['id'],
-                    'producto_id'         =>  $ventaProducto['productoId'],
-                    'numero_productos'    =>  $ventaProducto['cantidad'],
-                    'PPU'                 =>  $ventaProducto['precio']
+            foreach($ordenes as $fotografoId => $orden){
+                $venta = FotoVideoVenta::create([
+                    'folio'          => '',
+                    'nombre_cliente' => mb_strtoupper(isset($orden['nombre']) ? $orden['nombre'] : "cliente en mostrador"),
+                    'email'          => mb_strtoupper($orden['email']),
+                    'direccion'      => mb_strtoupper($orden['direccion']),
+                    'origen'         => mb_strtoupper($orden['origen']),
+                    'RFC'            => mb_strtoupper($orden['rfc']),
+                    'estatus_pago'   => $isPago,
+                    'fecha'          => $orden['fecha'],
+                    'fecha_creacion' => date('Y-m-d'),
+                    'usuario_id'     => is_numeric($orden['usuario']) ? $orden['usuario'] : 0,
+                    'comisionista_id'=> is_numeric($fotografoId) ? $fotografoId : 0,
+                    'comentarios'    => mb_strtoupper($orden['comentarios'])
                 ]);
-            }
-
-            if($isPago){
-                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivo", $request->usuario);
-                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "efectivoUsd", $request->usuario);
-                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "tarjeta", $request->usuario);
-                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "deposito", $request->usuario);
-                $this->setFaturaPago($venta['id'], $factura['id'], $request['pagos'], "cambio", $request->usuario);
-
-                // if($this->isValidDescuentoCupon($request)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
-                // }
-
-                // if($this->isValidDescuentoCodigo($request,$email)){
-                //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
-                // }
-
-                if($this->isValidDescuentoPersonalizado($request,$email)){
-                    $this->setFaturaPago($venta['id'], $factura['id'], $request, "descuentoPersonalizado", $request->usuario);
+    
+                $factura = FotoVideoVentaFactura::create([
+                    'venta_id' =>  $venta['id'],
+                    'total'    =>  (float)$orden['total'],
+                    'pagado'   =>  $pagado,
+                    'adeudo'   =>  $adeudo
+                ]);
+    
+                foreach($orden['ventaProductos'] as $ventaProducto){
+                    // $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
+                    // $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
+                    FotoVideoVentaDetalle::create([
+                        'venta_id'            =>  $venta['id'],
+                        'factura_id'          =>  $factura['id'],
+                        'producto_id'         =>  $ventaProducto['productoId'],
+                        'numero_productos'    =>  $ventaProducto['cantidad'],
+                        'PPU'                 =>  $ventaProducto['precio']
+                    ]);
                 }
+    
+                if($isPago){
+                    $this->setFaturaPago($venta['id'], $factura['id'], $orden['pagos'], "efectivo", $orden['usuario']);
+                    $this->setFaturaPago($venta['id'], $factura['id'], $orden['pagos'], "efectivoUsd", $orden['usuario']);
+                    $this->setFaturaPago($venta['id'], $factura['id'], $orden['pagos'], "tarjeta", $orden['usuario']);
+                    $this->setFaturaPago($venta['id'], $factura['id'], $orden['pagos'], "deposito", $orden['usuario']);
+                    $this->setFaturaPago($venta['id'], $factura['id'], $orden['pagos'], "cambio", $orden['usuario']);
+    
+                    // if($this->isValidDescuentoCupon($request)){
+                    //     $this->setFaturaPago($venta['id'],$factura['id'],$request,'cupon');
+                    // }
+    
+                    // if($this->isValidDescuentoCodigo($request,$email)){
+                    //     $this->setFaturaPago($venta['id'],$factura['id'],$request,"descuentoCodigo");
+                    // }
+    
+                    if($this->isValidDescuentoPersonalizado($orden,$email)){
+                        $this->setFaturaPago($venta['id'], $factura['id'], $orden, "descuentoPersonalizado", $orden['usuario']);
+                    }
+                }
+    
+                $venta        = FotoVideoVenta::find($venta['id']);
+                $venta->folio = str_pad($venta['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
+                $venta->save();
+    
+                $venta = FotoVideoVenta::find($venta['id']);
+    
+                $this->setEstatusPago($venta['id']);
+    
+                $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
+    
+                $comisiones     = new FotoVideoComisionController();
+                $comisiones->setComisiones($venta['id'], $fechaComisiones);
             }
-
-            $venta        = FotoVideoVenta::find($venta['id']);
-            $venta->folio = str_pad($venta['id'],$this->longitudFolio,0,STR_PAD_LEFT).$this->folioSufijo;
-            $venta->save();
 
             DB::commit();
-
-            $venta = FotoVideoVenta::find($venta['id']);
-
-            $this->setEstatusPago($venta['id']);
-
-            $fechaComisiones = Carbon::now()->format('Y-m-d H:i:m');
-
-            $comisiones     = new FotoVideoComisionController();
-            $comisiones->setComisiones($venta['id'], $fechaComisiones);
 
             return json_encode(
                 [
@@ -481,6 +490,123 @@ class FotoVideoVentaController extends Controller
         }
     }
 
+
+    //Define ordenes basado en fotografos
+    protected function definirOrdenes($request){
+        
+        $requestArray = $request->toArray();
+
+        $ordenes = [];
+        
+        $fotografosVenta = [];
+
+        $pagos = [
+            'efectivo' => $requestArray['pagos']['efectivo'],
+            'efectivoUsd' => $requestArray['pagos']['efectivoUsd'],
+            'tarjeta' => $requestArray['pagos']['tarjeta'],
+            'deposito' => $requestArray['pagos']['deposito'],
+            'cambio' => $requestArray['pagos']['cambio'],
+        ];
+
+        //Duplica la orden pero slo agrega los productos correspondientes al fotografo.
+        foreach($requestArray['ventaProductos'] as $ventaProducto){
+
+            if(!in_array($ventaProducto['fotografo'], $fotografosVenta)){
+                $fotografosVenta[] = $ventaProducto['fotografo'];     
+
+                $newRequest = $requestArray;
+                $newRequest['ventaProductos'] = [$ventaProducto];
+
+                $ordenes[$ventaProducto['fotografo']] = $newRequest;
+
+                continue;
+            }
+
+            $ordenes[$ventaProducto['fotografo']]['ventaProductos'][] = $ventaProducto;
+        }
+            
+        $cantidadDescuentoGeneral = ($requestArray['descuentoPersonalizado']['cantidad']);
+
+        foreach($ordenes as $ordenKey => $orden){
+            $totalOrden = 0;
+            $diferenciaOrden = 0;
+            $cantidadDescuentoOrden = 0;
+
+            foreach ($orden['ventaProductos'] as $value) {
+                $totalOrden += ($value['cantidad'] * $value['precio']);
+            }
+
+            // Si existe un descuento trata de aplicar el total del descuento a la primera orden si no es suficiente para cubrir el total,
+            // aplica el correspondiente.
+            if($cantidadDescuentoGeneral > 0){
+                if($cantidadDescuentoGeneral > $totalOrden){
+                    $cantidadDescuentoOrden = $totalOrden;
+    
+                    $cantidadDescuentoGeneral = ($cantidadDescuentoGeneral - $totalOrden); 
+                }else{
+                    $cantidadDescuentoOrden = $cantidadDescuentoGeneral;
+    
+                    $cantidadDescuentoGeneral = 0;
+                }
+            }
+
+            $diferenciaOrden = $totalOrden - $cantidadDescuentoOrden;
+
+            $ordenes[$ordenKey]['descuentoPersonalizado']['cantidad'] = $cantidadDescuentoOrden;
+            
+            //Define pagos para cada orden
+            foreach($pagos as $key => $pago){
+                $pago = (float)$pago;
+
+                if($pago == 0 || $diferenciaOrden == 0){
+                    $ordenes[$ordenKey]['pagos'][$key] = 0;
+                    continue;
+                }
+
+                if($key == 'efectivoUsd'){
+                    $pago = $this->convertUsdToMxn($pago);
+                }
+
+                if($pago > $diferenciaOrden){
+                    $ordenes[$ordenKey]['pagos'][$key] = $diferenciaOrden;
+
+                    $diferenciaPago = ($pago - $diferenciaOrden);
+
+                    if($key == 'efectivoUsd'){
+                        $diferenciaPago = $this->convertMxnToUsd($diferenciaPago);
+                    }
+
+                    $pagos[$key] = $diferenciaPago;
+
+                    $diferenciaOrden = 0;
+                    continue;
+                }
+                
+                if($key == 'efectivoUsd'){
+                    $pago = $this->convertMxnToUsd($pago);
+                }
+
+                $ordenes[$ordenKey]['pagos'][$key] = $pago;
+                $pagos[$key] = 0;
+
+                $diferenciaOrden = ($diferenciaOrden - $pago);
+            }
+        }
+
+        return $ordenes;
+    }
+
+    private function convertUsdToMxn($pago)
+    {
+        return ($pago * $this->tipoCambio);
+    }
+
+    private function convertMxnToUsd($pago)
+    {
+        return ($pago / $this->tipoCambio);
+    }
+
+
     /**
      * Update the specified resource in storage.
      *
@@ -612,7 +738,7 @@ class FotoVideoVentaController extends Controller
             //        'password' => $password
             //    ])
             //){
-                if($this->isDescuentoValid($request->total,$email)){
+                if($this->isDescuentoValid($request['total'],$email)){
                     return true;
                 }
             //}

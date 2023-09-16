@@ -144,9 +144,19 @@
                                         <label for="cantidad" class="col-form-label">Cantidad</label>
                                         <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="3">
                                     </div>
-                                    <div class="form-group col-3 mt-0 mb-0">
+                                    <div class="form-group col-4 mt-0 mb-0">
                                         <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
                                         <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="4">
+                                    </div>
+
+                                    <div class="form-group col-4 mt-0 mb-0">
+                                        <label for="fotografo" class="col-form-label">Fotógrafo</label>
+                                        <select name="fotografo" id="fotografo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12" required="required">
+                                            <option value='0' selected="true">Seleccionar fotógrafo</option>
+                                            @foreach($fotografos as $fotografo)
+                                                <option value="{{$fotografo->id}}">{{$fotografo->nombre}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
 
                                     <input type="hidden" name="precio" id="precio" value="0">
@@ -166,6 +176,7 @@
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
                                                     <th>Subtotal</th>
+                                                    <th>Fotografo</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -189,16 +200,6 @@
                                             <div class="form-group col-2 mt-0 mb-0">
                                                 <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
                                                 <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
-                                            </div>
-
-                                            <div class="form-group col-4 mt-0 mb-0">
-                                                <label for="fotografo" class="col-form-label">Fotógrafo</label>
-                                                <select name="fotografo" id="fotografo" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12" required="required">
-                                                    <option value='0' selected="true">Seleccionar fotógrafo</option>
-                                                    @foreach($fotografos as $fotografo)
-                                                        <option value="{{$fotografo->id}}">{{$fotografo->nombre}}</option>
-                                                    @endforeach
-                                                </select>
                                             </div>
 
                                             <div class="form-group col-12 mt-0 mb-0">

@@ -2,7 +2,7 @@ let productosArray = [];
 
 document.getElementById('pagar').addEventListener('click', (event) => {
     validateFecha();
-    if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid() && fotografoIsValid()) {
+    if (formValidity('venta-form') && cantidadProductosIsValid() && cambioValidoIsValid()) {
         createVenta('pagar');
     }
 });
@@ -95,6 +95,43 @@ function addProductos() {
     addProducto();
     resetProductoMeta();
     // enableBtn('reservar', productosArray.length > 0);
+}
+
+
+
+function addProducto(){
+    // debugger;
+    const productoDetalle = document.getElementById('productos').value;
+    const productoId = document.getElementById('producto-id').value;
+    const claveProducto = document.getElementById('clave').value;
+    const producto = document.getElementById('productos').value;
+    const cantidad = document.getElementById('cantidad').value;
+    const precio = document.getElementById('precio').value;
+    const fotografoSelect = document.getElementById('fotografo');
+    const fotografo = fotografoSelect.options[fotografoSelect.selectedIndex].text;
+    const fotografoId = fotografoSelect.options[fotografoSelect.selectedIndex].value;
+    const acciones = `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>`;
+    const totalPrecio = precio * cantidad;
+
+    ventasTable.row.add([
+        claveProducto,
+        productoDetalle,
+        cantidad,
+        precio,
+        totalPrecio.toFixed(2),
+        fotografo,
+        acciones
+    ])
+        .draw(false);
+    productosArray = [...productosArray, {
+        'claveProducto': claveProducto,
+        'productoId': productoId,
+        'producto': producto,
+        'cantidad': cantidad,
+        'precio': precio,
+        'fotografo': fotografoId
+    }];
+    setTotal();
 }
 
 function setTotal() {
