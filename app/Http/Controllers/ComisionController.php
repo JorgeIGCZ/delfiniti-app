@@ -47,7 +47,7 @@ class ComisionController extends Controller
 
             $pagos = Pago::where('reservacion_id',$request->reservacionId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
-                    ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                    ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
             })->get();
 
             $this->setComisionPago($pagos,0);
@@ -69,7 +69,7 @@ class ComisionController extends Controller
         $reservacion  = Reservacion::find($reservacionId);
         $pagos        = Pago::where('reservacion_id',$reservacion['id'])->where('comision_creada',0)->whereHas('tipoPago', function ($query) {
             $query
-                ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
         })->get();
         
         if(count($pagos) === 0){

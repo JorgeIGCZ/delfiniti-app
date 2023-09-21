@@ -220,6 +220,7 @@ class FotoVideoVentaController extends Controller
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
                 + (float)$request->pagos['deposito']
+                + (float)$request->pagos['cambio']
             );
 
         // if($this->isValidDescuentoCodigo($request,$email)){
@@ -256,7 +257,7 @@ class FotoVideoVentaController extends Controller
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
         $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
-        if((float)$cantidad>0){
+        if((float)$cantidad !== (float)0){
             $pago = FotoVideoVentaPago::create([
                 'venta_id' =>  $ventaId,
                 'factura_id'     =>  $facturaId,
@@ -375,8 +376,11 @@ class FotoVideoVentaController extends Controller
     
                 $tiposPago[] = $tipoPagoNombre;
     
-                if($pago->tipo_pago_id == 2){
-                    $total += ($pago->cantidad * $pago->tipo_cambio_usd);
+                if($pago->tipoPago->nombre == "efectivoUsd"){
+                    $cantidadPago = ($pago->cantidad * $pago->tipo_cambio_usd);
+                    $cambio = $this->getVentaCambio($venta);
+
+                    $total += ($cantidadPago + $cambio);
                     continue;
                 }
                 $total += $pago->cantidad;
@@ -397,6 +401,18 @@ class FotoVideoVentaController extends Controller
         }
         
         return json_encode(['data' => $ventaDetalleArray]);
+    }
+
+    private function getVentaCambio($venta){
+        $cambio = 0;
+
+        foreach($venta->pagos as $pago){
+            if($pago->tipoPago->nombre == "cambio"){
+                $cambio += $pago->cantidad;
+            }
+        }
+
+        return $cambio;
     }
 
     /**
@@ -508,7 +524,8 @@ class FotoVideoVentaController extends Controller
             'cambio' => $requestArray['pagos']['cambio'],
         ];
 
-        //Duplica la orden pero slo agrega los productos correspondientes al fotografo.
+
+        //Duplica la orden pero lo agrega los productos correspondientes al fotografo.
         foreach($requestArray['ventaProductos'] as $ventaProducto){
 
             if(!in_array($ventaProducto['fotografo'], $fotografosVenta)){
@@ -527,7 +544,10 @@ class FotoVideoVentaController extends Controller
             
         $cantidadDescuentoGeneral = ($requestArray['descuentoPersonalizado']['cantidad']);
 
+        $index = 0;
         foreach($ordenes as $ordenKey => $orden){
+            $index++;
+
             $totalOrden = 0;
             $diferenciaOrden = 0;
             $cantidadDescuentoOrden = 0;
@@ -536,7 +556,7 @@ class FotoVideoVentaController extends Controller
                 $totalOrden += ($value['cantidad'] * $value['precio']);
             }
 
-            // Si existe un descuento trata de aplicar el total del descuento a la primera orden si no es suficiente para cubrir el total,
+            // Si existe un descuento trata de aplicar el total del descuento a la primera orden y el restant en la segunda, si no es suficiente para cubrir el total,
             // aplica el correspondiente.
             if($cantidadDescuentoGeneral > 0){
                 if($cantidadDescuentoGeneral > $totalOrden){
@@ -558,7 +578,7 @@ class FotoVideoVentaController extends Controller
             foreach($pagos as $key => $pago){
                 $pago = (float)$pago;
 
-                if($pago == 0 || $diferenciaOrden == 0){
+                if($pago == 0){// || $diferenciaOrden == 0){
                     $ordenes[$ordenKey]['pagos'][$key] = 0;
                     continue;
                 }
@@ -568,7 +588,21 @@ class FotoVideoVentaController extends Controller
                 }
 
                 if($pago > $diferenciaOrden){
+                    if($key == 'efectivoUsd'){
+                        $diferenciaOrden = $this->convertMxnToUsd($diferenciaOrden);
+                        
+                        //verificamos si es la ultima orden que se generará si es asi le aplicaremos el total de dolares a esta
+                        if(count($ordenes) === $index){
+                            $diferenciaOrden = $this->convertMxnToUsd($pago);
+                        }
+                    }
+
                     $ordenes[$ordenKey]['pagos'][$key] = $diferenciaOrden;
+
+                    //regresamos a MXN para continuar con el proceso
+                    if($key == 'efectivoUsd'){
+                        $diferenciaOrden = $this->convertUsdToMxn($diferenciaOrden);
+                    }
 
                     $diferenciaPago = ($pago - $diferenciaOrden);
 
@@ -584,6 +618,25 @@ class FotoVideoVentaController extends Controller
                 
                 if($key == 'efectivoUsd'){
                     $pago = $this->convertMxnToUsd($pago);
+                }
+
+                if($key == 'cambio'){
+                    //verificamos si es la ultima orden que se generará si es asi le aplicaremos el total de dolares a esta
+                    if(count($ordenes) === $index){
+                        $ordenes[$ordenKey]['pagos'][$key] = $pago;
+                        $pagos[$key] = 0;
+
+                        $diferenciaOrden = ($diferenciaOrden - $pago);
+                        
+                        continue;
+                    }else{
+                        $ordenes[$ordenKey]['pagos'][$key] = 0;
+                        $pagos[$key] = $pago;
+
+                        $diferenciaOrden = $diferenciaOrden;
+
+                        continue;
+                    }
                 }
 
                 $ordenes[$ordenKey]['pagos'][$key] = $pago;

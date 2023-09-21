@@ -51,7 +51,7 @@ class FotoVideoComisionController extends Controller
             
             $pagos = FotoVideoVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
-                    ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                    ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
             })->get();
 
             $this->setComisionPago($pagos,0);
@@ -82,7 +82,7 @@ class FotoVideoComisionController extends Controller
         $venta  = FotoVideoVenta::find($ventaId);
         $pagos  = FotoVideoVentaPago::where('venta_id',$venta['id'])->where('comision_creada',0)->whereHas('tipoPago', function ($query) {
             $query
-                ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
         })->get();
         
         if(count($pagos) === 0){

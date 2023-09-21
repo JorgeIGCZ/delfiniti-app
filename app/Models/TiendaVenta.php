@@ -31,6 +31,12 @@ class TiendaVenta extends Model
         return $this->hasMany(TiendaVentaDetalle::class,'venta_id');
     }
 
+    public function productos()
+    {
+        return $this->belongsToMany(TiendaProducto::class, 'tienda_venta_detalles', 'venta_id', 'producto_id')
+                    ->withPivot('id', 'factura_id', 'numero_productos', 'PPU');
+    }
+
     public function pagos()
     {
         return $this->hasMany(TiendaVentaPago::class,'venta_id');

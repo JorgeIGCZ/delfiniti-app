@@ -244,6 +244,7 @@ class TiendaVentaController extends Controller
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
                 + (float)$request->pagos['deposito']
+                + (float)$request->pagos['cambio']
             );
 
         // if($this->isValidDescuentoCodigo($request,$email)){
@@ -285,7 +286,7 @@ class TiendaVentaController extends Controller
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
         $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
-        if((float)$cantidad>0){
+        if((float)$cantidad !== (float)0){
             $pago = TiendaVentaPago::create([
                 'venta_id' =>  $ventaId,
                 'factura_id'     =>  $facturaId,
@@ -324,6 +325,12 @@ class TiendaVentaController extends Controller
         ]);
     }
 
+    /**
+     * Muestra las ventas por Ajax
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function get(Request $request)
     {
 
@@ -389,8 +396,8 @@ class TiendaVentaController extends Controller
 
             foreach($venta->ventaDetalle as $ventaDetalle){
                 $numeroProductos += $ventaDetalle->numero_productos;
-                $horario         = ($horario != "" ? $horario.", " : "").@$ventaDetalle->horario->horario_inicial;
-                $productos     = ($productos != "" ? $productos.", " : "").@$ventaDetalle->producto->nombre;
+                $horario          = ($horario != "" ? $horario.", " : "").@$ventaDetalle->horario->horario_inicial;
+                $productos        = ($productos != "" ? $productos.", " : "").@$ventaDetalle->producto->nombre;
             }
 
             foreach($venta->pagos as $pago){
@@ -401,8 +408,11 @@ class TiendaVentaController extends Controller
 
                 $tiposPago[] = $tipoPagoNombre;
 
-                if($pago->tipo_pago_id == 2){
-                    $total += ($pago->cantidad * $pago->tipo_cambio_usd);
+                if($pago->tipoPago->nombre == "efectivoUsd"){
+                    $cantidadPago = ($pago->cantidad * $pago->tipo_cambio_usd);
+                    $cambio = $this->getVentaCambio($venta);
+
+                    $total += ($cantidadPago + $cambio);
                     continue;
                 }
                 $total += $pago->cantidad;
@@ -425,6 +435,19 @@ class TiendaVentaController extends Controller
         
         return json_encode(['data' => $ventaDetalleArray]);
     }
+
+    private function getVentaCambio($venta){
+        $cambio = 0;
+
+        foreach($venta->pagos as $pago){
+            if($pago->tipoPago->nombre == "cambio"){
+                $cambio += $pago->cantidad;
+            }
+        }
+
+        return $cambio;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

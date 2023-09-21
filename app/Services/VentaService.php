@@ -12,8 +12,9 @@ class VentaService
     private $pagoTarjeta;
     private $pagoDeposito;
     private $pagoCupon;
+    private $cambio;
  
-    public function __construct($folio = "", $productos = [], $nombreCliente = '', $pagoEfectivo = 0, $pagoEfectivoUsd = 0, $pagoTarjeta = 0, $pagoDeposito = 0, $pagoCupon = 0)
+    public function __construct($folio = "", $productos = [], $nombreCliente = '', $pagoEfectivo = 0, $pagoEfectivoUsd = 0, $pagoTarjeta = 0, $pagoDeposito = 0, $pagoCupon = 0, $cambio = 0)
     {
         $this->folio = $folio;
         $this->productos = $productos;
@@ -23,6 +24,7 @@ class VentaService
         $this->pagoTarjeta = $pagoTarjeta;
         $this->pagoDeposito = $pagoDeposito;
         $this->pagoCupon = $pagoCupon;
+        $this->cambio = $cambio;
     
     }
     
@@ -65,6 +67,11 @@ class VentaService
     {
         return $this->pagoCupon;
     }
+
+    public function getCambio()
+    {
+        return $this->cambio;
+    }
     
     public function setFolio($folio)
     {
@@ -104,5 +111,10 @@ class VentaService
     public function setPagoCupon($pagoCupon)
     {
         $this->pagoCupon = $pagoCupon;
+    }
+
+    public function setCambio($cambio)
+    {
+        $this->cambio = $cambio;
     }
 }

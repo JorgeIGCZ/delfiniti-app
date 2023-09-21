@@ -51,7 +51,7 @@ class TiendaComisionController extends Controller
 
             $pagos = TiendaVentaPago::where('venta_id',$request->ventaId)->where('comision_creada',1)->whereHas('tipoPago', function ($query) {
                 $query
-                    ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                    ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
             })->get();
 
             $this->setComisionPago($pagos,0);
@@ -84,7 +84,7 @@ class TiendaComisionController extends Controller
         $venta  = TiendaVenta::find($ventaId);
         $pagos  = TiendaVentaPago::where('venta_id',$venta['id'])->where('comision_creada',0)->whereHas('tipoPago', function ($query) {
             $query
-                ->whereRaw(" nombre IN ('efectivo','efectivoUsd','tarjeta','deposito')");
+                ->whereRaw(" nombre IN ('efectivo', 'efectivoUsd', 'tarjeta', 'deposito', 'cambio')");
         })->get();
         
         if(count($pagos) === 0){

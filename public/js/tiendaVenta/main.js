@@ -429,7 +429,7 @@ window.onload = function() {
         setTimeout(setOperacionResultados(),600);
     });
     document.getElementById('efectivo-usd').addEventListener('focusout', (event) =>{
-        setTimeout(applyValorSinCambio(event.target,true),300);
+        // setTimeout(applyValorConCambio(event.target),300); 
         setTimeout(setOperacionResultados(),600);
     });
     document.getElementById('tarjeta').addEventListener('focusout', (event) =>{
@@ -448,7 +448,7 @@ window.onload = function() {
             const cambio   = parseFloat(getCambio());
             const subTotal = (isUsd ? parseFloat(getUSDFromVentaMXN(valor+cambio)) : parseFloat(valor+cambio)); 
  
-            setValor(event.target,subTotal);
+            setValor(elemento,subTotal);
         }
     }
 

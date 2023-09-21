@@ -268,6 +268,7 @@ class ReservacionController extends Controller
                 + (float)$request->pagos['efectivo']
                 + (float)$request->pagos['tarjeta']
                 + (float)$request->pagos['deposito']
+                + (float)$request->pagos['cambio']
             );
 
         if($this->isValidDescuentoCodigo($request,$email)){
@@ -309,7 +310,7 @@ class ReservacionController extends Controller
         $tipoPagoId = $this->getTipoPagoId($tipoPago);
         $result     = true;
         $cantidad   = is_array($request[$tipoPago]) ?  $request[$tipoPago]['cantidad'] : $request[$tipoPago];
-        if((float)$cantidad>0){
+        if((float)$cantidad !== (float)0){
             $pago = Pago::create([
                 'reservacion_id' =>  $reservacionId,
                 'factura_id'     =>  $facturaId,

@@ -25,6 +25,7 @@ class ReporteCorteCajaService
     protected $tipoCambio = 0;
     protected $ventasVideoArray = [];
     protected $ventasFotoArray = [];
+    protected $ventasTiendaArray = [];
 
     public function __construct(
         VentaService $ventaService,
@@ -86,16 +87,22 @@ class ReporteCorteCajaService
             }
 
             foreach($reservacionesArray as $reservacion){
+                //establecemos index para saber cual es la ultima actividad y agregar el restante de ingreso por PagoEfectivoUsd
+                $index = 0;
                 foreach($reservacion->getProductos() as $actividad){
+                    $index++;
+                    $isUltimaActividad = (count($reservacion->getProductos()) == $index);
+                    
                     $actividadesIdArray[] = $actividad->getId();
                     $informacionActividadesArray[] = [
                         "id" => $actividad->getId(),
                         "folio" => $reservacion->getFolio(),
                         "efectivo" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivo'),
-                        "efectivoUsd" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivoUsd'),
+                        "efectivoUsd" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivoUsd', $isUltimaActividad),
                         "tarjeta" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoTarjeta'),
                         "deposito" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoDeposito'),
                         "cupon" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoCupon'),
+                        "cambio" => $this->getCambio($reservacion, 'Cambio', $isUltimaActividad),
                         "nombreCliente" => $reservacion->getNombreCliente(),
                     ];
                 }
@@ -163,6 +170,8 @@ class ReporteCorteCajaService
 
                 $initialRowNumber = $rowNumber;
 
+                $cambio = 0;
+
                 foreach($informacionActividadesArray as $informacionActividad){
                     if($informacionActividad['id'] == $actividad->id){
                         //Data
@@ -178,9 +187,23 @@ class ReporteCorteCajaService
 
                         $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$informacionActividad['nombreCliente']);
 
+                        $cambio += $informacionActividad['cambio'];
+
                         $rowNumber += 1;
                     }
                 }
+                
+                $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                    ->getNumberFormat()
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
+                        
+                $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    ->getFont()->setBold(true);
+
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'Cambio');
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $cambio);
+                $rowNumber += 1;
+
                 $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                     ->getNumberFormat()
                     ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
@@ -262,26 +285,99 @@ class ReporteCorteCajaService
 
             //Data
             $initialRowNumber = $rowNumber;
-            $tiendaVentas = $this->getTiendaVentas($fechaInicio, $fechaFinal, $usuarios);
-            foreach($tiendaVentas as $tiendaVenta){
-                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $tiendaVenta->folio);
 
-                $pagosEfectivoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivo', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
+            $ventasArray = [];
+            $this->ventasTiendaArray = [];
 
-                $pagosEfectivoUsdResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
+            $tiendaVentas = $this->getTiendaVentasFecha($fechaInicio, $fechaFinal, $usuarios);
+            foreach($tiendaVentas as $venta){
+                $ventasArray[] = $this->setVenta($venta, $usuarios);
+            }
 
-                $pagosTarjetaResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'tarjeta', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
-                    
-                $pagosDepositoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'deposito', $fechaInicio, $fechaFinal);
-                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
+            foreach($ventasArray as $venta){
+                $efectivo = 0;
+                $efectivoUsd = 0;
+                $tarjeta = 0;
+                $deposito = 0;
+                $cupon = 0;
+                $cambio = 0;
 
-                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$tiendaVenta->nombre_cliente);
+                foreach($venta->getProductos() as $producto){
+
+                    $index++;
+
+                    $efectivo += $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
+                    $efectivoUsd += $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', true);
+                    $tarjeta += $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
+                    $deposito += $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
+                    $cupon += $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
+                    $cambio += $this->getCambio($venta, 'Cambio', true);
+                }
+
+                $this->ventasTiendaArray[] = [
+                    "folio" => $venta->getFolio(),
+                    "efectivo" => $efectivo,
+                    "efectivoUsd" => $efectivoUsd,
+                    "tarjeta" => $tarjeta,
+                    "deposito" => $deposito,
+                    "cupon" => $cupon,
+                    "cambio" => $cambio,
+                    "nombreCliente" => $venta->getNombreCliente(),
+                ];
+            }
+
+            $cambio = 0;
+            foreach($this->ventasTiendaArray as $venta){
+                $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $venta['folio']);
+                $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $venta['efectivo']);
+                $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $venta['efectivoUsd']);
+                $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $venta['tarjeta']);
+                $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
+                $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombreCliente']);
+
+                $cambio += $venta['cambio'];
 
                 $rowNumber += 1;
             }
+
+            //Data
+            // $initialRowNumber = $rowNumber;
+            // $tiendaVentas = $this->getTiendaVentas($fechaInicio, $fechaFinal, $usuarios);
+            // $cambio = 0;
+            // foreach($tiendaVentas as $tiendaVenta){
+            //     $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $tiendaVenta->folio);
+
+            //     $pagosEfectivoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivo', $fechaInicio, $fechaFinal);
+            //     $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $pagosEfectivoResult['pago']);
+
+            //     $pagosEfectivoUsdResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'efectivoUsd', $fechaInicio, $fechaFinal);
+            //     $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $pagosEfectivoUsdResult['pago']);
+
+            //     $pagosTarjetaResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'tarjeta', $fechaInicio, $fechaFinal);
+            //     $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $pagosTarjetaResult['pago']);
+                    
+            //     $pagosDepositoResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'deposito', $fechaInicio, $fechaFinal);
+            //     $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $pagosDepositoResult['pago']);
+
+            //     $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$tiendaVenta->nombre_cliente);
+
+            //     $cambioResult = $this->getTiendaVentaPagosTotalesByType($usuarios, $tiendaVenta, 'cambio', $fechaInicio, $fechaFinal);
+            //     $cambio += $cambioResult['pago'];
+
+            //     $rowNumber += 1;
+            // }
+
+            $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                    ->getNumberFormat()
+                    ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
+                        
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                    ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'Cambio');
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $cambio);
+            $rowNumber += 1;
+
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
@@ -379,13 +475,20 @@ class ReporteCorteCajaService
                 $tarjeta = 0;
                 $deposito = 0;
                 $cupon = 0;
+                $cambio = 0;
 
+                $index = 0;
                 foreach($venta->getProductos() as $producto){
+
+                    $index++;
+                    $isUltimoProducto = (count($venta->getProductos()) == $index);
+
                     $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
-                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd');
+                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', $isUltimoProducto);
                     $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
                     $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
                     $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
+                    $tempCambio = $this->getCambio($venta, 'Cambio', $isUltimoProducto);
 
                     if($producto->getTipo() == $tipo){
                         $efectivo += $tempEfectivo;
@@ -393,6 +496,7 @@ class ReporteCorteCajaService
                         $tarjeta += $tempTarjeta;
                         $deposito += $tempDeposito;
                         $cupon += $tempCupon;
+                        $cambio += $tempCambio;
                     }
                 }
 
@@ -403,9 +507,12 @@ class ReporteCorteCajaService
                     "tarjeta" => $tarjeta,
                     "deposito" => $deposito,
                     "cupon" => $cupon,
+                    "cambio" => $cambio,
                     "nombreCliente" => $venta->getNombreCliente(),
                 ];
             }
+
+            $cambio = 0;
 
             foreach($this->ventasFotoArray as $venta){
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $venta['folio']);
@@ -415,8 +522,21 @@ class ReporteCorteCajaService
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
                 $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombreCliente']);
 
+                $cambio += $venta['cambio'];
+
                 $rowNumber += 1;
             }
+                
+            $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
+                    
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'Cambio');
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $cambio);
+            $rowNumber += 1;
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
@@ -513,13 +633,20 @@ class ReporteCorteCajaService
                 $tarjeta = 0;
                 $deposito = 0;
                 $cupon = 0;
-
+                $cambio = 0;
+                
+                $index = 0;
                 foreach($venta->getProductos() as $producto){
+
+                    $index++;
+                    $isUltimoProducto = (count($venta->getProductos()) == $index);
+
                     $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
-                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd');
+                    $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', $isUltimoProducto);
                     $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
                     $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
                     $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
+                    $tempCambio = $this->getCambio($venta, 'Cambio', $isUltimoProducto);
 
                     if($producto->getTipo() == $tipo){
                         $efectivo += $tempEfectivo;
@@ -527,6 +654,7 @@ class ReporteCorteCajaService
                         $tarjeta += $tempTarjeta;
                         $deposito += $tempDeposito;
                         $cupon += $tempCupon;
+                        $cambio += $tempCambio;
                     }
                 }
 
@@ -537,10 +665,12 @@ class ReporteCorteCajaService
                     "tarjeta" => $tarjeta,
                     "deposito" => $deposito,
                     "cupon" => $cupon,
+                    "cambio" => $cambio,
                     "nombreCliente" => $venta->getNombreCliente(),
                 ];
             }
 
+            $cambio = 0;
             foreach($this->ventasVideoArray as $venta){
                 $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", $venta['folio']);
                 $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $venta['efectivo']);
@@ -549,8 +679,21 @@ class ReporteCorteCajaService
                 $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $venta['deposito']);
                 $spreadsheet->getActiveSheet()->setCellValue("G{$rowNumber}", @$venta['nombreCliente']);
 
+                $cambio += $venta['cambio'];
+
                 $rowNumber += 1;
             }
+                
+            $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
+                ->getNumberFormat()
+                ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_CURRENCY_USD);
+                    
+            $spreadsheet->getActiveSheet()->getStyle("A{$rowNumber}:F{$rowNumber}")
+                ->getFont()->setBold(true);
+
+            $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", 'Cambio');
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $cambio);
+            $rowNumber += 1;
 
             $spreadsheet->getActiveSheet()->getStyle("B{$initialRowNumber}:F{$rowNumber}")
                 ->getNumberFormat()
@@ -651,6 +794,8 @@ class ReporteCorteCajaService
                             $totalEfectivoUSD += $informacionActividad['efectivoUsd'];
                             $totalTarjeta += $informacionActividad['tarjeta'];
                             $totalDeposito += $informacionActividad['deposito'];
+
+                            $totalEfectivo += $informacionActividad['cambio'];
     
                             if($showCupones){
                                 $totalCupon += $informacionActividad['cupon'];
@@ -678,8 +823,11 @@ class ReporteCorteCajaService
         //Acumulado Tienda
         if(in_array("Tienda", $moduloRequest)){
             $acumuladoTiendaVentas = $this->getAcumuladoTiendaVentas($usuarios, $tiendaVentas, $fechaInicio, $fechaFinal);
+
+            $efectivoAcumulado = ($this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo') + $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'cambio'));
+            
             $spreadsheet->getActiveSheet()->setCellValue("A{$rowNumber}", "TIENDA");
-            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivo'));
+            $spreadsheet->getActiveSheet()->setCellValue("B{$rowNumber}", $efectivoAcumulado);
             $spreadsheet->getActiveSheet()->setCellValue("C{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'efectivoUsd'));
             $spreadsheet->getActiveSheet()->setCellValue("D{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'tarjeta'));
             $spreadsheet->getActiveSheet()->setCellValue("E{$rowNumber}", $this->getPagosAcumuladosTotalesByType($acumuladoTiendaVentas, 'deposito'));
@@ -825,7 +973,7 @@ class ReporteCorteCajaService
             if(!in_array($pago->usuario_id, $usuarios->toArray())){
                 continue;
             }
-            $reservacionTipoPagos[$pago->tipoPago->nombre] = $pago->cantidad;
+            $reservacionTipoPagos[$pago->tipoPago->nombre] += $pago->cantidad;
         }
         return $reservacionTipoPagos;
     }
@@ -845,6 +993,7 @@ class ReporteCorteCajaService
         $ventaService->setPagoTarjeta($reservacionTipoPagos['tarjeta']);
         $ventaService->setPagoDeposito($reservacionTipoPagos['deposito']);
         $ventaService->setPagoCupon($reservacionTipoPagos['cupon']);
+        $ventaService->setCambio($reservacionTipoPagos['cambio']);
 
         return $ventaService;
     }
@@ -889,6 +1038,18 @@ class ReporteCorteCajaService
         return $ventas;
     }
 
+    private function getTiendaVentasFecha($fechaInicio, $fechaFinal, $usuarios)
+	{
+        $ventas = TiendaVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('tipo_pago_id', $this->tiposPago)
+                ->whereIn('usuario_id', $usuarios);
+        })->get();
+
+        return $ventas;
+    }
+
     private function getVentaPagos($venta, $usuarios)
     {
         $ventaTipoPagos = [];
@@ -923,6 +1084,7 @@ class ReporteCorteCajaService
         $ventaService->setPagoTarjeta($ventaTipoPagos['tarjeta']);
         $ventaService->setPagoDeposito($ventaTipoPagos['deposito']);
         $ventaService->setPagoCupon($ventaTipoPagos['cupon']);
+        $ventaService->setCambio($ventaTipoPagos['cambio']);
 
         return $ventaService;
     }
@@ -950,44 +1112,78 @@ class ReporteCorteCajaService
         return $productosArray;
     }
 
-    private function getPagoPorTipo($venta, $producto, $tipoPago)
+    private function getCambio($venta, $tipoPago, $isUltimoProducto = false)
+    {
+        if(!$isUltimoProducto){
+            return 0;
+        }
+        
+        $nombreMetodoGet = \sprintf('get%s',$tipoPago);
+        $nombreMetodoSet = \sprintf('set%s',$tipoPago);
+
+        $cambio = $venta->{$nombreMetodoGet}();
+
+        $venta->{$nombreMetodoSet}(0);
+
+        return $cambio;
+    }
+
+    private function getPagoPorTipo($venta, $producto, $tipoPago, $isUltimoProducto = false)
     {
         $nombreMetodoGet = \sprintf('get%s',$tipoPago);
         $nombreMetodoSet = \sprintf('set%s',$tipoPago);
         $precioProducto = ($producto->getPrecio() * $producto->getNumeroProductos());
         $cantidadPagada = $producto->getCantidadPagada();
-        $pendientePago = ($precioProducto - $cantidadPagada);
+        $diferenciaPago = ($precioProducto - $cantidadPagada);
         $pago = $venta->{$nombreMetodoGet}();
+
+        if($pago == 0){// || $diferenciaPago == 0){
+            return 0;
+        }
         
         //Se realiza una conversion de moneda para los calculos
         if($tipoPago == 'PagoEfectivoUsd'){
             $pago = $this->convertUsdToMxn($pago);
         }
 
-        if($pago <= 0 || $pendientePago == 0){
-            return 0;
-        }
-
         //Si el pago es mayor al costo del producto actual,
         //se descuenta el costo del producto actual y se modifica el monto con el residuo 
         //para el calculo en el siguiente producto
-        if($pago > $pendientePago){
-            $resta = $pago - $pendientePago;
+        if($pago > $diferenciaPago){
+            
+            $resta = $pago - $diferenciaPago;
 
             //Una vez finalizado el calculo regresamos el sobrante a la moneda original para que se siga descontando en el siguiente producto
             if($tipoPago == 'PagoEfectivoUsd'){
                 $resta = $this->convertMxnToUsd($resta);
+
+                //verificamos si es el ultimo producto/actividad que se generará si es asi le aplicaremos el total de dolares a esta
+                if($isUltimoProducto){    
+                    $venta->{$nombreMetodoSet}(0);
+
+                    // //Una vez finalizado el calculo regresamos a la moneda original para el reporte
+                    $pago = $this->convertMxnToUsd($pago);
+
+                    $producto->setCantidadPagada($pago);
+                    return $pago;
+                }
             }
 
             $venta->{$nombreMetodoSet}($resta);
             $producto->setCantidadPagada($precioProducto);
+
+            //regresamos a MXN para continuar con el proceso
+            // if($tipoPago == 'PagoEfectivoUsd'){
+            //     $diferenciaPago = $this->convertUsdToMxn($resta);
+
+            // }
             
-            //Una vez finalizado el calculo regresamos a la moneda original para el reporte
+            // //Una vez finalizado el calculo regresamos a la moneda original para el reporte
             if($tipoPago == 'PagoEfectivoUsd'){
-                $pendientePago = $this->convertMxnToUsd($pendientePago);
+                $diferenciaPago = $this->convertMxnToUsd($precioProducto);
             }
 
-            return $pendientePago;
+            return $diferenciaPago;
         }
 
         //Si el pago es menor o igual al costo del producto actual,
