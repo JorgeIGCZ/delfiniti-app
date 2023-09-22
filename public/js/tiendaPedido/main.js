@@ -1,5 +1,7 @@
 const actualizarEstatusReservacion = document.getElementById('actualizar-estatus-pedido');
 const agregarProducto = document.getElementById('add-producto');
+const autorizarPedido = document.getElementById('autorizar-pedido');
+
 let impuestosProductosGeneralesArray = [];
 let impuestosTotales = [];
 let productosTable = new DataTable('#productosTable', {
@@ -105,6 +107,13 @@ if(actualizarEstatusReservacion !== null){
     });
 }
 
+if(autorizarPedido !== null){
+    autorizarPedido.addEventListener('click', (event) =>{
+        event.preventDefault();
+        validacionAutorizacion(autorizarPedido.getAttribute('id-pedido'));
+    });
+}
+
 if(agregarProducto !== null){
     agregarProducto.addEventListener('click', (event) =>{
         event.preventDefault();
@@ -114,6 +123,59 @@ if(agregarProducto !== null){
             validateBotonGuardar();
         }
     });
+}
+
+function validacionAutorizacion(id){
+    Swal.fire({
+        title: `¿Desea autorizar el pedido con ID ${id}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '¡Si, autorizar!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            autorizar(id,);
+        }else{
+            return false;
+        }
+    }) 
+}
+
+function autorizar(id){
+    $('.loader').show();
+    axios.post(`/pedidos/validate/${id}/update`, {
+        '_token'  : token()
+    })
+    .then(function (response) {
+        $('.loader').hide();
+
+        if(response.data.result == "Success"){
+            Swal.fire({
+                icon: 'success',
+                title: 'Productos registrados',
+                showConfirmButton: false,
+                timer: 1500
+            });
+            location.href = '/pedidos';
+        }else{
+            Swal.fire({
+                icon: 'error',
+                title: 'Registro fallido',
+                html: `<small class="alert alert-danger mg-b-0">${response.data.message}</small>`,
+                showConfirmButton: true
+            })
+        }
+    })
+    .catch(function (error) {
+        $('.loader').hide();
+        Swal.fire({
+            icon: 'error',
+            title: 'Registro fallido',
+            html: `<small class="alert alert-danger mg-b-0">Error de conexión.</small>`,
+            showConfirmButton: true
+        })
+    }); 
 }
 
 function processImpuestosProductos(){
