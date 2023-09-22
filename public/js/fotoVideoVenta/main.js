@@ -1,3 +1,11 @@
+const claveElement = document.getElementById('venta-form').elements['clave'];
+const addProductoElement = document.getElementById('add-producto');
+const fechaElement = document.getElementById('fecha');
+const descuentoPersonalizadoElement = document.getElementById('descuento-personalizado');
+const addDescuentoPersonalizadoElement = document.getElementById('add-descuento-personalizado');
+const validarVerificacionElement = document.getElementById('validar-verificacion');
+let fotografos = [];
+
 function updateEstatusVenta(accion){
     const title = (accion === 'cancelar') ? 'cancelada' : 'reactivada';
     $('.loader').show();
@@ -317,13 +325,6 @@ let ventasTable = new DataTable('#ventas', {
 window.onload = function() {
     // getDisponibilidad()
 
-    const claveElement = document.getElementById('venta-form').elements['clave'];
-    const addProductoElement = document.getElementById('add-producto');
-    const fechaElement = document.getElementById('fecha');
-    const descuentoPersonalizadoElement = document.getElementById('descuento-personalizado');
-    const addDescuentoPersonalizadoElement = document.getElementById('add-descuento-personalizado');
-    const validarVerificacionElement = document.getElementById('validar-verificacion');
-
     // if(claveElement !== undefined){
         // claveElement.focus();
     // }
@@ -334,6 +335,12 @@ window.onload = function() {
         addProductoElement.addEventListener('click', (event) =>{
             event.preventDefault();
             if(productoIsValid() && fotografoIsValid()){
+                if(fotografoIsDifferent()){
+                    document.getElementById('add-descuento-personalizado').setAttribute("disabled", "disabled");
+                    document.getElementById('add-descuento-personalizado').setAttribute("title", "Sólo es posible agregar descuento cuando existe un solo fotografo seleccionado.");
+                    disableDescuento();
+                }
+
                 validateFecha();
                 addProductos();
                 document.getElementById('venta-form').elements['codigo'].focus();
@@ -346,6 +353,7 @@ window.onload = function() {
             setTimeout(validateFecha(),500);
         });
     }
+
     if(descuentoPersonalizadoElement !== null){
         descuentoPersonalizadoElement.addEventListener('keyup', (event) =>{
             if(getResta() < 0){
@@ -364,16 +372,10 @@ window.onload = function() {
             //resetDescuentos();
             if(addDescuentoPersonalizadoElement.checked){
                 $('#verificacion-modal').modal('show');
-                addDescuentoPersonalizadoElement.checked = false;
-                document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
                 document.getElementById('password').focus();
+                enableDescuento();
             }else{
-                descuentoPersonalizadoElement.setAttribute('disabled','disabled');
-                descuentoPersonalizadoElement.setAttribute('limite','0');
-                document.getElementById('descuento-personalizado-container').classList.add("hidden");
-                descuentoPersonalizadoElement.value = '0';
-                descuentoPersonalizadoElement.setAttribute('value',0);
-                setOperacionResultados();
+                disableDescuento();
             }
         });
     }
@@ -438,8 +440,10 @@ window.onload = function() {
             const valor = (isUsd ? getMXNFromVentaUSD(parseFloat(elemento.getAttribute('value'))) : parseFloat(getValor(elemento)));
             const cambio   = parseFloat(getCambio());
             const subTotal = (isUsd ? parseFloat(getUSDFromVentaMXN(valor+cambio)) : parseFloat(valor+cambio)); 
- 
-            setValor(elemento,subTotal);
+            
+            if(subTotal > 0){
+                setValor(elemento,subTotal);
+            }
         }
     }
 
@@ -472,11 +476,26 @@ $('#ventas').on( 'click', '.eliminar-celda', function (event) {
         }).then((result) => {
             if (result.isConfirmed) {
                 eliminarProductoVenta(this,$(this).parents('tr')[0].firstChild.innerText)
+                
+                removeFotografo(event.target);
+                if(fotografoIsUnique()){
+                    document.getElementById('add-descuento-personalizado').removeAttribute("disabled", "disabled");
+                    document.getElementById('add-descuento-personalizado').removeAttribute("title", "Sólo es posible agregar descuento cuando existe un solo fotografo seleccionado.");
+                    enableDescuento();
+                }
+                
             }
         });
     }else{
         removeProducto(this);
         setTotal();
+        
+        removeFotografo(event.target);
+        if(fotografoIsUnique()){
+            document.getElementById('add-descuento-personalizado').removeAttribute("disabled", "disabled");
+            document.getElementById('add-descuento-personalizado').removeAttribute("title", "Sólo es posible agregar descuento cuando existe un solo fotografo seleccionado.");
+            enableDescuento();
+        }
     }
 } );
 
@@ -599,6 +618,47 @@ async function validarVerificacion(){
             })
         }
     }
+}
+
+function removeFotografo(row){
+    const fotografo = $(row).parents('tr')[0].childNodes[5].innerText;
+
+    const index = fotografos.indexOf(fotografo);
+    fotografos.splice(index, 1);
+}
+
+function fotografoIsUnique(){
+    return (fotografos.length === 1);
+}
+
+function fotografoIsDifferent(){
+    const fotografoElement = document.getElementById('fotografo');
+    const fotografo = fotografoElement.options[fotografoElement.selectedIndex].text;
+    if(fotografos.includes(fotografo)){
+        fotografos.push(fotografo);
+        return false;
+    }
+    
+    fotografos.push(fotografo);
+    if(fotografos.length === 1){
+        return false;
+    }
+    return true;
+}
+
+function enableDescuento(){
+    addDescuentoPersonalizadoElement.checked = false;
+    document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
+}
+
+function disableDescuento(){
+    document.getElementById('add-descuento-personalizado').checked = false;
+    descuentoPersonalizadoElement.setAttribute('disabled','disabled');
+    descuentoPersonalizadoElement.setAttribute('limite','0');
+    document.getElementById('descuento-personalizado-container').classList.add("hidden");
+    descuentoPersonalizadoElement.value = '0';
+    descuentoPersonalizadoElement.setAttribute('value',0);
+    setOperacionResultados();
 }
 
 function updateEstatusReservacion(accion){

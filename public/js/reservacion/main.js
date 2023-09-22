@@ -686,7 +686,9 @@ window.onload = function() {
             const cambio   = parseFloat(getCambio());
             const subTotal = (isUsd ? parseFloat(getUSDFromVentaMXN(valor+cambio)) : parseFloat(valor+cambio)); 
  
-            setValor(elemento,subTotal);
+            if(subTotal > 0){
+                setValor(elemento,subTotal);
+            }
         }
     }
 
