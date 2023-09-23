@@ -111,7 +111,7 @@
                                 <strong>{{$reservacionesPendientes}}</strong>
                             </div>
                             <div>
-                                <label class="col-form-label">Cortesias:</label>
+                                <label class="col-form-label">Cortesías:</label>
                                 <strong>{{$cortesias}}</strong>
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                                                         <th>Folio</th>
                                                         <th>Cliente</th>
                                                         <th>Per.</th>
-                                                        <th>Cortesia</th>
+                                                        <th>Cortesía</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -200,7 +200,7 @@
                                                             </td>
                                                             <td>{{ mb_strlen($reservacion->nombre_cliente) > 15 ? mb_substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
-                                                            <td>@php echo(@$reservacion->descuentoCodigo->id > 0 ? 'Cortesia' : ''); @endphp</td>
+                                                            <td>@php echo(@$reservacion->descuentoCodigo->id > 0 ? 'Cortesía' : ''); @endphp</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

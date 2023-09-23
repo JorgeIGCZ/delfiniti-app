@@ -202,7 +202,7 @@
                                         <th>Horario</th>
                                         <th>Fecha Actividad</th>
                                         <th>Estatus</th>
-                                        <th>Cortesia</th>
+                                        <th>Cortesía</th>
                                         <th>Fecha creación</th>
                                         <th>Notas</th>
                                         <th>Acciones</th>
