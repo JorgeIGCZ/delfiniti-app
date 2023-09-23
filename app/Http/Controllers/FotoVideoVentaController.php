@@ -394,6 +394,7 @@ class FotoVideoVentaController extends Controller
                 'fechaCreacion' => @Carbon::parse($venta->fecha_creacion)->format('d/m/Y'),//date_format(date_create($venta->fecha_creacion),"d/m/Y"),
                 'fecha'        => @Carbon::parse($venta->fecha)->format('d/m/Y'),//date_format(date_create($venta->fecha),"d-m-Y"),
                 'cliente'      => @$venta->nombre_cliente,
+                'fotografo'    => @$venta->fotografo->nombre,
                 'notas'        => @$venta->comentarios,
                 'estatus'      => @$venta->estatus,
                 'estatusPago'  => @$venta->estatus_pago

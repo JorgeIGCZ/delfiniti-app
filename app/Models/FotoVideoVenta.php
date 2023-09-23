@@ -37,6 +37,11 @@ class FotoVideoVenta extends Model
                     ->withPivot('id', 'factura_id', 'numero_productos', 'PPU');
     }
 
+    public function fotografo()
+    {
+        return $this->hasOne(FotoVideoComisionista::class,'id','comisionista_id');
+    }
+
     public function pagos()
     {
         return $this->hasMany(FotoVideoVentaPago::class,'venta_id');

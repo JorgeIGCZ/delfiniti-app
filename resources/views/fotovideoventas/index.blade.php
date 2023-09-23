@@ -38,6 +38,7 @@
                     { data: 'id' },
                     { data: 'folio' },
                     { data: 'cliente' },
+                    { data: 'fotografo' },
                     { data: 'tiposPago' },
                     { defaultContent: 'total', 'render': function ( data, type, row ) 
                         {
@@ -194,6 +195,7 @@
                                         <th>Id</th>
                                         <th>Folio</th>
                                         <th>Cliente</th>
+                                        <th>Fotografo</th>
                                         <th>Tipo pago</th>
                                         <th>Total</th>
                                         <th>Estatus</th>
