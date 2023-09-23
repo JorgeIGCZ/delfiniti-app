@@ -110,7 +110,7 @@
                                 <label class="col-form-label">Pendientes:</label>
                                 <strong>{{$reservacionesPendientes}}</strong>
                             </div>
-                            <div>
+                            <div class="cortesias">
                                 <label class="col-form-label">Cortesías:</label>
                                 <strong>{{$cortesias}}</strong>
                             </div>
@@ -194,7 +194,7 @@
                                                                 }
                                                             }
                                                         @endphp
-                                                        <tr class="{{$estatus}} {{ (@$reservacion->descuentoCodigo->id > 0 ? 'highlight' : '') }}">
+                                                        <tr class="{{$estatus}} {{ (@$reservacion->descuentoCodigo->id > 0 ? 'cortesia' : '') }}">
                                                             <td class="folio-link">
                                                                 <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>

@@ -45154,6 +45154,10 @@ table.dataTable td, table.dataTable th{
   padding: 0 5px;
 }
 
+.reservaciones-table td a{
+  color: white!important;
+}
+
 tr.Pendiente{
   color: white;
   background: #cf4141;
@@ -45163,8 +45167,17 @@ tr.Parcial{
   background: #e98b00;
 }
 tr.Pagado{
-  color: green;
+  color: white;
+  background: #208d25;
 }
+tr.cortesia{
+  color: white;
+  background: #bd84cf!important;
+}
+.cortesias{
+  color: #bd84cf;
+}
+
 .folio-link{
   font-weight: 700;
   color: white;
