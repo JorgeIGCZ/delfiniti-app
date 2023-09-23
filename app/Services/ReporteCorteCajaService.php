@@ -301,6 +301,7 @@ class ReporteCorteCajaService
                 $deposito = 0;
                 $cupon = 0;
                 $cambio = 0;
+                $index = 0;
 
                 foreach($venta->getProductos() as $producto){
 
