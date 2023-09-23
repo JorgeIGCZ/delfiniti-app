@@ -169,6 +169,7 @@
                                                         <th>Folio</th>
                                                         <th>Cliente</th>
                                                         <th>Per.</th>
+                                                        <th>Cortesia</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -193,12 +194,13 @@
                                                                 }
                                                             }
                                                         @endphp
-                                                        <tr class={{$estatus}}>
+                                                        <tr class="{{$estatus}} {{ (@$reservacion->descuentoCodigo->id > 0 ? 'highlight' : '') }}">
                                                             <td class="folio-link">
                                                                 <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
                                                             </td>
                                                             <td>{{ mb_strlen($reservacion->nombre_cliente) > 15 ? mb_substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
+                                                            <td>@php echo(@$reservacion->descuentoCodigo->id > 0 ? 'Cortesia' : ''); @endphp</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

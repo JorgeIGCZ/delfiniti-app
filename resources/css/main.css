@@ -45163,8 +45163,7 @@ tr.Parcial{
   background: #e98b00;
 }
 tr.Pagado{
-  color: white;
-  background: #208d25;
+  color: green;
 }
 .folio-link{
   font-weight: 700;
