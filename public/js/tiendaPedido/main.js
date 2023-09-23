@@ -157,7 +157,7 @@ function autorizar(id){
                 showConfirmButton: false,
                 timer: 1500
             });
-            location.href = '/pedidos';
+            location.href = '/pedidos/validate';
         }else{
             Swal.fire({
                 icon: 'error',
