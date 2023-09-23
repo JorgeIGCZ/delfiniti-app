@@ -169,7 +169,6 @@
                                                         <th>Folio</th>
                                                         <th>Cliente</th>
                                                         <th>Per.</th>
-                                                        <th>Cortesía</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -200,7 +199,6 @@
                                                             </td>
                                                             <td>{{ mb_strlen($reservacion->nombre_cliente) > 15 ? mb_substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
-                                                            <td>@php echo(@$reservacion->descuentoCodigo->id > 0 ? 'Cortesía' : ''); @endphp</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
