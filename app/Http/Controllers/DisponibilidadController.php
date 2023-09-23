@@ -60,7 +60,7 @@ class DisponibilidadController extends Controller
 
         $cortesias = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
-                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+                ->whereRaw("tipo = 'porcentaje' AND descuento = '100' ");
         })->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
             $query
                 ->whereRaw(" '$fechaActividades' >= fecha_inicial")
@@ -116,7 +116,10 @@ class DisponibilidadController extends Controller
                 ->whereRaw('exclusion_especial = 0');
         })->with(['reservacion' => function ($query) use ($fechaActividades) {
                 $query->where('fecha', "{$fechaActividades}")
-                ->where('estatus',1);
+                ->where('estatus',1)->with(['descuentoCodigo' => function ($query) {
+                    $query
+                        ->whereRaw("tipo = 'porcentaje' AND descuento = '100' ");
+                }]);
         }])->orderBy('horario_inicial', 'asc')->orderBy('id', 'asc')->get()->groupBy('horario_inicial');
 /*
 ->with(['reservacion' => function ($query) use ($fechaActividades) {

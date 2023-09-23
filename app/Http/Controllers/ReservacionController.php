@@ -378,7 +378,8 @@ class ReservacionController extends Controller
         
         DB::enableQueryLog();
         $reservaciones = Reservacion::whereBetween("fecha", [$fechaInicio,$fechaFinal])->with(['descuentoCodigo' => function ($query) {
-                $query->where("nombre",'like',"%CORTESIA%");
+                $query
+                    ->whereRaw("tipo = 'porcentaje' AND descuento = '100' ");
             }])->orderByDesc('id')->where('estatus',1)->whereIn('estatus_pago',$estatus)->get();
         //dd(DB::getQueryLog());
     

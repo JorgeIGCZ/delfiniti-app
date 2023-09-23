@@ -238,7 +238,7 @@ class ReporteReservacionesService
         
         $cortesias           = Reservacion::whereIn('id',$reservacionesArray)->where('estatus',1)->whereHas('descuentoCodigo', function (Builder $query) {
             $query
-                ->whereRaw("nombre LIKE '%CORTESIA%' ");
+                ->whereRaw("tipo = 'porcentaje' AND descuento = '100' ");
         })->get();
 
         $cortesiasPersonas = 0;
