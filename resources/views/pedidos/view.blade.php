@@ -61,14 +61,18 @@
         </div>
 
         <div class="az-content-header-right">
-            @can('TiendaPedidos.cancel')
-                @if(!$pedido->estatus_proceso)
-                    @if($pedido->estatus)
+            @can('TiendaAutorizacionPedidos.update')
+                @if(!$pedido->estatus_proceso && $pedido->estatus)
                     <div class="media">
                         <div class="media-body">
                             <button class="btn btn-success" id="autorizar-pedido" id-pedido = "{{$pedido->id}}" accion='autorizar'>Autorizar</button>
                         </div>
                     </div>
+                @endif
+            @endcan
+            @can('TiendaPedidos.cancel')
+                @if(!$pedido->estatus_proceso)
+                    @if($pedido->estatus)
                         <div class="media">
                             <div class="media-body">
                                 <button class="btn btn-danger" id="actualizar-estatus-pedido" accion='cancelar'>Cancelar</button>
