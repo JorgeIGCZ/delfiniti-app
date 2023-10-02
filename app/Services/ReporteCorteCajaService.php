@@ -950,13 +950,20 @@ class ReporteCorteCajaService
     private function getReservacionesFecha($fechaInicio,$fechaFinal,$usuarios,$showCupones) {
         ($showCupones ?  array_push($this->tiposPago,4) : '');
         // DB::enableQueryLog();
+        
+        //se utiliza el with para filtrar solo los pagos que coincidan con el criterio de busqueda añadiendolos al objeto reservacion.
 
         $reservaciones = Reservacion::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('pagos.tipo_pago_id',$this->tiposPago)
                 ->whereIn('pagos.usuario_id',$usuarios);
-        })->get();
+        })->with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("pagos.created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('pagos.tipo_pago_id',$this->tiposPago)
+                ->whereIn('pagos.usuario_id',$usuarios);
+        }])->get();
         // dd(DB::getQueryLog());
 
         return $reservaciones;
