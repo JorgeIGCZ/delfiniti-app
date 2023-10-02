@@ -964,6 +964,7 @@ class ReporteCorteCajaService
                 ->whereIn('pagos.tipo_pago_id',$this->tiposPago)
                 ->whereIn('pagos.usuario_id',$usuarios);
         }])->get();
+        
         // dd(DB::getQueryLog());
 
         return $reservaciones;
@@ -1034,12 +1035,19 @@ class ReporteCorteCajaService
 
     private function getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo)
 	{
+        //se utiliza el with para filtrar solo los pagos que coincidan con el criterio de busqueda añadiendolos al objeto reservacion.
+
         $ventas = FotoVideoVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id', $this->tiposPago)
                 ->whereIn('usuario_id', $usuarios);
-        })->whereHas('productos', function (Builder $query) use ($tipo) {
+        })->with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('tipo_pago_id',$this->tiposPago)
+                ->whereIn('usuario_id',$usuarios);
+        }])->whereHas('productos', function (Builder $query) use ($tipo) {
             $query->where('tipo', $tipo);
         })->get();
 
@@ -1048,12 +1056,19 @@ class ReporteCorteCajaService
 
     private function getTiendaVentasFecha($fechaInicio, $fechaFinal, $usuarios)
 	{
+        //se utiliza el with para filtrar solo los pagos que coincidan con el criterio de busqueda añadiendolos al objeto reservacion.
+        
         $ventas = TiendaVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id', $this->tiposPago)
                 ->whereIn('usuario_id', $usuarios);
-        })->get();
+        })->with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('tipo_pago_id',$this->tiposPago)
+                ->whereIn('usuario_id',$usuarios);
+        }])->get();
 
         return $ventas;
     }
@@ -1224,7 +1239,12 @@ class ReporteCorteCajaService
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
                 ->whereIn('tipo_pago_id',$this->tiposPago)
                 ->whereIn('usuario_id',$usuarios);
-        })->get();
+        })->with(['pagos' => function ($query) use ($usuarios, $fechaInicio, $fechaFinal) {
+            $query
+                ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
+                ->whereIn('tipo_pago_id',$this->tiposPago)
+                ->whereIn('usuario_id',$usuarios);
+        }])->get();
 
         return $ventas;
     }
