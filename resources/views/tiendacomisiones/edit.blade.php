@@ -10,7 +10,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="container">
-                        <form method="POST" class="row g-3 align-items-center f-auto" id="comisiones-form" action="{{route("fotovideocomisiones.update",$comision->id)}}">
+                        <form method="POST" class="row g-3 align-items-center f-auto" id="comisiones-form" action="{{route("tiendacomisiones.update",$comision->id)}}">
                             @csrf
                             <input type="hidden" name="_method" value="PATCH">
 
@@ -18,7 +18,7 @@
 
                             <div class="form-group col-4 mt-3">
                                 <label for="nombre" class="col-form-label">Comisionista</label>    
-                                <input type="text" name="comisionista" class="form-control" disabled="disabled" value="{{$comision->comisionista->nombre}}">  
+                                <input type="text" name="comisionista" class="form-control" disabled="disabled" value="{{$comision->directivo->nombre}}">  
                             </div>
                             <div class="form-group col-2 mt-3">
                                 <label for="tipo" class="col-form-label">Venta</label>

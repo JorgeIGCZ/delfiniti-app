@@ -80,20 +80,18 @@
                             let view       = '';
                             let estatusRow = '';
                             let recalcular = '';
-                            //if('{{(@session()->get('user_roles')['Alumnos']->Estatus)}}' == 'Y'){
-                                // if(row.estatus){
-                                //     estatusRow = `| <a href="#!" onclick="verificacionInactivar(${row.id})" >Inactivar</a>`;
-                                // }else{
-                                //     estatusRow = `| <a href="#!" onclick="updateDescuentoCodigoEstatus(${row.id},1)" >Reactivar</a>`;
-                                // }
-                            //}
+
+                            if(row.tipo === 'directivo'){
+                                estatusRow = `<a href="/tiendacomisiones/${row.id}/edit">Editar</a> | `;
+                            }
+
                             if(row.estatus == 1){
                                 recalcular = `<a href="#!" class="recalcular-comisiones" ventaFolio="${row.venta}" ventaId="${row.ventaId}">Recalcular</a>`;
-                                //comisiones/recalculateComisiones
                             }
- 
-                            @can('Comisiones.update')
+
+                            @can('TiendaComisiones.update')
                                 view    =   `<small> 
+                                        ${estatusRow}
                                         ${recalcular}
                                     </small>`;
                             @endcan

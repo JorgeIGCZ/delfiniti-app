@@ -37,6 +37,7 @@ class TiendaComisionController extends Controller
     public function recalculateComisiones(Request $request)
     {
         try {
+            
             $oldComision = DirectivoComisionTienda::where('venta_id',$request->ventaId)->first(); 
             if(isset($oldComision->created_at)){
                 $oldFechaComisiones = $oldComision->created_at;
@@ -416,11 +417,48 @@ class TiendaComisionController extends Controller
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
                     'estatus'           => $comision->estatus,
-                    'tipo'              => 'directivo'
+                    'tipo'              => 'supervisor'
                 ];
             }
 
             return json_encode(['data' => $comisionesArray]);
         //}
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     * Excepcion ya que Tienda no tiene comisionistas solo directivos y supervisores, se opto por solo poder mdoificar directivos.
+     * 
+     * @param  \App\Models\DirectivoComisionTienda $tiendacomision
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(DirectivoComisionTienda $tiendacomision)
+    {
+        return view('tiendacomisiones.edit',['comision' => $tiendacomision]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Comision  $comision
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $comision                         = DirectivoComisionTienda::find($id);
+            $comision->iva                    = $request->iva;
+            $comision->descuento_impuesto     = $request->descuento_impuesto;
+            $comision->cantidad_comision_neta = $request->cantidad_comision_neta;
+            $comision->created_at             = $request->fecha_registro_comision;
+            $comision->save();
+        } catch (\Exception $e){
+            $CustomErrorHandler = new CustomErrorHandler();
+            $CustomErrorHandler->saveError($e->getMessage(),$request);
+            return json_encode(['result' => 'Error','message' => $e->getMessage()]);
+        }
+
+        return redirect()->route("tiendacomisiones.index")->with(["result" => "Comision actualizada"]);
     }
 }

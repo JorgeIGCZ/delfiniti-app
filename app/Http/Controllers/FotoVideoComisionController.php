@@ -400,7 +400,7 @@ class FotoVideoComisionController extends Controller
                     'comisionNeta'      => $comision->cantidad_comision_neta,
                     'fecha'             => date_format($comision->created_at,'d-m-Y'),
                     'estatus'           => $comision->estatus,
-                    'tipo'              => 'directivo'
+                    'tipo'              => 'supervisor'
                 ];
             }
 

@@ -325,6 +325,7 @@ Route::controller(TiendaComisionController::class)->middleware(['auth'])->group(
             'tiendacomisiones' => 'tiendacomision'
         ]
     ]);
+    
 });
 
 Route::controller(TiendaVentaTicketController::class)->middleware(['auth'])->group(function () {
