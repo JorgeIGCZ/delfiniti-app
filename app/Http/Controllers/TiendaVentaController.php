@@ -52,7 +52,8 @@ class TiendaVentaController extends Controller
      */
     public function create(TiendaVenta $venta)
     {
-        $productos = TiendaProducto::where('estatus',1)->get()->toArray();
+        $productos = TiendaProducto::where('estatus',1)->where('stock','>=',1)->get()->toArray();
+
         $estados = Estado::all();
 
 
