@@ -14,7 +14,7 @@
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
                     const reservaciones = document.getElementById('reservaciones-form');
-                    axios.post('/reservaciones/show',{
+                    axios.post('/reservaciones/get',{
                         "_token"  : '{{ csrf_token() }}',
                         "estatus" : reservaciones.elements['estatus'].value,
                         "fecha"   : reservaciones.elements['fecha'].value,
@@ -70,6 +70,7 @@
                             let cloneRow = '';
                             let payRow = '';
                             let editRow = '';
+                            let viewRow = '';
                             let options = [];
                             @can('Reservaciones.update')
                                 @role('Administrador')
@@ -84,12 +85,16 @@
                             @can('Reservaciones.create')
                                 cloneRow = `<a href="reservaciones/create/${row.id}">Clonar</a>`;
                             @endcan
+
+                            @can('Reservaciones.index')
+                                viewRow = `<a href="reservaciones/${row.id}">Ver</a>`;
+                            @endcan
                             
                             if(row.estatusPago !== 2){
                                 payRow = `<a href="reservaciones/${row.id}/edit?accion=pago#detalle-reservacion-contenedor">Pagar</a>`;
                             }
 
-                            options = [cloneRow,payRow,editRow];
+                            options = [viewRow, cloneRow, payRow, editRow];
                             options = options.filter(option => option != ""); 
 
                             let view    =   `<small>

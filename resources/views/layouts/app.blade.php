@@ -35,7 +35,7 @@
     <meta property="og:image:height" content="600"> -->
 
     <!-- Meta -->
-    <meta name="author" content="Ceusjic">
+    <meta name="author" content="Delfiniti">
 
     <title>Delfiniti App</title>
 

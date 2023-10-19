@@ -23,6 +23,7 @@ use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\FotoVideoVentaTicketController;
+use App\Http\Controllers\ReservacionPublicaController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\SupervisorController;
 use App\Http\Controllers\TicketController;
@@ -100,7 +101,7 @@ Route::controller(ReservacionController::class)->middleware(['auth'])->group(fun
     Route::post('reservaciones/removeDescuento', 'removeDescuento');
     Route::post('reservaciones/getCodigoDescuento', 'getCodigoDescuento');
     Route::post('reservaciones/getDescuentoPersonalizadoValidacion', 'getDescuentoPersonalizadoValidacion');
-    Route::post('reservaciones/show/{reservacion?}', 'show');
+    Route::post('reservaciones/get/{reservacion?}', 'get');
     Route::resource('reservaciones',ReservacionController::class, [
         'parameters' => [
             'reservaciones' => 'reservacion'

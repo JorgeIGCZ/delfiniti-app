@@ -332,13 +332,59 @@ class ReservacionController extends Controller
         $tipoPagoId = TipoPago::where('nombre',$tipoPago)->first()->id;
         return $tipoPagoId;
     }
+
     /**
      * Display the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(Reservacion $reservacion)
+    {
+        $estados          = Estado::all();
+        $alojamientos     = Alojamiento::orderBy('nombre','asc')->get();
+        $descuentosCodigo = DescuentoCodigo::where('estatus',1)->get();
+        $actividades      = Actividad::where('estatus',1)
+            ->whereRaw('NOW() >= fecha_inicial')
+            ->whereRaw('NOW() <= fecha_final')
+            ->orWhere('duracion','indefinido')
+            ->get();
+
+        $cerradores     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_cerrador',1);
+        })->get();
+            
+        $comisionistas     = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_canal',0)
+            ->where('comisionista_actividad',0)
+            ->where('comisionista_cerrador',0);
+        })->get();
+
+        $comisionistasActividad = Comisionista::where('estatus',1)->whereHas('tipo', function ($query) {
+            $query
+            ->where('comisionista_actividad',1);
+        })->get();
+
+        $dolarPrecio = TipoCambio::where('seccion_uso', 'general')->first();
+        $tickets           = ReservacionTicket::where('reservacion_id',$reservacion->id)->get();
+
+        return view('reservaciones.view',[
+            'reservacion' => $reservacion,
+            'estados' => $estados,
+            'actividades' => $actividades,
+            'alojamientos' => $alojamientos,
+            'comisionistas' => $comisionistas,
+            'comisionistasActividad' => $comisionistasActividad,
+            'dolarPrecio' => $dolarPrecio,
+            'cerradores' => $cerradores,
+            'descuentosCodigo' => $descuentosCodigo,
+            'tickets' => $tickets
+        ]);
+    }
+    
+    public function get(Request $request)
     {
 
         if(!is_null($request->fecha)){

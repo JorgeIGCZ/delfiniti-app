@@ -1,3 +1,17 @@
+const validarVerificacionElement = document.getElementById('validar-verificacion');
+const verificacionModalElement = document.getElementById('verificacion-modal');
+const addActividadElement = document.getElementById('add-actividad');
+const codigoDescuentoElement = document.getElementById('codigo-descuento');
+const addDescuentoPersonalizadoElement = document.getElementById('add-descuento-personalizado');
+const descuentoCodigoElement = document.getElementById('descuento-codigo');
+const efectivoElement = document.getElementById('efectivo');
+const efectivoUsdElement = document.getElementById('efectivo-usd');
+const tarjetaElement = document.getElementById('tarjeta');
+const depositoElement = document.getElementById('deposito');
+const descuentoPersonalizadoElement = document.getElementById('descuento-personalizado');
+const cuponElement = document.getElementById('cupon');
+const fechaElement = document.getElementById('fecha');
+
 function validateActivarReservacion(){
     Swal.fire({
         title: '¿Activar?',
@@ -9,8 +23,12 @@ function validateActivarReservacion(){
         confirmButtonText: 'Sí, activar!'
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','activar-reservacion');
-            $('#verificacion-modal').modal('show');
+            if(validarVerificacionElement !== null){
+                validarVerificacionElement.setAttribute('action','activar-reservacion');
+            }
+            if(verificacionModalElement !== null){
+                $('#verificacion-modal').modal('show');
+            }
         }
     });
 }
@@ -172,8 +190,8 @@ function addActividad(){
 }
 function isLimite() {
     const total = parseFloat(document.getElementById('total').getAttribute('value'));
-    const descuento = parseFloat(document.getElementById('descuento-personalizado').getAttribute('value'));
-    const limite = parseFloat(document.getElementById('descuento-personalizado').getAttribute('limite'));
+    const descuento = parseFloat(descuentoPersonalizadoElement.getAttribute('value'));
+    const limite = parseFloat(descuentoPersonalizadoElement.getAttribute('limite'));
     //return ((total/100)*limite) >= descuento;//cantidad del porcentaje limite del total debe ser mayor o igual a la cantidad de descuento
     return limite >= descuento;
 }
@@ -202,23 +220,23 @@ function resetReservaciones() {
     // document.getElementsByName('disponibilidad')[0].value = 1;
     // document.getElementsByName('fecha')[0].value = new Date();
 
-    // document.getElementById('efectivo').setAttribute('value', 0);
-    // document.getElementById('efectivo-usd').setAttribute('value', 0);
-    // document.getElementById('tarjeta').setAttribute('value', 0);
-    // document.getElementById('deposito').setAttribute('value', 0);
-    // //document.getElementById('cupon').setAttribute('value',0);
-    // document.getElementById('cupon').setAttribute('value', 0);
-    // document.getElementById('descuento-personalizado').setAttribute('value', 0);
-    // document.getElementById('descuento-codigo').setAttribute('value', 0);
+    // efectivoElement.setAttribute('value', 0);
+    // efectivoUsdElement.setAttribute('value', 0);
+    // tarjetaElement.setAttribute('value', 0);
+    // depositoElement.setAttribute('value', 0);
+    // //cuponElement.setAttribute('value',0);
+    // cuponElement.setAttribute('value', 0);
+    // descuentoPersonalizadoElement.setAttribute('value', 0);
+    // descuentoCodigoElement.setAttribute('value', 0);
 
-    // document.getElementById('efectivo').value = 0;
-    // document.getElementById('efectivo-usd').value = 0;
-    // document.getElementById('tarjeta').value = 0;
-    // document.getElementById('deposito').value = 0;
-    // //document.getElementById('cupon').value        = 0;
-    // document.getElementById('cupon').value = 0;
-    // document.getElementById('descuento-personalizado').value = 0;
-    // document.getElementById('descuento-codigo').value = 0;
+    // efectivoElement.value = 0;
+    // efectivoUsdElement.value = 0;
+    // tarjetaElement.value = 0;
+    // depositoElement.value = 0;
+    // //cuponElement.value        = 0;
+    // cuponElement.value = 0;
+    // descuentoPersonalizadoElement.value = 0;
+    // descuentoCodigoElement.value = 0;
 
     // $('select[name="actividad"] option:nth-child(1)').attr('selected', 'selected');
     // $('select[name="actividad"]').trigger('change.select2');
@@ -235,8 +253,8 @@ function resetReservaciones() {
     // $('select[name="cerrador"] option:nth-child(1)').attr('selected', 'selected');
 
 
-    // document.getElementById('descuento-personalizado').setAttribute('password', '');
-    // document.getElementById('descuento-codigo').setAttribute('password', '');
+    // descuentoPersonalizadoElement.setAttribute('password', '');
+    // descuentoCodigoElement.setAttribute('password', '');
 
     // changeClaveActividad();
     // changeActividad();
@@ -253,9 +271,13 @@ function validateDescuentoPersonalizado() {
         .then(function (response) {
             $('.loader').hide();
             if (response.data.result == 'Success') {
-                $('#verificacion-modal').modal('hide');
+                if(verificacionModalElement !== null){
+                    $('#verificacion-modal').modal('hide');
+                }
                 setLimiteDescuentoPersonalizado(response.data.limite);
-                document.getElementById('add-descuento-personalizado').checked = true;
+                if(addDescuentoPersonalizadoElement !== null){
+                    addDescuentoPersonalizadoElement.checked = true;
+                }
                 $('#descuento-personalizado').focus();
             } else {
                 $('.loader').hide();
@@ -264,7 +286,9 @@ function validateDescuentoPersonalizado() {
                     title: `Petición fallida`,
                     showConfirmButton: true
                 })
-                document.getElementById('add-descuento-personalizado').checked = false;
+                if(addDescuentoPersonalizadoElement !== null){
+                    addDescuentoPersonalizadoElement.checked = false;
+                }
             }
         })
         .catch(function (error) {
@@ -273,14 +297,16 @@ function validateDescuentoPersonalizado() {
                 title: `Autorización fallida E:${error.message}`,
                 showConfirmButton: true
             })
-            document.getElementById('add-descuento-personalizado').checked = false;
+            if(addDescuentoPersonalizadoElement !== null){
+                addDescuentoPersonalizadoElement.checked = false;
+            }
         });
 }
 
 function setLimiteDescuentoPersonalizado(limite) {
-    document.getElementById('descuento-personalizado').removeAttribute('disabled');
+    descuentoPersonalizadoElement.removeAttribute('disabled');
     if (limite !== null) {
-        document.getElementById('descuento-personalizado').setAttribute('limite', limite);
+        descuentoPersonalizadoElement.setAttribute('limite', limite);
         document.getElementById('descuento-personalizado-container').classList.remove("hidden");
     } else {
         document.getElementById('descuento-personalizado-container').classList.add("hidden");
@@ -294,7 +320,10 @@ async function validateUsuario($password){
         'email': userEmail(),
         'password': $password
     });
-    $('#verificacion-modal').modal('hide');
+    
+    if(verificacionModalElement !== null){
+        $('#verificacion-modal').modal('hide');
+    }
     return (result.data.result == 'Autorized') ? true : false;
 }
 
@@ -314,7 +343,9 @@ function getCodigoDescuento() {
             $('.loader').hide();
             if (response.data.result == 'Success') {
                 if (response.data.descuento.descuento !== null) {
-                    $('#verificacion-modal').modal('hide');
+                    if(verificacionModalElement !== null){
+                        $('#verificacion-modal').modal('hide');
+                    }
                     setCodigoDescuento(response.data.descuento);
                 } else {
                     Swal.fire({
@@ -425,7 +456,7 @@ function displayActividad() {
 
 function getActividadDisponibilidad(){
     const actividad   = document.getElementById('actividades').value;
-    const fecha       = document.getElementById('fecha').value;
+    const fecha       = fechaElement.value;
     const horario     = document.getElementById('horarios').value;
 
     axios.get(`/api/disponibilidad/actividadDisponibilidad/${actividad}/${fecha}/${horario}`)
@@ -491,7 +522,7 @@ function cambioValidoIsValid(){
     return true;
 }
 function validateFecha() {
-    const fecha = document.getElementById('fecha');
+    const fecha = fechaElement;
     const horario = document.getElementById('horarios');
     const horarioOpcion = horario.options[horario.selectedIndex];
     const fechaValor = new Date(`${fecha.value} 23:59:000`);
@@ -541,8 +572,12 @@ function isDisponible() {
         confirmButtonText: 'Sí, agregar!'
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById('validar-verificacion').setAttribute('action','add-actividad-disponibilidad');
-            $('#verificacion-modal').modal('show');
+            if(validarVerificacionElement !== null){
+                validarVerificacionElement.setAttribute('action','add-actividad-disponibilidad');
+            }
+            if(verificacionModalElement !== null){
+                $('#verificacion-modal').modal('show');
+            }
         }
     })
     return false;
@@ -574,111 +609,151 @@ window.onload = function() {
     //    this.value = this.value.toUpperCase();
     //});s
 
-    document.getElementById('verificacion-modal').addEventListener('blur', (event) =>{
-        document.getElementById('password').value="";
-    });
+    if(verificacionModalElement !== null){
+        verificacionModalElement.addEventListener('blur', (event) =>{
+            document.getElementById('password').value="";
+        });
+    }
 
-    document.getElementById('validar-verificacion').addEventListener('click', (event) =>{
-        validarVerificacion();
-    });
+    if(validarVerificacionElement !== null){
+        validarVerificacionElement.addEventListener('click', (event) =>{
+            validarVerificacion();
+        });
+    }
 
-    document.getElementById('add-actividad').addEventListener('click', (event) =>{
-        event.preventDefault();
-        if(cantidadIsValid()){
-            validateFecha();
-            addActividades();
-            validateBotonGuardar();
-        }
-    });
+    if(addActividadElement !== null){
+        addActividadElement.addEventListener('click', (event) =>{
+            event.preventDefault();
+            if(cantidadIsValid()){
+                validateFecha();
+                addActividades();
+                validateBotonGuardar();
+            }
+        });
+    }
 
-    $('#codigo-descuento').on('change', function (e) {
-        const codigoDescuento = document.getElementById('codigo-descuento').value;
-        if(codigoDescuento == 0){
-            document.getElementById('descuento-codigo-container').classList.add("hidden");
-            document.getElementById('descuento-codigo').setAttribute('value',0);
-            document.getElementById('descuento-codigo').value = 0;
-            document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
-        }
-        setOperacionResultados()
-    });
+    if(codigoDescuentoElement !== null){
+        $('#codigo-descuento').on('change', function (e) {
+            const codigoDescuentoVal = codigoDescuentoElement.value;
+            if(codigoDescuentoVal == 0){
+                document.getElementById('descuento-codigo-container').classList.add("hidden");
+                descuentoCodigoElement.setAttribute('value',0);
+                descuentoCodigoElement.value = 0;
+                descuentoCodigoElement.setAttribute('tipo','cantidad');
+            }
+            setOperacionResultados()
+        });
+    }
+
+    if(codigoDescuentoElement !== null){
+        codigoDescuentoElement.addEventListener('click', (event) =>{
+            event.preventDefault();
+            //resetDescuentos();
+
+            if(validarVerificacionElement !== null){
+                validarVerificacionElement.setAttribute('action','add-codigo-descuento');
+            }
+        });
+    }
+
+    if(addDescuentoPersonalizadoElement !== null){
+        addDescuentoPersonalizadoElement.addEventListener('click', (event) =>{
+            //resetDescuentos();
+            if(addDescuentoPersonalizadoElement.checked){
+                if(verificacionModalElement !== null){
+                    $('#verificacion-modal').modal('show');
+                }
+                addDescuentoPersonalizadoElement.checked = false;
+                if(validarVerificacionElement !== null){
+                    validarVerificacionElement.setAttribute('action','add-descuento-personalizado');
+                }
+                document.getElementById('password').focus();
+            }else{
+                descuentoPersonalizadoElement.setAttribute('disabled','disabled');
+                descuentoPersonalizadoElement.setAttribute('limite','0');
+                document.getElementById('descuento-personalizado-container').classList.add("hidden");
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+                setOperacionResultados();
+            }
+        });
+    }
+    
+    if(descuentoCodigoElement !== null){
+        descuentoCodigoElement.addEventListener('keyup', (event) =>{
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
 
-    document.getElementById('add-codigo-descuento').addEventListener('click', (event) =>{
-        event.preventDefault();
-        //resetDescuentos();
+    if(efectivoElement !== null){
+        efectivoElement.addEventListener('keyup', (event) =>{
+            //if(getResta() < 0){
+            //    efectivoElement.value = '$0.00';
+            //    efectivoElement.setAttribute('value',0);
+            //}
+            
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-        document.getElementById('validar-verificacion').setAttribute('action','add-codigo-descuento');
-    });
+    if(efectivoUsdElement !== null){
+        efectivoUsdElement.addEventListener('keyup', (event) =>{
+            //if(getResta() < 0){
+            //    efectivoUsdElement.value = '$0.00';
+            //    efectivoUsdElement.setAttribute('value',0);
+            //}
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-    document.getElementById('add-descuento-personalizado').addEventListener('click', (event) =>{
-        //resetDescuentos();
-        if(document.getElementById('add-descuento-personalizado').checked){
-            $('#verificacion-modal').modal('show');
-            document.getElementById('add-descuento-personalizado').checked = false;
-            document.getElementById('validar-verificacion').setAttribute('action','add-descuento-personalizado');
-            document.getElementById('password').focus();
-        }else{
-            document.getElementById('descuento-personalizado').setAttribute('disabled','disabled');
-            document.getElementById('descuento-personalizado').setAttribute('limite','0');
-            document.getElementById('descuento-personalizado-container').classList.add("hidden");
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-            setOperacionResultados();
-        }
-    });
-    document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
-        setTimeout(setOperacionResultados(),500);
-    });
+    if(tarjetaElement !== null){
+        tarjetaElement.addEventListener('keyup', (event) =>{
+            //if(getResta() < 0){
+            //    tarjetaElement.value = '$0.00';
+            //    tarjetaElement.setAttribute('value',0);
+            //}
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
+    if(depositoElement !== null){
+        depositoElement.addEventListener('keyup', (event) =>{
+            //if(getResta() < 0){
+            //    depositoElement.value = '$0.00';
+            //    depositoElement.setAttribute('value',0);
+            //}
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-    document.getElementById('efectivo').addEventListener('keyup', (event) =>{
-        //if(getResta() < 0){
-        //    document.getElementById('efectivo').value = '$0.00';
-        //    document.getElementById('efectivo').setAttribute('value',0);
-        //}
-        
-        setTimeout(setOperacionResultados(),500);
-    });
+    if(efectivoElement !== null){
+        efectivoElement.addEventListener('focusout', (event) =>{
+            setTimeout(applyValorSinCambio(event.target),300);
+            setTimeout(setOperacionResultados(),600);
+        });
+    }
 
-    document.getElementById('efectivo-usd').addEventListener('keyup', (event) =>{
-        //if(getResta() < 0){
-        //    document.getElementById('efectivo-usd').value = '$0.00';
-        //    document.getElementById('efectivo-usd').setAttribute('value',0);
-        //}
-        setTimeout(setOperacionResultados(),500);
-    });
-    document.getElementById('tarjeta').addEventListener('keyup', (event) =>{
-        //if(getResta() < 0){
-        //    document.getElementById('tarjeta').value = '$0.00';
-        //    document.getElementById('tarjeta').setAttribute('value',0);
-        //}
-        setTimeout(setOperacionResultados(),500);
-    });
-    document.getElementById('deposito').addEventListener('keyup', (event) =>{
-        //if(getResta() < 0){
-        //    document.getElementById('deposito').value = '$0.00';
-        //    document.getElementById('deposito').setAttribute('value',0);
-        //}
-        setTimeout(setOperacionResultados(),500);
-    });
+    if(efectivoUsdElement !== null){
+        efectivoUsdElement.addEventListener('focusout', (event) =>{
+            // setTimeout(applyValorSinCambio(event.target,true),300);
+            setTimeout(setOperacionResultados(),600);
+        });
+    }
 
-    document.getElementById('efectivo').addEventListener('focusout', (event) =>{
-        setTimeout(applyValorSinCambio(event.target),300);
-        setTimeout(setOperacionResultados(),600);
-    });
+    if(tarjetaElement !== null){
+        tarjetaElement.addEventListener('focusout', (event) =>{
+            setTimeout(applyValorSinCambio(event.target),300);
+            setTimeout(setOperacionResultados(),600);
+        });
+    }
 
-    document.getElementById('efectivo-usd').addEventListener('focusout', (event) =>{
-        // setTimeout(applyValorSinCambio(event.target,true),300);
-        setTimeout(setOperacionResultados(),600);
-    });
-    document.getElementById('tarjeta').addEventListener('focusout', (event) =>{
-        setTimeout(applyValorSinCambio(event.target),300);
-        setTimeout(setOperacionResultados(),600);
-    });
-    document.getElementById('deposito').addEventListener('focusout', (event) =>{
-        setTimeout(applyValorSinCambio(event.target),300);
-        setTimeout(setOperacionResultados(),600);
-    });
+    if(depositoElement !== null){
+        depositoElement.addEventListener('focusout', (event) =>{
+            setTimeout(applyValorSinCambio(event.target),300);
+            setTimeout(setOperacionResultados(),600);
+        });
+    }
 
     function applyValorSinCambio(elemento,isUsd = false){
         if(getResta() < 0){
@@ -707,39 +782,46 @@ window.onload = function() {
 
 
 
+    if(descuentoCodigoElement !== null){
+        descuentoCodigoElement.addEventListener('keyup', (event) =>{
+            if(getResta() < 0){
+                descuentoCodigoElement.value = '0%';
+                descuentoCodigoElement.setAttribute('value',0);
+            }
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-    document.getElementById('descuento-codigo').addEventListener('keyup', (event) =>{
-        if(getResta() < 0){
-            document.getElementById('descuento-codigo').value = '0%';
-            document.getElementById('descuento-codigo').setAttribute('value',0);
-        }
-        setTimeout(setOperacionResultados(),500);
-    });
+    if(descuentoPersonalizadoElement !== null){
+        descuentoPersonalizadoElement.addEventListener('keyup', (event) =>{
+            if(getResta() < 0){
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+            }
+            if(!isLimite()){
+                descuentoPersonalizadoElement.value = '0';
+                descuentoPersonalizadoElement.setAttribute('value',0);
+            }
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-    document.getElementById('descuento-personalizado').addEventListener('keyup', (event) =>{
-        if(getResta() < 0){
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-        }
-        if(!isLimite()){
-            document.getElementById('descuento-personalizado').value = '0';
-            document.getElementById('descuento-personalizado').setAttribute('value',0);
-        }
-        setTimeout(setOperacionResultados(),500);
-    });
+    if(cuponElement !== null){
+        cuponElement.addEventListener('keyup', (event) =>{
+            if(getResta() < 0){
+                cuponElement.value = '0';
+                cuponElement.setAttribute('value',0);
+            }
+            setTimeout(setOperacionResultados(),500);
+        });
+    }
 
-    document.getElementById('cupon').addEventListener('keyup', (event) =>{
-        if(getResta() < 0){
-            document.getElementById('cupon').value = '0';
-            document.getElementById('cupon').setAttribute('value',0);
-        }
-        setTimeout(setOperacionResultados(),500);
-    });
-
-    document.getElementById('fecha').addEventListener('focusout', (event) =>{
-        getActividadDisponibilidad();
-        setTimeout(validateFecha(),500);
-    });
+    if(fechaElement !== null){
+        fechaElement.addEventListener('focusout', (event) =>{
+            getActividadDisponibilidad();
+            setTimeout(validateFecha(),500);
+        });
+    }
 };
 
 //jQuery
@@ -831,10 +913,10 @@ $('body').on('keydown', 'input, select, button', function(e) {
 function changeCuponDetalle() {
     const comisionista    = document.getElementById('comisionista');
     const cuponDescuento  = comisionista.options[comisionista.selectedIndex].getAttribute('cuponDescuento');
-    const cupon           = document.getElementById('cupon');
+    const cupon           = cuponElement;
 
-    document.getElementById('cupon').setAttribute('value',0);
-    document.getElementById('cupon').value = 0;
+    cuponElement.setAttribute('value',0);
+    cuponElement.value = 0;
     document.getElementById('reservacion-form').elements['cupon'].focus();
 
     (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
@@ -918,14 +1000,14 @@ function setCodigoDescuento(descuento){
     if(descuento.tipo == 'porcentaje'){
         let cantidadDescuento = getDescuento(descuento.descuento);
         document.getElementById('descuento-codigo-container').classList.remove("hidden");
-        document.getElementById('descuento-codigo').setAttribute('value',cantidadDescuento);
-        document.getElementById('descuento-codigo').value = `${cantidadDescuento}%`;
-        document.getElementById('descuento-codigo').setAttribute('tipo','porcentaje');
+        descuentoCodigoElement.setAttribute('value',cantidadDescuento);
+        descuentoCodigoElement.value = `${cantidadDescuento}%`;
+        descuentoCodigoElement.setAttribute('tipo','porcentaje');
     }else{
         document.getElementById('descuento-codigo-container').classList.remove("hidden");
-        document.getElementById('descuento-codigo').setAttribute('value',descuento.descuento);
-        document.getElementById('descuento-codigo').value  = `$${descuento.descuento}`;
-        document.getElementById('descuento-codigo').setAttribute('tipo','cantidad');
+        descuentoCodigoElement.setAttribute('value',descuento.descuento);
+        descuentoCodigoElement.value  = `$${descuento.descuento}`;
+        descuentoCodigoElement.setAttribute('tipo','cantidad');
     }
     setOperacionResultados()
 
@@ -949,7 +1031,10 @@ function enableBtn(btnId,status){
 }
 
 async function validarVerificacion(){
-    const action      = document.getElementById('validar-verificacion').getAttribute('action');
+    const action = "";
+    if(validarVerificacionElement !== null){
+        validarVerificacionElement.getAttribute('action');
+    }
     if(formValidity('reservacion-form')){
         if(await validateUsuario(document.getElementById('password').value)){
             if(action === 'add-descuento-personalizado'){

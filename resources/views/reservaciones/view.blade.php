@@ -1,8 +1,8 @@
 @extends('layouts.app')
 @section('scripts')
     <script>
-        const env = 'edit';
-        const accion = '{{ (@$_GET["accion"] === "pago" ? "pago" : "edit"); }}';
+        const env = '';
+        const accion = '';
         const reservacionId = () => {
             return {{$reservacion->id}};
         }
@@ -64,10 +64,7 @@
                 '{{$detalle->horario->horario_inicial}}',
                 '{{$detalle->numero_personas}}',
                 formatter.format('{{$detalle->PPU}}'),
-                formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}'),
-                (canEdit() && ((accion !== 'pago' && {{ ($reservacion->estatus_pago !== 2) ? 1 : 0 }}) || isAdmin()) 
-                    ?  `<a href="#!" class='eliminar-celda' class='eliminar'>Eliminar</a>` 
-                    : '')
+                formatter.format('{{$detalle->PPU}}'*'{{$detalle->numero_personas}}')
             ]];
             actvidadesArray = [...actvidadesArray,{
                 'claveActividad': '{{$detalle->actividad->clave}}',
@@ -84,21 +81,12 @@
         let editar   = '';
         let accionesArray = [];
         @forEach($reservacion->pagos as $pago)
-            accionesArray = [];
-            (isAdmin())
-                    ? accionesArray.push(`<a href="#!" class='editar-celda'>Editar</a>` )
-                    : '';
-
-            (canEdit() && ((accion === 'edit' && ![1,2,3,8].includes({{$pago->tipo_pago_id}})) || isAdmin()))
-                    ?  accionesArray.push(`<a href="#!" class='eliminar-celda'>Eliminar</a>` )
-                    : '';
 
             pagosTablaArray = [...pagosTablaArray,[
                 '{{$pago->id}}',
                 ('{{$pago->tipo_pago_id}}' == '2' ? `${formatter.format('{{$pago->cantidad}}')} USD * ${'{{$pago->tipo_cambio_usd}}'}` : formatter.format('{{$pago->cantidad}}')),
                 '{{@$pago->tipoPago->nombre}} {{@$pago->descuentoCodigo->nombre}}',
-                '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;" disabled="disabled">',
-                accionesArray.join(" | ")
+                '<input class="fecha-pago not-editable" type="datetime-local" value="{{$pago->created_at}}" style="font-weight: 400;" disabled="disabled">'
             ]];
             pagosArray = [...pagosArray,{
                 'id'            : '{{$pago->id}}',
@@ -110,11 +98,10 @@
 
             nombreTipoPagoArray = [...nombreTipoPagoArray,'{{@$pago->tipoPago->nombre}}'];
         @endforeach
-
     </script>
 
     <script src="{{ asset('js/reservacion/main.js') }}"></script>
-    <script src="{{ asset('js/reservacion/edit.js') }}"></script>
+    <script src="{{ asset('js/reservacion/view.js') }}"></script>
     <script src="{{ asset('js/reservacion/ticket.js') }}"></script>
 @endsection
 @section('content')
@@ -228,15 +215,15 @@
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="nombre" class="col-form-label">Nombre</label>
-                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
+                                <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}" disabled="disabled">
                             </div>
                             <div class="form-group col-4 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
-                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2" value="{{$reservacion->email}}">
+                                <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2" value="{{$reservacion->email}}" disabled="disabled">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>
-                                <select name="alojamiento" class="form-control to-uppercase" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->alojamiento}}">
+                                <select name="alojamiento" class="form-control to-uppercase" data-show-subtext="true" data-live-search="true" tabindex="3" value="{{$reservacion->alojamiento}}" disabled="disabled">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}" {{$reservacion->alojamiento == $alojamiento->id ? 'selected="selected"' : ""}} >{{$alojamiento->nombre}}</option>
@@ -246,7 +233,7 @@
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$reservacion->origen}}"/>
+                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{$reservacion->origen}}" disabled="disabled"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}}">
@@ -256,46 +243,7 @@
                             <div class="col-12 mt-3">
                                 <strong>Datos de la reservación</strong>
                             </div>
-                            <div id="actividad-container" class="form-group col-9 mt-0 mb-0">
-                                <div class="row">
-                                    <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="clave" class="col-form-label">Clave</label>
-                                        <select id="clave-actividad" name="clave" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="5">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-6 mt-0 mb-0">
-                                        <label for="actividad" class="col-form-label">Actividad</label>
-                                        <select name="actividad" id="actividades"  class="form-control" data-show-subtext="true" data-live-search="true" tabindex="6">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-2 mt-0 mb-0">
-                                        <label for="horario" class="col-form-label">Horario</label>
-                                        <select name="horario" id="horarios" class="form-control" tabindex="7">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-1 mt-0 mb-0">
-                                        <label for="cantidad" class="col-form-label">Cantidad</label>
-                                        <input type="number" name="cantidad" id="cantidad" class="form-control" value="1"  max="200" autocomplete="off" tabindex="8">
-                                    </div>
-                                    <div class="form-group col-1 mt-0 mb-0">
-                                        <label for="disponibilidad" class="col-form-label">Disp.</label>
-                                        <input type="text" name="disponibilidad" id="disponibilidad" class="form-control" value="0" disabled="disabled" >
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="form-group col-2 mt-0 mb-0">
-                                <label for="fecha" class="col-form-label">Fecha</label>
-                                <input type="date" name="fecha" id="fecha" class="form-control" value="{{date_format(date_create($reservacion->fecha),'Y-m-d')}}" required="required" autocomplete="off" tabindex="9">
-                            </div>
-                            <input type="hidden" name="precio" id="precio" value="0">
-                            @can('Reservaciones.update') 
-                                <div class="form-group col-1 mt-0 mb-0">
-                                    <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
-                                </div>
-                            @endcan
-                            <div class="form-group col-12 mt-8 mb-2 bd-t">
+                            <div class="form-group col-12 mt-2 mb-2 bd-t">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-2">
                                         <table id="reservaciones" class="display" style="width:100%">
@@ -307,7 +255,6 @@
                                                     <th>Cantidad</th>
                                                     <th>Costo P/P</th>
                                                     <th>Subtotal</th>
-                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -318,7 +265,7 @@
                             <div class="col-12 mt-3">
                                 <strong>Pagos</strong>
                             </div>
-                            <div class="form-group col-12 mt-8 mb-8 bd-t">
+                            <div class="form-group col-12 mt-2 mb-8 bd-t">
                                 <div class="row">
                                     <div class="col-12 mt-2 mb-2">
                                         <table id="pagos" class="display" style="width:100%">
@@ -328,7 +275,6 @@
                                                     <th>Cantidad</th>
                                                     <th>Tipo de pago</th>
                                                     <th>Fecha pago</th>
-                                                    <th>Acciones</th>
                                                 </tr>
                                             </thead>
                                         </table>
@@ -342,15 +288,15 @@
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="usuario" class="col-form-label">Reservado por</label>
-                                                <select name="usuario" class="form-control" tabindex="11">
-                                                    <option value="{{$reservacion->usuario->id}}" usuario="{{$reservacion->usuario->username}}" selected="selected" disabled="disabled">
+                                                <select name="usuario" class="form-control" tabindex="11" disabled="disabled">
+                                                    <option value="{{$reservacion->usuario->id}}" usuario="{{$reservacion->usuario->username}}" selected="selected">
                                                         {{$reservacion->usuario->name}} ({{$reservacion->usuario->email}})
                                                     </option>
                                                 </select>
                                             </div>
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="comisionista" class="col-form-label">Comisionista</label>
-                                                <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12" disabled="disabled">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
                                                         <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected"' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
@@ -360,30 +306,17 @@
 
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="cerrador" class="col-form-label">Cerrador</label>
-                                                <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12" disabled="disabled">
                                                     <option value='0' selected="true">Seleccionar cerrador</option>
                                                     @foreach($cerradores as $cerrador)
-                                                        <option value="{{$cerrador->id}}" {{$reservacion->cerrador_id === $cerrador->id ? 'selected="selected"' : ""}}>{{$cerrador->nombre}}</option>
+                                                        <option value="{{$cerrador->id}}" {{$reservacion->cerrador_id === $cerrador->id ? 'selected="selected"' : ""}} >{{$cerrador->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
-                                            <div class="col-4 mt-0 mb-0">
-                                                <label for="codigo-descuento" class="col-form-label">Código descuento</label>
-                                                <div class="input-button">
-                                                    <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
-                                                        <option value='0' selected="true">Seleccionar codigo</option>
-                                                        @foreach($descuentosCodigo as $descuentoCodigo)
-                                                            <option value="{{$descuentoCodigo->id}}" >{{$descuentoCodigo->nombre}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    <button id="add-codigo-descuento" class="btn btn-info btn-block form-control" data-bs-toggle="modal" data-bs-target="#verificacion-modal">verificar</button>
-                                                </div>
-                                            </div>
-
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="comisionista-actividad" class="col-form-label">Comisionista actividad</label>
-                                                <select name="comisionista-actividad" id="comisionista-actividad" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="14">
+                                                <select name="comisionista-actividad" id="comisionista-actividad" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="14" disabled="disabled">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistasActividad as $comisionistaActividad)
                                                         <option value="{{$comisionistaActividad->id}}" {{$reservacion->comisionista_actividad_id === $comisionistaActividad->id ? 'selected="selected"' : ""}}>{{$comisionistaActividad->nombre}}</option>
@@ -391,19 +324,14 @@
                                                 </select>
                                             </div>
 
-                                            <div class="form-group col-2 mt-0 mb-0">
-                                                <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
-                                                <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
-                                            </div>
-
                                             <div class="form-group col-2"> 
                                                 <label for="comisionable" class="col-form-label">Comisionable</label>
-                                                <input type="checkbox" name="comisionable" id="comisionable" class="form-control" style="display: block;" @if($reservacion->comisionable) checked="checked" @endif tabindex="16">
+                                                <input type="checkbox" name="comisionable" id="comisionable" class="form-control" style="display: block;" @if($reservacion->comisionable) checked="checked" @endif tabindex="16" disabled="disabled">
                                             </div>
 
                                             <div class="form-group col-12 mt-0 mb-0">
                                                 <label for="comentarios" class="col-form-label">Comentarios</label>
-                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;">{{$reservacion->comentarios}}</textarea>
+                                                <textarea name="comentarios" class='to-uppercase' rows="5" style="width:100%;" disabled="disabled">{{$reservacion->comentarios}}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -448,7 +376,9 @@
                                                     <div class="form-group col-5 mt-0 mb-0">
                                                         <input type="text" name="cambio" id="cambio" class="form-control amount not-editable height-auto" disabled="disabled" value="0.00">
                                                     </div>
-                                                    <div class="col-12" id="detallePagoContainer">
+
+
+                                                    <div class="col-12" id="detallePagoContainer" style="display:none;">
                                                         <div class="row">
                                                             <div class="form-group col-7 mt-0 mb-0">
                                                                 <label for="efectivo" class="col-form-label">Efectivo M.N.:</label>
@@ -508,48 +438,10 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    <!--div class="form-group col-7 mt-0 mb-0">
-                                                        <label for="cupon" class="col-form-label">Cupón</label>
-                                                    </div>
-                                                    <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
-                                                    </div-->
-
-
-
-                                                    @can('Reservaciones.update') 
-                                                        @if($reservacion->estatus_pago !== 2)
-                                                            <div class="form-group col-12 mt-0 mb-0">
-                                                                <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
-                                                            </div>
-                                                        @else
-                                                            @role('Administrador')
-                                                                <div class="form-group col-12 mt-0 mb-0">
-                                                                    <button class="btn btn-info btn-block" id="pagar" disabled="disabled" tabindex="20">Pagar</button>
-                                                                </div>
-                                                            @endrole
-                                                        @endif
-                                                    @endcan
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    @can('Reservaciones.update') 
-                                        @if($reservacion->estatus_pago !== 2)
-                                            <div class="form-group col-2 mt-0 mb-0">
-                                                <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
-                                            </div>
-                                        @else
-                                            @role('Administrador')
-                                                <div class="form-group col-2 mt-0 mb-0">
-                                                    <button class="btn btn-info btn-block mt-33" id="actualizar" tabindex="21">Actualizar</button>
-                                                </div>
-                                            @endrole
-                                        @endif
-                                    @endcan
-
                                 </div>
                             </div>
                         </form>
