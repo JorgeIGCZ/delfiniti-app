@@ -14,7 +14,9 @@ class UsuarioController extends Controller
 
     public function __construct() {
         $this->middleware('permission:Usuarios.index')->only('index');
-        $this->middleware('permission:Usuarios.update')->only('edit'); 
+        $this->middleware('permission:Usuarios.index')->only('show');
+        $this->middleware('permission:Usuarios.create')->only('store');
+        $this->middleware('permission:Usuarios.update')->only('edit');
     }
 
     /**
