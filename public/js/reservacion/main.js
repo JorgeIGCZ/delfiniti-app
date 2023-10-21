@@ -1,4 +1,5 @@
 const validarVerificacionElement = document.getElementById('validar-verificacion');
+const addCodigoDescuentoElement = document.getElementById('add-codigo-descuento');
 const verificacionModalElement = document.getElementById('verificacion-modal');
 const addActividadElement = document.getElementById('add-actividad');
 const codigoDescuentoElement = document.getElementById('codigo-descuento');
@@ -645,8 +646,8 @@ window.onload = function() {
         });
     }
 
-    if(codigoDescuentoElement !== null){
-        codigoDescuentoElement.addEventListener('click', (event) =>{
+    if(addCodigoDescuentoElement !== null){
+        addCodigoDescuentoElement.addEventListener('click', (event) =>{
             event.preventDefault();
             //resetDescuentos();
 
@@ -1031,9 +1032,9 @@ function enableBtn(btnId,status){
 }
 
 async function validarVerificacion(){
-    const action = "";
+    let action = "";
     if(validarVerificacionElement !== null){
-        validarVerificacionElement.getAttribute('action');
+        action = validarVerificacionElement.getAttribute('action');
     }
     if(formValidity('reservacion-form')){
         if(await validateUsuario(document.getElementById('password').value)){
