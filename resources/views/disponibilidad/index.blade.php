@@ -195,7 +195,11 @@
                                                         @endphp
                                                         <tr class="{{$estatus}} {{ (@$reservacion->descuentoCodigo->id > 0 ? 'cortesia' : '') }}">
                                                             <td class="folio-link">
-                                                                <a href="{{ url('reservaciones/'.$reservacion->id) }}">{{ $reservacion->folio }}</a>
+                                                                @can('Reservaciones.update')
+                                                                    <a href="{{ url('reservaciones/'.$reservacion->id.'/edit?accion=edit') }}">{{ $reservacion->folio }}</a>
+                                                                @elsecan('Reservaciones.index')
+                                                                    <a href="{{ url('reservaciones/'.$reservacion->id) }}">{{ $reservacion->folio }}</a>
+                                                                @endcan
                                                             </td>
                                                             <td>{{ mb_strlen($reservacion->nombre_cliente) > 15 ? mb_substr($reservacion->nombre_cliente, 0, 15) . '...' : $reservacion->nombre_cliente }}</td>
                                                             <td>{{ $numeroPersonas }}</td>
