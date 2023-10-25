@@ -21,7 +21,7 @@ class ReporteCorteCajaService
     protected $ventaService;
     protected $productoService;
 
-    protected $tiposPago = [1,2,3,5,8];
+    protected $tiposPago = [1, 2, 3, 5, 7, 8];
     protected $tipoCambio = 0;
     protected $ventasVideoArray = [];
     protected $ventasFotoArray = [];
@@ -1036,7 +1036,6 @@ class ReporteCorteCajaService
     private function getFotoVideoVentasFecha($fechaInicio, $fechaFinal, $usuarios, $tipo)
 	{
         //se utiliza el with para filtrar solo los pagos que coincidan con el criterio de busqueda añadiendolos al objeto reservacion.
-
         $ventas = FotoVideoVenta::where('estatus', 1)->whereHas('pagos', function (Builder $query) use ($usuarios, $fechaInicio, $fechaFinal) {
             $query
                 ->whereBetween("created_at", [$fechaInicio,$fechaFinal])
@@ -1295,6 +1294,9 @@ class ReporteCorteCajaService
         $total = 0;
         foreach($ventas as $venta){
             $total += (float)$venta[$pagoTipoNombre];
+            if($pagoTipoNombre === 'efectivo'){
+                $total += (float)$venta['cambio'];
+            }
         }
 
         return $total;        
