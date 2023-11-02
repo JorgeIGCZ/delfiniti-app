@@ -94,6 +94,7 @@
                 "nombre"  : descuentocodigos.elements['nombre'].value,
                 "tipo"  : tipo,
                 "descuento": descuentocodigos.elements['descuento'].value,
+                "cupon": descuentocodigos.elements['cupon'].checked
             })
             .then(function (response) {
                 $('.loader').hide();
@@ -142,6 +143,14 @@
                     { data: 'nombre' },
                     { data: 'tipo' },
                     { data: 'descuento' },
+                    { defaultContent: 'cupon', 'render': function ( data, type, row ) 
+                        {
+                            if(row.cupon){
+                                    return 'Sí';
+                            }
+                            return 'No';
+                        }
+                    },
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus){
@@ -214,6 +223,11 @@
                                     <input type="number" name="descuento"  id="descuento" class="form-control" value="0">
                                 </div>
 
+                                <div class="form-group col-2 mt-3">
+                                    <label for="cupon" class="col-form-label" style="display: block;">¿Es cupón?</label>
+                                    <input type="checkbox" name="cupon" class="form-control" >
+                                </div>
+
                                 <div class="form-group col-3 mt-3">
                                     <button class="btn btn-info btn-block mt-33" id="crear-descuentocodigo">Crear código</button>
                                 </div>
@@ -237,6 +251,7 @@
                                         <th>Nombre</th>
                                         <th>Tipo</th>
                                         <th>Descuento</th>
+                                        <th>¿Es cupón?</th>
                                         <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>

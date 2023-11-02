@@ -57,6 +57,8 @@
 
                 'Disponibilidad.index'        : roles.elements['Disponibilidad.index'          ].checked,
 
+                'Cupones.index'              : roles.elements['Cupones.index'                  ].checked,
+
                 'Reservaciones.index'         : roles.elements['Reservaciones.index'           ].checked,
                 'Reservaciones.create'        : roles.elements['Reservaciones.create'          ].checked,
                 'Reservaciones.update'        : roles.elements['Reservaciones.update'          ].checked,
@@ -391,6 +393,16 @@
                                     </label>
                                 </div>
                             </div> 
+
+                            <div class="col-md-2">
+                                <strong>Cupones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Cupones.index" type="checkbox" >
+                                    <label for="Cupones.index">
+                                        Ver 
+                                    </label>
+                                </div>
+                            </div>
 
                             <div class="col-md-2">
                                 <strong>Reservaciones</strong>

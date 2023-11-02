@@ -23,6 +23,7 @@ use App\Http\Controllers\FotoVideoComisionistaController;
 use App\Http\Controllers\FotoVideoProductoController;
 use App\Http\Controllers\FotoVideoVentaController;
 use App\Http\Controllers\FotoVideoVentaTicketController;
+use App\Http\Controllers\ReservacionCuponesController;
 use App\Http\Controllers\ReservacionPublicaController;
 use App\Http\Controllers\ReservacionTicketController;
 use App\Http\Controllers\SupervisorController;
@@ -230,6 +231,11 @@ Route::controller(ReservacionTicketController::class)->middleware(['auth'])->gro
             'reservacionestickets' => 'reservacionTicket'
         ]
     ]);
+});
+
+Route::controller(ReservacionCuponesController::class)->middleware(['auth'])->group(function () {
+    Route::post('cupones/get/{cupon?}', 'get');
+    Route::resource('cupones',ReservacionCuponesController::class);
 });
 
 

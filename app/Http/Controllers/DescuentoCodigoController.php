@@ -35,7 +35,8 @@ class DescuentoCodigoController extends Controller
                 'codigo'        => $request->codigo,
                 'nombre'        => mb_strtoupper($request->nombre),
                 'tipo'          => $request->tipo,
-                'descuento'     => $request->descuento
+                'descuento'     => $request->descuento,
+                'cupon'         => $request->cupon
             ]);
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();
@@ -62,6 +63,7 @@ class DescuentoCodigoController extends Controller
                     'nombre'       => $descuentocodigo->nombre,
                     'tipo'         => $descuentocodigo->tipo,
                     'descuento'    => $descuentocodigo->descuento,
+                    'cupon'        => $descuentocodigo->cupon,
                     'estatus'      => $descuentocodigo->estatus,
                 ];
             }
@@ -95,6 +97,7 @@ class DescuentoCodigoController extends Controller
             $codigodescuento->nombre   = mb_strtoupper($request->nombre);
             $codigodescuento->tipo     = $request->tipo;
             $codigodescuento->descuento= $request->descuento;
+            $codigodescuento->cupon    = $request->has('cupon');
             $codigodescuento->save();
         } catch (\Exception $e){
             $CustomErrorHandler = new CustomErrorHandler();

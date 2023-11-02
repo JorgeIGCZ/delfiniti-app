@@ -54,6 +54,12 @@
           </li>
         @endcan
 
+        @can('Cupones.index')
+          <li class="nav-item {{url()->current() == url('cupones') ? 'active' : ''}}">
+            <a href="{{ url('cupones') }}" class="nav-link {{url()->current() == url('cupones') ? 'active' : ''}}"><i class="typcn typcn-contacts"></i> Ver Cupones</a>
+          </li>
+        @endcan
+
         @can('Comisiones.index')
           <li class="nav-item {{url()->current() == url('comisiones') ? 'active' : ''}}">
             <a href="{{ url('comisiones') }}" class="nav-link"><i class="typcn typcn-group-outline"></i> Comisiones</a>

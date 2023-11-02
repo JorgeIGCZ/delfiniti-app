@@ -37,6 +37,8 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'Checkin.update'])->assignRole($administrador);
 
         Permission::create(['name' => 'Disponibilidad.index'])->assignRole($administrador);
+        
+        Permission::create(['name' => 'Cupones.index'])->assignRole($administrador);
 
         Permission::create(['name' => 'Reservaciones.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reservaciones.create'])->assignRole($administrador);
