@@ -58,7 +58,7 @@
                             let viewRow = '';
                             let options = [];
                             @can('Reservaciones.index')
-                                viewRow = `<a href="reservaciones/${row.reservacionId}">Ver</a>`;
+                                viewRow = `<a href="reservaciones/${row.reservacionId}" target="_blank">Ver</a>`;
                             @endcan
 
                             options = [viewRow];
