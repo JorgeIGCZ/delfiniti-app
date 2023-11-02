@@ -100,7 +100,7 @@
                 const fechaInicio = document.getElementById('end_date').value;
                 const fechaFinal = document.getElementById('start_date').value;
                 if(fechaInicio !== "" && fechaFinal !== ""){
-                    descuentocodigosTable.ajax.reload();
+                    cuponesTable.ajax.reload();
                     return;
                 }
             }
