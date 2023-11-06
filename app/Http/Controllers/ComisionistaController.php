@@ -55,7 +55,8 @@ class ComisionistaController extends Controller
                 'representante'      => mb_strtoupper($request->representante),
                 'direccion'          => mb_strtoupper($request->direccion),
                 'telefono'           => $request->telefono,
-                'comisiones_canal'   => $request->comisionesCanal
+                'comisiones_canal'   => $request->comisionesCanal,
+                'cupon'              => $request->cupon
             ]);
             
             if($request->tipoComisionista == 'comisionistaCanal'){
@@ -119,6 +120,7 @@ class ComisionistaController extends Controller
                     'representante'     => mb_strtoupper($comisionista->representante),
                     'direccion'         => mb_strtoupper($comisionista->direccion),
                     'telefono'          => $comisionista->telefono,
+                    'cupon'             => $comisionista->cupon,
                     'estatus'           => $comisionista->estatus
                 ];
             }
@@ -183,6 +185,7 @@ class ComisionistaController extends Controller
             $comisionista->direccion          = mb_strtoupper($request->direccion);
             $comisionista->telefono           = $request->telefono;
             $comisionista->comisiones_canal   = $request->has('comisiones_canal');
+            $comisionista->cupon              = $request->has('cupon');
             $comisionista->save();
 
             $comisionistaCanalVenta = Comisionista::find($id)->tipo;

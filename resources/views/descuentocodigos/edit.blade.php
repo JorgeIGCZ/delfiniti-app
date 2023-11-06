@@ -52,10 +52,6 @@
                                 <label for="descuento" class="col-form-label">descuento</label>
                                 <input type="number" name="descuento" id="descuento" class="form-control" min="0" max="90" value="{{$descuentocodigo->descuento}}">
                             </div>
-                            <div class="form-group col-2 mt-3">
-                                <label for="cupon" class="col-form-label" style="display: block;">¿Es cupón?</label>
-                                <input type="checkbox" name="cupon" @if($descuentocodigo->cupon) checked="checked" @endif class="form-control" >
-                            </div>
                             <div class="form-group col-3 mt-3">
                                 <button class="btn btn-info btn-block mt-33" id="actualizar-descuentocodigo">Actualizar Código</button>
                             </div>

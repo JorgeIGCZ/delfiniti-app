@@ -125,6 +125,10 @@
                                 <label for="comisiones_canal" class="col-form-label" style="display: block;">Incluir en comisiones de canal</label>
                                 <input type="checkbox" name="comisiones_canal" class="form-control" value="{{$comisionista->comisiones_canal}}" @if($comisionista->comisiones_canal) checked="checked" @endif>
                             </div>
+                            <div class="form-group col-2 mt-3">
+                                <label for="cupon" class="col-form-label" style="display: block;">¿Es cupón?</label>
+                                <input type="checkbox" name="cupon" @if($comisionista->cupon) checked="checked" @endif class="form-control" >
+                            </div>
 
                             <div class="col-12 mt-3 general-settings">
                                 <strong>Datos Representante</strong>

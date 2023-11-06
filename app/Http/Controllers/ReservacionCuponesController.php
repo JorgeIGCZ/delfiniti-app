@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comisionista;
 use App\Models\Pago;
 use Carbon\Carbon;
 use Illuminate\Contracts\Database\Eloquent\Builder;
@@ -78,14 +79,18 @@ class ReservacionCuponesController extends Controller
                     break;
             }   
         }
+
+        $comisionistasCupon = Comisionista::where('cupon', 1)->get();
         
         // DB::enableQueryLog();
-        $pagos = Pago::whereHas('reservacion', function ($query) use ($fechaInicio, $fechaFinal){
+        $pagos = Pago::whereHas('reservacion', function ($query) use ($fechaInicio, $fechaFinal, $comisionistasCupon){
             $query
                 ->whereBetween("fecha", [$fechaInicio,$fechaFinal])
+                ->whereIn('comisionista_id', $comisionistasCupon->pluck('id'))
                 ->where('estatus',1); 
-        })->whereHas('descuentoCodigo', function ($query) {
-            $query->where('cupon', 1);
+        })->whereHas('tipoPago', function ($query){
+            $query
+                ->where('nombre','cupon'); 
         })->get();
 
         $pagoDetalleArray = [];
@@ -95,7 +100,7 @@ class ReservacionCuponesController extends Controller
                 'id'           => @$pago->id,
                 'folio'        => @$pago->reservacion->folio,
                 'reservacionId'=> @$pago->reservacion->id,
-                'cupon'        => $pago->descuentoCodigo->nombre,
+                'cupon'        => $pago->reservacion->comisionista->nombre,
                 'cantidad'     => $pago->cantidad,
                 'fecha'        => @Carbon::parse($pago->reservacion->fecha)->format('d/m/Y'),
                 'estatus'      => "",

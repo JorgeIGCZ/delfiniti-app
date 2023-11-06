@@ -12,8 +12,7 @@ class DescuentoCodigo extends Model
     protected $fillable = [
         'nombre',
         'tipo',
-        'descuento',
-        'cupon'
+        'descuento'
     ];
     protected $primaryKey = 'id';
 }

@@ -20,7 +20,8 @@ class Comisionista extends Model
         'direccion',
         'telefono',
         'canal_venta_id',
-        'comisiones_canal'
+        'comisiones_canal',
+        'cupon'
     ];
     protected $primaryKey = 'id';
 

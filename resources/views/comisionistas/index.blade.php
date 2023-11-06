@@ -104,7 +104,8 @@
                 "representante"     : comisionistas.elements['representante'].value,
                 "direccion"         : comisionistas.elements['direccion'].value,
                 "telefono"          : comisionistas.elements['telefono'].value,
-                "comisionesCanal"   : comisionistas.elements['comisiones_canal'].checked
+                "comisionesCanal"   : comisionistas.elements['comisiones_canal'].checked,
+                "cupon"             : comisionistas.elements['cupon'].checked
             })
             .then(function (response) {
                 $('.loader').hide();
@@ -221,6 +222,14 @@
                     { data: 'representante' },
                     { data: 'direccion' },
                     { data: 'telefono' },
+                    { defaultContent: 'cupon', 'render': function ( data, type, row ) 
+                        {
+                            if(row.cupon){
+                                    return 'Sí';
+                            }
+                            return 'No';
+                        }
+                    },
                     { defaultContent: 'estatus', 'render': function ( data, type, row ) 
                         {
                             if(row.estatus){
@@ -376,6 +385,11 @@
                                     <input type="checkbox" name="comisiones_canal" class="form-control" checked="checked">
                                 </div>
 
+                                <div class="form-group col-2 mt-3">
+                                    <label for="cupon" class="col-form-label" style="display: block;">¿Es cupón?</label>
+                                    <input type="checkbox" name="cupon" class="form-control" >
+                                </div>
+
                                 <div class="col-12 mt-3 general-settings">
                                     <strong>Datos Representante</strong>
                                 </div>
@@ -421,6 +435,7 @@
                                         <th>Representante</th>
                                         <th>Dirección</th>
                                         <th>Teléfono</th>
+                                        <th>Cupón</th>
                                         <th>Estatus</th>
                                         <th>Acciones</th>
                                     </tr>

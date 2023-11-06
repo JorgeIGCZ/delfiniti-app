@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('telefono')->nullable();
             $table->integer('canal_venta_id');
             $table->boolean('comisiones_canal')->default(1)->comment('Generalmente usado en comisionistas de grupos que son directivos');
+            $table->boolean('cupon')->default(1)->comment('Generalmente usado para identificar a los cupones de hoteles');
             $table->boolean('estatus')->default(1);
             $table->timestamps();
         });
