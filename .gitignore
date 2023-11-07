@@ -4,7 +4,9 @@ npm-debug.log
 yarn-error.log
 
 # LIgnorar todos los reportes 
-public/Reportes/*
+public/Reportes/corte_de_caja/~$comisiones.xlsx
+public/Reportes/corte_de_caja/~$corte-de-caja.xlsx
+public/Reportes/reservaciones/~$reservaciones.xlsx
 
 # Laravel 4 specific
 bootstrap/compiled.php
