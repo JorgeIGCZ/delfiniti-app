@@ -124,7 +124,7 @@
                     pageSize: 'LEGAL',
                     footer: true,
                     text: 'Exportar Excel',
-                    title: 'DELFINITI IXTAPA S.A. DE C.V. - REPORTE INVENTARIO',
+                    title: 'GUERRERO DOLPHIN S.A. DE C.V. - REPORTE INVENTARIO',
                     exportOptions: {
                         columns: [0, 1, 5, 6, 7]
                     }

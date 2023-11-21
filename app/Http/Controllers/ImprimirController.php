@@ -56,8 +56,8 @@ class ImprimirController extends Controller
         
         $connector = new WindowsPrintConnector($nombreImpresora);
         $printer   = new Printer($connector);
-        $printer->text("DELFINITI DE MEXICO S.A. DE C.V.");
-        $printer->text("RFC: DME-990323-PR7");
+        $printer->text("GUERRERO DOLPHIN S.A. DE C.V.");
+        $printer->text("RFC: GDO211105KA5");
         $printer->text("ZONA HOTELERA 1");
         $printer->text("LOTE ANEXO 6-B");
         $printer->text("TEL. (755) 553-2707");

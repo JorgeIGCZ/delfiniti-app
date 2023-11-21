@@ -19,7 +19,7 @@
                     pageSize: 'LEGAL',
                     footer: true,
                     text: 'Exportar Excel',
-                    title: 'DELFINITI IXTAPA S.A. DE C.V. - REPORTE CUPONES',
+                    title: 'GUERRERO DOLPHIN S.A. DE C.V. - REPORTE CUPONES',
                     exportOptions: {
                         columns: [1, 2, 3, 4]
                     }

@@ -199,7 +199,7 @@ const format    = (venta) => {
                         src="${logo()}"
                         alt="Logotipo">
                     <p class="centrado">
-                        <strong>DELFINITI DE MEXICO S.A. DE C.V.</strong>
+                        <strong>GUERRERO DOLPHIN S.A. DE C.V.</strong>
                         <br/>
                         RFC: DME-990323-PR7
                         <br/>

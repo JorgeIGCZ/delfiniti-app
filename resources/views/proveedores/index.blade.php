@@ -127,7 +127,7 @@
                     pageSize: 'LEGAL',
                     footer: true,
                     text: 'Exportar Excel',
-                    title: 'DELFINITI IXTAPA S.A. DE C.V. - REPORTE PROVEEDORES',
+                    title: 'GUERRERO DOLPHIN S.A. DE C.V. - REPORTE PROVEEDORES',
                     exportOptions: {
                         columns: [0, 1, 3, 5, 7]
                     }

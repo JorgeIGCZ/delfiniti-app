@@ -1,7 +1,7 @@
 <div class="az-header">
     <div class="container">
       <div class="az-header-left">
-        <a href="/" class="az-logo"><img src="{{asset('assets/img/logo.png')}}" style="height: 57px;filter: brightness(0.2);"></a>
+        <a href="/" class="az-logo"><img src="{{asset('assets/img/logo.png')}}" style="height: 57px;"></a>
         <a href="#" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
       </div><!-- az-header-left -->
       <div class="az-header-menu">
