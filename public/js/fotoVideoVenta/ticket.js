@@ -186,22 +186,28 @@ const format    = (venta) => {
                         max-width: 320px;
                     }
 
+                    .image-container{
+                        text-align:center;
+                    }
+
                     img {
                         max-width: inherit;
-                        width: inherit;
-                        filter: invert(1);
+                        width: 150px;
+                        filter: grayscale(1);
                     }
                 </style>
             </head>
             <body>
                 <div class="ticket">
-                    <img
+                    <div class="image-container">
+                        <img
                         src="${logo()}"
                         alt="Logotipo">
+                    </div>
                     <p class="centrado">
                         <strong>GUERRERO DOLPHIN S.A. DE C.V.</strong>
                         <br/>
-                        RFC: DME-990323-PR7
+                        RFC: GDO211105KA5
                         <br/>
                         LOTE ANEXO 6-B
                         <br/>
