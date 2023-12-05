@@ -408,7 +408,7 @@ class ReporteComisionesService
                         if(!in_array($titulo,$titulosCreados)){
                             $titulosCreados[] = $titulo;
 
-                            if($titulo == 'CERRADOR'){
+                            if($titulo == 'CERRADOR' && isset($value['Id'])){
                                 $comisionista = Comisionista::find($value['Id']);
                                 $titulo = $comisionista->nombre;
                             }
