@@ -10,7 +10,7 @@
         minimumFractionDigits: 2
     });
   </script>
-  <script src="{{asset('assets/lib/jquery/jquery.min.js')}}"></script>
+  <script src="{{asset('assets/lib/jquery/jquery.min.js')}}"></script>  
   <script src="{{asset('assets/lib/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
   <script src="{{asset('assets/lib/ionicons/ionicons.js')}}"></script>
   <script src="{{asset('assets/lib/jquery.flot/jquery.flot.js')}}"></script>
@@ -22,7 +22,7 @@
   <script src="{{asset('assets/js/chart.flot.sampledata.js')}}"></script>
   <script src="{{asset('assets/js/dashboard.sampledata.js')}}"></script>
   <script src="{{asset('js/app.js')}}"></script>
-  <script src="{{asset('js/reportes/main.js') }}"></script>
+  {{-- <script src="{{asset('js/reportes/main.js') }}"></script> --}}
   <script src="{{asset('assets/js/filter-multi-select-bundle.min.js')}}"></script>
   <!-- Latest compiled and minified CSS -->
 

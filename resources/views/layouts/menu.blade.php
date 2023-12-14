@@ -2,9 +2,9 @@
   
     <ul class="nav">
       @can('Reportes.index')
-        <li class="nav-item {{url()->current() == url('reportes') ? 'active' : ''}}">
-          <a href="#!" class="nav-link with-sub"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
-          <div class="az-menu-sub">
+        <li class="nav-item {{url()->current() == url('exportar-reportes') ? 'active' : ''}}">
+          <a href="{{ url('exportar-reportes') }}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Reportes</a>
+          {{-- <div class="az-menu-sub">
             <nav class="nav">
               @can('Reportes.CorteCaja.index')
               <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-corte-caja" data-bs-target="#reportes-modal">Corte de caja</a>
@@ -18,7 +18,7 @@
               <a href="#!" class="nav-link" data-bs-toggle="modal" id="reporte-comisiones" data-bs-target="#reportes-modal">Comisiones</a>
               @endcan
             </nav>
-          </div>
+          </div> --}}
         </li>
       @endcan
       @if(session('modulo') == 'reservaciones')

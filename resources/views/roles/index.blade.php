@@ -46,10 +46,12 @@
             'permisos'                 : {
                 'SeccionReservaciones.index'  : roles.elements['SeccionReservaciones.index'    ].checked,
 
-                'Reportes.index'              : roles.elements['Reportes.index'                ].checked,
-                'Reportes.CorteCaja.index'    : roles.elements['Reportes.CorteCaja.index'      ].checked,
-                'Reportes.Reservaciones.index': roles.elements['Reportes.Reservaciones.index'  ].checked,
-                'Reportes.Comisiones.index'   : roles.elements['Reportes.Comisiones.index'     ].checked,
+                'Reportes.index'                           : roles.elements['Reportes.index'                          ].checked,
+                'Reportes.CorteCaja.index'                 : roles.elements['Reportes.CorteCaja.index'                ].checked,
+                'Reportes.Reservaciones.index'             : roles.elements['Reportes.Reservaciones.index'            ].checked,
+                'Reportes.Comisiones.index'                : roles.elements['Reportes.Comisiones.index'               ].checked,
+                'Reportes.CuponesAgenciaConcentrado.index' : roles.elements['Reportes.CuponesAgenciaConcentrado.index'].checked,
+                'Reportes.CuponesAgenciaDetallado.index'   : roles.elements['Reportes.CuponesAgenciaDetallado.index'  ].checked,
 
                 'Checkin.index'               : roles.elements['Checkin.index'                 ].checked,
                 'Checkin.create'              : roles.elements['Checkin.create'                ].checked,
@@ -319,13 +321,15 @@
                             </label>
                         </div>
                     </div>
+
+
                     <div class="col-md-12 col-xl-12 mt-5 mb-3">
                         <div class="row">
                             <div class="col-md-2">
-                                <strong>Sección reservaciones</strong>
+                                <strong>Sección reportes</strong>
                                 <div class="checkbox checkbox-primary">
-                                    <input name="SeccionReservaciones.index" type="checkbox">
-                                    <label for="SeccionReservaciones.index">
+                                    <input name="Reportes.index" type="checkbox">
+                                    <label for="Reportes.index">
                                         Ver
                                     </label>
                                 </div>
@@ -335,13 +339,6 @@
                     <div class="col-md-12 col-xl-12 ml-5">
                         <div class="row">
                             <div class="col-md-2">
-                                <strong>Reportes</strong>
-                                <div class="checkbox checkbox-primary">
-                                    <input name="Reportes.index" type="checkbox" >
-                                    <label for="Reportes.index">
-                                        Ver
-                                    </label>
-                                </div>
                                 <div class="checkbox checkbox-primary">
                                     <input name="Reportes.CorteCaja.index" type="checkbox" >
                                     <label for="Reportes.CorteCaja.index">
@@ -360,8 +357,39 @@
                                         Comisiones
                                     </label>
                                 </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.CuponesAgenciaConcentrado.index" type="checkbox" >
+                                    <label for="Reportes.CuponesAgenciaConcentrado.index">
+                                        Cup. Agencia concentrado
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="Reportes.CuponesAgenciaDetallado.index" type="checkbox" >
+                                    <label for="Reportes.CuponesAgenciaDetallado.index">
+                                        Cup. Agencia Detallado
+                                    </label>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
+
+
+                    <div class="col-md-12 col-xl-12 mt-5 mb-3">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>Sección reservaciones</strong>
+                                <div class="checkbox checkbox-primary">
+                                    <input name="SeccionReservaciones.index" type="checkbox">
+                                    <label for="SeccionReservaciones.index">
+                                        Ver
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-xl-12 ml-5">
+                        <div class="row">
                             <div class="col-md-2">
                                 <strong>Check-in</strong>
                                 <div class="checkbox checkbox-primary">
@@ -857,7 +885,11 @@
                     </div>
                     @can('Usuarios.Roles.update')
                         <div class="col-md-12">
-                            <button class="btn btn-primary " usuario="" id="guardar-roles">Guardar</button>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <button class="btn btn-info btn-block mt-33" usuario="" id="guardar-roles">Guardar</button>
+                                </div>
+                            </div>
                         </div>
                     @endcan
                 </form>

@@ -1,88 +1,138 @@
-$(function () {
     const selectorMultipleCanalesVenta = $('#filtro-comisiones-canales-venta').filterMultiSelect({
         selectAllText:"SELECCIONAR TODAS"
     })
     const selectorMultipleModuloCorteCaja = $('#filtro-modulo-corte-caja').filterMultiSelect({
         selectAllText:"SELECCIONAR TODOS"
     })
-
     const selectorMultipleModuloComisiones = $('#filtro-modulo-comisiones').filterMultiSelect({
         selectAllText:"SELECCIONAR TODOS"
     })
+    const selectorMultipleAgenciaCupon = $('#filtro-agencia-cupon').filterMultiSelect({
+        selectAllText:"SELECCIONAR TODOS"
+    })
 
-    const reporteCorteCaja = document.getElementById('reporte-corte-caja');
-    const reporteReservaciones = document.getElementById('reporte-reservaciones');
-    const reporteComisiones = document.getElementById('reporte-comisiones');
+
+    const reporteSelect = document.getElementById('reporte-select');
 
     const crearReporte = document.getElementById('crear-reporte');
 
-    const filtrosCorteCaja = document.getElementById('filtros-corte-caja');
+    const filtrosCajero = document.getElementById('filtro-cajero');
+    const filtrosCupones = document.getElementById('filtro-cupones');
     const filtrosComisiones = document.getElementById('filtros-comisiones');
-
     const filtrosModuloCorteCaja = document.getElementById('filtros-modulo-corte-caja');
     const filtrosModuloComisiones = document.getElementById('filtros-modulo-comisiones');
+    const filtrosAgenciaCupon = document.getElementById('filtros-agencia-cupon');
+    
 
     function clearFiltros(){
-        filtrosCorteCaja.style.display = "none";
+        crearReporte.style.display = "none";
+        filtrosCajero.style.display = "none";
+        filtrosCupones.style.display = "none";
         filtrosComisiones.style.display = "none";
 
         filtrosModuloCorteCaja.style.display = "none";
         filtrosModuloComisiones.style.display = "none";
+        filtrosAgenciaCupon.style.display = "none";
 
         selectorMultipleCanalesVenta.selectAll();
         selectorMultipleModuloCorteCaja.selectAll();
         selectorMultipleModuloComisiones.selectAll();
-        document.getElementById('report_fecha_inicio').value = moment().format('YYYY-MM-DD');
-        document.getElementById('report_fecha_final').value = moment().format('YYYY-MM-DD');
+        selectorMultipleAgenciaCupon.selectAll();
+        // $('#start-date').datepicker('today');  
+        // $('#end-date').datepicker('today');  
+
+        
+        $('#start-date').datepicker('setDate', new Date());
+        $('#end-date').datepicker('setDate', new Date());
     }
-    selectorMultipleCanalesVenta.selectAll()
-    selectorMultipleModuloCorteCaja.selectAll()
-    selectorMultipleModuloComisiones.selectAll();
+    clearFiltros()
+    
+    if(reporteSelect !== null){
+        reporteSelect.addEventListener('change', (event) =>{
+            const seleccion = event.target.value;
+
+            switch (seleccion) {
+                case 'corte-caja':
+                    clearFiltros();
+
+                    filtrosCajero.style.display = "block";
+                    filtrosCupones.style.display = "block";
+                    crearReporte.style.display = "block";
+
+                    if(JSON.parse(selectorMultipleModuloCorteCaja.getSelectedOptionsAsJson()).filtro_modulo_corte_caja.length > 0){
+                        filtrosModuloCorteCaja.style.display = "block";
+                    }
+                    
+                    document.getElementById('crear-reporte').setAttribute('action','corte-caja');
+                    break;
+
+                case 'reservaciones':
+                    clearFiltros();
+
+                    filtrosComisiones.style.display = "block";
+                    crearReporte.style.display = "block";
+                    document.getElementById('crear-reporte').setAttribute('action','reservaciones');
+                    break;
+
+                case 'comisiones':
+                    clearFiltros();
 
 
-    if(reporteCorteCaja !== null){
-        reporteCorteCaja.addEventListener('click', (event) => { 
-            event.preventDefault();
-            clearFiltros();
-            filtrosCorteCaja.style.display = "block";
+                    crearReporte.style.display = "block";
 
-            if(JSON.parse(selectorMultipleModuloCorteCaja.getSelectedOptionsAsJson()).filtro_modulo_corte_caja.length > 0){
-                filtrosModuloCorteCaja.style.display = "block";
-            }
+                    if(JSON.parse(selectorMultipleCanalesVenta.getSelectedOptionsAsJson()).comisiones_canales_venta.length > 0){
+                        filtrosComisiones.style.display = "block";
+                    }
+
+                    if(JSON.parse(selectorMultipleModuloComisiones.getSelectedOptionsAsJson()).filtro_modulo_comisiones.length > 0){
+                        filtrosModuloComisiones.style.display = "block";
+                    }
+
+                    document.getElementById('crear-reporte').setAttribute('action','comisiones');
+                    break;
+
+                case 'cupones-agencia-concentrado':
+                    clearFiltros();
+
+
+                    crearReporte.style.display = "block";
+
+                    if(JSON.parse(selectorMultipleAgenciaCupon.getSelectedOptionsAsJson()).filtro_agencia_cupon.length > 0){
+                        filtrosAgenciaCupon.style.display = "block";
+                    }
+
+
+                    document.getElementById('crear-reporte').setAttribute('action','cupones-agencia-concentrado');
+                    break;
+
+                case 'cupones-agencia-detallado':
+                    clearFiltros();
+
+                    crearReporte.style.display = "block";
+
+                    if(JSON.parse(selectorMultipleAgenciaCupon.getSelectedOptionsAsJson()).filtro_agencia_cupon.length > 0){
+                        filtrosAgenciaCupon.style.display = "block";
+                    }
+
+
+                    document.getElementById('crear-reporte').setAttribute('action','cupones-agencia-detallado');
+                    break;
             
-            document.getElementById('crear-reporte').setAttribute('action','corte-caja');
-        });
-    }
-    if(reporteReservaciones !== null){
-        reporteReservaciones.addEventListener('click', (event) => {
-            event.preventDefault();
-            clearFiltros();
-            filtrosComisiones.style.display = "block";
-            document.getElementById('crear-reporte').setAttribute('action','reservaciones');
-        });
-    }
-    if(reporteComisiones !== null){
-        reporteComisiones.addEventListener('click', (event) => {
-            debugger;
-            event.preventDefault();
-            clearFiltros();
-
-            if(JSON.parse(selectorMultipleCanalesVenta.getSelectedOptionsAsJson()).comisiones_canales_venta.length > 0){
-                filtrosComisiones.style.display = "block";
+                default:
+                    clearFiltros()
+                    break;
             }
-
-            filtrosModuloComisiones.style.display = "block";
-            document.getElementById('crear-reporte').setAttribute('action','comisiones');
         });
     }
+
     if(crearReporte !== null){
         crearReporte.addEventListener('click', (event) => { 
             event.preventDefault();
         
-            const fechaInicio = document.getElementById('report_fecha_inicio').value;
-            const fechaFinal  = document.getElementById('report_fecha_final').value;
+            const fechaInicio = document.getElementById('start-date').value;
+            const fechaFinal  = document.getElementById('end-date').value;
 
-            if (!formValidity('reporte-form')) {
+            if (!formValidity('reportes-form')) {
                 return false;
             }
     
@@ -106,10 +156,12 @@ $(function () {
                     }
     
                     break;
+
                 case 'reservaciones':
                     url          = '/reportes/totalreservaciones';
                     documentPath = `/Reportes/reservaciones/reservaciones.xlsx`;
                     break;
+
                 case 'comisiones':
                     url          = '/reportes/totalcomisiones';
                     documentPath = `/Reportes/comisiones/comisiones.xlsx`;
@@ -117,7 +169,22 @@ $(function () {
                         'canalesVenta'  : selectorMultipleCanalesVenta.getSelectedOptionsAsJson(),
                         'modulo'  : selectorMultipleModuloComisiones.getSelectedOptionsAsJson()
                     }
-    
+                    break;
+
+                case 'cupones-agencia-concentrado':
+                    url          = '/reportes/cuponesagenciaconcentrado';
+                    documentPath = `/Reportes/cupones/cupones-agencia-concentrado.xlsx`;
+                    data         = {
+                        'agencias'  : selectorMultipleAgenciaCupon.getSelectedOptionsAsJson()
+                    }
+                    break;
+
+                case 'cupones-agencia-detallado':
+                    url          = '/reportes/cuponesagenciadetallado';
+                    documentPath = `/Reportes/cupones/cupones-agencia-detallado.xlsx`;
+                    data         = {
+                        'agencias'  : selectorMultipleAgenciaCupon.getSelectedOptionsAsJson()
+                    }
                     break;
             }
             $('.loader').show();
@@ -147,4 +214,3 @@ $(function () {
             });
         });
     }
-});

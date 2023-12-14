@@ -49,6 +49,15 @@ use App\Models\FotoVideoVentaTicket;
 | contains the "web" middleware group. Now create something great!
 |
 */
+//TODO: WORKING ON
+// Route::get('reservar', [ReservacionPublicaController::class, 'index']);
+// Route::post('reservar/pago', [ReservacionPublicaController::class, 'pago']);
+// Route::get('reservar/success', [ReservacionPublicaController::class, 'pagoExito']);
+// Route::get('reservar/error', [ReservacionPublicaController::class, 'pagoError']);
+// Route::get('reservar/default', [ReservacionPublicaController::class, 'pagoDefault']);
+
+// //hooks
+// Route::get('reservar/hook/payment', [ReservacionPublicaController::class, 'hookPago']);
 
 Route::post('ticket', [TicketController::class, 'display']);
 
@@ -169,10 +178,12 @@ Route::controller(SupervisorController::class)->middleware(['auth'])->group(func
     ]);
 });
 
-Route::get('/reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('reportes');
+Route::get('/exportar-reportes',[ReporteController::class,'index'])->middleware(['auth'])->name('exportar-reportes');
 Route::post('/reportes/cortecaja',[ReporteController::class,'reporteCorteCaja'])->middleware(['auth'])->name('reportecortecaja');
 Route::post('/reportes/totalreservaciones',[ReporteController::class,'reporteReservaciones'])->middleware(['auth'])->name('reportereservaciones');
 Route::post('/reportes/totalcomisiones',[ReporteController::class,'reporteComisiones'])->middleware(['auth'])->name('reportecomisiones');
+Route::post('/reportes/cuponesagenciaconcentrado',[ReporteController::class,'reporteCuponesAgenciaConcentrado'])->middleware(['auth'])->name('reporteCuponesAgenciaConcentrado');
+Route::post('/reportes/cuponesagenciadetallado',[ReporteController::class,'reporteCuponesAgenciaDetallado'])->middleware(['auth'])->name('reporteCuponesAgenciaDetallado');
 
 Route::get('/roles',[RolController::class,'index'])->middleware(['auth'])->name('roles');
 Route::post('/roles',[RolController::class,'store'])->middleware(['auth'])->name('rolesstore');

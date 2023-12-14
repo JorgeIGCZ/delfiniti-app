@@ -31,6 +31,8 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'Reportes.CorteCaja.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.Reservaciones.index'])->assignRole($administrador);
         Permission::create(['name' => 'Reportes.Comisiones.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Reportes.CuponesAgenciaConcentrado.index'])->assignRole($administrador);
+        Permission::create(['name' => 'Reportes.CuponesAgenciaDetallado.index'])->assignRole($administrador);
 
         Permission::create(['name' => 'Checkin.index'])->assignRole($administrador);
         Permission::create(['name' => 'Checkin.create'])->assignRole($administrador);
