@@ -11,6 +11,7 @@ const tarjetaElement = document.getElementById('tarjeta');
 const depositoElement = document.getElementById('deposito');
 const descuentoPersonalizadoElement = document.getElementById('descuento-personalizado');
 const cuponElement = document.getElementById('cupon');
+const numCuponElement = document.getElementById('num-cupon');
 const fechaElement = document.getElementById('fecha');
 
 function validateActivarReservacion(){
@@ -210,6 +211,11 @@ function removeCupon(cupon) {
     cupon.setAttribute('value', 0);
     cupon.value = 0;
     setTimeout(setOperacionResultados(), 500);
+}
+
+function removeNumCupon(cupon) {
+    cupon.setAttribute('disabled', 'disabled');
+    cupon.value = '';
 }
 
 function resetReservaciones() {
@@ -921,6 +927,7 @@ function changeCuponDetalle() {
     document.getElementById('reservacion-form').elements['cupon'].focus();
 
     (cuponDescuento == '1') ? cupon.removeAttribute('disabled') : removeCupon(cupon);
+    (cuponDescuento == '1') ? numCuponElement.removeAttribute('disabled') : removeNumCupon(numCuponElement);
 
     setOperacionResultados();
 }

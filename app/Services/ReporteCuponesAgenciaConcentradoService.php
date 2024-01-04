@@ -163,7 +163,7 @@ class ReporteCuponesAgenciaConcentradoService
             $numeroActividades = $this->getNumeroActividad($pagoReservacionCupon);
             $reservacionesCuponArray[] = [
                 'reservacionFolio' => $pagoReservacionCupon->reservacion->folio,
-                'cupon' => '?',
+                'cupon' => $pagoReservacionCupon->reservacion->num_cupon,
                 'fecha' => @Carbon::parse($pagoReservacionCupon->reservacion->fecha)->format('d/m/Y'),
                 'importe' => $pagoReservacionCupon->cantidad,
                 'actividades' => $numeroActividades

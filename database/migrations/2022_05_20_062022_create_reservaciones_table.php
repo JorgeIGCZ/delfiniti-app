@@ -33,6 +33,7 @@ return new class extends Migration
             $table->boolean('comisionable')->default(1);
             $table->boolean('comisiones_especiales')->default(0)->comment('Generalmente usado en visitas');
             $table->boolean('comisiones_canal')->default(1)->comment('Generalmente usado en comisionistas de grupos que son directivos');
+            $table->string('num_cupon')->nullable()->comment('Campo usado para colocar el numero de cupón');
             $table->timestamps();
         });
     }

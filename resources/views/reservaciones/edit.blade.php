@@ -230,9 +230,13 @@
                                 <label for="nombre" class="col-form-label">Nombre</label>
                                 <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{$reservacion->nombre_cliente}}">
                             </div>
-                            <div class="form-group col-4 mt-0 mb-0">
+                            <div class="form-group col-2 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
                                 <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2" value="{{$reservacion->email}}">
+                            </div>
+                            <div class="form-group col-2 mt-0 mb-0">
+                                <label for="num-cupon" class="col-form-label">#Cupón</label>
+                                <input type="text" id="num-cupon" name="num-cupon" class="form-control to-uppercase" autocomplete="off" tabindex="3" value="{{@$reservacion->num_cupon}}" disabled="disabled">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel</label>

@@ -209,6 +209,7 @@ function createReservacion(estatus) {
             'tipoValor': document.getElementById('descuento-personalizado').getAttribute('tipo')
         },
         'comentarios': reservacion.elements['comentarios'].value,
+        'numCupon': reservacion.elements['num-cupon'].value,
         "comisionable"   : reservacion.elements['comisionable'].checked,
         'estatus': estatus,
         'reservacionArticulos': actvidadesArray

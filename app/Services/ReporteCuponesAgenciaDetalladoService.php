@@ -133,7 +133,7 @@ class ReporteCuponesAgenciaDetalladoService
                 'reservacionFolio' => $pagoReservacionCupon->reservacion->folio,
                 'cliente' => $pagoReservacionCupon->reservacion->nombre_cliente,
                 'fecha' => @Carbon::parse($pagoReservacionCupon->reservacion->fecha)->format('d/m/Y'),
-                'cupon' => '?',
+                'cupon' => $pagoReservacionCupon->reservacion->num_cupon,
                 'detalle' => implode(',', $actividadDetalles),
                 'importe' => $pagoReservacionCupon->cantidad
             ];

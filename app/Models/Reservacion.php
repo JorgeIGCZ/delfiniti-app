@@ -26,7 +26,8 @@ class Reservacion extends Model
         'fecha_creacion',
         'comisionable',
         'comisiones_especiales',
-        'comisiones_canal'
+        'comisiones_canal',
+        'num_cupon'
     ];
     protected $primaryKey = 'id';  
     

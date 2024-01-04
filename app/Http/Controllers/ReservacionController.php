@@ -172,6 +172,7 @@ class ReservacionController extends Controller
                 'comisionable'    => $request->comisionable,
                 'comisiones_especiales' => $this->isComisionesEspeciales($request->reservacionArticulos),
                 'comisiones_canal' => is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0,
+                'num_cupon'       => mb_strtoupper($request->numCupon),
                 'fecha'           => $request->fecha,
                 'fecha_creacion'  => date('Y-m-d')
             ]);
@@ -615,6 +616,7 @@ class ReservacionController extends Controller
             $reservacion->comisiones_especiales = $this->isComisionesEspeciales($request->reservacionArticulos);
             $reservacion->comisionable    = $request->comisionable;
             $reservacion->comisiones_canal = is_numeric($request->comisionista) ? $this->hasComisionesCanal($request->comisionista) : 0;
+            $reservacion->num_cupon       = $request->numCupon;
             $reservacion->fecha           = $request->fecha;
             if($pagar){
                 $reservacion->estatus_pago = 1;

@@ -100,9 +100,13 @@
                                 <label for="nombre" class="col-form-label">Nombre</label>
                                 <input type="text" name="nombre" class="form-control to-uppercase" required="required" autocomplete="off" tabindex="1" value="{{@$reservacion->nombre_cliente}}">
                             </div>
-                            <div class="form-group col-4 mt-0 mb-0">
+                            <div class="form-group col-2 mt-0 mb-0">
                                 <label for="email" class="col-form-label">Email</label>
                                 <input type="email" name="email" class="form-control to-uppercase" autocomplete="off" tabindex="2" value="{{@$reservacion->email}}">
+                            </div>
+                            <div class="form-group col-2 mt-0 mb-0">
+                                <label for="num-cupon" class="col-form-label">#Cupón</label>
+                                <input type="text" id="num-cupon" name="num-cupon" class="form-control to-uppercase" autocomplete="off" tabindex="3" value="{{@$reservacion->num_cupon}}" disabled="disabled">
                             </div>
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="alojamiento" class="col-form-label">Hotel
@@ -114,7 +118,7 @@
                                         ">+</button>
                                     @endcan
                                 </label>
-                                <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="3">
+                                <select name="alojamiento" id="alojamiento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="4">
                                     <option value='0' selected="true">Seleccionar hotel</option>
                                     @foreach($alojamientos as $alojamiento)
                                         <option value="{{$alojamiento->id}}" {{@$reservacion->alojamiento == $alojamiento->id ? 'selected="selected"' : ""}} >{{$alojamiento->nombre}}</option>
@@ -124,7 +128,7 @@
                             <div class="form-group col-6 mt-0 mb-0">
                                 <label for="origen" class="col-form-label">Lugar de origen</label>
 
-                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="4" value="{{@$reservacion->origen}}"/>
+                                <input list="ciudades" name="origen" class="form-control to-uppercase" tabindex="5" value="{{@$reservacion->origen}}"/>
                                 <datalist id="ciudades">
                                     @foreach($estados as $estado)
                                         <option value="{{$estado->nombre}}">
@@ -136,22 +140,22 @@
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="clave" class="col-form-label">Clave</label>
-                                <select id="clave-actividad" name="clave" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="5">
+                                <select id="clave-actividad" name="clave" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="6">
                                 </select>
                             </div>
                             <div class="form-group col-3 mt-0 mb-0">
                                 <label for="actividad" class="col-form-label">Actividad</label>
-                                <select name="actividad" id="actividades"  class="form-control" data-show-subtext="true" data-live-search="true" tabindex="6">
+                                <select name="actividad" id="actividades"  class="form-control" data-show-subtext="true" data-live-search="true" tabindex="7">
                                 </select>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="horario" class="col-form-label">Horario</label>
-                                <select name="horario" id="horarios" class="form-control" tabindex="7">
+                                <select name="horario" id="horarios" class="form-control" tabindex="8">
                                 </select>
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="cantidad" class="col-form-label">Cantidad</label>
-                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="8">
+                                <input type="number" name="cantidad" id="cantidad" class="form-control" value="1" min="1" max="200" autocomplete="off" tabindex="9">
                             </div>
                             <div class="form-group col-1 mt-0 mb-0">
                                 <label for="disponibilidad" class="col-form-label">Disponibilidad</label>
@@ -159,12 +163,12 @@
                             </div>
                             <input type="hidden" name="precio" id="precio" value="0">
                             <div class="form-group col-1 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="10">+</button>
+                                <button class="btn btn-info btn-block mt-33" id="add-actividad" tabindex="11">+</button>
                             </div>
 
                             <div class="form-group col-2 mt-0 mb-0">
                                 <label for="fecha" class="col-form-label"><strong>Fecha</strong></label>
-                                <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="9">
+                                <input type="date" name="fecha" id="fecha" class="form-control to-uppercase" value="{{date('Y-m-d')}}"  @if(!Auth::user()->hasRole('Administrador')) min="{{date('Y-m-d')}}" @endif  autocomplete="off" tabindex="10">
                             </div>
                             <div class="form-group col-12 mt-8 mb-8 bd-t">
                                 <div class="row">
@@ -191,7 +195,7 @@
                                         <div class="row">
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="usuario" class="col-form-label">Reservado por</label>
-                                                <select name="usuario" class="form-control" tabindex="11">
+                                                <select name="usuario" class="form-control" tabindex="12">
                                                     <option value="{{Auth::user()->id}}" usuario="{{Auth::user()->username}}" selected="selected" disabled="disabled">
                                                         {{Auth::user()->name}} ({{Auth::user()->email}})
                                                     </option>
@@ -199,7 +203,7 @@
                                             </div>
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="comisionista" class="col-form-label">Comisionista</label>
-                                                <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
                                                         <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}">{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
@@ -209,7 +213,7 @@
 
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="cerrador" class="col-form-label">Cerrador</label>
-                                                <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
+                                                <select name="cerrador" id="cerrador" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="14">
                                                     <option value='0' selected="true">Seleccionar cerrador</option>
                                                     @foreach($cerradores as $cerrador)
                                                         <option value="{{$cerrador->id}}" >{{$cerrador->nombre}}</option>
@@ -220,7 +224,7 @@
                                             <div class="col-4 mt-0 mb-0">
                                                 <label for="codigo-descuento" class="col-form-label">Código descuento</label>
                                                 <div class="input-button">
-                                                    <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="13">
+                                                    <select name="codigo-descuento" id="codigo-descuento" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="15">
                                                         <option value='0' selected="true">Seleccionar codigo</option>
                                                         @foreach($descuentosCodigo as $descuentoCodigo)
                                                             <option value="{{$descuentoCodigo->id}}" >{{$descuentoCodigo->nombre}}</option>
@@ -232,7 +236,7 @@
 
                                             <div class="form-group col-4 mt-0 mb-0">
                                                 <label for="comisionista-actividad" class="col-form-label">Comisionista actividad</label>
-                                                <select name="comisionista-actividad" id="comisionista-actividad" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="14">
+                                                <select name="comisionista-actividad" id="comisionista-actividad" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="16">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistasActividad as $comisionistaActividad)
                                                         <option value="{{$comisionistaActividad->id}}" >{{$comisionistaActividad->nombre}}</option>
@@ -242,12 +246,12 @@
 
                                             <div class="form-group col-2 mt-0 mb-0">
                                                 <label for="add-descuento-personalizado" class="col-form-label">Agregar descuento</label>
-                                                <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="15">
+                                                <input type="checkbox" name="add-descuento-personalizado" id="add-descuento-personalizado" class="form-control" style="display: block;" tabindex="17">
                                             </div>
 
                                             <div class="form-group col-2"> 
                                                 <label for="comisionable" class="col-form-label">Comisionable</label>    
-                                                <input type="checkbox" name="comisionable" class="form-control" checked="checked"  style="display: block;" tabindex="16">
+                                                <input type="checkbox" name="comisionable" class="form-control" checked="checked"  style="display: block;" tabindex="19">
                                             </div>
                                             
                                             <div class="form-group col-12 mt-0 mb-0">
@@ -308,14 +312,14 @@
                                                         <label for="tarjeta" class="col-form-label">Tarjeta crédito:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="19">
+                                                        <input type="text" name="tarjeta" id="tarjeta" class="form-control amount height-auto" value="0.00" tabindex="20">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
                                                         <label for="deposito" class="col-form-label">Depósito / transferencia:</label>
                                                     </div>
                                                     <div class="form-group col-5 mt-0 mb-0">
-                                                        <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="20">
+                                                        <input type="text" name="deposito" id="deposito" class="form-control amount height-auto" value="0.00" tabindex="21">
                                                     </div>
 
                                                     <div class="form-group col-7 mt-0 mb-0">
@@ -355,7 +359,7 @@
                                                         <input type="text" name="cupon" id="cupon" class="form-control amount" value="0.00" disabled="disabled">
                                                     </div-->
                                                     <div class="form-group col-12 mt-0 mb-0">
-                                                        <button class="btn btn-info btn-block mt-3" id="pagar-reservar" disabled="disabled" tabindex="21">Pagar y reservar</button>
+                                                        <button class="btn btn-info btn-block mt-3" id="pagar-reservar" disabled="disabled" tabindex="22">Pagar y reservar</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -364,10 +368,10 @@
                                 </div>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="btn btn-info btn-block mt-33" id="reservar" disabled="disabled" tabindex="22">Reservar</button>
+                                <button class="btn btn-info btn-block mt-33" id="reservar" disabled="disabled" tabindex="23">Reservar</button>
                             </div>
                             <div class="form-group col-2 mt-0 mb-0">
-                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="23">Cancelar</button>
+                                <button class="mt-33 btn btn-gray-700 btn-block" id="cancelar" tabindex="24">Cancelar</button>
                             </div>
                         </form>
                     </div>
