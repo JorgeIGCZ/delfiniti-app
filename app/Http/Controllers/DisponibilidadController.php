@@ -41,6 +41,22 @@ class DisponibilidadController extends Controller
                 $reservacionesPersonas += $reservacionDetalle->numero_personas;
             }
         }
+
+        $reservacionesVisita  = Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
+            $query
+                ->whereRaw(" '$fechaActividades' >= fecha_inicial")
+                ->whereRaw(" '$fechaActividades' <= fecha_final")
+                ->orWhere('duracion','indefinido')
+                ->whereRaw('estatus = 1')
+                ->whereRaw('exclusion_especial = 1');
+        })->get(); 
+
+        $reservacionesVisitaPersonas = 0;
+        foreach($reservacionesVisita as $reservacionVisita){
+            foreach($reservacionVisita->reservacionDetalle as $reservacionDetalle){
+                $reservacionesVisitaPersonas += $reservacionDetalle->numero_personas;
+            }
+        }
         
         $reservacionesPendientes= Reservacion::where('fecha',$fechaActividades)->where('estatus',1)->whereRaw('estatus_pago IN (0,1)')->whereHas('actividad', function (Builder $query) use ($fechaActividades) {
             $query
@@ -101,6 +117,7 @@ class DisponibilidadController extends Controller
             'reservaciones'       => $reservacionesPersonas,
             'reservacionesPagadas'=> $reservacionesPagadasSinCortesiasPersonas,
             'reservacionesPendientes'=> $reservacionesPendientesPersonas,
+            'reservacionesVisitaPersonas' => $reservacionesVisitaPersonas,
             'cortesias'           => $cortesiasPersonas
         ]);
     }

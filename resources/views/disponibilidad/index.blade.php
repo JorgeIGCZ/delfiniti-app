@@ -114,6 +114,10 @@
                                 <label class="col-form-label">Cortesías:</label>
                                 <strong>{{$cortesias}}</strong>
                             </div>
+                            <div class="visitas">
+                                <label class="col-form-label">Visitas:</label>
+                                <strong>{{$reservacionesVisitaPersonas}}</strong>
+                            </div>
                         </div>
                         <div>
                             <button id="toogle-info">

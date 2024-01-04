@@ -45118,7 +45118,7 @@ input[type='checkbox']{
 }
 #contenedor-informacion-disponibilidad{
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto auto auto auto auto;
     justify-items: center;
 }
 #toogle-info{
@@ -45176,6 +45176,10 @@ tr.cortesia{
 }
 .cortesias{
   color: #bd84cf;
+}
+
+.visitas{
+  color: #008dff;
 }
 
 .folio-link{
