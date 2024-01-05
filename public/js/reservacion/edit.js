@@ -34,7 +34,7 @@ if(actualizar !== null){
 if(pagar !== null){
     pagar.addEventListener('click', (event) => {
         event.preventDefault();
-        if (formValidity('reservacion-form') && cantidadActividadesIsValid()) {
+        if (formValidity('reservacion-form') && cantidadActividadesIsValid() && numCumponIsValid()) {
             createReservacion('pagar');
         }
     });

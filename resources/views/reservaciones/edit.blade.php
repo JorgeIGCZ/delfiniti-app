@@ -357,7 +357,7 @@
                                                 <select name="comisionista" id="comisionista" class="form-control" data-show-subtext="true" data-live-search="true" tabindex="12">
                                                     <option value='0' selected="true">Seleccionar comisionista</option>
                                                     @foreach($comisionistas as $comisionista)
-                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->descuentos}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected"' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
+                                                        <option value="{{$comisionista->id}}" cuponDescuento="{{$comisionista->cupon}}" {{$reservacion->comisionista_id === $comisionista->id ? 'selected="selected"' : ""}}>{{$comisionista->nombre}} ({{$comisionista->tipo->nombre}})</option>
                                                     @endforeach
                                                 </select>
                                             </div>

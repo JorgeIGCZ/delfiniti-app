@@ -505,6 +505,20 @@ function cantidadIsValid() {
     }
     return true;
 }
+function numCumponIsValid() {
+    const cupon = document.getElementById('cupon');
+    const numCupon = document.getElementById('num-cupon');
+    
+    if(cupon.getAttribute('value') > 0 && numCupon.value == ''){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Se necesita agregar numero de cupón!`
+        });
+        numCupon.focus()
+        return false;
+    }
+    return true;
+}
 function cantidadActividadesIsValid() {
     if(actvidadesArray.length < 1){
         Swal.fire({
