@@ -42,8 +42,12 @@
         // $('#end-date').datepicker('today');  
 
         
-        $('#start-date').datepicker('setDate', 'today');
-        $('#end-date').datepicker('setDate', 'today');
+        $('#start-date').datepicker({
+            language: 'es'
+        }).datepicker('update', 'today');
+        $('#end-date').datepicker({
+            language: 'es'
+        }).datepicker('update', 'today');
     }
     clearFiltros()
     
