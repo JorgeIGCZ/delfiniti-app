@@ -11,7 +11,31 @@
                 isFechaRangoValida();
             });
 
-            const productosTable = new DataTable('#movimientos', {
+            function isFechaRangoValida(){
+                const fechaInicio = document.getElementById('end_date').value;
+                const fechaFinal = document.getElementById('start_date').value;
+                if(fechaInicio !== "" && fechaFinal !== ""){
+                    movimientosInventarioTable.ajax.reload();
+                    return;
+                }
+            }
+
+            document.getElementById('fecha_movimiento').addEventListener('change', (event) =>{
+                const seleccion = event.target.value;
+                const rangoFecha = document.getElementById('rango-fecha');
+
+                $('#start_date').datepicker('setDate', null);
+                $('#end_date').datepicker('setDate', null);
+
+                rangoFecha.style.display = "none";
+                if(seleccion !== "custom"){
+                    descuentocodigosTable.ajax.reload();
+                    return;
+                }
+                rangoFecha.style.display = "block";
+            });
+
+            const movimientosInventarioTable = new DataTable('#movimientos', {
                 order: [[0, 'desc']],
                 ajax: function (d,cb,settings) {
                     $('.loader').show();
@@ -154,7 +178,7 @@
             <form class="row g-3 align-items-center f-auto" id="movimientos-form" method="GET">
                 <div class="form-group col-md-2">
                     <label for="fecha">Fecha Movimiento</label>
-                    <select class="form-control fecha" name="fecha">
+                    <select class="form-control fecha" name="fecha" id="fecha_movimiento">
                         <option value="year" selected="selected">Año Actual</option>
                         <option value="custom">Rango</option>
                     </select>
