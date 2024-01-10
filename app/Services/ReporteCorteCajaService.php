@@ -39,8 +39,8 @@ class ReporteCorteCajaService
 	public function getReporte($request)
 	{
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
-        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+        $fechaInicio = Carbon::createFromFormat('d/m/Y', $request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::createFromFormat('d/m/Y', $request->fechaFinal)->endOfDay();
 
         $moduloRequest = $request->data['modulo'];
         $moduloRequest = json_decode($moduloRequest);
@@ -56,8 +56,8 @@ class ReporteCorteCajaService
             $usuarios = User::whereIn('id',$usuarios)->pluck('id');
         }
         
-        // $fechaInicio = '2022-08-15 00:00:00';
-        // $fechaFinal = '2022-08-15 23:59:00';
+        // $fechaInicio = '2024-01-10 00:00:00';
+        // $fechaFinal = '2024-01-10 23:59:00';
         $formatoFechaInicio = date_format(date_create($fechaInicio),"d-m-Y"); 
         $formatoFechaFinal = date_format(date_create($fechaFinal),"d-m-Y"); 
         $tipoCambio = TipoCambio::where("seccion_uso","reportes")->get()[0]["precio_compra"];

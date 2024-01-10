@@ -43,9 +43,11 @@
 
         
         $('#start-date').datepicker({
+            format: 'dd/mm/yyyy',
             language: 'es'
         }).datepicker('update', 'today');
         $('#end-date').datepicker({
+            format: 'dd/mm/yyyy',
             language: 'es'
         }).datepicker('update', 'today');
     }

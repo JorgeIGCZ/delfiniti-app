@@ -14,8 +14,8 @@ class ReporteCuponesAgenciaDetalladoService
 	public function getReporte($request)
 	{
 		$spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load('reportTemplates/template.xlsx');
-        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
-        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+        $fechaInicio = Carbon::createFromFormat('d/m/Y', $request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::createFromFormat('d/m/Y', $request->fechaFinal)->endOfDay();
 
         $usuarios = User::role('Recepcion')->get()->pluck('id');
 

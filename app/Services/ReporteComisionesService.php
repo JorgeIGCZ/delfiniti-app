@@ -22,8 +22,8 @@ class ReporteComisionesService
 {
     public function getReporte($request)
     {   
-        $fechaInicio = Carbon::parse($request->fechaInicio)->startOfDay();
-        $fechaFinal  = Carbon::parse($request->fechaFinal)->endOfDay();
+        $fechaInicio = Carbon::createFromFormat('d/m/Y', $request->fechaInicio)->startOfDay();
+        $fechaFinal  = Carbon::createFromFormat('d/m/Y', $request->fechaFinal)->endOfDay();
 
         $canalesVentaRequest = $request->data['canalesVenta'];
         $canalesVentaRequest = json_decode($canalesVentaRequest);

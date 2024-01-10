@@ -3,7 +3,7 @@
     <script>
         $(function(){
             $('.input-daterange').datepicker({
-                format: 'yyyy-mm-dd',
+                format: 'dd-mm-yyyy',
                 // format: 'yyyy/mm/dd',
                 language: 'es'
             }).on("change", function() {
