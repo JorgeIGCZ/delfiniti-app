@@ -40,10 +40,10 @@ class ReporteCuponesAgenciaConcentradoService
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
         
         $rowNumber = 5;
-        $column = 5;
         
         foreach($comisionistasId as $comisionistaId){
-
+            $column = 5;
+            
             $nombreComisionista = Comisionista::find($comisionistaId)->nombre;
             
             $reservacionesCuponByComisionista = $this->getFechaReservacionesCuponByComisionista($fechaInicio, $fechaFinal, $comisionistaId);
