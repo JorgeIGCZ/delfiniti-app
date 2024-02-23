@@ -7,7 +7,7 @@ document.getElementById('add-alojamiento').addEventListener('click', (event) =>{
 
 document.getElementById('pagar-reservar').addEventListener('click', (event) => {
     validateFecha();
-    if (formValidity('reservacion-form') && cantidadActividadesIsValid() && cambioValidoIsValid() && numCumponIsValid()) {
+    if (formValidity('reservacion-form') && comisionistaIsValid() && cantidadActividadesIsValid() && cambioValidoIsValid() && numCumponIsValid()) {
         createReservacion('pagar-reservar');
     }
 });

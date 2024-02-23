@@ -34,7 +34,7 @@ if(actualizar !== null){
 if(pagar !== null){
     pagar.addEventListener('click', (event) => {
         event.preventDefault();
-        if (formValidity('reservacion-form') && cantidadActividadesIsValid() && numCumponIsValid()) {
+        if (formValidity('reservacion-form') && comisionistaIsValid() && cantidadActividadesIsValid() && numCumponIsValid()) {
             createReservacion('pagar');
         }
     });
@@ -77,7 +77,8 @@ $('#pagos').on( 'change', '.fecha-pago', function (event) {
 pagosTabla = new DataTable('#pagos', {
     searching: false,
     paging: false,
-    info: false
+    info: false,
+    responsive: true
 });
 
 fillReservacionDetallesTabla();

@@ -531,6 +531,19 @@ function cantidadActividadesIsValid() {
     }
     return true;
 }
+function comisionistaIsValid(){
+    const comisionista = document.getElementById('comisionista');
+
+    if (comisionista.value == 0){
+        Swal.fire({
+            icon: 'warning',
+            title: `¡Es necesario agregar comisionista!`
+        });
+        comisionista.focus()
+        return false;
+    }
+    return true;
+}
 function cambioValidoIsValid(){
     if(getCambio() > 0){
         Swal.fire({
@@ -619,7 +632,8 @@ let reservacionesTable = new DataTable('#reservaciones', {
     searching: false,
     paging: false,
     info: false,
-    ordering: false
+    ordering: false,
+    responsive: true
 } );
 
 window.onload = function() {
