@@ -331,7 +331,7 @@ function imprimirTicket(id){
     axios.get(`/tiendaventaticket/${id}`)
     .then(function (response) {
         openWindowWithPost("/ticket", {
-            venta: response.data.ticket
+            venta: response.data.ticket.replace(/\n/g, '')
         });
         result = true;    
     })
