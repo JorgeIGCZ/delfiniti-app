@@ -1,5 +1,5 @@
 <script>
-	const venta = `@php echo(json_decode($venta)); @endphp`;
+	const venta = `@php echo($venta); @endphp`;
 	try{
 		let w = window.open("","_self");
 		w.document.write(venta);

@@ -292,7 +292,7 @@ function getTicket(venta){
     let result = true;
     try{
         openWindowWithPost("/ticket", {
-            venta: JSON.stringify(format(venta))
+            venta: format(venta)
         });
         result = true;    
     }catch(err) {
@@ -331,7 +331,7 @@ function imprimirTicket(id){
     axios.get(`/tiendaventaticket/${id}`)
     .then(function (response) {
         openWindowWithPost("/ticket", {
-            venta: JSON.stringify(response.data.ticket)
+            venta: response.data.ticket
         });
         result = true;    
     })
