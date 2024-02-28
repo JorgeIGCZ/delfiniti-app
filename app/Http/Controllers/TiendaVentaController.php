@@ -21,6 +21,7 @@ use App\Models\VentaTicket;
 use App\Models\TipoCambio;
 use App\Models\TipoPago;
 use App\Models\User;
+use App\Http\Controllers\Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -176,6 +177,11 @@ class TiendaVentaController extends Controller
             ]);
 
             foreach($request->ventaProductos as $ventaProducto){
+
+                if (!$this->hasStock($ventaProducto['productoId'], $ventaProducto['cantidad'])){
+                    throw new \Exception("Error, No hay stock suficiente");
+                }
+
                 $Productos->updateFechaMovimientoStock($ventaProducto['productoId'], 'ultima_salida');
                 $Productos->updateStock($ventaProducto['productoId'], 'baja', $ventaProducto['cantidad']);
                 TiendaVentaDetalle::create([
@@ -257,6 +263,12 @@ class TiendaVentaController extends Controller
         }
 
         return $pagado;
+    }
+
+    private function hasStock($productoId, $cantidad){
+        $producto = TiendaProducto::find($productoId);
+        
+        return $producto->stock >= $cantidad;
     }
 
     public function getPagosAnteriores($id){
