@@ -97,8 +97,8 @@ class ReporteCorteCajaService
                     $informacionActividadesArray[] = [
                         "id" => $actividad->getId(),
                         "folio" => $reservacion->getFolio(),
-                        "efectivo" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivo'),
                         "efectivoUsd" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivoUsd', $isUltimaActividad),
+                        "efectivo" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoEfectivo'),
                         "tarjeta" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoTarjeta'),
                         "deposito" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoDeposito'),
                         "cupon" => $this->getPagoPorTipo($reservacion, $actividad, 'PagoCupon'),
@@ -307,8 +307,8 @@ class ReporteCorteCajaService
 
                     $index++;
 
+                    $efectivoUsd += $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', false);
                     $efectivo += $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
-                    $efectivoUsd += $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', true);
                     $tarjeta += $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
                     $deposito += $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
                     $cupon += $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
@@ -484,8 +484,8 @@ class ReporteCorteCajaService
                     $index++;
                     $isUltimoProducto = (count($venta->getProductos()) == $index);
 
-                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
                     $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', $isUltimoProducto);
+                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
                     $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
                     $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
                     $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
@@ -642,8 +642,8 @@ class ReporteCorteCajaService
                     $index++;
                     $isUltimoProducto = (count($venta->getProductos()) == $index);
 
-                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
                     $tempEfectivoUsd = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivoUsd', $isUltimoProducto);
+                    $tempEfectivo = $this->getPagoPorTipo($venta, $producto, 'PagoEfectivo');
                     $tempTarjeta = $this->getPagoPorTipo($venta, $producto, 'PagoTarjeta');
                     $tempDeposito = $this->getPagoPorTipo($venta, $producto, 'PagoDeposito');
                     $tempCupon = $this->getPagoPorTipo($venta,  $producto, 'PagoCupon');
@@ -1177,33 +1177,33 @@ class ReporteCorteCajaService
 
             //Una vez finalizado el calculo regresamos el sobrante a la moneda original para que se siga descontando en el siguiente producto
             if($tipoPago == 'PagoEfectivoUsd'){
-                $resta = $this->convertMxnToUsd($resta);
+
+                // Ya que sabemos que la cantidad de dolares es mayor a la diferencia de pago 
+                // obtenemos la cantidad de dolares enteros para aproximarse a la diferencia de Pago
+                $pagadoDolares = $this->getPagoDolaresEntero($diferenciaPago);
+
+                // Una vez validado regresamos a la moneda original
+                $pago = $this->convertMxnToUsd($pago);
+
+                $resta = $pago - $pagadoDolares;
 
                 //verificamos si es el ultimo producto/actividad que se generará si es asi le aplicaremos el total de dolares a esta
                 if($isUltimoProducto){    
                     $venta->{$nombreMetodoSet}(0);
 
                     // //Una vez finalizado el calculo regresamos a la moneda original para el reporte
-                    $pago = $this->convertMxnToUsd($pago);
-
-                    $producto->setCantidadPagada($pago);
+                    $producto->setCantidadPagada($this->convertUsdToMxn($pago));
                     return $pago;
                 }
+
+                $venta->{$nombreMetodoSet}($resta);
+                $producto->setCantidadPagada($this->convertUsdToMxn($pagadoDolares));
+                
+                return $pagadoDolares;
             }
 
             $venta->{$nombreMetodoSet}($resta);
             $producto->setCantidadPagada($precioProducto);
-
-            //regresamos a MXN para continuar con el proceso
-            // if($tipoPago == 'PagoEfectivoUsd'){
-            //     $diferenciaPago = $this->convertUsdToMxn($resta);
-
-            // }
-            
-            // //Una vez finalizado el calculo regresamos a la moneda original para el reporte
-            if($tipoPago == 'PagoEfectivoUsd'){
-                $diferenciaPago = $this->convertMxnToUsd($precioProducto);
-            }
 
             return $diferenciaPago;
         }
@@ -1219,6 +1219,10 @@ class ReporteCorteCajaService
             $pago = $this->convertMxnToUsd($pago);
         }
         return $pago;
+    }
+
+    private function getPagoDolaresEntero($cantidad) {
+        return intval($cantidad / $this->tipoCambio);
     }
 
     private function convertUsdToMxn($pago)
